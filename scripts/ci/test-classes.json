@@ -5,6 +5,11 @@
     "tests/operational-delivery-consumers.test.ts": "wymaga DYNA_OPERATIONAL_DELIVERY_NATIVE=true i natywnego klastra na porcie 55432 z instalacją operational-delivery"
   },
   "quarantine": {},
+  "darwin": {
+    "tests/release-migrations-resource-packaging.test.mjs": "gzipSync(level 9) z przypiętą sumą sha w tools/build/resource-io.mjs (resource209); na Linuksie zlib wpisuje w nagłówek gzip bajt OS 3 zamiast 19 (macOS), strumień deflate identyczny (12.11.2026)",
+    "tests/resource-format210.test.mjs": "gzipSync(level 9) z przypiętą sumą sha w tools/build/resource-format210.mjs (resource210); na Linuksie zlib wpisuje w nagłówek gzip bajt OS 3 zamiast 19 (macOS), strumień deflate identyczny (12.11.2026)",
+    "tests/resource187-identity-alias.test.mjs": "gzipSync(level 9) z przypiętą sumą sha w tools/build/resource-io.mjs (resource209); na Linuksie zlib wpisuje w nagłówek gzip bajt OS 3 zamiast 19 (macOS), strumień deflate identyczny (12.11.2026)"
+  },
   "db": {},
   "static": {
     "tests/return-credit207-ordinary-api-acceptance.test.mjs": "testuje sam walidator profilu (port 4100 w helperze to dane testu, nie wymaganie); 23/23 zielone bez bazy 11.11.2026"
