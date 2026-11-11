@@ -460,6 +460,28 @@ import { automationEditorColumn, automationEditorsAvailable } from './automation
 import { registerOrderSettingsRoutes } from './order-settings';
 export {bindOrdinaryConnectorTransport} from './ordinary-connector-routing';
 
+/** Without the startup gate (source/dev/test host) buildApp runs the same PIM validators as the
+ * gated construction owner (db.ts preflightOrdinaryConstructionPim) and with its 120 s budget, on one
+ * short owner READ ONLY transaction, like db.ts preflightUngatedTenantSchema does for tenantTx.
+ * SET LOCAL ends with the transaction, so the pooled session keeps its 8 s statement/lock limits. */
+async function preflightUngatedConstructionPim() {
+  const c = await pool.connect();
+  let destroy = false;
+  try {
+    await c.query('BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY');
+    await c.query("SET LOCAL statement_timeout='120s'");
+    const pimAvailable = await preflightPim(c);
+    const nestedAvailable = await preflightNestedPim(c, pimAvailable);
+    await c.query('COMMIT');
+    return { pimAvailable, nestedAvailable };
+  } catch (e) {
+    try { await c.query('ROLLBACK'); } catch { destroy = true; }
+    throw e;
+  } finally {
+    c.release(destroy);
+  }
+}
+
 export async function buildApp({
   logging = false,
   integrationTransport,
@@ -549,8 +571,9 @@ export async function buildApp({
   // Only the genuine startup-owned READ ONLY Native check can publish split.
   // Legacy hosts without that reviewed cold/construction lease stay inactive.
   const orderSplitsIsAvailable = constructionPim?.orderSplitsAvailable === true;
-  const pimDictionariesIsAvailable = constructionPim === undefined ? await preflightPim(pool) : constructionPim.pimAvailable;
-  const pimNestedMappingIsAvailable = constructionPim === undefined ? await preflightNestedPim(pool,pimDictionariesIsAvailable) : constructionPim.nestedAvailable;
+  const pimDictionariesPreflight = constructionPim ?? (await preflightUngatedConstructionPim());
+  const pimDictionariesIsAvailable = pimDictionariesPreflight.pimAvailable;
+  const pimNestedMappingIsAvailable = pimDictionariesPreflight.nestedAvailable;
   const largeImports = await createLargeImportApplication(largeImportDrivers,readOnly);
   const b2bCatalogScopeIsAvailable = await b2bCatalogScopeAvailable(pool);
   const emailAttachmentsAvailable = Boolean(
