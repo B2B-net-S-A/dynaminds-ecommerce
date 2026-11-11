@@ -27,13 +27,14 @@ const reverse264=(path:string,text:string)=>{if(path!=='server/catalog-stock-con
 const source272Edits:Record<string,readonly (readonly [string,string])[]>={"server/financial-return-completion.ts":[[" // 272: the ordinary-receipt front door answers NULL only where the sealed capture would, and is the sealed capture otherwise.\n const saved=await owner(c,async()=>{const front=(await c.query(\"SELECT to_regprocedure('public.return_receipt272_financial_capture(uuid,uuid,text,uuid,jsonb)') IS NOT NULL f\")).rows[0].f===true;\n  return (await c.query(front?'SELECT public.return_receipt272_financial_capture($1,$2,$3,$4,$5::jsonb) frame':'SELECT public.financial_return_capture($1,$2,$3,$4,$5::jsonb) frame',[a.userId,a.apiKeyId??null,hash,source.return_id,JSON.stringify(source.request)])).rows[0].frame;});\n"," const saved=await owner(c,async()=>(await c.query('SELECT public.financial_return_capture($1,$2,$3,$4,$5::jsonb) frame',[a.userId,a.apiKeyId??null,hash,source.return_id,JSON.stringify(source.request)])).rows[0].frame);\n"]]};
 const reverse272=(path:string,text:string)=>{for(const[from,to]of source272Edits[path]??[]){assert.equal(text.split(from).length,2,'one declared 272 edit');text=text.replace(from,()=>to);}return text;};
 const reverse248=(path:string,text:string)=>{text=reverse264(path,reverse272(path,text));for(const[from,to]of source248Edits[path]??[]){assert.equal(text.split(from).length,2,'one declared 248 edit');text=text.replace(from,()=>to);}return text;};
-test('reviewedMIG1 migrator and split-hook successors match all actual42 sources and3 literal native resources',()=>{
- assert.equal(sourceRoster.length,42);assert.equal(nativeRoster.length,3);
+test('reviewedMIG1 migrator and split-hook successors match all actual43 sources and3 literal native resources',()=>{
+ assert.equal(sourceRoster.length,43);assert.equal(nativeRoster.length,3);
  assert.equal(assertStockWriterManifestCoverage(actual),undefined);
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/db.ts'),{path:'server/db.ts',sha256:'01078f53f209e6e9314886e7735e6730af3dbcec3ac9849e4e8e5cac5d5bfb7c',bytes:49754});
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/developer-api.ts'),{path:'server/developer-api.ts',sha256:'0ebcef75ff081a07bdf5b65ab4e888d26fcad3647ef549d71ce49d0b0664552d',bytes:234015});
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/domain.ts'),{path:'server/domain.ts',sha256:'cff5ac7f6333e8ab47bd406abe05fc007e4cc4891d33434dd0e658a7a7126f2c',bytes:48283});
 
+ assert.deepEqual(sourceRoster.find(e=>e.path==='server/order-warehouse-transfer.ts'),{"path":"server/order-warehouse-transfer.ts","sha256":"7a99b26f1ae95244639d3dcbf8d61974620d4f7bd41162330455c40c61bc3af9","bytes":5363},'Source269 order warehouse transfer');
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/warehouse-wz-issuer.ts'),{path:'server/warehouse-wz-issuer.ts',sha256:'a9d23da2b028d2a491536bc457f3adfc93d3edb81cb8619432f798a49eb9f2cd',bytes:10476});
 });
 // SourceDbLocks re-pinned db.ts: tenantTx checks the held session locks right before COMMIT (db-lock-holder.ts).

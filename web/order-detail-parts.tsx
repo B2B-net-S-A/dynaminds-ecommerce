@@ -80,6 +80,7 @@ const EVENT_LABELS: Record<string, string> = {
   'order.item_quantity_changed': 'Zmieniono ilość produktu',
   'order.item_removed': 'Usunięto produkt',
   'order.delivery_address_changed': 'Zmieniono adres dostawy',
+  'order.warehouse_changed': 'Zmieniono magazyn',
   'payment.receipt': 'Zapisano wpłatę',
   'payment.courier_collection': 'Potwierdzono pobranie przez kuriera',
   'payment.courier_remittance': 'Zapisano rozliczenie kuriera',
@@ -131,6 +132,8 @@ export function orderEventText(e: Row, replacement = false): { title: string; de
   if (e.kind === 'order.item_added') return { title, detail: `${d.sku} · ${d.quantity} szt.` };
   if (e.kind === 'order.item_quantity_changed') return { title, detail: `${d.sku} · ${d.from} → ${d.to} szt.` };
   if (e.kind === 'order.item_removed') return { title, detail: `${d.sku} · ${d.quantity} szt.` };
+  if (e.kind === 'order.warehouse_changed')
+    return { title, detail: [`${d.from_name ?? '—'} → ${d.to_name ?? '—'}`, d.source === 'automation' ? 'reguła automatyczna' : null].filter(Boolean).join(' · ') };
   // A rule's own summary ("Reguła X: Dodano tag Y") says more than the generic label.
   if ((e.kind === 'automation.rule_applied' || e.kind === 'automation.notify') && typeof d.message === 'string' && d.message)
     return { title: d.message };

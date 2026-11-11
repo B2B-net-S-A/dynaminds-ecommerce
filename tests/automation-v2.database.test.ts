@@ -89,7 +89,8 @@ test('catalog: grouped options, money units, unsupported effects and triggers', 
   assert.equal(c.fields.find((f: any) => f.key === 'order.total').unit, 'money');
   assert.equal(c.fields.find((f: any) => f.key === 'product.sku').per_line, true);
   assert.ok(c.fields.find((f: any) => f.key === 'warehouse.id').options.some((o: any) => o.value === warehouse));
-  assert.equal(c.effects.find((e: any) => e.type === 'assign_warehouse').supported, false);
+  assert.equal(c.effects.find((e: any) => e.type === 'assign_warehouse').supported, undefined);
+  assert.ok(c.effects.every((e: any) => e.supported !== false), 'no effect is unsupported since 269');
   assert.equal(c.effects.find((e: any) => e.type === 'merge_orders').supported, undefined);
   assert.equal(c.effects.find((e: any) => e.type === 'split_order').supported, undefined);
   assert.equal(c.effects.find((e: any) => e.type === 'add_tag').supported, undefined);

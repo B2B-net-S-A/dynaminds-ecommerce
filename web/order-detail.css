@@ -606,3 +606,20 @@
   gap: 4px;
   font-size: 12px;
 }
+/* "Zmień magazyn" inside the "⋯ Więcej" menu (migration 269). */
+.order-more-menu .order-warehouse-change {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  white-space: normal;
+  font-size: 13px;
+}
+.order-more-menu .order-warehouse-change label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.order-warehouse-change-actions {
+  display: flex;
+  gap: 6px;
+}

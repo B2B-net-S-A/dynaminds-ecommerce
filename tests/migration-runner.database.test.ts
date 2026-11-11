@@ -21,7 +21,7 @@ assert.equal(database.port, '57084');
 assert.match(database.pathname, /^\/dynaminds_(?:mig145_20261028|m25[0123]_20261028|m(?:25[456789]|26[0123])_202610(?:2[89]|30))_[0-9]{2}$/, 'disposable clone dynaminds_mig145_20261028_NN (or m250/m251/m252/m253/m254/m255/m256/m257/m258/m259/m260/m261/m262/m263) at 243 required');
 after(() => pool.end());
 
-const PENDING = ['244_custom_events_checksums', '245_s5_comm', '246_b2b_trade_credit_directory', '247_sales_dimensions_repricing', '248_guard_verdicts', '249_catalog_ai', '250_wms_evidence_settle_unlocked', '251_b2b_network_lifecycle', '252_mirakl_operations', '253_mirakl_webhook_retention', '254_carrier_returns', '255_stock_verdict', '256_return_receipt_verdicts', '257_order_merge_snapshot_index_paths', '258_wz_issuer_refresh', '259_jobs_running_lease', '260_automation_runs_queued_job', '261_stocktake_evidence_usage', '262_revoke_public_temporary', '263_manual_off_verdict', '264_order_status_labels', '265_wms_order_line_resize', '266_accountant_order_settings', '267_status_categories_automation_editors', '268_cancelled_label_relabel'];
+const PENDING = ['244_custom_events_checksums', '245_s5_comm', '246_b2b_trade_credit_directory', '247_sales_dimensions_repricing', '248_guard_verdicts', '249_catalog_ai', '250_wms_evidence_settle_unlocked', '251_b2b_network_lifecycle', '252_mirakl_operations', '253_mirakl_webhook_retention', '254_carrier_returns', '255_stock_verdict', '256_return_receipt_verdicts', '257_order_merge_snapshot_index_paths', '258_wz_issuer_refresh', '259_jobs_running_lease', '260_automation_runs_queued_job', '261_stocktake_evidence_usage', '262_revoke_public_temporary', '263_manual_off_verdict', '264_order_status_labels', '265_wms_order_line_resize', '266_accountant_order_settings', '267_status_categories_automation_editors', '268_cancelled_label_relabel', '269_order_warehouse_transfer'];
 const state = async () => (await pool.query(`SELECT (SELECT count(*)::int FROM migrations) ledger,
   (SELECT md5(string_agg(name||coalesce(applied_at::text,''),',' ORDER BY name)) FROM migrations) ledger_md5,
   (SELECT max(name) FROM migrations) last,
@@ -50,7 +50,7 @@ test('a migration failing after four others in the series rolls the whole series
     assert.equal(e.migration, '248_guard_verdicts');
     assert.equal(e.file, '248_guard_verdicts.sql');
     assert.equal((e.cause as { code?: string })?.code, '42P07');
-    assert.match(e.message, /^Migracja 248_guard_verdicts \(248_guard_verdicts\.sql\) nie powiodła się; cała seria \(244_custom_events_checksums … 268_cancelled_label_relabel\) została wycofana/);
+    assert.match(e.message, /^Migracja 248_guard_verdicts \(248_guard_verdicts\.sql\) nie powiodła się; cała seria \(244_custom_events_checksums … 269_order_warehouse_transfer\) została wycofana/);
     return true;
   });
   console.log('failed series ms', Math.round(performance.now() - t));
@@ -88,7 +88,7 @@ test('two instances started while the fence is held both wait past the 8 s lock_
   } finally { if (!released) await lock.release(); }
   const after = await state();
   assert.equal(after.ledger, before.ledger + PENDING.length);
-  assert.equal(after.last, '268_cancelled_label_relabel');
+  assert.equal(after.last, '269_order_warehouse_transfer');
   assert.deepEqual([after.checksums244, after.objects, after.basis248, after.settle250], [true, 10, 1, true], 'one table of each of 244-249, 251, 252 and 254, the 253 index and the 250 settle body; 255 and 256 add functions only, 257 changes the 209 snapshot body, 258 adds a function and changes the 239 verdict, 263 adds functions only');
   const applied = (await pool.query("SELECT name FROM migration_checksums WHERE origin='applied' ORDER BY name")).rows.map((r) => r.name);
   assert.deepEqual(applied, PENDING, 'each pending migration recorded once, as applied');

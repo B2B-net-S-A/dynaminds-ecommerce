@@ -407,7 +407,8 @@ async function referenceNames(c: PoolClient, effects: EffectSpec[]) {
     await c.query(
       `SELECT id::text,name FROM workflow_statuses WHERE id=ANY($1::uuid[]) UNION ALL SELECT id::text,name FROM email_templates WHERE id=ANY($1::uuid[])
        UNION ALL SELECT id::text,name FROM sms_templates WHERE id=ANY($1::uuid[]) UNION ALL SELECT id::text,name FROM automation_rules WHERE id=ANY($1::uuid[])
-       UNION ALL SELECT id::text,label FROM order_field_definitions WHERE id=ANY($1::uuid[]) UNION ALL SELECT id::text,name FROM outbound_subscriptions WHERE id=ANY($1::uuid[])`,
+       UNION ALL SELECT id::text,label FROM order_field_definitions WHERE id=ANY($1::uuid[]) UNION ALL SELECT id::text,name FROM outbound_subscriptions WHERE id=ANY($1::uuid[])
+       UNION ALL SELECT id::text,name FROM warehouses WHERE id=ANY($1::uuid[])`,
       [ids],
     )
   ).rows;

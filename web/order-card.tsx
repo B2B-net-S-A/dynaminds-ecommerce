@@ -44,6 +44,7 @@ import {
 } from './order-card-model';
 import { saveOrderSection, SectionSaveError } from './order-section-api';
 import { OrderBreadcrumb, OrderCardHeader } from './order-card-header';
+import { OrderWarehouseChange } from './order-warehouse-change';
 import { OrderProductsCard } from './order-card-products';
 import { OrderAside } from './order-card-aside';
 import { SectionCard, SectionConfirmDialog, SectionSwitchDialog, type SectionControl } from './order-card-section';
@@ -409,6 +410,12 @@ export function OrderDetail({
   const menu = write ? (
     <>
       <ManualAutomationButtons orderIds={[id]} notify={notify} disabled={busy} onDone={() => { detail.reload(); reload(); }} />
+      <OrderWarehouseChange
+        order={o}
+        busy={busy}
+        loadWarehouses={async () => (await api('/warehouses')).data}
+        onMove={(warehouseId) => action(`/orders/${id}/warehouse`, { warehouse_id: warehouseId, expected_version: String(o.version) })}
+      />
       {o.status === 'picking' && (
         <button
           className="button"

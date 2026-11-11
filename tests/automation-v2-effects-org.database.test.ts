@@ -76,8 +76,9 @@ test('catalog: the lane effects are supported with tenant people and priorities'
   for (const t of ['assign_user', 'set_priority', 'reserve_stock', 'release_stock']) assert.equal(by(t).supported, undefined, t);
   assert.ok(by('assign_user').params[0].options.length > 0);
   assert.deepEqual(by('set_priority').params[0].options.map((o: any) => o.value), ['high', 'normal', 'low']);
-  // No domain path moves an order between warehouses (reservation rows are pinned to theirs).
-  assert.equal(by('assign_warehouse').supported, false);
+  // 269: the order and its reservations move through the owner function (tests/automation-v2-assign-warehouse.database.test.ts).
+  assert.equal(by('assign_warehouse').supported, undefined);
+  assert.equal(by('assign_warehouse').params[0].key, 'warehouse_id');
 });
 
 test('assign_user: owner order field created on first use, shown on the card; rerun is unchanged; foreign person refused', async () => {

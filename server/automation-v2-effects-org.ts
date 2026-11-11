@@ -7,8 +7,9 @@
  * extra field, without touching the orders table. Values are written by patchOrderFieldsInTx, as the card does.
  * Older runs stored them as tags ("Opiekun …", "Priorytet wysoki/niski"); those tags are left as they are.
  *
- * assign_warehouse is deliberately absent: no domain path changes an order's warehouse, and reservations cannot be
- * moved between warehouses by the app role (UNSUPPORTED_EFFECTS in automation-v2-fields.ts has the evidence).
+ * assign_warehouse moves the order and its reservations to another warehouse through the same path as "Zmień magazyn"
+ * on the order card (order-warehouse-transfer.ts, owner function order_warehouse269_transfer of migration 269); an
+ * order already in that warehouse is left as it is.
  */
 import { createHash, randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
@@ -18,6 +19,7 @@ import { lockedOrder, type Actor } from './domain';
 import { ensure, Problem } from './errors';
 import { createOrderFieldInTx, editOrderFieldInTx, patchOrderFieldsInTx, acquireOrderFieldsAdmissionInTx } from './order-fields';
 import { releaseOrderStockInTx, reserveOrderStockInTx } from './order-edit';
+import { transferOrderWarehouseInTx } from './order-warehouse-transfer';
 
 type Option = { id: string; label: string };
 type FieldSpec = { key: string; label: string; position: number };
@@ -159,6 +161,22 @@ export const effects: EffectModule = {
         return result('set_priority', changed, changed ? `Ustawiono priorytet: ${label}` : `Priorytet bez zmian: ${label}`);
       },
     },
+    assign_warehouse: {
+      schema: z.strictObject({ warehouse_id: z.uuid('Wybierz magazyn') }),
+      validate: async (c, p) => {
+        ensure((await c.query('SELECT 1 FROM warehouses WHERE id=$1', [p.warehouse_id])).rowCount === 1, 422, 'Magazyn nie należy do tej firmy');
+      },
+      describe: (p, names) => `Przeniesie zamówienie i jego rezerwacje do magazynu ${names[p.warehouse_id] ?? p.warehouse_id}`,
+      apply: async (env, p) => {
+        const o = await lockedOrder(env.c, env.orderId);
+        if (o.warehouse_id === p.warehouse_id) {
+          const name = (await env.c.query('SELECT name FROM warehouses WHERE id=$1', [p.warehouse_id])).rows[0]?.name ?? p.warehouse_id;
+          return result('assign_warehouse', false, `Magazyn bez zmian: ${name}`);
+        }
+        const moved = await transferOrderWarehouseInTx(env.c, env.actor, env.orderId, p.warehouse_id, 'automation');
+        return result('assign_warehouse', true, `Przeniesiono do magazynu ${moved.to_warehouse_name} (z ${moved.from_warehouse_name})`);
+      },
+    },
     reserve_stock: {
       schema: noParams,
       describe: () => 'Zarezerwuje stan dla pozycji zamówienia',
@@ -178,6 +196,7 @@ export const effects: EffectModule = {
   },
   catalogParams: async (c) => {
     const people = (await c.query('SELECT user_id,name FROM customer_message_eligible_assignees(NULL) ORDER BY name,user_id')).rows;
+    const warehouses = (await c.query('SELECT id,name FROM warehouses ORDER BY name,id')).rows;
     return {
       assign_user: [
         { key: 'user_id', label: 'Opiekun', kind: 'select', options: people.map((m) => ({ value: m.user_id, label: m.name })), required: true },
@@ -190,6 +209,9 @@ export const effects: EffectModule = {
           options: (Object.keys(PRIORITIES) as Priority[]).map((p) => ({ value: p, label: PRIORITIES[p] })),
           required: true,
         },
+      ],
+      assign_warehouse: [
+        { key: 'warehouse_id', label: 'Magazyn', kind: 'select', options: warehouses.map((w) => ({ value: w.id, label: w.name })), required: true },
       ],
       reserve_stock: [],
       release_stock: [],

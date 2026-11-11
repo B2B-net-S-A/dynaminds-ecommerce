@@ -145,15 +145,7 @@ export const EFFECT_LABELS: Record<string, string> = {
 };
 
 /** Effects that cannot run safely from a rule yet: listed with supported:false and a reason. */
-export const UNSUPPORTED_EFFECTS: Record<string, string> = {
-  // Every order reserves its physical lines with location rows (createOrder), and the app role cannot move them:
-  // the warehouse of a reservation row is sealed (146_warehouse_inventory_policies: "Tożsamość fizycznego stanu
-  // magazynu jest stała"), location rows are never deleted (no DELETE grant), a released reservation keeps them in
-  // a foreign key (025_stock_locations.sql), and the key (tenant, order, product) allows no second reservation in
-  // another warehouse. Proven by tests/automation-v2-assign-warehouse.database.test.ts.
-  assign_warehouse:
-    'Rezerwacje zamówienia są trwale przypięte do magazynu, w którym powstały, i baza nie pozwala ich przenieść; magazyn ustala się przy tworzeniu zamówienia',
-};
+export const UNSUPPORTED_EFFECTS: Record<string, string> = {};
 
 export const TRIGGER_GROUPS: Record<string, string> = {
   'order.matches': 'Warunki',

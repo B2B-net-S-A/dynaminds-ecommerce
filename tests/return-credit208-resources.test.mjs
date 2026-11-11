@@ -78,8 +78,14 @@ test('the actual fixed source resource reader returns frozenV2 bytes and rejects
 });
 test('coverage restores the literal207 snapshot after exact six207, a251dfe and thirteen236 source-pin and comment lineage changes',async()=>{
  const text=(await read('server/catalog-stock-writer-coverage.ts')).toString('utf8'),roster=JSON.parse(text.match(/const SOURCE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]),native=JSON.parse(text.match(/const NATIVE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]);
- assert.equal(roster.length,42);assert.equal(native.length,3);const db=await read('server/db.ts'),current={path:'server/db.ts',sha256:hash(db),bytes:db.length};assert.deepEqual(roster.filter(row=>row.path==='server/db.ts'),[current]);assert.equal(text.split(JSON.stringify(current)).length,2);
+ assert.equal(roster.length,43);assert.equal(native.length,3);const db=await read('server/db.ts'),current={path:'server/db.ts',sha256:hash(db),bytes:db.length};assert.deepEqual(roster.filter(row=>row.path==='server/db.ts'),[current]);assert.equal(text.split(JSON.stringify(current)).length,2);
  let historical=text;
+ // Source269 added the pin of server/order-warehouse-transfer.ts (a new writer front, not a re-pin) and its comment;
+ // both go first.
+ const source269Pin=roster.find(r=>r.path==='server/order-warehouse-transfer.ts');assert(source269Pin);
+ assert.equal(historical.split(','+JSON.stringify(source269Pin)).length,2);historical=historical.replace(','+JSON.stringify(source269Pin),'');
+ const source269Comment="// Source269 adds server/order-warehouse-transfer.ts after review: \"Zmie\u0144 magazyn\" and the rule effect assign_warehouse admit the\n// order like a reservation edit (catalog lock, inventory policies of both warehouses, LINE_BLOCKERS, WMS lots off) and call\n// only the owner function order_warehouse269_transfer (269 SQL), whose one transaction returns stock.reserved and the location\n// rows in the old warehouse and reserves the same quantities (stock, reservations, free bins) in the new; no other stock write.\n";
+ assert.equal(historical.split(source269Comment).length,2);historical=historical.replace(source269Comment,'');
  // SourceDbLocks re-pinned db.ts (tenantTx checks held session locks before COMMIT) and added its comment, which goes first.
  const sourceDbLocksComment="// SourceDbLocks re-pins db.ts after review: tenantTx calls assertDbLocksHeldInTx(c) right before COMMIT, which refuses\n// the commit (rollback) when a session advisory lock of the async context was lost (one pg_locks read only under\n// holdingDbLock); no stock write, stock-writer call or gate bypass.\n";
  assert.equal(historical.split(sourceDbLocksComment).length,2);historical=historical.replace(sourceDbLocksComment,'');

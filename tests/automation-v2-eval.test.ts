@@ -196,7 +196,8 @@ test('rule validation: operators per type, values, unknown fields, effects and t
   assert.match(bad({ conditions: { match: 'all', items: [leaf('order.status', 'in', ['paid'], 'all')] } })!, /Kwantyfikator/);
   assert.match(bad({ effects: [] })!, /co najmniej jeden efekt/);
   assert.match(bad({ effects: [{ type: 'teleport', params: {} }] })!, /Nieznany efekt/);
-  assert.match(bad({ effects: [{ type: 'assign_warehouse', params: {} }] })!, /niedostępny/);
+  // No effect is unsupported since 269: assign_warehouse passes the rule shape (its params are checked when saved).
+  assert.equal(bad({ effects: [{ type: 'assign_warehouse', params: { warehouse_id: '00000000-0000-4000-8000-000000000001' } }] }), undefined);
   assert.match(bad({ run: { ...DEFAULT_RUN, hours: { days: [1], from: '10:00', to: '10:00' } } })!, /różnić/);
   assert.match(bad({ run: { ...DEFAULT_RUN, auto: false } })!, /Włącz/);
   assert.match(parseRuleV2({ ...base, trigger: 'order.teleported' }, {}).error!, /Nieznany wyzwalacz/);
