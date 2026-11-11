@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {SLOTS, PORTS, resolveIndexes, validateResolved, materializeCompose, verifyPreparedConfiguration, usage, checkBudget, MIN_FREE_BYTES, MAX_BYTES,
-  localBuildsFor, forwarderConfig, forwarderArgs, storeBindings} from '../tools/local/official-woo/operator.mjs';
+  localBuildsFor, forwarderConfig, forwarderArgs, storeBindings, renewTlsFiles, MAX_TLS_DAYS} from '../tools/local/official-woo/operator.mjs';
 
 // Pure contract/filesystem tests. OCI bytes below are SYNTHETIC, never a release lock.
 const ids = ['wordpress', 'cli', 'database', 'tls'];
@@ -168,5 +168,53 @@ test('store bindings pin CA and both REST key files of owned stores; malformed o
     await assert.rejects(storeBindings(root, ['a', 'b']), /REST key/);
     await fs.writeFile(root + '/secrets/rest_producer_b.json', keys.producer_b); await fs.chmod(root + '/secrets/rest_producer_b.json', 0o644);
     await assert.rejects(storeBindings(root, ['a', 'b']), /0600/);
+  } finally { await fs.rm(root, {recursive: true, force: true}); }
+});
+
+test('renew-tls: same CA key and subject, longer validity, old files kept, bindings follow the new CA pin', async () => {
+  const {execFileSync} = await import('node:child_process'), {X509Certificate} = await import('node:crypto');
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'dyna-woo-renew-'));
+  const openssl = args => execFileSync('openssl', args, {cwd: root, stdio: ['ignore', 'pipe', 'pipe']});
+  try {
+    for (const d of ['secrets', 'config']) await fs.mkdir(root + '/' + d, {mode: 0o700});
+    await fs.writeFile(root + '/config/tls.ext', 'subjectAltName=DNS:localhost,IP:127.0.0.1\nbasicConstraints=critical,CA:FALSE\nextendedKeyUsage=serverAuth\n');
+    // The same three commands as prepare (14 days).
+    openssl(['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-sha256', '-days', '14', '-subj', '/CN=DYNAMINDS owned Woo local CA', '-addext', 'basicConstraints=critical,CA:TRUE', '-keyout', 'secrets/ca.key', '-out', 'secrets/ca.pem']);
+    openssl(['req', '-new', '-newkey', 'rsa:2048', '-nodes', '-subj', '/CN=localhost', '-keyout', 'secrets/tls.key', '-out', 'secrets/tls.csr']);
+    openssl(['x509', '-req', '-in', 'secrets/tls.csr', '-CA', 'secrets/ca.pem', '-CAkey', 'secrets/ca.key', '-CAcreateserial', '-days', '14', '-sha256', '-extfile', 'config/tls.ext', '-out', 'secrets/tls.pem']);
+    for (const f of await fs.readdir(root + '/secrets')) await fs.chmod(root + '/secrets/' + f, 0o600);
+    const key = (c, n) => JSON.stringify({consumer_key: 'ck_' + c.repeat(40), consumer_secret: 'cs_' + n.repeat(40)});
+    for (const [name, body] of Object.entries({importer_a: key('1', '2'), producer_a: key('3', '4'), importer_e: key('5', '6'), producer_e: key('7', '8')}))
+      await fs.writeFile(`${root}/secrets/rest_${name}.json`, body, {mode: 0o600});
+    const b = {...await storeBindings(root, ['a', 'e']), root};
+    await fs.writeFile(root + '/woo-store-bindings.private.json', JSON.stringify(b, null, 2) + '\n', {mode: 0o600});
+    const oldCa = await fs.readFile(root + '/secrets/ca.pem'), oldLeaf = await fs.readFile(root + '/secrets/tls.pem');
+
+    for (const days of [0, MAX_TLS_DAYS + 1, 1.5]) await assert.rejects(renewTlsFiles(root, days), /whole days/);
+    const r = await renewTlsFiles(root, 825);
+    assert.equal(r.previous_ca_sha256, sha(oldCa)); assert.notEqual(r.ca_sha256, r.previous_ca_sha256);
+    assert.equal(r.superseded, 'superseded-01'); assert.deepEqual(r.stores, ['https://localhost:18443', 'https://localhost:18447']);
+    const ca = new X509Certificate(await fs.readFile(root + '/secrets/ca.pem')), leaf = new X509Certificate(await fs.readFile(root + '/secrets/tls.pem'));
+    const previous = new X509Certificate(oldCa);
+    assert(ca.ca && ca.subject === previous.subject && ca.publicKey.equals(previous.publicKey), 'same CA key and subject');
+    assert(leaf.checkIssued(ca) && leaf.verify(ca.publicKey) && leaf.checkHost('localhost'));
+    assert(Date.parse(leaf.validTo) > Date.now() + 824 * 86400000 && Date.parse(ca.validTo) > Date.now() + 824 * 86400000);
+    assert.deepEqual(await fs.readFile(root + '/secrets/ca.pem.superseded-01'), oldCa);
+    assert.deepEqual(await fs.readFile(root + '/secrets/tls.pem.superseded-01'), oldLeaf);
+    for (const f of ['ca.pem', 'tls.pem', 'tls.csr', 'ca.srl']) assert.equal((await fs.stat(root + '/secrets/' + f)).mode & 0o777, 0o600);
+    const nb = JSON.parse(await fs.readFile(root + '/woo-store-bindings.private.json', 'utf8'));
+    assert.equal((await fs.stat(root + '/woo-store-bindings.private.json')).mode & 0o777, 0o600);
+    assert(nb.stores.every(s => s.ca.sha256 === r.ca_sha256 && s.ca.path === root + '/secrets/ca.pem'));
+    assert.deepEqual(nb.stores.map(s => [s.importer, s.producer]), b.stores.map(s => [s.importer, s.producer]), 'key pins unchanged');
+    assert.deepEqual(JSON.parse(await fs.readFile(root + '/woo-store-bindings.private.json.superseded-01', 'utf8')), b);
+
+    // A second renewal takes the next generation; bindings that pin another CA refuse before any file moves.
+    assert.equal((await renewTlsFiles(root, 30)).superseded, 'superseded-02');
+    const stale = JSON.parse(await fs.readFile(root + '/woo-store-bindings.private.json', 'utf8')); stale.stores[1].ca.sha256 = 'f'.repeat(64);
+    await fs.writeFile(root + '/woo-store-bindings.private.json', JSON.stringify(stale), {mode: 0o600});
+    const before = await fs.readFile(root + '/secrets/ca.pem');
+    await assert.rejects(renewTlsFiles(root, 30), /current CA/);
+    assert.deepEqual(await fs.readFile(root + '/secrets/ca.pem'), before);
+    await assert.rejects(fs.lstat(root + '/secrets/ca.pem.superseded-03'), {code: 'ENOENT'});
   } finally { await fs.rm(root, {recursive: true, force: true}); }
 });

@@ -8,6 +8,10 @@
 //                                                                   map SKUs, stock sync, orders.sync read, import opt-in,
 //                                                                   then two store orders that the app imports
 //   node tools/demo/seed-woo.mjs <DEMO_ROOT> <app base> --order    one new store order (live demo); prints its number
+//   node tools/demo/seed-woo.mjs <DEMO_ROOT> <app base> --refresh-ca
+//                                                                   after `operator.mjs renew-tls`: new copy of the store CA
+//                                                                   and its pin in the selection (same channel, fixture and
+//                                                                   key); the release reads it on its next start
 //
 // Keys: the release only ever gets the importer key (copy in $DEMO_ROOT/private/woo, 0600). The producer key (create
 // store products and orders, like a shop customer would) stays in the store root and in this host process' memory.
@@ -55,6 +59,7 @@ function woo(method, path, body) {
 }
 const ok = (r, what) => { if (r.status >= 300) throw new Error(`${what}: HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 300)}`); return r.json; };
 const writePrivate = (file, data) => { writeFileSync(file + '.tmp', data, { mode: 0o600 }); renameSync(file + '.tmp', file); };
+const copy = (pin, name) => { const b = ownPrivate(pin.path); if (sha(b) !== pin.sha256) throw new Error(pin.path + ' digest'); writePrivate(DIR + '/' + name, b); return { path: DIR + '/' + name, sha256: pin.sha256 }; };
 const creds = () => JSON.parse(ownPrivate(PRIV + '/credentials.json'));
 async function ownerClient() {
   const c = new Client(fetchTransport(BASE)), u = creds().users.find((x) => x.key === 'owner');
@@ -81,7 +86,6 @@ if (mode === '--prepare') {
   }
   // Release copies (0600) of the CA and the importer key; the selection names the owner session user.
   mkdirSync(DIR, { recursive: true, mode: 0o700 }); chmodSync(DIR, 0o700);
-  const copy = (pin, name) => { const b = ownPrivate(pin.path); if (sha(b) !== pin.sha256) throw new Error(pin.path + ' digest'); writePrivate(DIR + '/' + name, b); return { path: DIR + '/' + name, sha256: pin.sha256 }; };
   const channelId = randomUUID();
   const sel = [{ fixtureId: randomUUID(), channelId, tenantId: user.tenant_id, userId: user.id, origin: store.origin,
     ca: copy(store.ca, `${SLOT}-ca.pem`), credentials: copy(store.importer, `${SLOT}-importer.json`) }];
@@ -116,6 +120,14 @@ if (mode === '--prepare') {
   const n = Date.now() % 1000;
   const o = await storeOrder(st, n);
   console.log(`Zamówienie WooCommerce #${o.number} (${o.total} zł) złożone w ${st.origin}; DYNAMINDS pobierze je w ciągu ~1–2 min (Integracje → Lokalne sklepy Woo, Zamówienia).`);
+} else if (mode === '--refresh-ca') {
+  const file = DIR + '/selection.json', sel = JSON.parse(ownPrivate(file));
+  if (!Array.isArray(sel) || !sel.some((x) => x.origin === store.origin)) throw new Error(`selection has no store ${store.origin}; run the seed first`);
+  const before = sel.find((x) => x.origin === store.origin).ca.sha256;
+  if (before === store.ca.sha256) { log('CA pin already current', store.ca.sha256.slice(0, 12)); process.exit(0); }
+  const pin = copy(store.ca, `${SLOT}-ca.pem`);
+  writePrivate(file, JSON.stringify(sel.map((x) => (x.origin === store.origin ? { ...x, ca: pin } : x))));
+  log('CA pin', before.slice(0, 12), '->', pin.sha256.slice(0, 12), 'for', store.origin, '(the release reads it on its next start)');
 } else throw new Error('unknown mode ' + mode);
 
 async function storeOrder(st, n) {
