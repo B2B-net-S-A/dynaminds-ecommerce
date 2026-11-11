@@ -286,6 +286,16 @@ function ShipmentsCard({ order: o, write, onPrintShipment }: OrderAsideProps) {
             )}
           </div>
         ))}
+        {/* Migration 268: a new label took over the cancelled one; the cancelled label stays in the history. */}
+        {(o.replaced_labels ?? []).map((r: Row) => (
+          <div key={r.tracking_number} className="order-shipment">
+            <p className="muted">
+              <s>{r.tracking_number}</s>
+              <br />
+              {r.carrier}: etykieta anulowana, zastąpiona przez {r.replaced_by}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );

@@ -34,6 +34,7 @@ import { PrintJobsPanel, subscribePrintJobsLock, getPrintJobsMutationState } fro
 import { OrderParcelsPanel, getOrderParcelsLocked, subscribeOrderParcelsLock } from './order-parcels';
 import { ShipmentLabelPrintPanel } from './shipment-label-print';
 import { OrderFieldsPanel } from './order-fields';
+import { needsNewLabel } from './order-relabel';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ErrorBlock, Loading, type Notice } from './order-card-common';
 import type { OrderSection, SectionChange } from '../shared/order-sections';
@@ -365,6 +366,8 @@ export function OrderDetail({
     onSave: () => prepareSave(),
     onLockAction: (lock) => openTab(lock.action === 'correction' ? 'documents' : 'logistics'),
   };
+  // The order's only label was cancelled before hand-over: "Nowa etykieta" (migration 268).
+  const relabel = o.status === 'packed' && stage !== 'ready_to_ship' && needsNewLabel(o.shipments ?? []);
   const canIssueDocument = write && !replacement && !['new', 'cancelled'].includes(o.status) && !o.documents.length;
   // /pakowanie/<number> opens the packing screen for this order (App applies its navigation guards).
   const openPacking = onOpenPacking ?? (() => navigateTo(packingPath(o.number)));
@@ -377,7 +380,7 @@ export function OrderDetail({
       )}
       {o.status === 'packed' && write && (
         <button type="button" className="button primary order-primary" disabled={busy} onClick={() => openTab('logistics')}>
-          <Truck size={17} /> {stage === 'ready_to_ship' ? 'Przejdź do nadania' : 'Generuj etykietę'}
+          <Truck size={17} /> {stage === 'ready_to_ship' ? 'Przejdź do nadania' : relabel ? 'Nowa etykieta' : 'Generuj etykietę'}
         </button>
       )}
       {showNext && (
@@ -417,9 +420,15 @@ export function OrderDetail({
         </button>
       )}
       {/* §7: a label is not a dispatch. DEMO label → Gotowe do nadania; hand-over to the courier → Nadane. */}
+      {/* After "Anuluj etykietę" the new label takes over the cancelled one (migration 268): carriers in Logistyka. */}
+      {relabel && (
+        <button className="button" disabled={busy || o.shipping_active} onClick={() => openTab('logistics')}>
+          <Truck size={16} /> Nowa etykieta
+        </button>
+      )}
       {o.status === 'packed' && stage !== 'ready_to_ship' && (
         <button className="button" disabled={busy || o.shipping_active} onClick={() => action(`/orders/${id}/demo-label`)}>
-          <Truck size={16} /> Generuj etykietę DEMO
+          <Truck size={16} /> {relabel ? 'Nowa etykieta DEMO' : 'Generuj etykietę DEMO'}
         </button>
       )}
       {o.status === 'packed' && stage === 'ready_to_ship' && (
@@ -427,13 +436,13 @@ export function OrderDetail({
           <Truck size={16} /> Przekaż kurierowi (DEMO)
         </button>
       )}
-      {/* Lane J: shipment.cancelled. The shipment row stays (status 'canceled'); a second label is not possible yet. */}
+      {/* Lane J: shipment.cancelled. The shipment row stays (status 'canceled') until a new label takes it over. */}
       {o.status === 'packed' && stage === 'ready_to_ship' && (
         <button
           className="button danger subtle"
           disabled={busy || o.shipping_active}
           onClick={() => {
-            if (confirm('Anulować etykietę? Zamówienie wróci do „Spakowane”. Nowej etykiety dla tego zamówienia nie utworzysz w tej wersji.'))
+            if (confirm('Anulować etykietę? Zamówienie wróci do „Spakowane”, a nową etykietę utworzysz przez Więcej → Nowa etykieta.'))
               action(`/orders/${id}/cancel-label`);
           }}
         >

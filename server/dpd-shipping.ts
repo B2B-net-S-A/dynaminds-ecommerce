@@ -10,7 +10,7 @@ import { pool, tenantTx, localConfig } from './db';
 import { deliveryBindingInTx } from './buyer-address';
 import { audit, type Actor } from './domain';
 import { ensure } from './errors';
-import { assertNoShipmentForNewLabelInTx } from './shipment-cancelled';
+import { newLabelTargetInTx, writeLabelShipmentInTx } from './shipment-cancelled';
 import { encrypt } from './security';
 import { fulfillmentPayment } from './payments';
 import { loadChannel, channelRead, type IntegrationContext } from './channel-access';
@@ -381,7 +381,7 @@ export async function queueDpdInTx(
     409,
     'Zamówienie ma już aktywną przesyłkę',
   );
-  await assertNoShipmentForNewLabelInTx(c, o.id, 'Zamówienie ma już aktywną przesyłkę');
+  await newLabelTargetInTx(c, o.id, 'Zamówienie ma już aktywną przesyłkę');
   await audit(c, actor, 'dpd.queue', p.id, b);
   const result = await dpdJob(c, packingActor, p);
   await pinPackingShippingActorInTx(c, packingActor, Boolean(p.input.packing_snapshot));
@@ -526,21 +526,21 @@ export async function processDpd(job: any, ctx: IntegrationContext = {}) {
           [current.id, label.waybill],
         );
       }
-      const sid = randomUUID();
+      // A label cancelled with "Anuluj etykietę" is taken over by this one (migration 268).
+      const target = await newLabelTargetInTx(c, current.order_id, 'Zamówienie ma już przesyłkę');
+      const sid = target ?? randomUUID();
       await automationOnlyEvent(c, job.tenant_id, current.order_id, 'shipment.created', { shipment_id: sid, carrier: 'DPD Polska' });
-      await c.query(
-        "INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,external_id,cod_expected) VALUES($1,$2,$3,'DPD Polska',$4,$5,'label_ready',$6,$7,$8)",
-        [
-          sid,
-          job.tenant_id,
-          current.order_id,
-          label.waybill,
-          ch.settings.simulation ? 'demo' : ch.mode,
-          ch.id,
-          ch.settings.simulation ? null : label.waybill,
-          current.input.cod,
-        ],
-      );
+      await writeLabelShipmentInTx(c, target, sid, {
+        tenantId: job.tenant_id,
+        orderId: current.order_id,
+        carrier: 'DPD Polska',
+        trackingNumber: label.waybill,
+        mode: ch.settings.simulation ? 'demo' : ch.mode,
+        status: 'label_ready',
+        channelId: ch.id,
+        externalId: ch.settings.simulation ? null : label.waybill,
+        codExpected: current.input.cod,
+      });
       const { waybills, ...proof } = label;
       const result = {
         ...proof,

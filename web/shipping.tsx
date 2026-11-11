@@ -1,4 +1,5 @@
 import {OrdinaryConnectorJobControl,type ConnectorJobContext} from './ordinary-connector-job';
+import { liveShipments } from './order-relabel';
 import { useEffect, useState, useRef, type FormEvent } from 'react';
 import { Truck, RefreshCw, Printer } from 'lucide-react';
 import { api, money, date } from './api';
@@ -193,7 +194,7 @@ export function ShippingPanel({
             </p>
             <button
               className="button"
-              disabled={busy || active || Boolean(order.shipments.length)}
+              disabled={busy || active || Boolean(liveShipments(order.shipments).length)}
               onClick={() => {
                 const m = parcelSeed.measurements;
                 setPacking(parcelSeed);
@@ -227,7 +228,7 @@ export function ShippingPanel({
           order.status === 'packed' &&
           !active &&
           !order.shipping_active &&
-          !order.shipments.length && (
+          !liveShipments(order.shipments).length && (
             <div className="shipping-actions">
               <button
                 className="button primary"

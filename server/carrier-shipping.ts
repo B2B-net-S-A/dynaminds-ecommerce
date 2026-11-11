@@ -9,7 +9,7 @@ import { pool, tenantTx, localConfig } from './db';
 import { deliveryBindingInTx } from './buyer-address';
 import { audit, type Actor } from './domain';
 import { ensure } from './errors';
-import { assertNoShipmentForNewLabelInTx } from './shipment-cancelled';
+import { newLabelTargetInTx, writeLabelShipmentInTx } from './shipment-cancelled';
 import { encrypt } from './security';
 import { fulfillmentPayment } from './payments';
 import { channelRead, type IntegrationContext } from './channel-access';
@@ -339,22 +339,21 @@ export async function processCarrier(
         );
       } else if (!ch.settings.simulation)
         ensure(current.remote_id === label.waybill, 409, `Numer przesyłki ${spec.label} różni się od zapisanego`);
-      const sid = randomUUID();
+      // A label cancelled with "Anuluj etykietę" is taken over by this one (migration 268).
+      const target = await newLabelTargetInTx(c, current.order_id, 'Zamówienie ma już przesyłkę');
+      const sid = target ?? randomUUID();
       await automationOnlyEvent(c, job.tenant_id, current.order_id, 'shipment.created', { shipment_id: sid, carrier: CARRIER_NAMES[spec.provider] });
-      await c.query(
-        "INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,external_id,cod_expected) VALUES($1,$2,$3,$4,$5,$6,'label_ready',$7,$8,$9)",
-        [
-          sid,
-          job.tenant_id,
-          current.order_id,
-          CARRIER_NAMES[spec.provider],
-          label.waybill,
-          ch.settings.simulation ? 'demo' : ch.mode,
-          ch.id,
-          ch.settings.simulation ? null : label.waybill,
-          current.input.cod,
-        ],
-      );
+      await writeLabelShipmentInTx(c, target, sid, {
+        tenantId: job.tenant_id,
+        orderId: current.order_id,
+        carrier: CARRIER_NAMES[spec.provider],
+        trackingNumber: label.waybill,
+        mode: ch.settings.simulation ? 'demo' : ch.mode,
+        status: 'label_ready',
+        channelId: ch.id,
+        externalId: ch.settings.simulation ? null : label.waybill,
+        codExpected: current.input.cod,
+      });
       const result = {
         ...label,
         scope: ch.settings.simulation
@@ -461,7 +460,7 @@ export function registerCarrierRoutes(
         409,
         'Zamówienie ma już aktywną przesyłkę',
       );
-      await assertNoShipmentForNewLabelInTx(c, o.id, 'Zamówienie ma już aktywną przesyłkę');
+      await newLabelTargetInTx(c, o.id, 'Zamówienie ma już aktywną przesyłkę');
       await audit(c, req.actor, spec.provider + '.queue', p.id, b);
       const result = await carrierJob(c, packingActor, spec, p);
       await pinPackingShippingActorInTx(c, packingActor, Boolean(p.input.packing_snapshot));

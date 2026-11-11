@@ -14,7 +14,8 @@ import { fulfillmentPayment } from './payments';
 import { pool, tenantTx, localConfig } from './db';
 import { deliveryBindingInTx } from './buyer-address';
 import { ensure, Problem } from './errors';
-import { assertNoShipmentForNewLabelInTx } from './shipment-cancelled';
+import { newLabelTargetInTx, writeLabelShipmentInTx } from './shipment-cancelled';
+import { CANCELLED_SHIPMENT } from './order-stage';
 import { audit, event, getOrder, type Actor } from './domain';
 import { loadChannel, channelRead, type IntegrationContext } from './channel-access';
 import { InPost } from './integrations';
@@ -329,7 +330,7 @@ export async function queueShipping(c: PoolClient, a: PackingActor, id: string, 
     409,
     'Zamówienie ma już aktywny plan przesyłki',
   );
-  await assertNoShipmentForNewLabelInTx(c, o.id, 'Zamówienie ma już przesyłkę');
+  await newLabelTargetInTx(c, o.id, 'Zamówienie ma już przesyłkę');
   await c.query("UPDATE shipping_plans SET state='queued' WHERE id=$1", [id]);
   await audit(c, a, 'shipping.queue', id, { confirm_live: confirm });
   const result = await shippingJob(c, a, p, 'create');
@@ -495,7 +496,8 @@ export async function assertWholeOrderShippingInTx(c: PoolClient, orderId: strin
   await assertNoOrderParcelPlanInTx(c, orderId);
   const capability=(await c.query('SELECT order_shipments_guards() ok,order_shipments_installed() installed')).rows[0];
   ensure(capability?.ok && capability?.installed,503,'Moduł wielu przesyłek jest niekompletny');
-  const rows = (await c.query('SELECT id FROM shipments WHERE order_id=$1 ORDER BY id', [orderId])).rows;
+  // A label cancelled before hand-over is no shipment of the plan: the new label takes over its row (migration 268).
+  const rows = (await c.query('SELECT id FROM shipments WHERE order_id=$1 AND ($2::uuid IS NOT NULL OR dispatched_at IS NOT NULL OR status<>$3) ORDER BY id', [orderId, shipmentId, CANCELLED_SHIPMENT])).rows;
   ensure(shipmentId ? rows.length === 1 && rows[0].id === shipmentId : rows.length === 0,
     409, 'Wiele paczek wymaga osobnego przypisania towaru i pobrania; nie zlecaj ponownie całego zamówienia');
 }
@@ -810,22 +812,21 @@ export async function processShipping(job: any, ctx: IntegrationContext = {}) {
           'Cena wybranej oferty po zakupie różni się od zatwierdzonej; sprawdź rozliczenie w InPost',
         );
         if (!shipment) {
-          shipment = randomUUID();
+          // A label cancelled with "Anuluj etykietę" is taken over by this one (migration 268).
+          const target = await newLabelTargetInTx(c, p.order_id, 'Zamówienie ma już przesyłkę');
+          shipment = target ?? randomUUID();
           await automationOnlyEvent(c, actor.tenantId, p.order_id, 'shipment.created', { shipment_id: shipment, carrier: 'InPost ShipX' });
-          await c.query(
-            "INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,external_id,cod_expected) VALUES($1,$2,$3,'InPost ShipX',$4,$5,$6,$7,$8,$9)",
-            [
-              shipment,
-              actor.tenantId,
-              p.order_id,
-              r.tracking_number,
-              ch.settings.simulation ? 'demo' : ch.mode,
-              r.status,
-              ch.id,
-              String(r.id),
-              p.input.cod,
-            ],
-          );
+          await writeLabelShipmentInTx(c, target, shipment, {
+            tenantId: actor.tenantId,
+            orderId: p.order_id,
+            carrier: 'InPost ShipX',
+            trackingNumber: r.tracking_number,
+            mode: ch.settings.simulation ? 'demo' : ch.mode,
+            status: r.status,
+            channelId: ch.id,
+            externalId: String(r.id),
+            codExpected: p.input.cod,
+          });
         }
       }
       await c.query(

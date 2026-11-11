@@ -425,6 +425,8 @@ async function shipmentLabelSourceInTx(c: PoolClient, tenantId: string, id: stri
       [id],
     )
   ).rows[0];
+  // "Anuluj etykietę": the cancelled label is never printed or downloaded (a new label takes over its row, 268).
+  ensure(!shipment || shipment.status !== CANCELLED_SHIPMENT || shipment.dispatched_at, 409, 'Etykieta tej przesyłki została anulowana; nie można jej drukować ani pobrać');
   if (shipment?.mode === 'demo') {
     const current = await effectiveDeliveryInTx(c, tenantId, shipment.order_id, localConfig.encryptionKey);
     if (current.delivery) return { ...shipment, customer_name: current.delivery.recipient_name,
@@ -452,7 +454,7 @@ import type {BusinessQuotaRecoveryPort} from './large-import/business-quota-reco
 import {bindOrdinaryConnectorTransport} from './ordinary-connector-routing';
 import {statementCancelResponse} from './statement-cancel';
 import {DB_UNAVAILABLE_DETAIL,dbConnectionErrors,isDbConnectionLoss} from './db-connection-errors';
-import { orderFulfilmentStageSql } from './order-stage';
+import { CANCELLED_SHIPMENT, orderFulfilmentStageSql } from './order-stage';
 import { registerOrderEventRoutes } from './order-event-routes';
 import { paymentStateSql } from './order-stage-query';
 import { accountantAvailable, accountantColumn } from './accountant';
