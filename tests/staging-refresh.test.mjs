@@ -140,3 +140,16 @@ test('credentials: broken file is refused without quoting it', () => {
   writeFileSync(creds, JSON.stringify({ users: [{ key: 'owner', email: 'a@b.example' }] }));
   assert.throws(() => readCredentials(creds), /niepełne konto/);
 });
+
+test('smoke CLI: unknown argument and a flag without its value are told apart', () => {
+  const cli = (...a) => spawnSync(process.execPath, [SMOKE, ...a], { encoding: 'utf8' });
+  const unknown = cli('--host', 'x');
+  assert.equal(unknown.status, 2);
+  assert.match(unknown.stderr, /nieznany argument --host/);
+  const missing = cli('--base', 'http://127.0.0.1:9', '--credentials');
+  assert.equal(missing.status, 2);
+  assert.match(missing.stderr, /brak wartości dla --credentials/);
+  const swallowed = cli('--base', '--credentials', 'x.json');
+  assert.equal(swallowed.status, 2);
+  assert.match(swallowed.stderr, /brak wartości dla --base/);
+});

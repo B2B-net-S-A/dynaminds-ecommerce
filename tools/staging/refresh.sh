@@ -126,7 +126,11 @@ prev_dir="$(json_field "$prev_record" release_directory)"
 releases_dir="$(dirname "$(dirname "$prev_dir")")"
 count_releases() { RELEASES="$(find "$releases_dir" -maxdepth 1 -type d -name 'demo-release-*' 2>/dev/null | wc -l | tr -d ' ')"; }
 count_releases
-app_runs() { docker inspect -f '{{.State.Running}} {{json .Args}}' "$APP" 2>/dev/null | grep -q "^true .*$1/runtime/server/"; }
+# The release directory is matched literally (its path holds dots and spaces), and only in a running container.
+app_runs() {
+  local s; s="$(docker inspect -f '{{.State.Running}} {{json .Args}}' "$APP" 2>/dev/null)" || return 1
+  [ "${s%% *}" = true ] && printf '%s' "$s" | grep -qF "$1/runtime/server/"
+}
 health_code() { curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:$PORT/api/health" 2>/dev/null || true; }
 
 log "źródło $SRC, remote $REMOTE/$BRANCH, worktree $WT, demo :$PORT, DEMO_ROOT $DEMO_ROOT"

@@ -71,7 +71,8 @@ export async function smoke(base, users, { timeoutMs = 15000 } = {}) {
 function args(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 2) {
-    if (!['--base', '--credentials'].includes(argv[i]) || argv[i + 1] === undefined) throw new Error(`nieznany argument ${argv[i]}`);
+    if (!['--base', '--credentials'].includes(argv[i])) throw new Error(`nieznany argument ${argv[i]}`);
+    if (argv[i + 1] === undefined || argv[i + 1].startsWith('--')) throw new Error(`brak wartości dla ${argv[i]}`);
     out[argv[i].slice(2)] = argv[i + 1];
   }
   if (!out.base || !out.credentials) throw new Error('podaj --base i --credentials');
