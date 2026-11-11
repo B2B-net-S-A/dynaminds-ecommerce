@@ -255,13 +255,20 @@ export async function renewTlsFiles(root, days, now = new Date()) {
   await pinned(bindingsFile, false); const old = JSON.parse(await fs.readFile(bindingsFile, 'utf8'));
   const current = (await pinned(secrets + '/ca.pem', false)).pin;
   assert(old.schema === 'dynaminds-official-woo-store-bindings/v1' && old.root === root && Array.isArray(old.stores) && old.stores.length >= 1
-    && old.stores.every(s => s.ca?.path === current.path && s.ca.sha256 === current.sha256), 'bindings of this root pinning its current CA required');
+    && old.stores.every(s => s.ca?.path === current.path), 'bindings of this root required');
+  if (!old.stores.every(s => s.ca.sha256 === current.sha256)) {
+    // A renewal killed between moving the files and rewriting bindings: name the generation to put back.
+    const generation = (await fs.readdir(secrets)).filter(f => /^ca\.pem\.superseded-\d{2}$/.test(f)).sort().pop();
+    const back = generation && sha(await fs.readFile(secrets + '/' + generation)) === old.stores[0].ca.sha256 && generation.slice('ca.pem.'.length);
+    assert.fail(back ? `interrupted renewal: bindings still pin the CA in ${generation}; put the ${back} files of ${TLS_FILES.join(', ')} back in secrets/ (or rewrite bindings) and run renew-tls again`
+      : 'bindings of this root pinning its current CA required');
+  }
   for (const key of ['ca.key', 'tls.key']) await pinned(secrets + '/' + key, false);
   let n = 1; const suffix = () => '.superseded-' + String(n).padStart(2, '0');
   const taken = async () => (await Promise.all([...TLS_FILES.map(f => secrets + '/' + f), bindingsFile].map(f => fs.lstat(f + suffix()).then(() => true, e => { if (e.code !== 'ENOENT') throw e; return false; })))).some(Boolean);
   while (await taken()) { n++; assert(n < 100, 'too many superseded TLS generations'); }
   for (const f of TLS_FILES) await assert.rejects(fs.lstat(`${secrets}/${f}.renew`), {code: 'ENOENT'}, f + '.renew exists; inspect and remove it first');
-  const openssl = args => execFileSync('openssl', args, {cwd: root, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 1024 ** 2});
+  const openssl = args => execFileSync('openssl', args, {cwd: root, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 1024 ** 2, timeout: 60000});
   try {
     openssl(['req', '-x509', '-new', '-key', 'secrets/ca.key', '-sha256', '-days', String(days), '-subj', CA_SUBJECT, '-addext', 'basicConstraints=critical,CA:TRUE', '-out', 'secrets/ca.pem.renew']);
     openssl(['req', '-new', '-key', 'secrets/tls.key', '-subj', '/CN=localhost', '-out', 'secrets/tls.csr.renew']);
@@ -285,7 +292,7 @@ export async function renewTlsFiles(root, days, now = new Date()) {
     stores: renewed.stores.map(s => s.origin), fingerprint256: leaf.fingerprint256};
 }
 /** TLS handshake against the owned edge with the renewed CA; succeeds only when the edge serves the renewed certificate. */
-function handshake(port, ca, fingerprint256, deadline) {
+function handshake(port, ca, fingerprint256, deadline, stop) {
   return new Promise((resolve, reject) => {
     const attempt = () => {
       const socket = tls.connect({host: '127.0.0.1', port, servername: 'localhost', ca, minVersion: 'TLSv1.2', rejectUnauthorized: true}, () => {
@@ -295,7 +302,7 @@ function handshake(port, ca, fingerprint256, deadline) {
       socket.setTimeout(5000, () => socket.destroy(new Error(`edge ${port} handshake timeout`)));
       socket.once('error', retry);
     };
-    const retry = e => Date.now() > deadline ? reject(e) : setTimeout(attempt, 1000);
+    const retry = e => stop.done || Date.now() > deadline ? reject(e) : setTimeout(attempt, 1000);
     attempt();
   });
 }
@@ -304,8 +311,9 @@ function handshake(port, ca, fingerprint256, deadline) {
 async function renewTls(root, days) {
   const args = await composeArgs(root), result = await renewTlsFiles(root, days);
   execFileSync('docker', [...args, 'restart', 'tls'], {stdio: ['ignore', 'ignore', 'pipe'], timeout: 120000});
-  const ca = await fs.readFile(root + '/secrets/ca.pem'), deadline = Date.now() + 30000;
-  const verified = await Promise.all(result.stores.map(o => handshake(Number(new URL(o).port), ca, result.fingerprint256, deadline)));
+  const ca = await fs.readFile(root + '/secrets/ca.pem'), deadline = Date.now() + 30000, stop = {done: false};
+  // The first failing port ends the check; the other ports stop retrying instead of reconnecting until the deadline.
+  const verified = await Promise.all(result.stores.map(o => handshake(Number(new URL(o).port), ca, result.fingerprint256, deadline, stop))).finally(() => { stop.done = true; });
   return {status: 'TLS_RENEWED', ...result, edge_restarted: true, handshake_ports: verified};
 }
 export async function main(args) {

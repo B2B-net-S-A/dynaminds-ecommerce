@@ -156,6 +156,9 @@ node "$TOOLS/operator.mjs" renew-tls "$TASK_ROOT" 825              # liczba dni,
 - Do czasu wygaśnięcia starego CA działa jeszcze stary pin (ten sam klucz i podmiot), więc wydanie uruchomione
   przed odnowieniem nie traci połączenia do restartu.
 - Cofnięcie: przywróć pliki `*.superseded-NN` w `secrets/` i bindings, potem restart `tls` i `demo.sh woo-ca`.
+- Przerwane odnowienie (proces zabity po podmianie plików, przed zapisem bindings): `renew-tls` odmawia z
+  `interrupted renewal` i nazwą generacji. Przywróć jej pliki `ca.pem`, `ca.srl`, `tls.csr`, `tls.pem` w `secrets/`
+  i uruchom `renew-tls` ponownie.
 
 ## Budżet
 

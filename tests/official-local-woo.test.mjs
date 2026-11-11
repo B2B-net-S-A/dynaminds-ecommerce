@@ -216,5 +216,8 @@ test('renew-tls: same CA key and subject, longer validity, old files kept, bindi
     await assert.rejects(renewTlsFiles(root, 30), /current CA/);
     assert.deepEqual(await fs.readFile(root + '/secrets/ca.pem'), before);
     await assert.rejects(fs.lstat(root + '/secrets/ca.pem.superseded-03'), {code: 'ENOENT'});
+    // Killed after the files moved, before bindings were rewritten: the refusal names the generation to put back.
+    await fs.rename(root + '/woo-store-bindings.private.json.superseded-02', root + '/woo-store-bindings.private.json');
+    await assert.rejects(renewTlsFiles(root, 30), /interrupted renewal: bindings still pin the CA in ca\.pem\.superseded-02/);
   } finally { await fs.rm(root, {recursive: true, force: true}); }
 });
