@@ -31,6 +31,9 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # dynaminds-codex-bot pushes the commits of Claude sessions; without this entry the actor check fails the
+          # job (a rerun keeps the actor). Deliberately one named bot, not '*' (as on COMPASS and ATLAS).
+          allowed_bots: "dynaminds-codex-bot"
           track_progress: true
           prompt: |
             REPO: ${{ github.repository }}
