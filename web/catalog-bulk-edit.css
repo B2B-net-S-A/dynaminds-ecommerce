@@ -1,0 +1,215 @@
+.catalog-bulk-edit {
+  min-width: 0;
+  margin: 20px 0;
+}
+.catalog-bulk-edit .panel-heading {
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.catalog-bulk-edit .cbe-body {
+  min-width: 0;
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 16px;
+}
+.catalog-bulk-edit p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.catalog-bulk-edit .cbe-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.catalog-bulk-edit .cbe-columns {
+  display: flex;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  min-width: 0;
+}
+.catalog-bulk-edit .cbe-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-direction: row;
+  line-height: 1.5;
+}
+.catalog-bulk-edit .cbe-checkbox input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+}
+.catalog-bulk-edit .cbe-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  min-width: 0;
+}
+.catalog-bulk-edit .cbe-sheet {
+  min-width: 100%;
+  width: max-content;
+}
+.catalog-bulk-edit .cbe-sheet th,
+.catalog-bulk-edit .cbe-sheet td {
+  min-width: 160px;
+  max-width: 360px;
+  vertical-align: top;
+}
+.catalog-bulk-edit .cbe-sheet th:first-child,
+.catalog-bulk-edit .cbe-sheet td:first-child {
+  min-width: 75px;
+}
+.catalog-bulk-edit .cbe-sheet .cbe-identity {
+  min-width: 240px;
+  max-width: 340px;
+  overflow-wrap: anywhere;
+}
+.catalog-bulk-edit .cbe-sheet input:not([type='checkbox']),
+.catalog-bulk-edit .cbe-sheet select {
+  width: 100%;
+  min-width: 140px;
+}
+.catalog-bulk-edit .cbe-sheet textarea {
+  width: 260px;
+  min-width: 200px;
+  max-width: 100%;
+}
+.catalog-bulk-edit .cbe-sheet small {
+  display: block;
+  margin-top: 5px;
+}
+.catalog-bulk-edit .cbe-edited {
+  background: #fff8de;
+}
+.catalog-bulk-edit .cbe-reset {
+  display: block;
+  border: 0;
+  background: transparent;
+  color: #4338ca;
+  padding: 6px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+.catalog-bulk-edit .cbe-long-fields {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0;
+}
+.catalog-bulk-edit .cbe-long-fields textarea {
+  width: 100%;
+}
+.catalog-bulk-edit .cbe-setting-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(240px, 2fr);
+  gap: 14px;
+}
+.catalog-bulk-edit .cbe-setting-grid input:not([type='checkbox']),
+.catalog-bulk-edit .cbe-setting-grid select,
+.catalog-bulk-edit .cbe-setting-grid textarea {
+  width: 100%;
+}
+.catalog-bulk-edit .cbe-bulk-setting,
+.catalog-bulk-edit .cbe-result {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+.catalog-bulk-edit .cbe-bulk-setting h3,
+.catalog-bulk-edit .cbe-result h3,
+.catalog-bulk-edit .cbe-result p {
+  margin: 0;
+}
+.catalog-bulk-edit .cbe-preview-table,
+.catalog-bulk-edit .cbe-execution-table {
+  min-width: 730px;
+}
+.catalog-bulk-edit .cbe-preview-table td {
+  vertical-align: top;
+}
+.catalog-bulk-edit .cbe-preview-table small,
+.catalog-bulk-edit .cbe-execution-table small {
+  display: block;
+  margin-top: 5px;
+}
+.catalog-bulk-edit .cbe-differences {
+  overflow-x: auto;
+  min-width: 0;
+  margin: 10px 0;
+}
+.catalog-bulk-edit .cbe-differences table {
+  min-width: 550px;
+}
+.catalog-bulk-edit .cbe-differences td {
+  min-width: 160px;
+  max-width: 340px;
+  vertical-align: top;
+}
+.catalog-bulk-edit pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  max-height: 300px;
+  overflow: auto;
+}
+.catalog-bulk-edit summary {
+  cursor: pointer;
+  line-height: 1.5;
+}
+.catalog-bulk-edit .cbe-consent {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.catalog-bulk-edit .cbe-technical {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.catalog-bulk-edit .button {
+  white-space: normal;
+  justify-self: start;
+}
+@media (max-width: 700px) {
+  .catalog-bulk-edit .cbe-body {
+    padding: 0 14px 18px;
+  }
+  .catalog-bulk-edit .cbe-setting-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-bulk-edit .cbe-result,
+  .catalog-bulk-edit .cbe-bulk-setting {
+    padding: 12px;
+  }
+}
+
+.product-logistics {
+  min-width: 0;
+}
+.product-logistics p {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.product-logistics .panel-heading {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.product-logistics-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.product-logistics-scroll table {
+  min-width: 780px;
+}
+.product-logistics-scroll td {
+  vertical-align: top;
+  white-space: normal;
+}

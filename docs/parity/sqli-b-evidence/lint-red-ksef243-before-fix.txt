@@ -1,0 +1,7 @@
+not ok 1 - every .query() SQL text in server/ and shared/ is a literal, built from constants, or reviewed
+    +   'server/ksef243.ts:286 listInvoicesInTx key=04d35ab2aa35efc3\n' +
+    +     '    ← `.text` of `.limit` of parameter `q` of listInvoicesInTx ← server/ksef243-routes.ts:43: parameter `q` of list ← server/integration-recovery-routes.ts:46: return of normalizeIntegrationRecoveryQuery: `parsed.provider` ← `.provider` of call of `.parse()`'
+      server/ksef243.ts:286 listInvoicesInTx key=04d35ab2aa35efc3
+          ← `.text` of `.limit` of parameter `q` of listInvoicesInTx ← server/ksef243-routes.ts:43: parameter `q` of list ← server/integration-recovery-routes.ts:46: return of normalizeIntegrationRecoveryQuery: `parsed.provider` ← `.provider` of call of `.parse()`
+# pass 29
+# fail 1

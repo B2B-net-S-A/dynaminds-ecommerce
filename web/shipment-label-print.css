@@ -1,0 +1,149 @@
+.shipment-label-print.panel {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.shipment-label-print .slp-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.shipment-label-print h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.shipment-label-print h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.shipment-label-print p {
+  margin: 0;
+  line-height: 1.6;
+}
+.shipment-label-print fieldset,
+.shipment-label-print article {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--border, #dbe2ea);
+  border-radius: 10px;
+}
+.shipment-label-print legend {
+  padding: 0 6px;
+  font-weight: 700;
+}
+.shipment-label-print .slp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.shipment-label-print label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  line-height: 1.5;
+}
+.shipment-label-print input:not([type='checkbox']),
+.shipment-label-print select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 11px;
+  box-sizing: border-box;
+  border: 1px solid #94a3b8;
+  border-radius: 7px;
+  color: inherit;
+  background: #fff;
+  font: inherit;
+}
+.shipment-label-print .slp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.shipment-label-print input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  padding: 0;
+  margin: 3px 0 0;
+}
+.shipment-label-print .button {
+  justify-self: start;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.5;
+}
+.shipment-label-print .slp-warning {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #fff7ed;
+}
+.shipment-label-print .slp-pdf-section {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.shipment-label-print .slp-cache-head,
+.shipment-label-print .slp-cache-history,
+.shipment-label-print .slp-cache-detail {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.shipment-label-print h4 {
+  margin: 0;
+  font-size: 14px;
+}
+.shipment-label-print details {
+  min-width: 0;
+  line-height: 1.6;
+}
+.shipment-label-print summary {
+  cursor: pointer;
+}
+.shipment-label-print summary:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+.shipment-label-print .error {
+  padding: 12px 14px;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+}
+.shipment-label-print [role='status'] {
+  padding: 12px 14px;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+}
+.shipment-label-print input:focus-visible,
+.shipment-label-print select:focus-visible,
+.shipment-label-print .button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .shipment-label-print.panel {
+    padding: 16px;
+  }
+  .shipment-label-print .slp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shipment-label-print fieldset,
+  .shipment-label-print article {
+    padding: 14px;
+  }
+}

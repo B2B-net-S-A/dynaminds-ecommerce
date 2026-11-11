@@ -1,0 +1,47 @@
+.catalog-tax-profile {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0 0 12px;
+}
+.catalog-tax-profile dt {
+  color: var(--muted);
+}
+.catalog-tax-profile dd {
+  margin: 0;
+}
+.tax-oss {
+  padding: 22px 23px;
+}
+.tax-oss h3 {
+  margin: 0 0 6px;
+}
+.tax-oss .table-scroll {
+  margin: 12px 0;
+}
+.tax-oss table input {
+  width: 6em;
+}
+.tax-oss form .form-grid {
+  align-items: end;
+}
+.local-invoice-tax ul {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+.tax226-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.tax226-check input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  padding: 0;
+  margin: 3px 0 0;
+}
+.tax226-form .full-span {
+  grid-column: 1 / -1;
+}

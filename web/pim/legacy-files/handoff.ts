@@ -1,0 +1,15 @@
+/** Browser-only custody boundary. No parser/server imports and no request transport. */
+export type CoreHead={id:string;scope_hash:string;total:number;invalid:number;ready:boolean;config:Record<string,unknown>};
+export type CoreRow={index:number;product_id:string|null;identity_value:string|null;operation:string;errors:unknown[];after:Record<string,unknown>|null};
+export type CoreExecution=CoreHead&{preview_id:string;state:'done'};
+export type CoreCustody={context_key:string;serialized_request:string;preview:CoreHead;execution:CoreExecution;rows:CoreRow[]};
+const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,hash=/^[a-f0-9]{64}$/;
+const canonical=(x:any):any=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?Object.fromEntries(Object.entries(x).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([k,v])=>[k,canonical(v)])):x;
+export const same=(a:unknown,b:unknown)=>JSON.stringify(canonical(a))===JSON.stringify(canonical(b));
+export function need(v:unknown,message='Niepełny dowód zapisanego importu'):asserts v{if(!v)throw Error(message);}
+export function coreRequest(serialized:string):Record<string,any>{let q;try{q=JSON.parse(serialized);}catch{throw Error('Nieprawidłowa zachowana treść importu');}need(q&&typeof q==='object'&&!Array.isArray(q)&&typeof q.content==='string'&&['csv','xml'].includes(q.format)&&typeof q.catalog_id==='string'&&uuid.test(q.catalog_id)&&typeof q.client_key==='string'&&uuid.test(q.client_key));need(new TextEncoder().encode(q.content).byteLength<=1048576,'Drugi etap PIM obsługuje cały plik do 1 MiB; import core pozostaje zapisany');return q;}
+export function previewCustody(context_key:string,serialized_request:string,raw:CoreHead){const q=coreRequest(serialized_request),{content:_,client_key:__,...config}=q;need(raw&&uuid.test(raw.id)&&hash.test(raw.scope_hash)&&raw.ready&&raw.invalid===0&&Number.isSafeInteger(raw.total)&&raw.total>=1&&raw.total<=500);need(same(config,raw.config),'Konfiguracja receiptu różni się od zachowanego żądania');return{context_key,serialized_request,preview:structuredClone(raw)};}
+export function executionCustody(bound:ReturnType<typeof previewCustody>,raw:CoreExecution,rows:readonly CoreRow[]):CoreCustody{
+ need(raw&&uuid.test(raw.id)&&raw.state==='done'&&raw.preview_id===bound.preview.id&&raw.scope_hash===bound.preview.scope_hash&&raw.total===bound.preview.total&&same(raw.config,bound.preview.config));need(rows.length===raw.total&&new Set(rows.map(x=>x.index)).size===raw.total);
+ const sorted=[...rows].sort((a,b)=>a.index-b.index);for(const[r,i]of sorted.map((r,i)=>[r,i] as const))need(r.index===i&&typeof r.product_id==='string'&&uuid.test(r.product_id)&&typeof r.identity_value==='string'&&['create','update','unchanged'].includes(r.operation)&&Array.isArray(r.errors)&&r.errors.length===0&&r.after?.id===r.product_id,'Niepełne lub niepowiązane trwałe wiersze importu');need(new Set(sorted.map(r=>r.product_id)).size===sorted.length,'Drugi etap PIM wymaga jednego pełnego wiersza na produkt');return structuredClone({...bound,execution:raw,rows:sorted});
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "dynaminds-base-functional-domain-scope-addition/v1",
+  "version": 4,
+  "as_of": "2026-10-17",
+  "prepared_on": "2026-10-18",
+  "status": "SOURCE_ONLY_ADDITIVE_PROPOSAL_NOT_FROZEN",
+  "scope_complete": false,
+  "acceptance_granted": false,
+  "frozen_scope_mutated": false,
+  "source_kind": "existing_retained_official_Base_documentation_only",
+  "parent": {
+    "path": "docs/parity/scope.v3.json",
+    "bytes": 2283319,
+    "sha256": "72c8fd34337d13f1cc397ace3761ebf8013f91680c9ff41a9b4da4a43f11ccb9"
+  },
+  "domain_input_parent": {
+    "path": "docs/parity/scope-inputs/v2/domains.json",
+    "bytes": 389487,
+    "sha256": "e586ae249a4ea44d2c3016ba6e122e8b1cbb203c66f994efa4ec32408fa83eea"
+  },
+  "official_contract": {
+    "path": "docs/parity/base-api-client-contracts.v1.json",
+    "bytes": 52288,
+    "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330"
+  },
+  "official_source_bundle": {
+    "path": "docs/parity/base-api-client-sources-20261017.json.gz",
+    "bytes": 109499,
+    "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+  },
+  "historical_coverage_audit_read_only": {
+    "path": "docs/parity/scope-v2-coverage-audit-20261018.json",
+    "bytes": 13334,
+    "sha256": "1452a42f3db46347fe71c3a154ddff12ca7f9086f01cc1c9567f4d1b89e1ef4c"
+  },
+  "change": {
+    "kind": "append_domain_row_only",
+    "target_collection": "domains.rows",
+    "append_rows": [
+      {
+        "id": "DOM-CRM-001",
+        "domain": "CRM",
+        "requirement": "Niezależna kartoteka klienta: utworzenie, odczyt, częściowa aktualizacja i usunięcie bez zmiany wcześniejszych zamówień",
+        "operations": [
+          "utworzenie klienta niezależnie od konkretnego zamówienia",
+          "odczyt szczegółów oraz lista klientów z jawną stroną i filtrem",
+          "aktualizacja wyłącznie przekazanych pól istniejącego klienta",
+          "usunięcie klienta z zachowaniem wcześniejszych zamówień"
+        ],
+        "base_sources": [
+          {
+            "source_id": "BASE-API-addCrmClient",
+            "method": "addCrmClient",
+            "url": "https://api.baselinker.com/index.php?method=addCrmClient",
+            "observed_at": "2026-10-17T17:57:12.092696+00:00",
+            "snapshot_ref": {
+              "path": "docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "snapshot_document_method": "addCrmClient",
+            "html_utf8_bytes": 53202,
+            "html_utf8_sha256": "e37e513c047be1e563cdc84f0a5a7a71034c5dc78c406da329c2d0fdfa72da4c",
+            "support": "Retained official public documentation; not an authenticated Base request. Original response final_url and HTTP status were not recorded."
+          },
+          {
+            "source_id": "BASE-API-getCrmClientData",
+            "method": "getCrmClientData",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClientData",
+            "observed_at": "2026-10-17T17:57:13.212315+00:00",
+            "snapshot_ref": {
+              "path": "docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "snapshot_document_method": "getCrmClientData",
+            "html_utf8_bytes": 53084,
+            "html_utf8_sha256": "8f656c57f196e75252b10403072f553509157d760d425a0f271b312896994ac5",
+            "support": "Retained official public documentation; not an authenticated Base request. Original response final_url and HTTP status were not recorded."
+          },
+          {
+            "source_id": "BASE-API-getCrmClients",
+            "method": "getCrmClients",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClients",
+            "observed_at": "2026-10-17T17:57:13.556388+00:00",
+            "snapshot_ref": {
+              "path": "docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "snapshot_document_method": "getCrmClients",
+            "html_utf8_bytes": 54059,
+            "html_utf8_sha256": "a3b49b2b13c6a6b7937543fd3403565fdcbb600bbcf93f4d07fb4c1a9f2b0ffa",
+            "support": "Retained official public documentation; not an authenticated Base request. Original response final_url and HTTP status were not recorded."
+          },
+          {
+            "source_id": "BASE-API-deleteCrmClient",
+            "method": "deleteCrmClient",
+            "url": "https://api.baselinker.com/index.php?method=deleteCrmClient",
+            "observed_at": "2026-10-17T17:57:12.320330+00:00",
+            "snapshot_ref": {
+              "path": "docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "snapshot_document_method": "deleteCrmClient",
+            "html_utf8_bytes": 48612,
+            "html_utf8_sha256": "ae87db44bc80a5d904e642a9bec8056816e4f5c935097941744817a129d6b3c0",
+            "support": "Retained official public documentation; not an authenticated Base request. Original response final_url and HTTP status were not recorded."
+          }
+        ],
+        "status": "unverified",
+        "acceptance_state": "OPEN",
+        "required_evidence_level": "local",
+        "implementation_assessment": "not_assessed_in_this_change",
+        "bound_scope": "New additive functional scope proposal only. No code/UI/API/provider or full Goal acceptance; do not infer absence of implementation from this inventory omission.",
+        "evidence": {
+          "code": [],
+          "local": [],
+          "sandbox": [],
+          "account": []
+        },
+        "acceptance": [
+          "Happy: w normalnym lokalnym UI/API utworzyć klienta z własnym trwałym ID; odczytać szczegóły oraz znaleźć go na jawnej stronie listy po filtrze; nie zastępować klienta snapshotem odbiorcy zamówienia.",
+          "Patch: zapisać co najmniej dwa pola, zmienić tylko jedno przez ten sam trwały identyfikator i wykazać zachowanie wszystkich pominiętych pól.",
+          "History: przypisać własne zamówienie do klienta; przed i po usunięciu klienta porównać całe niezmienne dane zamówienia, pozycje, kwoty, dokumenty oraz historię. Nie wykonywać usuwania historycznych zamówień.",
+          "Restart: zachować trwałe ID i wynik po normalnym restarcie; utrata ACK utworzenia nie uprawnia do ślepego ponowienia zapisu.",
+          "Permissions: w osobno zdefiniowanym lokalnym kontrakcie uprawnień sprawdzić administratora i odmowę obcej firmy/niedozwolonej roli; to wymaganie projektu, nie nieudokumentowana deklaracja zachowania Base."
+        ],
+        "full_goal_acceptance": "not_evaluated",
+        "requirement_origin": "publicly_documented_function_decomposed_for_parity"
+      }
+    ],
+    "remove_ids": [],
+    "replace_ids": [],
+    "preserve_all_existing_requirements": true,
+    "preserve_all_existing_required_ids": true,
+    "preserve_all_existing_domain_rows": true,
+    "domain_rows_before": 135,
+    "domain_rows_after_if_integrated": 136,
+    "domains_before": 16,
+    "domains_after_if_integrated": 17,
+    "required_records_before": 2585,
+    "required_records_after_if_integrated": 2586,
+    "new_required_key_if_integrated": "domains:operation:DOM-CRM-001",
+    "existing_requirements_canonical_sha256": "6931647ed3e44d57f1becc0396bcda6c5df3ac499f1293418af712d33aaac6a4",
+    "existing_required_ids_canonical_sha256": "1847c977d46e2056bc25ea0f9e779601d1695ea8b3a6068fe28b8cc6ab0b0db6",
+    "existing_domain_rows_canonical_sha256": "a50ee75cbba64495684eca41fb0217aed7f4378ec5523ff4066d27f124a3fe03"
+  },
+  "nonduplicate_review": [
+    {
+      "existing_key": "domains:operation:DOM-COM-008",
+      "existing_requirement": "Wspólny inbox obejmuje marketplace i helpdesk",
+      "boundary": "Responso/shared inbox and thread assignment; not independent client profile CRUD."
+    },
+    {
+      "existing_key": "domains:operation:DOM-ANALYTICS-003",
+      "existing_requirement": "Analiza klientów pokazuje powroty i kraje",
+      "boundary": "Aggregated customer statistics; not an independently mutable CRM client."
+    },
+    {
+      "existing_key": "domains:operation:DOM-B2B-001",
+      "existing_requirement": "Dostawca udostępnia wybrany asortyment kontrahentowi",
+      "boundary": "Supplier assortment/price access for another company; not a retail CRM profile."
+    }
+  ],
+  "tests": [
+    {
+      "id": "CRM-PROFILE-LOCAL-CREATE-READ",
+      "status": "OPEN",
+      "scope": "Normal UI/API create/detail/list/filter with durable identity."
+    },
+    {
+      "id": "CRM-PROFILE-PATCH-PRESERVES-OMITTED",
+      "status": "OPEN",
+      "scope": "Only supplied field changes on same client ID."
+    },
+    {
+      "id": "CRM-PROFILE-DELETE-PRESERVES-ORDERS",
+      "status": "OPEN",
+      "scope": "Complete original order history remains unchanged."
+    },
+    {
+      "id": "CRM-PROFILE-RESTART-ACK",
+      "status": "OPEN",
+      "scope": "Durable ID/readback after restart; no unknown create replay."
+    },
+    {
+      "id": "CRM-PROFILE-TENANT-ROLE",
+      "status": "OPEN",
+      "scope": "Local role and foreign-tenant refusals without data leakage."
+    }
+  ],
+  "evidence_status": {
+    "official_snapshot_body_integrity": "VERIFIED_FILE_ONLY",
+    "normal_UI_API": "OPEN",
+    "controlled_implementation_tests": "OPEN",
+    "restart": "OPEN",
+    "permissions": "OPEN",
+    "Base_wire_compatibility": "OPEN"
+  },
+  "deliberately_open": [
+    "No complete CRM-family discovery claim: custom field serialization/files, status groups and migration rules remain outside this one row.",
+    "Public Base HTTP/error/default-page/terminal-page and role details remain as explicitly unresolved in the existing CRM contracts.",
+    "The documented list page size100/from1 is retained; no default page, sorting, terminal-page rule or exact null/unknown-ID semantics invented.",
+    "No requirement/provider identities inferred from Responso, Bitrix24 or catalogue names.",
+    "No provider-account request, credentials request, runtime execution, SQL or implementation acceptance.",
+    "Integration into a future freeze must use the existing scope successor validator and exact pinned evidence archive; this file is not a new frozen scope."
+  ]
+}

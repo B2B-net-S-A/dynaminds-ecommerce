@@ -1,0 +1,187 @@
+.catalog-export {
+  padding: 20px;
+  margin-block: 18px;
+  max-width: 100%;
+}
+.catalog-export .ce-heading {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+.catalog-export h2,
+.catalog-export h3 {
+  margin-top: 0;
+}
+.catalog-export p {
+  overflow-wrap: anywhere;
+  margin-block: 10px;
+}
+.catalog-export label + label {
+  margin-top: 0;
+}
+.catalog-export .ce-heading p {
+  color: #64748b;
+  margin-bottom: 0;
+}
+.catalog-export fieldset {
+  border: 1px solid #dbe3ed;
+  border-radius: 9px;
+  padding: 16px;
+  margin: 16px 0;
+  min-width: 0;
+}
+.catalog-export legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+.catalog-export .ce-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.catalog-export .ce-settings label {
+  display: grid;
+  gap: 6px;
+}
+.catalog-export .ce-settings input,
+.catalog-export select {
+  width: 100%;
+  min-width: 0;
+}
+.catalog-export .ce-wide {
+  grid-column: 1 / -1;
+}
+.catalog-export .ce-column-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.catalog-export .ce-column,
+.catalog-export .ce-consent {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  gap: 9px;
+  cursor: pointer;
+}
+.catalog-export input[type='checkbox'] {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+}
+.catalog-export .ce-column small {
+  display: block;
+  color: #64748b;
+  margin-top: 3px;
+}
+.catalog-export .ce-hint {
+  background: #f8fafc;
+  color: #475569;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+.catalog-export .ce-error {
+  color: #991b1b;
+  background: #fef2f2;
+  padding: 12px;
+  border-radius: 7px;
+}
+.catalog-export .ce-status {
+  color: #166534;
+  background: #f0fdf4;
+  padding: 12px;
+  border-radius: 7px;
+}
+.catalog-export details {
+  margin-top: 16px;
+}
+.catalog-export summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.catalog-export .ce-order {
+  margin: 12px 0 0;
+  padding-left: 26px;
+}
+.catalog-export .ce-order li {
+  padding-block: 4px;
+}
+.catalog-export .ce-order li span {
+  display: inline-block;
+  min-width: 180px;
+}
+.catalog-export .ce-order button {
+  margin-left: 6px;
+}
+.catalog-export .ce-order li label {
+  display: inline-grid;
+  gap: 4px;
+  width: min(100%, 300px);
+  vertical-align: middle;
+  margin: 8px;
+  font-size: 13px;
+}
+.catalog-export .ce-order li input {
+  width: 100%;
+}
+.catalog-export .ce-review {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #bfd4ef;
+  border-radius: 9px;
+  background: #f8fbff;
+}
+.catalog-export dl {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 8px 16px;
+}
+.catalog-export dt {
+  font-weight: 600;
+}
+.catalog-export dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.catalog-export .ce-consent {
+  margin-block: 16px;
+}
+@media (max-width: 700px) {
+  .catalog-export {
+    padding: 14px;
+  }
+  .catalog-export .ce-heading {
+    flex-direction: column;
+  }
+  .catalog-export .ce-settings,
+  .catalog-export .ce-column-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-export dl {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .catalog-export dd {
+    margin-bottom: 8px;
+  }
+  .catalog-export .ce-order li span {
+    min-width: 0;
+    width: calc(100% - 95px);
+  }
+}
+
+.ce-source-sample section {
+  margin-top: 1rem;
+}
+.ce-sample-scroll {
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+.ce-source-sample table {
+  width: 100%;
+  min-width: 560px;
+}

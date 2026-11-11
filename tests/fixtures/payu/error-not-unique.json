@@ -1,0 +1,4 @@
+{
+  "_synthetic": "SYNTETYCZNE: kształt według publicznej dokumentacji PayU REST API 2.1, nie nagranie z PayU",
+  "status": { "statusCode": "ERROR_ORDER_NOT_UNIQUE", "statusDesc": "SYNTHETIC order already exists" }
+}

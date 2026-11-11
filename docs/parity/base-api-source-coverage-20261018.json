@@ -1,0 +1,1577 @@
+{
+  "schema": "base-api-individual-source-coverage/v1",
+  "as_of": "2026-10-18",
+  "documentation_only": true,
+  "implementation_coverage_measured": false,
+  "wire_acceptance": false,
+  "provider_account_acceptance": false,
+  "acceptance_granted": false,
+  "index": {
+    "path": "base-api-methods.v1.json",
+    "bytes": 85076,
+    "sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+    "methods": 204
+  },
+  "scope_note": "All204 frozen-index method pages are already present in15 stored official HTML bundles (111 retrieved17.10,93 supplementary pages retrieved18.10). This recomputes source coverage only; index/implementation acceptance remain unchanged. Historical145/59 projection is retained byte-exact separately.",
+  "bundles": [
+    {
+      "path": "base-api-client-sources-20261017.json.gz",
+      "bytes": 109499,
+      "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18",
+      "individual_html_methods": 11
+    },
+    {
+      "path": "base-api-courier-sources-20261017.json.gz",
+      "bytes": 161622,
+      "sha256": "b3dc3fee5e1ff738c5e97fc0828ebbc73ee5514070bfb2e262f2a3e90b8c515f",
+      "individual_html_methods": 16
+    },
+    {
+      "path": "base-api-document-sources-20261017.json.gz",
+      "bytes": 203503,
+      "sha256": "bc78d68758a8a990fdddd3134d3d0676ae75765fee9f75d3d54b91c4cbbb9fe7",
+      "individual_html_methods": 20
+    },
+    {
+      "path": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "bytes": 140312,
+      "sha256": "55e6a8b29cc4882c372b5ed6a6add7e7f005917719e96c43b8b7c3c9c8a1c679",
+      "individual_html_methods": 14
+    },
+    {
+      "path": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "bytes": 120069,
+      "sha256": "f3c578d2e64c63b82287d23094fc7efa7cdfc29a9ac386484fd2da6189aaa412",
+      "individual_html_methods": 12
+    },
+    {
+      "path": "base-api-inventory-products-sources-20261017.json.gz",
+      "bytes": 130602,
+      "sha256": "f775b0673b090433b39f20598daf857b3c0f5953ecdbde7917021237bdeac5db",
+      "individual_html_methods": 12
+    },
+    {
+      "path": "base-api-order-configuration-sources-20261017.json.gz",
+      "bytes": 98555,
+      "sha256": "9f36c3d13f99fb95c8b9cb54390f02dfc2a47bf800e6cb45b900849f6481d559",
+      "individual_html_methods": 10
+    },
+    {
+      "path": "base-api-orders-next-sources-20261018.json.gz",
+      "bytes": 142815,
+      "sha256": "0ec4bc405b62e0e7f10b4882d055974db8c7f019a165232f37538b70d5baf289",
+      "individual_html_methods": 14
+    },
+    {
+      "path": "base-api-orders-sources-20261017.json.gz",
+      "bytes": 76890,
+      "sha256": "d220a459e9d6050328552d988fbc81a8c73fdfb1b362837e3e441fd5567627c6",
+      "individual_html_methods": 7
+    },
+    {
+      "path": "base-api-other-connect-external-sources-20261018.json.gz",
+      "bytes": 204296,
+      "sha256": "2f5eda1e2b538cfbea97f87c5a230aba8f89352b4fabdc092a25b51fa2e4f943",
+      "individual_html_methods": 20
+    },
+    {
+      "path": "base-api-pickpack-sources-20261018.json.gz",
+      "bytes": 79498,
+      "sha256": "e1c35ce403578f0fbd54fe20e323653cc73bdfd45dc83675aae3a59bfedcb647",
+      "individual_html_methods": 8
+    },
+    {
+      "path": "base-api-products-next-sources-20261018.json.gz",
+      "bytes": 121964,
+      "sha256": "63368c3895d4f92a7d256840173d48d23a3da364973b486120e155e1b5dea940",
+      "individual_html_methods": 12
+    },
+    {
+      "path": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "bytes": 153541,
+      "sha256": "401288efad4ec411e73545b123ea041fcb19ac7a0dcc422d891c25b0920a77bc",
+      "individual_html_methods": 15
+    },
+    {
+      "path": "base-api-return-sources-20261017.json.gz",
+      "bytes": 211873,
+      "sha256": "59834def63733ad30e74b98cfa3c2d2e562b1dbde1fdbe9035bd7c18875baae6",
+      "individual_html_methods": 21
+    },
+    {
+      "path": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "bytes": 122971,
+      "sha256": "6b016b5366c4424dc8311136c9368af0738a0493f9b5208e3c4da9bafe9fea79",
+      "individual_html_methods": 12
+    }
+  ],
+  "individual_html_methods": 204,
+  "missing_individual_html_methods": 0,
+  "covered": [
+    {
+      "method": "addConnectContractorCreditSettlement",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "6a0e2662e6b7549012f7316e82bea71b815a0e3a0ab9a856ead0a57990eeae31",
+      "html_bytes": 50552,
+      "retrieved_at": "2026-10-18T01:11:29.147841Z"
+    },
+    {
+      "method": "addCrmClient",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "e37e513c047be1e563cdc84f0a5a7a71034c5dc78c406da329c2d0fdfa72da4c",
+      "html_bytes": 53202,
+      "retrieved_at": "2026-10-17T17:57:12.092696+00:00"
+    },
+    {
+      "method": "addCrmClientStatus",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "23bc7e6c2c2c4350eedb475f56300d9738c73fe5440825f55db7ed950fad2114",
+      "html_bytes": 49477,
+      "retrieved_at": "2026-10-17T17:57:13.652318+00:00"
+    },
+    {
+      "method": "addCrmClientStatusGroup",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "9fb7fc7d7734f25efddaec8f9e8df32880f0f56ab6e41578e3bc49195b288135",
+      "html_bytes": 49010,
+      "retrieved_at": "2026-10-17T17:57:13.968403+00:00"
+    },
+    {
+      "method": "addInventory",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "4f1001055c29927a410292d9b0e458845118f86bd1af9908389d4440073321cd",
+      "html_bytes": 51342,
+      "retrieved_at": "2026-10-17T19:02:42.172341+00:00"
+    },
+    {
+      "method": "addInventoryCategory",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "f8b6a8fed005b31f285077eaedc2cd6acfb0f9de29e8e58e77b54269351da93f",
+      "html_bytes": 50114,
+      "retrieved_at": "2026-10-17T19:02:42.011659+00:00"
+    },
+    {
+      "method": "addInventoryDocument",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "a474609bc9b058ba09246d5f74e3a5a9af00dd3e1ef9010c1de52be7285d5617",
+      "html_bytes": 50577,
+      "retrieved_at": "2026-10-17T18:34:13.633953+00:00"
+    },
+    {
+      "method": "addInventoryDocumentFile",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "19423ca85d7764b92b199c923cc828eab576f3ea646f95a1bad157d07fb09413",
+      "html_bytes": 49267,
+      "retrieved_at": "2026-10-17T18:34:13.908367+00:00"
+    },
+    {
+      "method": "addInventoryDocumentItems",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "b7c62616f129b52e376599249f0da29fcca789582fcec290c5cafc38636671f1",
+      "html_bytes": 51576,
+      "retrieved_at": "2026-10-17T18:34:13.844796+00:00"
+    },
+    {
+      "method": "addInventoryFulfillmentDelivery",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "394d688b96057f66d4b3d92b25a3c2e728420ab574ba0bd1096c0590978ddecf",
+      "html_bytes": 49422,
+      "retrieved_at": "2026-10-18T01:06:32.112426+00:00"
+    },
+    {
+      "method": "addInventoryFulfillmentDeliveryItems",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "29309a7f6aaa664ca4f0287777ef322cdf61fb431ea31c2c22fec51ca4c2312f",
+      "html_bytes": 50457,
+      "retrieved_at": "2026-10-18T01:06:31.600749+00:00"
+    },
+    {
+      "method": "addInventoryManufacturer",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "3670d7e82ab98ff35fba73849d7f48a06d1a029e8acd821b14cf14667ae87757",
+      "html_bytes": 51756,
+      "retrieved_at": "2026-10-17T19:02:43.326151+00:00"
+    },
+    {
+      "method": "addInventoryPayer",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "58f65cc533ddd4a03c328354ba39e1ef1f0cfe0c08d3a4c85d45d1b2cebbbc57",
+      "html_bytes": 49728,
+      "retrieved_at": "2026-10-18T01:09:58.655747+00:00"
+    },
+    {
+      "method": "addInventoryPriceGroup",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "c54971e84cb5e3ea1ce70e92d6cd5a940a5a7891ee0d83fe3fc2e4665db2919a",
+      "html_bytes": 51439,
+      "retrieved_at": "2026-10-18T01:09:58.074125+00:00"
+    },
+    {
+      "method": "addInventoryProduct",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "78a7dc51eea5228bf3001cb7767ed98d104bbd6dcfc1e8d5fa90416112b55b57",
+      "html_bytes": 74448,
+      "retrieved_at": "2026-10-17T18:52:29.741569+00:00"
+    },
+    {
+      "method": "addInventoryPromotion",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "fa232ddb2c98b6323b821a2adb3426cbd5b9df8f85319fc7c97fa62ff29ac2bd",
+      "html_bytes": 54946,
+      "retrieved_at": "2026-10-18T01:11:28.129570Z"
+    },
+    {
+      "method": "addInventoryPurchaseOrder",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "16afc486811850b1f373732e0b78b680e6141d07943b3e51601b964a942756e6",
+      "html_bytes": 52772,
+      "retrieved_at": "2026-10-18T01:06:00.835250+00:00"
+    },
+    {
+      "method": "addInventoryPurchaseOrderFile",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "42ad0da6712df81ccff0255155acc1f012494f78b82fee2c4520058daa1d2ba1",
+      "html_bytes": 49258,
+      "retrieved_at": "2026-10-18T01:06:00.697224+00:00"
+    },
+    {
+      "method": "addInventoryPurchaseOrderItems",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "880dcb9c88723e3bd23512915ba396608b9f4fd6506f72742389ee9c41e7d555",
+      "html_bytes": 51690,
+      "retrieved_at": "2026-10-18T01:06:00.804532+00:00"
+    },
+    {
+      "method": "addInventoryStocktake",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "76d8e9cf567eb65076875fc6ad7fcb81bbb1eb8f2e420e09bf385a7517ffb4e3",
+      "html_bytes": 52662,
+      "retrieved_at": "2026-10-18T01:06:30.811582+00:00"
+    },
+    {
+      "method": "addInventoryStocktakeItems",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "fa07ae9a39ed7b0f1a8e79b07335317d436101ea92601cd339f26344ecec2ba0",
+      "html_bytes": 50975,
+      "retrieved_at": "2026-10-18T01:06:31.103552+00:00"
+    },
+    {
+      "method": "addInventorySupplier",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "3ea389d0a727e9d6510d916541c703768fa0d1f0e2801a2e27601ba326f2005a",
+      "html_bytes": 51555,
+      "retrieved_at": "2026-10-18T01:09:57.952748+00:00"
+    },
+    {
+      "method": "addInventoryTag",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "79e3242f63f3b26ff8cf5b4bf8109b32cd58b2c49da448a04e3dde6dff2a0715",
+      "html_bytes": 48986,
+      "retrieved_at": "2026-10-18T01:09:59.011978+00:00"
+    },
+    {
+      "method": "addInventoryTransfer",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "ca4c09db20f0a7e1d2bf00f73bf22c7d07829d23f4f748377c8d4819271018b3",
+      "html_bytes": 50778,
+      "retrieved_at": "2026-10-18T01:06:01.803024+00:00"
+    },
+    {
+      "method": "addInventoryTransferItems",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "6893c5b3762b8f20370d7c29287ec3c38261fe39d6232b3ee5bea056655c2f03",
+      "html_bytes": 51464,
+      "retrieved_at": "2026-10-18T01:06:02.694489+00:00"
+    },
+    {
+      "method": "addInventoryWarehouse",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "b568150418e40000caa2ee1368649fca4a54f22decf0f13a38c23705fd46cdb1",
+      "html_bytes": 50586,
+      "retrieved_at": "2026-10-17T19:02:39.629097+00:00"
+    },
+    {
+      "method": "addInventoryWarehouseLocation",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "ad0a2bda16a55ef01a31b533bbcb358a8c556bf7610b7e494374e72c5ad3ac65",
+      "html_bytes": 51611,
+      "retrieved_at": "2026-10-18T00:53:54.927333+00:00"
+    },
+    {
+      "method": "addInventoryWarehouseLocationType",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "2f97686a78607eead2aa178d9084378589d17708924b6348677de5e20bead566",
+      "html_bytes": 51199,
+      "retrieved_at": "2026-10-18T00:53:57.100660+00:00"
+    },
+    {
+      "method": "addInventoryWarehouseRack",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "cfa448608b8b705c51fbff94f76d458c8f5252f8703f9390f9751dde6082bf7d",
+      "html_bytes": 49810,
+      "retrieved_at": "2026-10-18T00:53:56.899755+00:00"
+    },
+    {
+      "method": "addInventoryWarehouseZone",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "469d116883481d5d1cd09ea718428737c0b4016d24e3a3b539d6831df0bddb19",
+      "html_bytes": 49565,
+      "retrieved_at": "2026-10-18T00:53:56.891468+00:00"
+    },
+    {
+      "method": "addInvoice",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "16f030261719e2921a71f30d7eb8f551a6a1ab7e8df2903292c361a83ee871d1",
+      "html_bytes": 49242,
+      "retrieved_at": "2026-10-17T18:34:11.152324+00:00"
+    },
+    {
+      "method": "addInvoiceCorrection",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "e820594f25835d5e368383fd9160f50036622511af028bdf817adde0bb4cb4b2",
+      "html_bytes": 53283,
+      "retrieved_at": "2026-10-17T18:34:11.646651+00:00"
+    },
+    {
+      "method": "addOrder",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "3719b83cf7cbef19af7a1578a5dc7f308d703404c4ae6a6c758a8dc18d9e7170",
+      "html_bytes": 59672,
+      "retrieved_at": "2026-10-17T20:56:17.746659+00:00"
+    },
+    {
+      "method": "addOrderBySplit",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "9686d4f42a2d53476505475f208d74b6455abaaabb8a2dc0e58546784c69b258",
+      "html_bytes": 50278,
+      "retrieved_at": "2026-10-17T20:56:19.933479+00:00"
+    },
+    {
+      "method": "addOrderDuplicate",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "207bc903ee4163651e11409662fcc4acd412d01ca0687285ab6bcaee3accf2ff",
+      "html_bytes": 48811,
+      "retrieved_at": "2026-10-17T20:56:17.784829+00:00"
+    },
+    {
+      "method": "addOrderInvoiceFile",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "3527ece3e3853bd1d676c0cca4421223f7b147b42b9c3ff98fdf4b9f084d42bb",
+      "html_bytes": 49428,
+      "retrieved_at": "2026-10-17T18:34:11.606698+00:00"
+    },
+    {
+      "method": "addOrderPickList",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "22cdfb4873d3ba8987d899fe754a8adfbc953a272aad3b0f39a522280e80e7b3",
+      "html_bytes": 48996,
+      "retrieved_at": "2026-10-18T00:54:25.456935+00:00"
+    },
+    {
+      "method": "addOrderProduct",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "f806b370b78832dbb35c98cbf331ed3407e0b416cafc74df1572ac1f40e8d312",
+      "html_bytes": 52011,
+      "retrieved_at": "2026-10-18T00:54:25.292156+00:00"
+    },
+    {
+      "method": "addOrderReceiptFile",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "244f7820484f134e7c94f95043ec79c10b669d5dc20461002a3fbd14dbdc26a5",
+      "html_bytes": 49405,
+      "retrieved_at": "2026-10-17T18:34:12.091575+00:00"
+    },
+    {
+      "method": "addOrderReturn",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "cc6fdfd5d9db7f819f0acda8b48e146b747e5b143232703ef385281389edbee3",
+      "html_bytes": 57306,
+      "retrieved_at": "2026-10-17T17:55:53.065341+00:00"
+    },
+    {
+      "method": "addOrderReturnProduct",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "ee1b4063ef03188c76746b3769489838cda65ed93c3c20cd13ff7763f18ad85b",
+      "html_bytes": 52885,
+      "retrieved_at": "2026-10-17T17:55:53.368997+00:00"
+    },
+    {
+      "method": "addOrderReturnStatus",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "65612b57998ef5c936319267067cf0dd93d55359914fd5265401ce3a5ec46051",
+      "html_bytes": 50111,
+      "retrieved_at": "2026-10-17T17:55:53.631642+00:00"
+    },
+    {
+      "method": "addOrderReturnStatusGroup",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "94ff0ad14943ab0b73c5a33b5939507c0fd2c5ce8dae296e66d7422bc82924a1",
+      "html_bytes": 49018,
+      "retrieved_at": "2026-10-17T17:55:53.714660+00:00"
+    },
+    {
+      "method": "addOrderStatus",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "40423835e41d60e50f736d4cebab7b7b204032a7562cc26d3bae7ff7ee42b9d4",
+      "html_bytes": 50826,
+      "retrieved_at": "2026-10-17T21:03:39.270681+00:00"
+    },
+    {
+      "method": "addOrderStatusGroup",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "e79285464fe975a21d52cafb1e076cead13c635a80c3f7912b52eb767df42051",
+      "html_bytes": 48986,
+      "retrieved_at": "2026-10-17T21:03:39.750214+00:00"
+    },
+    {
+      "method": "addPickPackCart",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "b4abc613ea3f532d3d4797f147f8d1fb4f1bd4e35714a3e124f79eba66a7744c",
+      "html_bytes": 49504,
+      "retrieved_at": "2026-10-18T00:50:41.094721+00:00"
+    },
+    {
+      "method": "addPickPackOrdersToCart",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "e78e2cb2d01d2a0403212b8a4cb03c158c7e6be8ed50865706d0918db04ebab9",
+      "html_bytes": 49485,
+      "retrieved_at": "2026-10-18T00:50:41.194285+00:00"
+    },
+    {
+      "method": "addReceipt",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "ead3e99780a2898a8ca9e0e2fd666ae397e861e9e535fb15e77b5d535a693cff",
+      "html_bytes": 48904,
+      "retrieved_at": "2026-10-17T18:34:12.360183+00:00"
+    },
+    {
+      "method": "createPackage",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "df02b94c7d772d5963f6b28ff9807953f3e6aca9cffbe0f95f49cd86590201da",
+      "html_bytes": 52864,
+      "retrieved_at": "2026-10-17T18:05:47.118981+00:00"
+    },
+    {
+      "method": "createPackageManual",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "049a2395c9736ca3ecad7dcf2af533c7d53b80ca1ddd0a591f254c54b74491b4",
+      "html_bytes": 49867,
+      "retrieved_at": "2026-10-17T18:05:48.225806+00:00"
+    },
+    {
+      "method": "deleteCourierPackage",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "afe1f3871992d58c734cae2afcd10b344b8c3636fe1be12943061a171735f0f6",
+      "html_bytes": 49415,
+      "retrieved_at": "2026-10-17T18:05:47.653897+00:00"
+    },
+    {
+      "method": "deleteCrmClient",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "ae87db44bc80a5d904e642a9bec8056816e4f5c935097941744817a129d6b3c0",
+      "html_bytes": 48612,
+      "retrieved_at": "2026-10-17T17:57:12.320330+00:00"
+    },
+    {
+      "method": "deleteCrmClientStatus",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "83c21c4f15d13eadf9c3b0ac1efe52b1bb8f7c13b25f3555b9935a3de7dbe11a",
+      "html_bytes": 48937,
+      "retrieved_at": "2026-10-17T17:57:14.830016+00:00"
+    },
+    {
+      "method": "deleteCrmClientStatusGroup",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "18871fd25230698019db0f07fbb01348424ed841f101c0361b449b12180fa6f9",
+      "html_bytes": 48669,
+      "retrieved_at": "2026-10-17T17:57:14.347110+00:00"
+    },
+    {
+      "method": "deleteInventory",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "e5632d91fa9d77256d573b4f51e0c6a192a606481fb15fb49a8ec5d03130c9ab",
+      "html_bytes": 48642,
+      "retrieved_at": "2026-10-17T19:02:39.711781+00:00"
+    },
+    {
+      "method": "deleteInventoryCategory",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "1907e3575c811ebaecd4d5ed2d161d80775ef971b884db63f3becc986eb27502",
+      "html_bytes": 48801,
+      "retrieved_at": "2026-10-17T19:02:41.120055+00:00"
+    },
+    {
+      "method": "deleteInventoryManufacturer",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "bde7fd15f735f05a169c9447b295c15a80394c45cd9b7b90c39e176a322c65c1",
+      "html_bytes": 48622,
+      "retrieved_at": "2026-10-17T19:02:43.696064+00:00"
+    },
+    {
+      "method": "deleteInventoryPayer",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "ca18fe089613440d0becc1eb27e6f7af2d4336fce01917d5f79aa4ee07e46326",
+      "html_bytes": 48543,
+      "retrieved_at": "2026-10-18T01:09:58.601184+00:00"
+    },
+    {
+      "method": "deleteInventoryPriceGroup",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "ffc5ed01685239cf647e38a50a67edaf788b496ee236d4f79c970f65b018508f",
+      "html_bytes": 48588,
+      "retrieved_at": "2026-10-18T01:09:58.032037+00:00"
+    },
+    {
+      "method": "deleteInventoryProduct",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "6fd83ecc4c60bd141b504eef648a55264f8cac3857687dfe093683e510d7bd78",
+      "html_bytes": 48570,
+      "retrieved_at": "2026-10-17T18:52:29.529945+00:00"
+    },
+    {
+      "method": "deleteInventorySupplier",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "c0dcd8e99afdf1e1d1bdcf1ccaba10a36a783bf56954f4eb035aad3061b87fa7",
+      "html_bytes": 48567,
+      "retrieved_at": "2026-10-18T01:09:58.474701+00:00"
+    },
+    {
+      "method": "deleteInventoryTag",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "d63dd51a0cc1740279c231f74647aa6d8a24faceee097af56189f4f5b7c8a84d",
+      "html_bytes": 48716,
+      "retrieved_at": "2026-10-18T01:09:59.017168+00:00"
+    },
+    {
+      "method": "deleteInventoryWarehouse",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "6d36d7014195c2b9ad3adae79695f2a574e1c1a96b65c1be94ff5357ad19828b",
+      "html_bytes": 48725,
+      "retrieved_at": "2026-10-17T19:02:40.127666+00:00"
+    },
+    {
+      "method": "deleteInventoryWarehouseLocation",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "d2f8c84a91ea4127d38e62106161adafd7bd5c52e6312a0107ff9991ca7aeb53",
+      "html_bytes": 49434,
+      "retrieved_at": "2026-10-18T00:53:54.825227+00:00"
+    },
+    {
+      "method": "deleteInventoryWarehouseLocationType",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "91024a197e6147e2ce60407375d3751d670af86b25a15934d3ca542d6018f752",
+      "html_bytes": 48793,
+      "retrieved_at": "2026-10-18T00:53:54.982120+00:00"
+    },
+    {
+      "method": "deleteInventoryWarehouseRack",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "5366d671f601792ca25757bcbd8c90cbcca3aab3ed7d1a3b14971df7e13be24e",
+      "html_bytes": 48708,
+      "retrieved_at": "2026-10-18T00:53:59.478795+00:00"
+    },
+    {
+      "method": "deleteInventoryWarehouseZone",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "dfcd5f18f4e8414a5a11397d54f3ee67d44b6268bcc850b9ad86b6032d00c08f",
+      "html_bytes": 48755,
+      "retrieved_at": "2026-10-18T00:53:56.808319+00:00"
+    },
+    {
+      "method": "deleteOrderProduct",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "3479e604a48bed0cb3648e1751426462e0251deab646966402f5c25c8ecc65c4",
+      "html_bytes": 48776,
+      "retrieved_at": "2026-10-18T00:54:25.533801+00:00"
+    },
+    {
+      "method": "deleteOrderReturnProduct",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "3854be9702f18b0c9a05d7613182f1e7a47a6d6d969739ee57c450662a99b399",
+      "html_bytes": 48771,
+      "retrieved_at": "2026-10-17T17:55:53.394172+00:00"
+    },
+    {
+      "method": "deleteOrderReturnStatus",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "e418f5bb445d5979dd6b16f49e1ee6403101c14edc814d4bf5f87e3e35dd583e",
+      "html_bytes": 48946,
+      "retrieved_at": "2026-10-17T17:55:53.750349+00:00"
+    },
+    {
+      "method": "deleteOrderReturnStatusGroup",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "3f37924a995cd491a02ae57cdf9e3a0b9f816150a56bedf7cb9e616862f559f3",
+      "html_bytes": 48678,
+      "retrieved_at": "2026-10-17T17:55:54.241162+00:00"
+    },
+    {
+      "method": "deleteOrderStatus",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "8cedbc1a2775553baa5681f97692505df9af2b12b20c07749d4497a70c175453",
+      "html_bytes": 48920,
+      "retrieved_at": "2026-10-17T21:03:40.285819+00:00"
+    },
+    {
+      "method": "deleteOrderStatusGroup",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "06ae0aec7426f8eda97e8393f6db366d22801e257e52e29f636ee6778d4c82ae",
+      "html_bytes": 48646,
+      "retrieved_at": "2026-10-17T21:03:40.932770+00:00"
+    },
+    {
+      "method": "deleteOrders",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "de4492b3e6b1f1cd2465a1467866302133ed3e7e39027b03f8499461f0515d03",
+      "html_bytes": 48936,
+      "retrieved_at": "2026-10-17T20:56:18.008374+00:00"
+    },
+    {
+      "method": "deletePickPackCart",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "5f039dad15005e89e83fcc0c384174fef12d9366d5796f3e7f10b25ebc21fc10",
+      "html_bytes": 48731,
+      "retrieved_at": "2026-10-18T00:50:41.102426+00:00"
+    },
+    {
+      "method": "deletePickPackCartOrders",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "d2fc16826bfb651f5a89e6d112a1cfa7b478be46ef0246f2d07c59c3023c20c2",
+      "html_bytes": 48949,
+      "retrieved_at": "2026-10-18T00:50:41.185044+00:00"
+    },
+    {
+      "method": "deletePickPackOrderFromCart",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "42fa0344f4e3c2ce89a11338a81b84c93a9c0dbd5737adb3739c645dcf7ed34c",
+      "html_bytes": 48757,
+      "retrieved_at": "2026-10-18T00:50:41.437712+00:00"
+    },
+    {
+      "method": "getConnectContractorCreditHistory",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "fe163860e648403c1321e7800ef0f296d973b319446619e251398546e7bde43d",
+      "html_bytes": 50289,
+      "retrieved_at": "2026-10-18T01:11:29.199190Z"
+    },
+    {
+      "method": "getConnectIntegrationContractors",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "5c934e5aebd1bd0d3ea0b50721b29ef33c645c256006e36e5194fecc0ccf05b9",
+      "html_bytes": 49726,
+      "retrieved_at": "2026-10-18T01:11:29.239449Z"
+    },
+    {
+      "method": "getConnectIntegrations",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "cded1c22b3fea50d89fa747a3d46bf248d9ba8fa253992d4b20c18614e70d8e4",
+      "html_bytes": 49714,
+      "retrieved_at": "2026-10-18T01:11:29.053129Z"
+    },
+    {
+      "method": "getCourierAccounts",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "93d2f33d958e7479ea438ae96dd927a21946055e57f816c349e3961a962ca45a",
+      "html_bytes": 49112,
+      "retrieved_at": "2026-10-17T18:05:48.115623+00:00"
+    },
+    {
+      "method": "getCourierDocument",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "bd5c23fdea17d23a5b29eb54cd4a93fa77324776f00bd07e6af797c1c2028408",
+      "html_bytes": 49844,
+      "retrieved_at": "2026-10-17T18:05:48.658156+00:00"
+    },
+    {
+      "method": "getCourierFields",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "997afc06173de990576e1fdd393f840ecd49afc461559b935bbc81425f4fd806",
+      "html_bytes": 53833,
+      "retrieved_at": "2026-10-17T18:05:48.174627+00:00"
+    },
+    {
+      "method": "getCourierPackagesStatusHistory",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "ee4b7d98de02781c9339eb19f4e26228342a863bd11d7f78b62cd6925d507128",
+      "html_bytes": 50639,
+      "retrieved_at": "2026-10-17T18:05:47.199981+00:00"
+    },
+    {
+      "method": "getCourierServices",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "ff2567ca6baed3cfadfc39239012d1457c0394b6e41202ef50ed50774f4789cb",
+      "html_bytes": 50598,
+      "retrieved_at": "2026-10-17T18:05:48.951025+00:00"
+    },
+    {
+      "method": "getCouriersList",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "f3a634d41b5b1a101713db0a17c676000b86787e93bcdb14d451179193521c21",
+      "html_bytes": 49716,
+      "retrieved_at": "2026-10-17T18:05:49.097193+00:00"
+    },
+    {
+      "method": "getCrmClientData",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "8f656c57f196e75252b10403072f553509157d760d425a0f271b312896994ac5",
+      "html_bytes": 53084,
+      "retrieved_at": "2026-10-17T17:57:13.212315+00:00"
+    },
+    {
+      "method": "getCrmClientExtraFields",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "05738237a944676666eadd158573ac663651c81d599b5a226ed281ea66894528",
+      "html_bytes": 50193,
+      "retrieved_at": "2026-10-17T17:57:12.099765+00:00"
+    },
+    {
+      "method": "getCrmClientStatusGroups",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "c3e9a06d37f5ccd204bb9bf76249d324417ea61be0d4d29f07cd3408227665a6",
+      "html_bytes": 49073,
+      "retrieved_at": "2026-10-17T17:57:14.441957+00:00"
+    },
+    {
+      "method": "getCrmClientStatuses",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "a1e7c34e0f5aa25aa5546c7b0391322769849f7b1d524be5370fc43c81fd8d57",
+      "html_bytes": 49614,
+      "retrieved_at": "2026-10-17T17:57:14.633337+00:00"
+    },
+    {
+      "method": "getCrmClients",
+      "bundle": "base-api-client-sources-20261017.json.gz",
+      "html_sha256": "a3b49b2b13c6a6b7937543fd3403565fdcbb600bbcf93f4d07fb4c1a9f2b0ffa",
+      "html_bytes": 54059,
+      "retrieved_at": "2026-10-17T17:57:13.556388+00:00"
+    },
+    {
+      "method": "getExternalStorageCategories",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "3079bbc4fa378ca28b2f0c9fd09c559ef0d8c298a1d7b3ba5651b6497ee27422",
+      "html_bytes": 49685,
+      "retrieved_at": "2026-10-18T01:11:29.638106Z"
+    },
+    {
+      "method": "getExternalStorageProductsData",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "bc318f489b61f5aedaaccc027af8278786269a05e026b39a8dff9528cf20a1da",
+      "html_bytes": 55204,
+      "retrieved_at": "2026-10-18T01:11:29.597610Z"
+    },
+    {
+      "method": "getExternalStorageProductsList",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "3c8c839ade91bcc65a67a143f578cc02c4f6870215248f27e5ca2296ca1801d4",
+      "html_bytes": 52718,
+      "retrieved_at": "2026-10-18T01:11:29.627988Z"
+    },
+    {
+      "method": "getExternalStorageProductsPrices",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "eda1db7e8ff4e207a88f85bf85fa09ce93f4daa94356027df46b4890e9e23ade",
+      "html_bytes": 50043,
+      "retrieved_at": "2026-10-18T01:11:29.874677Z"
+    },
+    {
+      "method": "getExternalStorageProductsQuantity",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "9084a63ae9431e4b861b458bcf974f03725497c352c0ae33f3d8f6e068dadd7a",
+      "html_bytes": 50061,
+      "retrieved_at": "2026-10-18T01:11:30.080902Z"
+    },
+    {
+      "method": "getExternalStoragesList",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "c6d8dca6383e1b6a6cc24179d7f3e913cb6ed509fd8a1c09d94d98f50f5a15f0",
+      "html_bytes": 50273,
+      "retrieved_at": "2026-10-18T01:11:30.151531Z"
+    },
+    {
+      "method": "getInventories",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "fcbdf2839b53d1281e5bd40cdc9483fdef5d1729724f042b07154dd0f16ad7bf",
+      "html_bytes": 51247,
+      "retrieved_at": "2026-10-17T19:02:39.739485+00:00"
+    },
+    {
+      "method": "getInventoryAvailableTextFieldKeys",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "f2dc6b4860f995b03c6aaa74332e3cf76529c91290f1776ae81b2dea8e91bd50",
+      "html_bytes": 50827,
+      "retrieved_at": "2026-10-18T01:11:28.040189Z"
+    },
+    {
+      "method": "getInventoryCategories",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "1bf919edba03ef44a7bf0d6d06e6f9e77511d06b5232802c4d0020fb765d5d1e",
+      "html_bytes": 49502,
+      "retrieved_at": "2026-10-17T19:02:41.795139+00:00"
+    },
+    {
+      "method": "getInventoryDocumentFile",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "8cde13050e98224cb06079f12785631d7857293cb41d608bf31a53df81f1fefb",
+      "html_bytes": 49289,
+      "retrieved_at": "2026-10-17T18:34:13.971258+00:00"
+    },
+    {
+      "method": "getInventoryDocumentItems",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "34601599add940a435e388367063d42d60e1d23560baaf0582e833b98c0f50ea",
+      "html_bytes": 51713,
+      "retrieved_at": "2026-10-17T18:34:15.178730+00:00"
+    },
+    {
+      "method": "getInventoryDocumentSeries",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "d8aebd21304749750ff297030b814878b666204ccf05ec81e4d3cbe017958f84",
+      "html_bytes": 49998,
+      "retrieved_at": "2026-10-17T18:34:15.017739+00:00"
+    },
+    {
+      "method": "getInventoryDocuments",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "d4ad019b17c8f447a7ebce6b23920b0bd82cd6bd2fa46baf0bd05dd0469da9dd",
+      "html_bytes": 54076,
+      "retrieved_at": "2026-10-17T18:34:14.397501+00:00"
+    },
+    {
+      "method": "getInventoryExtraFields",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "25b33cf24f2666d486a65ec29c309ac59f18f144742e1b1bc943dad58f5b8011",
+      "html_bytes": 50174,
+      "retrieved_at": "2026-10-18T01:11:27.902126Z"
+    },
+    {
+      "method": "getInventoryFulfillmentDeliveries",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "ea72bc9c1e232f57433e29060f74a4fa5bc80c83f9ed5838114993bff5e05e72",
+      "html_bytes": 53802,
+      "retrieved_at": "2026-10-18T01:06:31.660983+00:00"
+    },
+    {
+      "method": "getInventoryFulfillmentDeliveryItems",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "1c1664413a2df3ac937c1e287f65326412b976f3e736ff3c33236dcc585485db",
+      "html_bytes": 50234,
+      "retrieved_at": "2026-10-18T01:06:31.655036+00:00"
+    },
+    {
+      "method": "getInventoryFulfillmentDeliveryLabels",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "8162c3d3210d4ee89f2a24e157ee98d8d7a7e3ad06d9715ff2f9fceeb2b0a782",
+      "html_bytes": 49902,
+      "retrieved_at": "2026-10-18T01:06:32.131382+00:00"
+    },
+    {
+      "method": "getInventoryIntegrations",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "d5b0d71b60bfd3c39b220da1687b189510e4491e021923c6c919e9a1cabda96c",
+      "html_bytes": 50389,
+      "retrieved_at": "2026-10-18T01:11:28.081293Z"
+    },
+    {
+      "method": "getInventoryManufacturers",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "6ebc1e3a942ce50e4edf4f62368c2fa42834bd61351c03f9d2674624782456db",
+      "html_bytes": 51189,
+      "retrieved_at": "2026-10-17T19:02:42.501073+00:00"
+    },
+    {
+      "method": "getInventoryMapDetails",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "4ec0cb7d85d6cff715661d08162623af563c92e414fbad665f1e5369d36032b6",
+      "html_bytes": 51432,
+      "retrieved_at": "2026-10-17T19:02:41.629252+00:00"
+    },
+    {
+      "method": "getInventoryMaps",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "7f01d6982ffddd82224aeaa576e2ba407edd4600eeae631bf16df82154161b2f",
+      "html_bytes": 51063,
+      "retrieved_at": "2026-10-17T19:02:40.154475+00:00"
+    },
+    {
+      "method": "getInventoryParameters",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "f704d7ae659a611a6e2a6962cab1c82413f69537d0d57903b26514a0457cd855",
+      "html_bytes": 51273,
+      "retrieved_at": "2026-10-17T18:52:29.465902+00:00"
+    },
+    {
+      "method": "getInventoryPayers",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "4eb4b1ac73cbf8b2c962e3af3aa513c03b32f79f6367d903985099731845cb02",
+      "html_bytes": 50209,
+      "retrieved_at": "2026-10-18T01:09:58.760610+00:00"
+    },
+    {
+      "method": "getInventoryPriceGroups",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "38ddc8d0b892f1033c396f55977bcddfe60afb2bb73383d330812280e337cde5",
+      "html_bytes": 51505,
+      "retrieved_at": "2026-10-18T01:09:58.095963+00:00"
+    },
+    {
+      "method": "getInventoryPrintoutTemplates",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "a68edf5d79b7d7d848692494b49c49332a9ecdc270af78006ede534d56b5d846",
+      "html_bytes": 49178,
+      "retrieved_at": "2026-10-18T01:11:28.307983Z"
+    },
+    {
+      "method": "getInventoryProductLogs",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "01f2cbc1fd1f654a383018868aade9d67e3f391bfc492ed0452111f04f341111",
+      "html_bytes": 52321,
+      "retrieved_at": "2026-10-17T18:52:29.653123+00:00"
+    },
+    {
+      "method": "getInventoryProductsData",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "3503d8e24637b121754256c500685ecf862ab8d62c3cca56b735f4650bc5c33c",
+      "html_bytes": 71633,
+      "retrieved_at": "2026-10-17T18:52:29.973904+00:00"
+    },
+    {
+      "method": "getInventoryProductsList",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "43f156d3d16162ce3fc13022f05329319e840a0eaaa0029b45e4493c43f1d4ad",
+      "html_bytes": 53373,
+      "retrieved_at": "2026-10-17T18:52:32.029050+00:00"
+    },
+    {
+      "method": "getInventoryProductsPrices",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "2288b3f75588d07fef33058d1a460bc8828f4abccaccad8101e5581c9fedd363",
+      "html_bytes": 50410,
+      "retrieved_at": "2026-10-17T18:52:30.059764+00:00"
+    },
+    {
+      "method": "getInventoryProductsStock",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "c476a5882c1282694d65a8cefc83d3d8f4ee9aabb0daa0c0f2ef3eaea2972ff5",
+      "html_bytes": 53230,
+      "retrieved_at": "2026-10-17T18:52:30.080391+00:00"
+    },
+    {
+      "method": "getInventoryPromotionsList",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "fc24b2623f45b51cedea84a8c756e8f92b079b9f779a64bc5317147b88b89c0d",
+      "html_bytes": 55461,
+      "retrieved_at": "2026-10-18T01:11:28.546345Z"
+    },
+    {
+      "method": "getInventoryPurchaseOrderFile",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "766995bb55825fa3a25020320ab716c894896d25c816473f64fdb50a6e1218a8",
+      "html_bytes": 49201,
+      "retrieved_at": "2026-10-18T01:06:00.793349+00:00"
+    },
+    {
+      "method": "getInventoryPurchaseOrderItems",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "184c538be80ac25dbf1a8d3cfd7e8c7b17094acac9d423789ab11213d629d16f",
+      "html_bytes": 51688,
+      "retrieved_at": "2026-10-18T01:06:01.132865+00:00"
+    },
+    {
+      "method": "getInventoryPurchaseOrderLogs",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "279e251b0a3c49f55e66476101392c81636258a34e8b31b8f4a0e1a8efce8f4e",
+      "html_bytes": 53503,
+      "retrieved_at": "2026-10-18T01:06:01.264509+00:00"
+    },
+    {
+      "method": "getInventoryPurchaseOrderSeries",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "ddc3c7137e99e774ef7dd39f0f2b374b334235e3ac3a2bb4c79ac47ba00a2b5e",
+      "html_bytes": 49579,
+      "retrieved_at": "2026-10-18T01:06:01.303769+00:00"
+    },
+    {
+      "method": "getInventoryPurchaseOrders",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "3776779d45c14e854bddebabc57d7ddcac6ef8cdce4629a2d5e4003dc6266089",
+      "html_bytes": 55242,
+      "retrieved_at": "2026-10-18T01:06:01.374393+00:00"
+    },
+    {
+      "method": "getInventoryShippingTemplates",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "fffbd4867416347d97b88f13f6d69163702005ae6213ed76cf1f5b52b5542220",
+      "html_bytes": 50706,
+      "retrieved_at": "2026-10-18T01:11:28.596715Z"
+    },
+    {
+      "method": "getInventoryStocktakeItems",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "0dff411720355c06a39efef88780c965d19d49010fedf67d3533cb79212947ea",
+      "html_bytes": 51459,
+      "retrieved_at": "2026-10-18T01:06:30.907617+00:00"
+    },
+    {
+      "method": "getInventoryStocktakeSeries",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "a2d685346a672792e6ac059a9de7ec24d737854f3808402260b97b553e9f162b",
+      "html_bytes": 49540,
+      "retrieved_at": "2026-10-18T01:06:31.119348+00:00"
+    },
+    {
+      "method": "getInventoryStocktakes",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "eff81c2f2ceee0d8d584ffe3ea0f0e7f351ad1930b1736321239b8abda35e9a6",
+      "html_bytes": 54205,
+      "retrieved_at": "2026-10-18T01:06:31.320376+00:00"
+    },
+    {
+      "method": "getInventorySuppliers",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "863156078d93110e6cb322cb7f400acc77b7d5f76038b4718500546144ee3d10",
+      "html_bytes": 51185,
+      "retrieved_at": "2026-10-18T01:09:58.390759+00:00"
+    },
+    {
+      "method": "getInventoryTags",
+      "bundle": "base-api-inventory-other-configuration-sources-20261018.json.gz",
+      "html_sha256": "cd2f6ffff3bfdf1bfb5944b1010f83ac53d4a17058c710bd89aca4234b56cc97",
+      "html_bytes": 48904,
+      "retrieved_at": "2026-10-18T01:09:58.974529+00:00"
+    },
+    {
+      "method": "getInventoryTransferItems",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "8f012a25e8b619158b049b49bceaad1a513d8d9c452f06dc62371d5c30099c4d",
+      "html_bytes": 51630,
+      "retrieved_at": "2026-10-18T01:06:01.953255+00:00"
+    },
+    {
+      "method": "getInventoryTransferSeries",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "93db6889fe19a71dfc7ee13ec8716fa33dc02efdb4c8af08396ad07ef8b96465",
+      "html_bytes": 49532,
+      "retrieved_at": "2026-10-18T01:06:02.304134+00:00"
+    },
+    {
+      "method": "getInventoryTransfers",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "cbc9e662484336900eb287655025c562772a855a7732fcbaf05b475b82ab28fa",
+      "html_bytes": 54643,
+      "retrieved_at": "2026-10-18T01:06:02.357862+00:00"
+    },
+    {
+      "method": "getInventoryWarehouseLocationTypes",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "0302b4d68c414952c560137c20c28ba856b2885bce1b92871bfd01995bb39674",
+      "html_bytes": 51528,
+      "retrieved_at": "2026-10-18T00:53:55.438601+00:00"
+    },
+    {
+      "method": "getInventoryWarehouseLocations",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "409bb09966d045148b0cc6d9ee532932ed21b62d576c6df8c0c14fb0d7ff6fb9",
+      "html_bytes": 52578,
+      "retrieved_at": "2026-10-18T00:53:55.336866+00:00"
+    },
+    {
+      "method": "getInventoryWarehouseRacks",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "3aa1b8d5cd3752fb3dc081b22d6ef1a136b301a44f7324c62d53f963e543a47c",
+      "html_bytes": 49866,
+      "retrieved_at": "2026-10-18T00:53:57.410023+00:00"
+    },
+    {
+      "method": "getInventoryWarehouseZones",
+      "bundle": "base-api-products-next-sources-20261018.json.gz",
+      "html_sha256": "f6a32a24be8f020b4ea6980588563437659efc19bc605f4697e98d7dbc6c1900",
+      "html_bytes": 49763,
+      "retrieved_at": "2026-10-18T00:53:56.165857+00:00"
+    },
+    {
+      "method": "getInventoryWarehouses",
+      "bundle": "base-api-inventory-configuration-sources-20261017.json.gz",
+      "html_sha256": "352b761ac77369996d2fd2315b7abaada44f1090c5c17e68af668549c863b1a7",
+      "html_bytes": 51495,
+      "retrieved_at": "2026-10-17T19:02:40.609694+00:00"
+    },
+    {
+      "method": "getInvoiceFile",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "fb94df5f2b9bebe0dfcb4e0d7e8785cfd918abb37f09915c3316124abdcb9f4f",
+      "html_bytes": 49432,
+      "retrieved_at": "2026-10-17T18:34:14.292625+00:00"
+    },
+    {
+      "method": "getInvoices",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "f46b1020414a6f564d8522d435931af2fa836db629d28b01726c1bedac8b05da",
+      "html_bytes": 59434,
+      "retrieved_at": "2026-10-17T18:34:11.799709+00:00"
+    },
+    {
+      "method": "getJournalList",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "5407ade0c7965ff9157ed09b36f38726626d970bfc8bd3c937c5a39e4a4ed398",
+      "html_bytes": 51123,
+      "retrieved_at": "2026-10-18T00:54:26.028824+00:00"
+    },
+    {
+      "method": "getLabel",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "18b30ed3dbcfb580c5b19e9b9fd7c2215397e2a9dfa911e081b08f6ebf8fe2fe",
+      "html_bytes": 49373,
+      "retrieved_at": "2026-10-17T18:05:48.911259+00:00"
+    },
+    {
+      "method": "getNewReceipts",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "6a1bbd5b7817218ea2f8817db38455772b4bad8802c68a24713d57736ac8e913",
+      "html_bytes": 52236,
+      "retrieved_at": "2026-10-17T18:34:13.225442+00:00"
+    },
+    {
+      "method": "getOrderExtraFields",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "1aa1b6c02d573b5188a1d31bd4e419ee2c1da931c954012ca209e867e4f8ad1e",
+      "html_bytes": 50234,
+      "retrieved_at": "2026-10-18T00:54:26.069434+00:00"
+    },
+    {
+      "method": "getOrderPackages",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "f536fad9d370b0c6b018a5c6f298886d16f1d312869ebd4ce4f843c6c947d695",
+      "html_bytes": 51140,
+      "retrieved_at": "2026-10-17T18:05:47.616292+00:00"
+    },
+    {
+      "method": "getOrderPaymentsHistory",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "2a754f7f049521b9d6e8da3b7c7c02570567d6dde42a1f3af43381d4a39c949e",
+      "html_bytes": 50039,
+      "retrieved_at": "2026-10-17T21:03:38.270112+00:00"
+    },
+    {
+      "method": "getOrderPickLists",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "c164407427468c7778c22eefeba0a9545d9905ab38711862eec1b5fae524bf2c",
+      "html_bytes": 50838,
+      "retrieved_at": "2026-10-18T00:54:25.812093+00:00"
+    },
+    {
+      "method": "getOrderPickPackHistory",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "6dca4207291e4e7549e4fda259d4f1013a589c5ade84fd981bca58aa6896e0a6",
+      "html_bytes": 51452,
+      "retrieved_at": "2026-10-18T00:54:26.057983+00:00"
+    },
+    {
+      "method": "getOrderPrintoutTemplates",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "2343e198be6a0466f3dc8058af4696c53072d50e334a62b498176417b86607af",
+      "html_bytes": 49386,
+      "retrieved_at": "2026-10-18T00:54:26.278447+00:00"
+    },
+    {
+      "method": "getOrderReturnExtraFields",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "bc2a15f3b61b6885a91a9e93829e58008034633cbc172f7e5e7542102258fd3f",
+      "html_bytes": 50265,
+      "retrieved_at": "2026-10-17T17:55:52.930924+00:00"
+    },
+    {
+      "method": "getOrderReturnJournalList",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "4b5a6c2a42d50b59fb33f3885cca3e9452560f74f7d6c829c5b282768830d187",
+      "html_bytes": 50455,
+      "retrieved_at": "2026-10-17T17:55:55.613648+00:00"
+    },
+    {
+      "method": "getOrderReturnPaymentsHistory",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "4a9152d4a4d44a1c2b9f8411b801a960fa41686933d0de07f4805f00f71e5157",
+      "html_bytes": 50359,
+      "retrieved_at": "2026-10-17T17:55:55.194552+00:00"
+    },
+    {
+      "method": "getOrderReturnProductStatuses",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "3a2e9067d43f62fa35907e23b6feed5a1642de8c069a1d71bc0dc55e3a28e580",
+      "html_bytes": 49199,
+      "retrieved_at": "2026-10-17T17:55:54.396022+00:00"
+    },
+    {
+      "method": "getOrderReturnReasonsList",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "82024d74d800667796805ad30932658e54b5d4271078962a0ca1cdb7a738933e",
+      "html_bytes": 49382,
+      "retrieved_at": "2026-10-17T17:55:54.248805+00:00"
+    },
+    {
+      "method": "getOrderReturnStatusGroups",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "09c28d79d4d0c91a218dd2312471d9809460e1a3d85c6884f1ab70d093b200e8",
+      "html_bytes": 49163,
+      "retrieved_at": "2026-10-17T17:55:54.607397+00:00"
+    },
+    {
+      "method": "getOrderReturnStatusList",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "97505346176d84250033cb907a1c975376bf65363b8c114468cda3213563a699",
+      "html_bytes": 49942,
+      "retrieved_at": "2026-10-17T17:55:54.596589+00:00"
+    },
+    {
+      "method": "getOrderReturns",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "58042d5b838ba07c5abfe9cc4b7871da4a0a9c981a681cc4ad0d9790ecf40e92",
+      "html_bytes": 61860,
+      "retrieved_at": "2026-10-17T17:55:53.150232+00:00"
+    },
+    {
+      "method": "getOrderSources",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "fb2ca39313219a2aaef30d472982509816a9b3bf3f07fefcade92f809583408c",
+      "html_bytes": 50794,
+      "retrieved_at": "2026-10-18T00:54:26.597427+00:00"
+    },
+    {
+      "method": "getOrderStatusGroups",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "b857a67c097bac2d68238bdf197d7a538c95d755296faa72914f53c0603bdd25",
+      "html_bytes": 49131,
+      "retrieved_at": "2026-10-17T21:03:41.415737+00:00"
+    },
+    {
+      "method": "getOrderStatusList",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "8d4dc6107070ddb4a2cebf8985c4bd62e5e11b0a2a5c4c5fca987966e7b956ce",
+      "html_bytes": 49902,
+      "retrieved_at": "2026-10-17T21:03:42.114704+00:00"
+    },
+    {
+      "method": "getOrderTransactionData",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "d2de7a8cbc1cd394afb9b13e63faae63fa94c64d183c46ab654b862f4dde7b60",
+      "html_bytes": 52691,
+      "retrieved_at": "2026-10-18T00:54:26.622851+00:00"
+    },
+    {
+      "method": "getOrders",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "4f02f4aa4d9311750978349a7936c2cb27a7da04487a2176418d2ae91c591954",
+      "html_bytes": 73802,
+      "retrieved_at": "2026-10-17T20:56:18.258017+00:00"
+    },
+    {
+      "method": "getOrdersByEmail",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "be6681758b9055fe456671014457498103f6ee7335b26945b11aa8da6ff82fab",
+      "html_bytes": 50101,
+      "retrieved_at": "2026-10-18T00:54:26.638529+00:00"
+    },
+    {
+      "method": "getOrdersByPhone",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "456c534aa8b5b9a504c2f137ca7089e3c1d63414d9511b034c8b6275a61ed97d",
+      "html_bytes": 50360,
+      "retrieved_at": "2026-10-18T00:54:26.813444+00:00"
+    },
+    {
+      "method": "getPackageDetails",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "1c576e08200455c51b5885c9ad2f6a811d4cd91ca6c417f5c6c7d3d0916fe7c7",
+      "html_bytes": 52622,
+      "retrieved_at": "2026-10-17T18:05:47.601555+00:00"
+    },
+    {
+      "method": "getPickPackCartOrders",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "e7db55239b9a7d34e817da15f0a39af24a832977927d123a1e35245fab5778a5",
+      "html_bytes": 49146,
+      "retrieved_at": "2026-10-18T00:50:41.622681+00:00"
+    },
+    {
+      "method": "getPickPackCarts",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "12d76898e218fd1c3750bf5dc49755d0023cfeed995b2d129b84f3441f345e31",
+      "html_bytes": 49297,
+      "retrieved_at": "2026-10-18T00:50:41.658745+00:00"
+    },
+    {
+      "method": "getPickPackOrderCart",
+      "bundle": "base-api-pickpack-sources-20261018.json.gz",
+      "html_sha256": "529d1d62a29e1bf78fe17c56097ba5457a2216d112ed64d3f5c0aea6ddd6a0d1",
+      "html_bytes": 49314,
+      "retrieved_at": "2026-10-18T00:50:41.621382+00:00"
+    },
+    {
+      "method": "getPricePackage",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "d98f3a0b6c37aa796b684e4f3251c105e0383fdfa9d666f6e48b652af4a9d666",
+      "html_bytes": 52962,
+      "retrieved_at": "2026-10-17T18:05:47.935350+00:00"
+    },
+    {
+      "method": "getProtocol",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "2624861bbbcd8d80527ff7547a56460417c9fe4ce35009993b5dcfe928bd6f49",
+      "html_bytes": 49683,
+      "retrieved_at": "2026-10-17T18:05:49.137299+00:00"
+    },
+    {
+      "method": "getReceipt",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "faca5699eb72c34e9f4e22beb5cde1d105d712224f9f972ab88c6bd253b77531",
+      "html_bytes": 53388,
+      "retrieved_at": "2026-10-17T18:34:12.892851+00:00"
+    },
+    {
+      "method": "getReceipts",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "cabf9af3b2684fcaac5048beab201b7c1247891f617ce0bb9ddbc71d7c1763c9",
+      "html_bytes": 51930,
+      "retrieved_at": "2026-10-17T18:34:12.856941+00:00"
+    },
+    {
+      "method": "getRequestParcelPickupFields",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "b4250c3e38bffc7beda537138da5030fdeeaed95ff152330b943122633804e7a",
+      "html_bytes": 49833,
+      "retrieved_at": "2026-10-17T18:05:50.251257+00:00"
+    },
+    {
+      "method": "getSeries",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "7fc19baab6771b4d381f4e10e72b06a1e084577f6fcf1ca30397089b29117af9",
+      "html_bytes": 49476,
+      "retrieved_at": "2026-10-17T18:34:12.179890+00:00"
+    },
+    {
+      "method": "getSyncLogList",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "0e6f688abd9a48ab72482683c4d065f034578aea565d36bb8b2f1306909a7292",
+      "html_bytes": 51836,
+      "retrieved_at": "2026-10-18T01:11:28.745794Z"
+    },
+    {
+      "method": "runFulfillmentLinkProducts",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "60f070534a5f9c666b1fedc7b93210f1a5d21f046ed5482d34f1004048065c6a",
+      "html_bytes": 49365,
+      "retrieved_at": "2026-10-17T18:52:30.472839+00:00"
+    },
+    {
+      "method": "runInventoryFulfillmentDeliverySubmission",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "05912bdb488048209d2ed1ff462dbdf0cecc50e3423d854af2445feb8286d82b",
+      "html_bytes": 49673,
+      "retrieved_at": "2026-10-18T01:06:31.971100+00:00"
+    },
+    {
+      "method": "runOrderMacroTrigger",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "48ac547df1c29c2f1d259b1347b9de34e628fd291caa5097e69a25d2a76f0ac6",
+      "html_bytes": 48810,
+      "retrieved_at": "2026-10-18T00:54:27.103113+00:00"
+    },
+    {
+      "method": "runOrderReturnMacroTrigger",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "10988a0d9d969dc28e29dc7153fec2cc337a9700e5b5527f4302918a0472b614",
+      "html_bytes": 48825,
+      "retrieved_at": "2026-10-17T17:55:55.736298+00:00"
+    },
+    {
+      "method": "runProductMacroTrigger",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "861fa6ecd44ee1c85afffa68e5c8379877e3d0723e912a620ed3ca0857a8e89e",
+      "html_bytes": 48822,
+      "retrieved_at": "2026-10-17T18:52:30.484056+00:00"
+    },
+    {
+      "method": "runRequestParcelPickup",
+      "bundle": "base-api-courier-sources-20261017.json.gz",
+      "html_sha256": "8e71f639e140441a20c0a85e4cdaad6f7d9bce9ab902a0760e187a13fa14e0c3",
+      "html_bytes": 50364,
+      "retrieved_at": "2026-10-17T18:05:49.439297+00:00"
+    },
+    {
+      "method": "setConnectContractorCreditLimit",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "ae8cbd5a8445ad2160bf7ad3ca5538e78ac62a2ad063a27fbb20b70b3573f2a4",
+      "html_bytes": 49185,
+      "retrieved_at": "2026-10-18T01:11:29.549690Z"
+    },
+    {
+      "method": "setInventoryDocumentStatusConfirmed",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "2512cc3fe93ca8f9c12610233d4f75facaeed2dcb8c851da850cb4879794c3c4",
+      "html_bytes": 48648,
+      "retrieved_at": "2026-10-17T18:34:14.870423+00:00"
+    },
+    {
+      "method": "setInventoryPurchaseOrderStatus",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "0f4f6884bc0f6e8ec3309fe3239778b37208ed508de88521690476adc783620c",
+      "html_bytes": 49534,
+      "retrieved_at": "2026-10-18T01:06:01.741697+00:00"
+    },
+    {
+      "method": "setInventoryStocktakeStatus",
+      "bundle": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+      "html_sha256": "d7fe95d74b4ac1b18253ee9db3249f9c58a526e20a300659744fd1127539bf84",
+      "html_bytes": 49702,
+      "retrieved_at": "2026-10-18T01:06:31.304423+00:00"
+    },
+    {
+      "method": "setInventoryTransferStatus",
+      "bundle": "base-api-purchase-transfer-sources-20261018.json.gz",
+      "html_sha256": "d97a8a7577f5806e3b385a9d9f50ed6e5e27c890fb02035fc086c70caf3c562f",
+      "html_bytes": 49583,
+      "retrieved_at": "2026-10-18T01:06:02.490229+00:00"
+    },
+    {
+      "method": "setOrderFields",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "6728386c86f33a0808500a11064ab703845ce3cc1013695746e840cc84ad659d",
+      "html_bytes": 54976,
+      "retrieved_at": "2026-10-17T20:56:18.258787+00:00"
+    },
+    {
+      "method": "setOrderPayment",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "5735e19fcd77dbffe919b3622e65b7a560ebb394a59cee7dfe9d5d69aab62f9e",
+      "html_bytes": 49446,
+      "retrieved_at": "2026-10-17T21:03:38.773590+00:00"
+    },
+    {
+      "method": "setOrderProductFields",
+      "bundle": "base-api-orders-next-sources-20261018.json.gz",
+      "html_sha256": "b0f3682914d5218048de25dcb868cfdc75613e75b6c2f1ae29dc0ad5eff14b02",
+      "html_bytes": 51557,
+      "retrieved_at": "2026-10-18T00:54:25.526317+00:00"
+    },
+    {
+      "method": "setOrderReceipt",
+      "bundle": "base-api-document-sources-20261017.json.gz",
+      "html_sha256": "d3ad0eda6a29e0e5d682e94d7b79d1242f4bec07ec1048db1a7e29ffc9262a77",
+      "html_bytes": 49451,
+      "retrieved_at": "2026-10-17T18:34:13.347755+00:00"
+    },
+    {
+      "method": "setOrderReturnFields",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "6a61bcbf4f122b1350ed0f4a6dc885adc6a5594c59badcb1756b4ce318db75e6",
+      "html_bytes": 51423,
+      "retrieved_at": "2026-10-17T17:55:52.931303+00:00"
+    },
+    {
+      "method": "setOrderReturnProductFields",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "cb4fa86f104b1e08acc671027059c93d70f61286a39c567679b55145150965ed",
+      "html_bytes": 51936,
+      "retrieved_at": "2026-10-17T17:55:54.551576+00:00"
+    },
+    {
+      "method": "setOrderReturnRefund",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "98b4488bfe626ec9d41180b81204e1c635f0f5f380e9cbb5b2e48b7f1e5cb09e",
+      "html_bytes": 49494,
+      "retrieved_at": "2026-10-17T17:55:55.096976+00:00"
+    },
+    {
+      "method": "setOrderReturnStatus",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "84f540b19e0ff9b0b5874d39be540b19cfd33fef9cb2d92e4bbb1d54ae1d1493",
+      "html_bytes": 48779,
+      "retrieved_at": "2026-10-17T17:55:55.150647+00:00"
+    },
+    {
+      "method": "setOrderReturnStatuses",
+      "bundle": "base-api-return-sources-20261017.json.gz",
+      "html_sha256": "01d8189b8eca447f9265610fd397c044f668c63b74eeb39270ebf8c7360d7768",
+      "html_bytes": 48877,
+      "retrieved_at": "2026-10-17T17:55:55.890599+00:00"
+    },
+    {
+      "method": "setOrderStatus",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "112ae205b517456cbaa6ab7b46f95165b3c4e988458ee01bc27d6f48bc549807",
+      "html_bytes": 48737,
+      "retrieved_at": "2026-10-17T21:03:42.853405+00:00"
+    },
+    {
+      "method": "setOrderStatuses",
+      "bundle": "base-api-order-configuration-sources-20261017.json.gz",
+      "html_sha256": "2a6229a12299e02fee9c93aae58ae29992a66a2a03784e46fd6ec03af4793c33",
+      "html_bytes": 48821,
+      "retrieved_at": "2026-10-17T21:03:43.347227+00:00"
+    },
+    {
+      "method": "setOrdersMerge",
+      "bundle": "base-api-orders-sources-20261017.json.gz",
+      "html_sha256": "2663d7fa9a8f5bb006c93ed5971443f47bab731857fe28eea6e6364ea0ac3b1b",
+      "html_bytes": 49747,
+      "retrieved_at": "2026-10-17T20:56:18.646621+00:00"
+    },
+    {
+      "method": "updateExternalStorageProductsQuantity",
+      "bundle": "base-api-other-connect-external-sources-20261018.json.gz",
+      "html_sha256": "112961677de205c4e7bee62d285ffef7613bea399ffb4889627ad1d820199309",
+      "html_bytes": 49955,
+      "retrieved_at": "2026-10-18T01:11:30.018030Z"
+    },
+    {
+      "method": "updateInventoryProductsPrices",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "00ee221a24992bca672c438842564a48d236709182a32a17e37a6e49cacaf1a3",
+      "html_bytes": 50027,
+      "retrieved_at": "2026-10-17T18:52:30.597561+00:00"
+    },
+    {
+      "method": "updateInventoryProductsStock",
+      "bundle": "base-api-inventory-products-sources-20261017.json.gz",
+      "html_sha256": "1cffc4a9dc69ecb64c5783e167095ee96eced40098a8d936b17fb2213ddcdaf9",
+      "html_bytes": 50268,
+      "retrieved_at": "2026-10-17T18:52:30.966575+00:00"
+    }
+  ],
+  "remaining": [],
+  "historical_snapshot": {
+    "path": "base-api-source-coverage-145-historical-20261018.json",
+    "bytes": 58369,
+    "sha256": "e8f63888ec977a01ebba06ecbb297b2db83d1732fff430ff9c9a98fc4968ca45",
+    "individual_html_methods": 145,
+    "missing_individual_html_methods": 59,
+    "status": "HISTORICAL_SOURCE_PROJECTION_NOT_CURRENT"
+  },
+  "source_metadata_gaps": {
+    "final_url_not_recorded": [
+      "addCrmClient",
+      "addCrmClientStatus",
+      "addCrmClientStatusGroup",
+      "deleteCrmClient",
+      "deleteCrmClientStatus",
+      "deleteCrmClientStatusGroup",
+      "getCrmClientData",
+      "getCrmClientExtraFields",
+      "getCrmClientStatusGroups",
+      "getCrmClientStatuses",
+      "getCrmClients"
+    ],
+    "http_status_not_recorded": [
+      "addCrmClient",
+      "addCrmClientStatus",
+      "addCrmClientStatusGroup",
+      "deleteCrmClient",
+      "deleteCrmClientStatus",
+      "deleteCrmClientStatusGroup",
+      "getCrmClientData",
+      "getCrmClientExtraFields",
+      "getCrmClientStatusGroups",
+      "getCrmClientStatuses",
+      "getCrmClients"
+    ]
+  }
+}

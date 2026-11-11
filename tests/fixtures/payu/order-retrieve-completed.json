@@ -1,0 +1,20 @@
+{
+  "_synthetic": "SYNTETYCZNE: kształt według publicznej dokumentacji PayU REST API 2.1, nie nagranie z PayU",
+  "orders": [
+    {
+      "orderId": "FIXT9ZZ1ABC251026GUEST000P01",
+      "extOrderId": "sess-fixture-1",
+      "orderCreateDate": "2026-10-26T10:00:00.000+01:00",
+      "notifyUrl": "https://sklep.example/api/public/payu/notify",
+      "customerIp": "127.0.0.1",
+      "merchantPosId": "300001",
+      "description": "Zamówienie SYNTH-1",
+      "currencyCode": "PLN",
+      "totalAmount": "12345",
+      "status": "COMPLETED",
+      "products": [{ "name": "Produkt syntetyczny", "unitPrice": "12345", "quantity": "1" }]
+    }
+  ],
+  "status": { "statusCode": "SUCCESS", "statusDesc": "Request processing successful" },
+  "properties": [{ "name": "PAYMENT_ID", "value": "7000000001" }]
+}

@@ -1,0 +1,467 @@
+{
+  "about": "Reviewed .query() sites whose SQL text tests/sql-text-lint.ts cannot show to be constant (SQL-injection audit B, 29.10.2026, docs/parity/SQL-INJECTION-AUDIT-B-20261029.md). key = sha256(16 hex) of the whitespace-normalised SQL-text argument: any edit of the expression breaks the entry and needs a new review. An entry that no longer matches a dynamic site fails the test.",
+  "entries": [
+    {
+      "file": "server/b2b-credits.ts",
+      "fn": "listInTx",
+      "key": "71d769c02367ffa4",
+      "class": "request number",
+      "why": "LIMIT ${q.limit+1}: q = b2bCreditPageQuery.parse(input), limit is z.coerce.number().int().min(1).max(50) (server/b2b-credit-values.ts:19), so the text is a JS number. File is hash-pinned (catalog-stock-writer-coverage) and FV-adjacent: left as is (not injectable)."
+    },
+    {
+      "file": "server/b2b-invoices.ts",
+      "fn": "listInTx",
+      "key": "683ccfaf03a3a5c6",
+      "class": "request number",
+      "why": "LIMIT ${q.limit+1}: q = b2bInvoicePageQuery.parse(input), limit is z.coerce.number().int().min(1).max(50) (server/b2b-invoice-values.ts:9). Hash-pinned FV file: left as is (not injectable)."
+    },
+    {
+      "file": "server/fa3-drafts.ts",
+      "fn": "listInTx",
+      "key": "70b90c93c4d8829c",
+      "class": "request number",
+      "why": "LIMIT ${q.limit+1}: q = fa3DraftPageQuery.parse(input), limit is z.coerce.number().int().min(1).max(50) (server/fa3-drafts.ts:26). Hash-pinned FV file: left as is (not injectable)."
+    },
+    {
+      "file": "server/catalog-export.ts",
+      "fn": "readBatch",
+      "key": "df0b363cf8f5ab5d",
+      "class": "request whitelist",
+      "why": "Projection `${scalarSql[k]} AS ${k}`: k comes from q.columns, a z.array(z.enum(CATALOG_EXPORT_COLUMNS keys)) (server/catalog-export.ts:56,63), filtered by scalarSql[k]; every k is a fixed column key and scalarSql values are constants."
+    },
+    {
+      "file": "server/catalog-export.ts",
+      "fn": "matchedCount",
+      "key": "17699005c30fce15",
+      "class": "constant",
+      "why": "LIMIT ${CATALOG_EXPORT_LIMITS.products + 1}: a module constant object of numbers; the lint only fails because the object is also returned in a response (alias), which cannot change it."
+    },
+    {
+      "file": "server/catalog-file-import.ts",
+      "fn": "identityMatches",
+      "key": "78d5d34014b868e2",
+      "class": "stored, validated",
+      "why": "Column `${kind}` = config.identity. config is the zod-parsed request (identity: z.enum(['id','sku','ean','name']), server/catalog-file-import-schema.ts:89) or the same config stored by this app in the preview row and re-hashed against the parsed request (catalog-file-import-eligibility.ts:23). Not writable by a request; sku takes another branch. Second-order only if a row could be forged by SQL, which this audit rules out."
+    },
+    {
+      "file": "server/catalog-file-import.ts",
+      "fn": "quota",
+      "key": "0aa90f0c55a12325",
+      "class": "constant",
+      "why": "table(kind) = `catalog_file_import_${kind}` with kind: 'previews' | 'executions'; every call passes one of these literals (lines 808, 992, 1296 and catalog-file-import-eligibility.ts:43, where quota is handed over as a value)."
+    },
+    {
+      "file": "server/carrier-returns.ts",
+      "fn": "step",
+      "key": "7df624a113057562",
+      "class": "constant",
+      "why": "Column list from Object.keys(values); step is passed as a callback to dpdReturn/inpostReturn and every call writes an object literal with fixed keys (lines 266-335). Values are bound parameters."
+    },
+    {
+      "file": "server/db.ts",
+      "fn": "migrate",
+      "key": "660fd1fbb8c99e67",
+      "class": "code resource",
+      "why": "Migration body: the packaged SQL file of the fixed migration program (readRuntimeResource('sql:server/…')). Code, not data."
+    },
+    {
+      "file": "server/db.ts",
+      "fn": "migrate",
+      "key": "b87f7955e25a2d31",
+      "class": "code resource",
+      "why": "Fixed packaged SQL file 199_keeper_private_cold.sql run by migrate()."
+    },
+    {
+      "file": "server/db.ts",
+      "fn": "migrate",
+      "key": "6a918db24d7cefb5",
+      "class": "code resource",
+      "why": "Fixed packaged SQL file 188_consumer_credit_structure.sql run by migrate()."
+    },
+    {
+      "file": "server/db.ts",
+      "fn": "migrate",
+      "key": "89f4dc1e3eb0227f",
+      "class": "code resource",
+      "why": "Fixed packaged SQL file wms-stocktake-invariants.sql run by migrate()."
+    },
+    {
+      "file": "server/db.ts",
+      "fn": "migrate",
+      "key": "5d6731d8c523af3b",
+      "class": "code resource",
+      "why": "Fixed packaged SQL file 108_b2b_dropship_dispatch.sql run by migrate()."
+    },
+    {
+      "file": "server/order-detail-rows.ts",
+      "fn": "orderDetailRows",
+      "key": "d06530d2bbf5bd49",
+      "class": "quoted literal",
+      "why": "Simple-query batch (six SELECTs in one round trip, no bind parameters possible): the order id enters only as pg.escapeLiteral(id) followed by ::uuid. escapeLiteral doubles quotes and switches to E'' with doubled backslashes, so the value cannot leave the literal."
+    },
+    {
+      "file": "server/order-merges.ts",
+      "fn": "executeOrderMerge",
+      "key": "ad956a30d4f64f4b",
+      "class": "catalog identifier",
+      "why": "Column list from pg_attribute.attname of public.orders, each quoted as \"…\" with \"\" doubling. Catalog data, not request data."
+    },
+    {
+      "file": "server/order-split222.ts",
+      "fn": "executeOrderSplit222",
+      "key": "ad956a30d4f64f4b",
+      "class": "catalog identifier",
+      "why": "Same as executeOrderMerge: pg_attribute.attname of public.orders, quoted with \"\" doubling."
+    },
+    {
+      "file": "server/order-split222.ts",
+      "fn": "blockers",
+      "key": "933d06e9274a170f",
+      "class": "constant",
+      "why": "Table/column names are rows of a query that only returns pairs from the fixed BLOCKERS list (unnest($1,$2) joined to pg_attribute), quoted as \"…\"."
+    },
+    {
+      "file": "server/public-constraint-drain.ts",
+      "fn": "drainPublicConstraintsInTx",
+      "key": "731adcf2777328a1",
+      "class": "catalog identifier",
+      "why": "SET CONSTRAINTS list from pg_constraint names, schema checked to be 'public' and each name passed through quoteIdentifier (line 17-18)."
+    },
+    {
+      "file": "server/recovery-private-acl.ts",
+      "fn": "restorePrivateAclSnapshot",
+      "key": "0c81ecd77da768ec",
+      "class": "operator snapshot, quoted",
+      "why": "Recovery tool on an isolated dynaminds_restore_* database (asserted, line 33): schema from the zod-parsed operator snapshot, matched against the live catalogue, quoted by quoted() (\"\" doubling)."
+    },
+    {
+      "file": "server/recovery-private-acl.ts",
+      "fn": "restorePrivateAclSnapshot",
+      "key": "81b26d76c43faf78",
+      "class": "operator snapshot, quoted",
+      "why": "Same restore tool: schema and relation names quoted by quoted(); the object must exist in the live catalogue with equal metadata before any GRANT."
+    },
+    {
+      "file": "server/recovery-private-tables.ts",
+      "fn": "privateTableFingerprints",
+      "key": "22176ade51aee0b9",
+      "class": "catalog identifier",
+      "why": "Schema/table come from a catalogue query and are re-parsed by zod as /^[a-z][a-z0-9_]{0,62}$/ (line 6-9) before \"${schema}\".\"${table}\"."
+    },
+    {
+      "file": "server/recovery-relation-acl.ts",
+      "fn": "restoreRelationAclSnapshot",
+      "key": "1c3f6ef040dc8c6c",
+      "class": "operator snapshot, quoted",
+      "why": "Restore tool: relation and owner from the parsed snapshot, matched against the live catalogue and quoted by identifier() (\"\" doubling)."
+    },
+    {
+      "file": "server/recovery.ts",
+      "fn": "tableFingerprints",
+      "key": "4a7472f49b288b36",
+      "class": "catalog identifier",
+      "why": "Table names from pg_tables, each checked against /^[a-z][a-z0-9_]*$/ (line 244) before FROM \"${name}\"."
+    },
+    {
+      "file": "server/recovery.ts",
+      "fn": "restoreBackup",
+      "key": "9ffc931bfd7d84f8",
+      "class": "generated identifier",
+      "why": "CREATE DATABASE ${database}: restoreDatabaseName() = 'dynaminds_restore_' + randomBytes hex. Generated by the tool, never input."
+    },
+    {
+      "file": "server/recovery.ts",
+      "fn": "restoreBackup",
+      "key": "3975a8169a5bcd7b",
+      "class": "generated identifier",
+      "why": "DROP DATABASE ${database} of the database this run created (same generated name)."
+    },
+    {
+      "file": "server/recovery-dump-restore.ts",
+      "fn": "restorePlainDump",
+      "key": "650b7936062d8ff2",
+      "class": "catalog identifier",
+      "why": "CREATE DATABASE \"${database}\": operator CLI argument checked /^[a-z][a-z0-9_]{0,62}$/ (line 43) and refused when pg_database already has it; quoted; local operator tool, not a request path."
+    },
+    {
+      "file": "server/recovery-dump-restore.ts",
+      "fn": "restorePlainDump",
+      "key": "ce041f4b6670852f",
+      "class": "catalog identifier",
+      "why": "DROP DATABASE \"${database}\" only of the database this call created (created flag), same checked name."
+    },
+    {
+      "file": "server/release-rollback.ts",
+      "fn": "drop",
+      "key": "3975a8169a5bcd7b",
+      "class": "validated identifier",
+      "why": "DROP DATABASE ${database}: guarded by /^dynaminds_restore_[a-f0-9]{16}$/ one line above (line 123)."
+    },
+    {
+      "file": "server/wms-lots-limits.ts",
+      "fn": "wmsEvidenceUsageInTx",
+      "key": "fe0950034b15385f",
+      "class": "constant",
+      "why": "UNION of `FROM ${name}` over the module constants evidenceTables/stocktakeTables; the lint fails only on the alias `names = cond ? [...] : evidenceTables`."
+    },
+    {
+      "file": "server/ordinary-legacy-schema.mjs",
+      "fn": "normalizeOrdinaryLegacyOwnerAcls",
+      "key": "a077e36e3b04989e",
+      "class": "catalog identifier",
+      "why": "GRANT on names from the packing189 catalogue read: private tables only from the fixed list contexts/journal, public names checked /^[a-z][a-z0-9_]*$/ (lines 55-66), all quoted \"…\"; startup owner tool, not a request path."
+    },
+    {
+      "file": "server/ordinary-legacy-schema.mjs",
+      "fn": "normalizeOrdinaryLegacyOwnerAcls",
+      "key": "f05c2d8cde706a66",
+      "class": "catalog identifier",
+      "why": "GRANT on names from the packing189 catalogue read: private tables only from the fixed list contexts/journal, public names checked /^[a-z][a-z0-9_]*$/ (lines 55-66), all quoted \"…\"; startup owner tool, not a request path."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-cold-inspection.mjs",
+      "fn": "inspectPackingColdCompartment",
+      "key": "a49156a188757e4a",
+      "class": "constant",
+      "why": "RELEASE_COLD_MARKER_SQL is built from the frozen RELEASE_MIGRATIONS constant; the lint fails only on an alias inside its builder."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectComparedProfile",
+      "key": "85276be21d04cfeb",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectKeeperSchemaExtension",
+      "key": "ed13583b78289db9",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectCoreReviewAliasExtension",
+      "key": "056970a71a97c5df",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectDurableWriterEpochDescriptors",
+      "key": "e4e629576c0c5cd6",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectConsumerCreditExtension",
+      "key": "0debd553e8b0ecfd",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectConsumerCreditExtension",
+      "key": "944382b8b15d6210",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectKeeperResourceDescriptors198",
+      "key": "c613c080407e7238",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectKeeperResourceDescriptors198",
+      "key": "c39a0c66b36c1ac2",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectKeeperResourceDescriptors198",
+      "key": "0debd553e8b0ecfd",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectKeeperResourceExtension198",
+      "key": "944382b8b15d6210",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "readInstallationCut",
+      "key": "ce33333236dd21fb",
+      "class": "constant",
+      "why": "Installation seal/marker SQL built from the module constants INSTALLATION_SEALS/INSTALLATION_MARKERS (or the seal keys of a cut read back and checked against them); startup owner tool."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "readInstallationIdentity",
+      "key": "0771e7847159e4b1",
+      "class": "constant",
+      "why": "Installation seal/marker SQL built from the module constants INSTALLATION_SEALS/INSTALLATION_MARKERS (or the seal keys of a cut read back and checked against them); startup owner tool."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "readCurrentInstallationCut",
+      "key": "4f6b1e96720fe0e3",
+      "class": "constant",
+      "why": "Installation seal/marker SQL built from the module constants INSTALLATION_SEALS/INSTALLATION_MARKERS (or the seal keys of a cut read back and checked against them); startup owner tool."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+      "fn": "inspectOrdinarySchemaExtension",
+      "key": "cef346b3ef53b7c2",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-composite-compiler-backend/startup.mjs",
+      "fn": "inspectCompositeStartup",
+      "key": "7d43e2f918f0f560",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "shared/large-import-dependencies/pim-large-import173-terminal-composite-compiler-ui/startup.mjs",
+      "fn": "inspectComparedProfile",
+      "key": "7d43e2f918f0f560",
+      "class": "reviewed package SQL",
+      "why": "Startup owner inspector: the statement is the reviewed catalogue/anchor SQL of the source or release profile loaded at startup (catalog_sql/…_sql fields, sha256-checked against the reviewed package: assertSourceExpectation, sha(e.…_sql) asserts). Not reachable from a request; the control is package integrity, not quoting."
+    },
+    {
+      "file": "server/app.ts",
+      "fn": "buildApp",
+      "key": "c7718ea9c39ff4f3",
+      "class": "constant",
+      "why": "Order list (Uwagi v3 §3): orderListSql (server/order-list-query.ts) joins fixed fragments; conditions and the cursor page come from orderListConditions/orderListPaging, which bind every value as $n (limit too: p.bind(limit+1)); paymentSummarySql/operationalPredicate are module constants; extraSql is fieldScope.sql from orderFieldListScopeInTx (fixed fragments, $n via bind()). The lint stops because input is handed on inside orderListSql."
+    },
+    {
+      "file": "server/catalog-export.ts",
+      "fn": "catalogExportPreview",
+      "key": "b744f9634fb2a60a",
+      "class": "constant",
+      "why": "f = filter(q, caps): sql from fixed fragments, $n placeholders and productNotDeletedSQL(caps.deletions); the lint stops because filter() returns its local object (an escape by the read-only rule), the caller only reads f.sql/f.params."
+    },
+    {
+      "file": "server/migration-bootstrap.ts",
+      "fn": "acquireMigrationLock",
+      "key": "1d84d478be9b406c",
+      "class": "validated number",
+      "why": "SET LOCAL lock_timeout/statement_timeout from waitMs, asserted Number.isSafeInteger and 1000..3600000 one line above (line 114); the lint stops because migrate() hands its options object on."
+    },
+    {
+      "file": "server/migration-bootstrap.ts",
+      "fn": "acquireMigrationLock",
+      "key": "842fc90d15e3ef68",
+      "class": "validated number",
+      "why": "SET LOCAL lock_timeout/statement_timeout from waitMs, asserted Number.isSafeInteger and 1000..3600000 one line above (line 114); the lint stops because migrate() hands its options object on."
+    },
+    {
+      "file": "server/order-communication.ts",
+      "fn": "orderCommunication",
+      "key": "74347f25acef02d6",
+      "class": "constant",
+      "why": "UNION of chosen.map(s => s.sql): sources holds only object literals pushed in this function with fixed SQL strings (lines 62-77); the lint cannot follow element shapes through push."
+    },
+    {
+      "file": "server/order-split-source.ts",
+      "fn": "one",
+      "key": "4ec7c53222c8a758",
+      "class": "constant",
+      "why": "one(c, sql) is called with module constants (physicalBoundsSql from the constant physicalTables list); the lint stops on the destructuring .map(([key, table]) => …) callback."
+    },
+    {
+      "file": "server/order-split-transport.ts",
+      "fn": "related",
+      "key": "4cac417711ca2cc5",
+      "class": "constant",
+      "why": "LIMIT ${max+1} with max from ORDER_SPLIT_LIMITS (frozen module numbers); table/field/order are literal choices in this function; the lint stops because the limits object is handed to Math.max elsewhere."
+    },
+    {
+      "file": "server/reconciliation-queue.ts",
+      "fn": "registerReconciliationQueueRoutes",
+      "key": "c9326244d9f5c192",
+      "class": "constant",
+      "why": "s.sql of the module constant `sources` list (fixed SQL per domain); LIMIT is the module constant LIMIT; the loop element is also stored in the response, which the read-only rule counts as an escape."
+    },
+    {
+      "file": "server/reconciliation-queue.ts",
+      "fn": "registerReconciliationQueueRoutes",
+      "key": "718333093117b1b8",
+      "class": "constant",
+      "why": "s.sql of the module constant `sources` list (fixed SQL per domain); LIMIT is the module constant LIMIT; the loop element is also stored in the response, which the read-only rule counts as an escape."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "guarded",
+      "key": "4ec7c53222c8a758",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` and KSEF_FILES lists of this module (fixed identifiers), values bound; the lint stops because loop elements are copied into the result objects (an escape by the read-only rule)."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "anonymiseInTx",
+      "key": "c37b6da160dd7b55",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` and KSEF_FILES lists of this module (fixed identifiers), values bound; the lint stops because loop elements are copied into the result objects (an escape by the read-only rule)."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "anonymiseInTx",
+      "key": "40b6fa2b3b4690fa",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` and KSEF_FILES lists of this module (fixed identifiers), values bound; the lint stops because loop elements are copied into the result objects (an escape by the read-only rule)."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "anonymiseInTx",
+      "key": "6644e20b5b1ef543",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` and KSEF_FILES lists of this module (fixed identifiers), values bound; the lint stops because loop elements are copied into the result objects (an escape by the read-only rule)."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "anonymiseInTx",
+      "key": "23e6808d6e9ede8d",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` and KSEF_FILES lists of this module (fixed identifiers), values bound; the lint stops because loop elements are copied into the result objects (an escape by the read-only rule)."
+    },
+    {
+      "file": "server/ksef243.ts",
+      "fn": "listInvoicesInTx",
+      "key": "a7084e1a6062e0fb",
+      "class": "constant",
+      "why": "w = purchaseListWhere(q): sql from fixed fragments with $n placeholders (ksef243-model.ts:113-125), LIMIT bound since bdc1440; the lint stops because w.params is spread into the values array (shared elements, read-only rule)."
+    },
+    {
+      "file": "server/db-lock-holder.ts",
+      "fn": "lockDbClient",
+      "key": "",
+      "class": "forwarding wrapper",
+      "why": "The lock client's own query method, kept bound to it; the wrapper passes the caller's arguments to it unchanged (it only reads the text to count pg_advisory_lock/unlock). Every SQL text sent through it is linted at the caller's own .query( site; the wrapper adds no SQL."
+    },
+    {
+      "file": "server/order-edit.ts",
+      "fn": "blockers",
+      "key": "9b062b482b603ed8",
+      "class": "constant",
+      "why": "Table/column names and the optional extra filter come only from the fixed Blocker lists (DELIVERY_BLOCKERS, LINE_BLOCKERS in this module, TAGGED in order-sections.ts), filtered by a pg_attribute check; the order id is bound as $1. The lint stops at the .map() over those constant tuples."
+    },
+    {
+      "file": "server/rodo228.ts",
+      "fn": "anonymiseInTx",
+      "key": "e893c42d7ea41c47",
+      "class": "constant",
+      "why": "Table/column names from the constant `json` list of this function (fixed identifiers; Uwagi v3 §6 added the order_events kind column), order id bound as $1. The lint stops because the loop element is read through the history alias."
+    }
+  ]
+}

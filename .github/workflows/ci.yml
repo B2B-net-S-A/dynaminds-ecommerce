@@ -1,0 +1,303 @@
+name: CI
+
+# Testy z bazą PostgreSQL (klasa `db` w scripts/ci/classify-tests.mjs). Szybkie bramki
+# (gitleaks, typecheck, lint, testy static i web) są w ci-gate.yml. Opis: docs/ci/README.md.
+#
+#   * pull_request — sito: testy db najbliżej zmienionych plików (scripts/ci/select-pr-tests.mjs),
+#                    limit 40 plików i budżet CI_DB_PR_BUDGET_MIN, 1–3 shardy.
+#   * merge_group  — to samo sito z szerszym limitem (120 plików, budżet CI_DB_QUEUE_BUDGET_MIN), do
+#                    CI_DB_MAX_SHARDS shardów po ≤ ~35–40 min (decyzja 11.11.2026: pełny zestaw trwa godziny).
+#   * schedule (co noc 01:17 UTC), workflow_dispatch — pełny zestaw db w CI_DB_MAX_SHARDS shardach;
+#                    czerwony nocny bieg otwiera issue (zielony je zamyka).
+# Zmiana w server/db.ts, migracjach, runnerze/manifeście migracji, package*.json, tsconfig.json,
+# skryptach CI albo tym pliku = pełny zestaw także na PR-ze i w kolejce (limit shardu 180 min; ruleset
+# musi mieć wydłużony limit czasu checków).
+# Każdy shard ma własny PostgreSQL 18.4 (service), losowe hasło i klucz tylko na runnerze, osobną bazę
+# na każdy plik (kopia szablonu zmigrowanego raz na shard). Ruleset wymaga kontekstu „DB tests” —
+# dostarcza go job zbiorczy, nie shardy (ich liczba się zmienia).
+#
+# Nie leci na `push: main`: przy kolejce merge'ów merge_group testuje DOKŁADNIE drzewo, które sekundę
+# później ląduje na mainie (tak jak w NEXUSIE). Gdyby kolejka została wyłączona — dodaj tu `push`.
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  # Strojenie bez zmiany pliku: Settings → Secrets and variables → Actions → Variables.
+  CI_DB_MAX_SHARDS: ${{ vars.CI_DB_MAX_SHARDS || '20' }}
+  CI_DB_TARGET_MIN: ${{ vars.CI_DB_TARGET_MIN || '35' }}
+  CI_DB_PR_BUDGET_MIN: ${{ vars.CI_DB_PR_BUDGET_MIN || '75' }}
+  CI_DB_QUEUE_BUDGET_MIN: ${{ vars.CI_DB_QUEUE_BUDGET_MIN || '600' }}
+  CI_DB_CONCURRENCY: ${{ vars.CI_DB_CONCURRENCY || '1' }}
+  CI_FILE_TIMEOUT_MIN: ${{ vars.CI_FILE_TIMEOUT_MIN || '45' }}
+
+jobs:
+  plan:
+    name: DB tests (plan)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+      count: ${{ steps.plan.outputs.count }}
+      shards: ${{ steps.plan.outputs.shards }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      # Skrypty planu używają tylko modułów wbudowanych Node i gita — bez npm ci.
+      - name: Choose files and shards
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p plan
+          node scripts/ci/classify-tests.mjs | tee plan/classification.txt
+          if [ "$EVENT" = "pull_request" ]; then
+            node scripts/ci/select-pr-tests.mjs --range "${BASE_SHA}...HEAD" --limit 40 --budget-min "$CI_DB_PR_BUDGET_MIN" > plan/selection.json
+          elif [ "$EVENT" = "merge_group" ]; then
+            node scripts/ci/select-pr-tests.mjs --range "${BASE_SHA}...HEAD" --limit 120 --budget-min "$CI_DB_QUEUE_BUDGET_MIN" > plan/selection.json
+          else
+            node scripts/ci/classify-tests.mjs --list db \
+              | node -e 'const f=require("fs").readFileSync(0,"utf8").split("\n").filter(Boolean);console.log(JSON.stringify({mode:"full",reason:"pełny zestaw ('"$EVENT"')",files:f}))' > plan/selection.json
+          fi
+          node -e 'const s=require("./plan/selection.json");require("fs").writeFileSync("plan/files.txt",s.files.join("\n")+(s.files.length?"\n":""))'
+          mode=$(node -p 'require("./plan/selection.json").mode')
+          # Sito PR-a: 1–3 shardy; sito kolejki i pełny zestaw: do CI_DB_MAX_SHARDS.
+          if [ "$mode" = "full" ] || [ "$EVENT" != "pull_request" ]; then max=$CI_DB_MAX_SHARDS; target=$CI_DB_TARGET_MIN; else max=3; target=30; fi
+          node scripts/ci/shard.mjs --plan --target-min "$target" --max "$max" --files-from plan/files.txt > plan/plan.json
+          count=$(node -p 'require("./plan/plan.json").count')
+          if [ "$count" -gt 0 ]; then
+            node scripts/ci/shard.mjs --count "$count" --out-dir plan --files-from plan/files.txt
+          fi
+          {
+            echo "mode=$mode"
+            echo "count=$count"
+            echo "shards=$(node -p 'JSON.stringify(require("./plan/plan.json").shards)')"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "### Testy db — plan"
+            echo "- tryb: **$mode** — $(node -p 'require("./plan/selection.json").reason')"
+            echo "- plików: $(wc -l < plan/files.txt | tr -d ' '), shardów: $count, szacunek: $(node -p 'const p=require("./plan/plan.json");p.estimateMin+" min łącznie, na shard "+p.perShardMin.join("/")+" min"')"
+            echo
+            echo '```'
+            cat plan/classification.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: db-test-plan
+          path: plan/
+          retention-days: 7
+
+  db-tests:
+    name: DB tests (shard ${{ matrix.shard }})
+    needs: plan
+    if: ${{ needs.plan.outputs.count != '0' }}
+    runs-on: ubuntu-latest
+    # Sito (PR, kolejka): plan celuje w ~35 min na shard, limit 60. Pełny zestaw: przed pierwszym pomiarem
+    # szacunek to ~155 min na shard przy 20 shardach (docs/ci/README.md, „Czasy shardów”), limit 180.
+    timeout-minutes: ${{ needs.plan.outputs.mode == 'full' && 180 || 60 }}
+    strategy:
+      # Jeden padnięty shard nie ubija pozostałych — pełny obraz w jednym przebiegu.
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.shards) }}
+    services:
+      postgres:
+        image: postgres:18.4-trixie
+        env:
+          # Hasło startowe żyje kilka sekund: krok „Database config” zmienia je na losowe.
+          POSTGRES_PASSWORD: bootstrap-${{ github.run_id }}
+          POSTGRES_INITDB_ARGS: --locale=C.UTF-8 --encoding=UTF8
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DYNA_TEST: "true"
+      DYNA_TEST_PG_PORT: "55432"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      # W repo jest śledzony symlink `node_modules` do ścieżki lokalnej — na runnerze wisi w próżni.
+      - name: Install dependencies
+        run: |
+          rm -f node_modules
+          npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: db-test-plan
+          path: plan
+      # Losowe dbPassword/encryptionKey tylko w $RUNNER_TEMP (nigdy w repo), maskowane w logu.
+      # Bez fsync/synchronous_commit — baza jednorazowa, a zapis na dysk to główny koszt migracji.
+      - name: Database config
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          cfg="$RUNNER_TEMP/dyna-local.json"
+          node -e 'const c=require("crypto");require("fs").writeFileSync(process.argv[1],JSON.stringify({dbPassword:c.randomBytes(24).toString("hex"),encryptionKey:c.randomBytes(32).toString("hex")}),{mode:0o600})' "$cfg"
+          pw=$(node -p 'require(process.argv[1]).dbPassword' "$cfg")
+          echo "::add-mask::$pw"
+          docker exec "$PG_CONTAINER" psql -U postgres -qc "ALTER USER postgres PASSWORD '$pw'"
+          docker exec "$PG_CONTAINER" psql -U postgres -qc "ALTER SYSTEM SET fsync = off" \
+            -c "ALTER SYSTEM SET synchronous_commit = off" -c "ALTER SYSTEM SET full_page_writes = off" \
+            -c "SELECT pg_reload_conf()"
+          docker exec "$PG_CONTAINER" psql -U postgres -Atc "SELECT version()"
+          echo "DYNA_LOCAL_CONFIG_PATH=$cfg" >> "$GITHUB_ENV"
+      - name: Tests
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          echo "Shard $SHARD: $(wc -l < "plan/shard-$SHARD.txt") plików"
+          node scripts/ci/run-tests.mjs --kind db --concurrency "$CI_DB_CONCURRENCY" \
+            --out ci-out/db --files-from "plan/shard-$SHARD.txt"
+      - name: Summary
+        if: ${{ always() }}
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          [ -f ci-out/db/summary.txt ] || exit 0
+          {
+            echo "### DB tests — shard $SHARD"
+            echo '```'
+            cat ci-out/db/summary.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -s ci-out/db/failed.txt ]; then
+            mkdir -p ci-out/failed-logs
+            cp ci-out/db/_template-migrate.log ci-out/failed-logs/ 2>/dev/null || true
+            while read -r f; do cp "ci-out/db/$(basename "$f").log" ci-out/failed-logs/; done < ci-out/db/failed.txt
+          fi
+      - name: Upload logs of failed files
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: db-failed-logs-shard-${{ matrix.shard }}
+          path: |
+            ci-out/failed-logs/
+            ci-out/db/_template-migrate.log
+          if-no-files-found: ignore
+          retention-days: 14
+      # Zmierzone czasy plików — z nich aktualizuje się scripts/ci/test-durations.json (wagi shardów).
+      - name: Upload durations
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: db-durations-shard-${{ matrix.shard }}
+          path: ci-out/db/durations.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  db-tests-gate:
+    # Ruleset wymaga kontekstu o nazwie DOKŁADNIE „DB tests”. `if: always()` jest load-bearing:
+    # bez niego anulowane/pominięte shardy zostawiłyby kontekst wiecznie oczekujący zamiast czerwieni.
+    name: DB tests
+    needs: [plan, db-tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Collect shard results
+        env:
+          PLAN: ${{ needs.plan.result }}
+          COUNT: ${{ needs.plan.outputs.count }}
+          MODE: ${{ needs.plan.outputs.mode }}
+          SHARDS: ${{ needs.db-tests.result }}
+        run: |
+          echo "Plan: $PLAN (tryb $MODE, shardów $COUNT); shardy: $SHARDS"
+          if [ "$PLAN" != "success" ]; then
+            echo "::error::Plan testów db nie przeszedł (result=$PLAN)."; exit 1
+          fi
+          if [ "$COUNT" = "0" ]; then
+            echo "Brak testów db do uruchomienia dla tej zmiany."; exit 0
+          fi
+          if [ "$SHARDS" != "success" ]; then
+            echo "::error::Co najmniej jeden shard testów db nie przeszedł (result=$SHARDS) — logi w artefaktach db-failed-logs-shard-*."; exit 1
+          fi
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        if: ${{ needs.db-tests.result != 'skipped' }}
+        with:
+          pattern: db-durations-shard-*
+          path: durations
+      - name: Merge durations
+        if: ${{ needs.db-tests.result != 'skipped' }}
+        run: |
+          node -e '
+            const fs=require("fs"),path=require("path");const all={};
+            for(const d of fs.existsSync("durations")?fs.readdirSync("durations"):[]){
+              const f=path.join("durations",d,"durations.json");if(fs.existsSync(f))Object.assign(all,JSON.parse(fs.readFileSync(f,"utf8")));}
+            const rows=Object.entries(all).sort((a,b)=>b[1]-a[1]);
+            fs.writeFileSync("test-durations.json",JSON.stringify(Object.fromEntries(rows.slice().sort()),null,1)+"\n");
+            const total=rows.reduce((s,[,v])=>s+v,0);
+            const out=["### Czasy testów db","- plików: "+rows.length+", suma: "+Math.round(total/60)+" min","","Najwolniejsze:",...rows.slice(0,15).map(([f,v])=>"- "+f+" — "+Math.round(v)+" s")];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,out.join("\n")+"\n");'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ needs.db-tests.result != 'skipped' }}
+        with:
+          name: db-test-durations
+          path: test-durations.json
+          retention-days: 30
+
+  nightly-alert:
+    # Czerwony nocny pełny bieg otwiera issue (albo komentuje otwarte); zielony je zamyka — jak uptime-probe.yml.
+    name: Nightly DB alert
+    needs: [plan, db-tests-gate]
+    if: ${{ always() && github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RESULT: ${{ needs.db-tests-gate.result }}
+      MARKER: "Nocny pełny bieg testów db nie przeszedł"
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Open, comment or close the issue
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --repo "$REPO" --state open --search "\"$MARKER\" in:title" \
+            --json number --jq '.[0].number // empty' || echo "")
+          if [ "$RESULT" = "success" ]; then
+            if [ -n "$existing" ]; then gh issue close "$existing" --repo "$REPO" --comment "Nocny bieg znów zielony: $RUN_URL"; fi
+            exit 0
+          fi
+          {
+            echo "Wynik joba DB tests: $RESULT."
+            echo
+            echo "Bieg: $RUN_URL — logi padniętych plików w artefaktach db-failed-logs-shard-*."
+            echo
+            echo "_Auto: .github/workflows/ci.yml (nightly-alert)_"
+          } > "$RUNNER_TEMP/issue.md"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$REPO" --body-file "$RUNNER_TEMP/issue.md"
+          else
+            gh issue create --repo "$REPO" --title "$MARKER" --body-file "$RUNNER_TEMP/issue.md"
+          fi

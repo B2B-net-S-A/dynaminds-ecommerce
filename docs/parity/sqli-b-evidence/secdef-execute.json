@@ -1,0 +1,752 @@
+{
+ "generated": "2026-10-29",
+ "database": "dynaminds_sqli29_20261029_01 (TEMPLATE dynaminds_restore_36751abef3079f3f + migrate() of this branch; ledger 252, last 262_revoke_public_temporary)",
+ "method": "pg_proc.prosrc of every plpgsql/sql function outside pg_catalog/information_schema whose source contains EXECUTE; SQL lexer (strings, $tag$, comments) → code-level EXECUTE statements only; text before USING/INTO classified",
+ "functions_with_word_execute": 107,
+ "functions_with_execute_statements": 38,
+ "definers_with_execute_statements": 34,
+ "statements": 65,
+ "by_kind": {
+  "format %I/%L": 51,
+  "literal": 2,
+  "concat": 1,
+  "variable": 6,
+  "format %s": 5
+ },
+ "statements_detail": [
+  {
+   "sig": "base_wire220_identity_guard()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "base_wire220_catalog_ids",
+    "base_wire220_invoice_ids",
+    "base_wire220_invoice_series_ids",
+    "base_wire220_order_ids",
+    "base_wire220_order_status_ids",
+    "base_wire220_package_ids",
+    "base_wire220_price_group_ids",
+    "base_wire220_product_ids",
+    "base_wire220_warehouse_ids"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT EXISTS(SELECT 1 FROM public.%I WHERE (tenant_id,id)=($1,$2))' , parent ) INTO present USING OLD . tenant_id , OLD . local_id"
+  },
+  {
+   "sig": "buyer_address_block_reason(uuid,uuid)",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT EXISTS(SELECT FROM public.%I WHERE(tenant_id,order_id)=($1,$2) AND(state IN(''queued'',''failed'',''conflict'') OR phase IN(''write_started'',''verify'')))' , r ) INTO blocked USING t , oid"
+  },
+  {
+   "sig": "catalog_stock_control_capture_xid_birth()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "inventory_bulk_edit_executions",
+    "stock_location_movements",
+    "stock_location_operations",
+    "stock_movements",
+    "warehouse_documents",
+    "wms_cost_layers",
+    "wms_layer_movements",
+    "wms_layer_positions",
+    "wms_lots",
+    "wms_operations",
+    "wms_policies",
+    "wms_stocktake_postings"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT r.xmin FROM public.%I r WHERE r.tenant_id=$1 AND r.id=$2' , TG_TABLE_NAME ) INTO actual_xmin USING t , NEW . id"
+  },
+  {
+   "sig": "catalog_stock_count_budget(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(sum(pg_column_size(x)),0) FROM public.catalog_stock_count_%I x WHERE tenant_id=$1' , nm ) INTO v USING t"
+  },
+  {
+   "sig": "competitor_observation_guards()",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "literal",
+   "non_quoted_parts": [],
+   "statement": "'SELECT count(*) count FROM pg_temp.competitor_observation_portability_basis' INTO basis"
+  },
+  {
+   "sig": "competitor_observation_guards()",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "literal",
+   "non_quoted_parts": [],
+   "statement": "'SELECT * FROM pg_temp.competitor_observation_portability_basis' INTO basis"
+  },
+  {
+   "sig": "cooperation171_public_drain()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "concat",
+   "non_quoted_parts": [
+    "targets"
+   ],
+   "statement": "'SET CONSTRAINTS ' || targets || ' IMMEDIATE'"
+  },
+  {
+   "sig": "email_inbound_budget()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(sum(octet_length(to_jsonb(r)::text)),0) FROM public.%I r WHERE tenant_id=$1' , rel ) INTO n USING t"
+  },
+  {
+   "sig": "large_import173_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "large_import173_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "large_import173_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "order_merge_delivery209_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "order_merge_delivery209_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "order_merge_delivery209_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "order_parcel_release_budget()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(sum(octet_length(to_jsonb(q)::text)),0) FROM %I q WHERE tenant_id=$1' , rel ) INTO part USING t"
+  },
+  {
+   "sig": "order_parcel_release_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(q) ORDER BY to_jsonb(q)),''[]'') FROM %I q WHERE tenant_id=$1 AND %I=$2' , name , CASE WHEN name = 'orders' THEN 'id' ELSE 'order_id' END ) INTO data USING t , oid"
+  },
+  {
+   "sig": "order_parcel_release_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(q) ORDER BY to_jsonb(q)),''[]'') FROM %I q WHERE q.tenant_id=$1 AND q.product_id IN(SELECT product_id FROM reservations WHERE tenant_id=$1 AND order_id=$2)' , name ) INTO data USING t , oid"
+  },
+  {
+   "sig": "order_parcel_release_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(q) ORDER BY to_jsonb(q)),''[]'') FROM %I q JOIN order_parcel_commercial_origins o ON(o.tenant_id,o.id)=(q.tenant_id,q.origin_id) WHERE o.tenant_id=$1 AND o.order_id=$2' , name ) INTO data USING t , oid"
+  },
+  {
+   "sig": "ordinary177_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary177_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary177_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary179_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary179_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary179_history_pim_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary180_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary180_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary180_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary181_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary181_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "ordinary181_history_pim_valid(jsonb,boolean)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "pim_dictionary_seal(jsonb)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "pim_dictionary_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "pim_dictionary_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "pim_dictionary_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "pim_dictionary_valid()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT public.%I()' , guard_name ) INTO guard_ok"
+  },
+  {
+   "sig": "purchasing_source_changed()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "b2b_network_order_lines",
+    "b2b_network_orders",
+    "b2b_network_receipt_lines",
+    "b2b_network_receipts",
+    "purchase_order_lines",
+    "purchase_orders",
+    "purchase_receipt_lines",
+    "purchase_receipts",
+    "stock"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "query LOOP IF scope IS NOT NULL AND t IS DISTINCT FROM scope THEN RAISE EXCEPTION 'Purchase source statement crosses declared tenant scope'"
+   ],
+   "statement": "query LOOP IF scope IS NOT NULL AND t IS DISTINCT FROM scope THEN RAISE EXCEPTION 'Purchase source statement crosses declared tenant scope' USING ERRCODE = '42501'"
+  },
+  {
+   "sig": "replenishment_append_source_after()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "b2b_network_order_lines",
+    "b2b_network_orders",
+    "b2b_network_receipt_lines",
+    "b2b_network_receipts",
+    "purchase_order_lines",
+    "purchase_orders",
+    "purchase_receipt_lines",
+    "purchase_receipts",
+    "purchasing_source_versions",
+    "purchasing_stock_changes",
+    "stock",
+    "stock_movements"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "query LOOP IF EXISTS ( SELECT 1 FROM public . replenishment_append_seals WHERE tenant_id = t AND transaction_id = pg_current_xact_id ( ) AND transaction_started_at = transaction_timestamp ( ) ) THEN RAISE EXCEPTION 'Append execution seals actual own purchase source until commit'"
+   ],
+   "statement": "query LOOP IF EXISTS ( SELECT 1 FROM public . replenishment_append_seals WHERE tenant_id = t AND transaction_id = pg_current_xact_id ( ) AND transaction_started_at = transaction_timestamp ( ) ) THEN RAISE EXCEPTION 'Append execution seals actual own purchase source until commit' USING ERRCODE = '235"
+  },
+  {
+   "sig": "replenishment_forecast_changed()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "stock_movements"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "query LOOP IF scope IS NOT NULL AND t IS DISTINCT FROM scope THEN RAISE EXCEPTION 'Forecast journal statement crosses declared tenant scope'"
+   ],
+   "statement": "query LOOP IF scope IS NOT NULL AND t IS DISTINCT FROM scope THEN RAISE EXCEPTION 'Forecast journal statement crosses declared tenant scope' USING ERRCODE = '42501'"
+  },
+  {
+   "sig": "return_assistant_physical_validate(return_assistant_admissions)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT to_jsonb(x) FROM %I x WHERE tenant_id=$1 AND id=$2' , witness_row - > > 'table' ) INTO live USING t , ( witness_row - > 'row' - > > 'id' ) :: uuid"
+  },
+  {
+   "sig": "return_credit206_parent(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT count(*) FROM public.%I WHERE tenant_id=$1 AND receipt_id=$2' , nm ) INTO rowcount USING t , d . receipt_id"
+  },
+  {
+   "sig": "return_credit206_parent(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY x.id),''[]'') FROM public.%I x WHERE x.tenant_id=$1 AND x.id IN(SELECT v::uuid FROM jsonb_array_elements_text($2)v)' , nm ) INTO actual USING t , r . proof - > key"
+  },
+  {
+   "sig": "return_credit206_rejected_history(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(native_row) ORDER BY native_row.id),''[]'') FROM public.%I native_row WHERE native_row.tenant_id=$1 AND native_row.id IN(SELECT(entry->>''id'')::uuid FROM jsonb_array_elements($2)entry)' , table_name ) INTO actual USING tenant , admission . before_snapsho"
+  },
+  {
+   "sig": "return_credit211_frozen_physical(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT to_jsonb(x) FROM public.%I x WHERE (tenant_id,id)=($1,$2)' , wr - > > 'table' ) INTO live USING t , ( wr - > 'row' - > > 'id' ) :: uuid"
+  },
+  {
+   "sig": "return_credit211_history148(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(v) ORDER BY to_jsonb(v)::text),''[]'') FROM jsonb_populate_recordset(NULL::public.%I,$1)v' , table_name ) INTO actual USING admission . before_snapshot - > table_name"
+  },
+  {
+   "sig": "return_credit211_history148(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(v) ORDER BY to_jsonb(v)::text),''[]'') FROM jsonb_populate_recordset(NULL::public.%I,$1)v' , table_name ) INTO actual USING admission . after_snapshot - > table_name"
+  },
+  {
+   "sig": "return_credit211_history148(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(native_row) ORDER BY native_row.id),''[]'') FROM public.%I native_row WHERE native_row.tenant_id=$1 AND native_row.id IN(SELECT(entry->>''id'')::uuid FROM jsonb_array_elements($2)entry)' , table_name ) INTO actual USING tenant , admission . after_snapshot"
+  },
+  {
+   "sig": "return_destination_lock(uuid,uuid,jsonb,uuid,uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %s",
+   "non_quoted_parts": [
+    "CASE nm WHEN 'stock' THEN '' WHEN 'stock_locations' THEN ',x.location COLLATE \"C\"' ELSE ',x.location COLLATE \"C\",x.layer_id' END"
+   ],
+   "statement": "format ( 'SELECT 1 FROM public.%I x WHERE x.tenant_id=$1 AND EXISTS(SELECT 1 FROM jsonb_array_elements($2)v WHERE(x.warehouse_id::text,x.product_id::text)=(v->>''warehouse_id'',v->>''product_id'')) ORDER BY x.warehouse_id,x.product_id%s FOR UPDATE' , nm , CASE nm WHEN 'stock' THEN '' WHEN 'stock_loc"
+  },
+  {
+   "sig": "return_destination_physical_validate(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT to_jsonb(x) FROM public.%I x WHERE (tenant_id,id)=($1,$2)' , wr - > > 'table' ) INTO live USING t , ( wr - > 'row' - > > 'id' ) :: uuid"
+  },
+  {
+   "sig": "return_destination_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %s",
+   "non_quoted_parts": [
+    "CASE WHEN nm = 'wms_layer_movements' THEN ' OR x.operation_id=$3' ELSE '' END"
+   ],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY to_jsonb(x)::text),''[]''::jsonb) FROM public.%I x WHERE x.tenant_id=$1 AND ((EXISTS(SELECT 1 FROM jsonb_array_elements($2->''snapshot''->''lines'')l CROSS JOIN LATERAL jsonb_array_elements(l->''components'')c WHERE c->>''product_id''=x.produc"
+  },
+  {
+   "sig": "return_destination_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY x.id),''[]''::jsonb) FROM public.%I x WHERE x.tenant_id=$1 AND (x.operation_id=$3 OR EXISTS(SELECT 1 FROM jsonb_array_elements($2->''snapshot''->''lines'')l CROSS JOIN LATERAL jsonb_array_elements(l->''components'')c WHERE c->>''product_id''=x"
+  },
+  {
+   "sig": "return_destination_snapshot(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %s",
+   "non_quoted_parts": [
+    "CASE WHEN nm IN ( 'wms_return_fragments' , 'wms_issue_fragments' ) THEN ' OR x.operation_id=$3' WHEN nm = 'wms_operations' THEN ' OR x.id=$3' ELSE '' END"
+   ],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY to_jsonb(x)::text),''[]''::jsonb) FROM public.%I x WHERE x.tenant_id=$1 AND (x.order_id=$2%s)' , nm , CASE WHEN nm IN ( 'wms_return_fragments' , 'wms_issue_fragments' ) THEN ' OR x.operation_id=$3' WHEN nm = 'wms_operations' THEN ' OR x.id=$3'"
+  },
+  {
+   "sig": "stock_file_import_budget()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "stock_file_import_executions",
+    "stock_file_import_previews",
+    "stock_file_import_profile_revisions",
+    "stock_file_import_profiles"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(sum(octet_length(to_jsonb(p)::text)),0) FROM %I p WHERE tenant_id=$1' , name ) INTO records USING NEW . tenant_id"
+  },
+  {
+   "sig": "stock_file_import_budget_check(uuid)",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(sum(octet_length(to_jsonb(p)::text)),0) FROM %I p WHERE tenant_id=$1' , name ) INTO b USING t"
+  },
+  {
+   "sig": "stock_file_import_snapshot(jsonb)",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(stock_file_import_record(to_jsonb(p)) ORDER BY to_jsonb(p)::text COLLATE \"C\"),''[]''::jsonb) FROM %I p WHERE tenant_id=$1 AND product_id=ANY($2) AND warehouse_id=ANY($3)' , name ) INTO data USING t , ps , ws"
+  },
+  {
+   "sig": "stock_file_import_snapshot(jsonb)",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(stock_file_import_record(to_jsonb(p)) ORDER BY to_jsonb(p)::text COLLATE \"C\"),''[]''::jsonb) FROM %I p WHERE tenant_id=$1 AND product_id=ANY($2)' , name ) INTO data USING t , ps"
+  },
+  {
+   "sig": "stock_file_import_snapshot(jsonb)",
+   "secdef": true,
+   "dyna_app_execute": true,
+   "trigger_on": [],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT coalesce(jsonb_agg(stock_file_import_record(to_jsonb(p)) ORDER BY to_jsonb(p)::text COLLATE \"C\"),''[]''::jsonb) FROM %I p WHERE tenant_id=$1' , name ) INTO data USING t"
+  },
+  {
+   "sig": "stocktake_adjustment_usage_track()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "stocktake_adjustment_admissions",
+    "stocktake_adjustment_counters",
+    "stocktake_adjustment_document_rows",
+    "stocktake_adjustment_documents",
+    "stocktake_adjustment_preview_rows",
+    "stocktake_adjustment_previews",
+    "stocktake_adjustment_receipts",
+    "stocktake_adjustment_series",
+    "stocktake_adjustment_series_commands"
+   ],
+   "kind": "format %s",
+   "non_quoted_parts": [
+    "array_to_string ( k , ',s.' )",
+    "array_to_string ( k , ',n.' ) ) LOOP"
+   ],
+   "statement": "format ( 'SELECT tenant_id,count(*) n,sum((SELECT pg_column_size(s) FROM public.%I s WHERE (s.%s)=(n.%s))) b FROM stocktake_adjustment_new n GROUP BY tenant_id ORDER BY tenant_id' , TG_TABLE_NAME , array_to_string ( k , ',s.' ) , array_to_string ( k , ',n.' ) ) LOOP INSERT INTO public . stocktake_ad"
+  },
+  {
+   "sig": "stocktake_adjustment_usage_track_update()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "stocktake_adjustment_admissions",
+    "stocktake_adjustment_counters"
+   ],
+   "kind": "format %s",
+   "non_quoted_parts": [
+    "array_to_string ( k , ',s.' )",
+    "array_to_string ( k , ',n.' ) ) LOOP"
+   ],
+   "statement": "format ( 'SELECT tenant_id,sum(b) b FROM (SELECT tenant_id,(SELECT pg_column_size(s) FROM public.%I s WHERE (s.%s)=(n.%s)) b FROM stocktake_adjustment_new n\n  UNION ALL SELECT tenant_id,-pg_column_size(o) FROM stocktake_adjustment_old o) d GROUP BY tenant_id HAVING sum(b)<>0 ORDER BY tenant_id' , TG"
+  },
+  {
+   "sig": "wms_enqueue_validation_scopes()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "reservation_locations",
+    "reservations",
+    "stock",
+    "stock_locations",
+    "wms_issue_fragments",
+    "wms_layer_movements",
+    "wms_layer_positions",
+    "wms_policies",
+    "wms_reservation_layers",
+    "wms_return_fragments"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'INSERT INTO public.wms_validation_scopes(transaction_id,tenant_id,kind,scope_id)\n    SELECT pg_current_xact_id(),tenant_id,''policy'',''tenant'' FROM %I GROUP BY tenant_id ON CONFLICT DO NOTHING' , relation_name )"
+  },
+  {
+   "sig": "wms_enqueue_validation_scopes()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "reservation_locations",
+    "reservations",
+    "stock",
+    "stock_locations",
+    "wms_issue_fragments",
+    "wms_layer_movements",
+    "wms_layer_positions",
+    "wms_policies",
+    "wms_reservation_layers",
+    "wms_return_fragments"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'INSERT INTO public.wms_validation_scopes(transaction_id,tenant_id,kind,scope_id,warehouse_id,product_id)\n     SELECT pg_current_xact_id(),tenant_id,''quantity'',warehouse_id::text||'':''||product_id::text,warehouse_id,product_id\n     FROM %I GROUP BY tenant_id,warehouse_id,product_id ON CO"
+  },
+  {
+   "sig": "wms_enqueue_validation_scopes()",
+   "secdef": true,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "reservation_locations",
+    "reservations",
+    "stock",
+    "stock_locations",
+    "wms_issue_fragments",
+    "wms_layer_movements",
+    "wms_layer_positions",
+    "wms_policies",
+    "wms_reservation_layers",
+    "wms_return_fragments"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'INSERT INTO public.wms_validation_scopes(transaction_id,tenant_id,kind,scope_id,operation_id)\n     SELECT pg_current_xact_id(),tenant_id,''operation'',operation_id::text,operation_id FROM %I\n     GROUP BY tenant_id,operation_id ON CONFLICT DO NOTHING' , relation_name )"
+  },
+  {
+   "sig": "catalog_file_import_budget()",
+   "secdef": false,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "catalog_file_import_execution_rows",
+    "catalog_file_import_executions",
+    "catalog_file_import_previews",
+    "catalog_file_import_rows"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "( CASE WHEN TG_TABLE_NAME = 'catalog_file_import_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END )"
+   ],
+   "statement": "( CASE WHEN TG_TABLE_NAME = 'catalog_file_import_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END ) USING t LOOP SELECT h . byte_count + coalesce ( sum ( r . byte_count ) , 0 ) INTO n FROM public . catalog_file_import_"
+  },
+  {
+   "sig": "packing_budget_guard()",
+   "secdef": false,
+   "dyna_app_execute": true,
+   "trigger_on": [
+    "order_packing_profiles",
+    "packing_cartons",
+    "packing_operations",
+    "packing_policies",
+    "packing_previews",
+    "packing_receipts",
+    "packing_sessions",
+    "packing_stations"
+   ],
+   "kind": "format %I/%L",
+   "non_quoted_parts": [],
+   "statement": "format ( 'SELECT count(*),coalesce(sum(%I),0) FROM %I WHERE tenant_id=$1' , CASE WHEN t = 'packing_sessions' THEN 'budget_bytes' ELSE 'byte_count' END , t ) INTO n , part USING NEW . tenant_id"
+  },
+  {
+   "sig": "product_translation_bulk_budget()",
+   "secdef": false,
+   "dyna_app_execute": true,
+   "trigger_on": [
+    "product_translation_bulk_edit_execution_rows",
+    "product_translation_bulk_edit_executions",
+    "product_translation_bulk_edit_previews",
+    "product_translation_bulk_edit_rows"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "( CASE WHEN TG_TABLE_NAME = 'product_translation_bulk_edit_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END )"
+   ],
+   "statement": "( CASE WHEN TG_TABLE_NAME = 'product_translation_bulk_edit_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END ) USING t LOOP SELECT h . byte_count + coalesce ( sum ( r . byte_count ) , 0 ) INTO n FROM product_translation"
+  },
+  {
+   "sig": "replenishment_budget()",
+   "secdef": false,
+   "dyna_app_execute": false,
+   "trigger_on": [
+    "replenishment_execution_rows",
+    "replenishment_executions",
+    "replenishment_previews",
+    "replenishment_rows"
+   ],
+   "kind": "variable",
+   "non_quoted_parts": [
+    "( CASE WHEN TG_TABLE_NAME = 'replenishment_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END )"
+   ],
+   "statement": "( CASE WHEN TG_TABLE_NAME = 'replenishment_previews' THEN 'SELECT id FROM inserted WHERE tenant_id=$1' ELSE 'SELECT DISTINCT preview_id FROM inserted WHERE tenant_id=$1' END ) USING t LOOP SELECT h . byte_count + coalesce ( sum ( r . byte_count ) , 0 ) INTO n FROM replenishment_previews h LEFT JOIN "
+  }
+ ]
+}

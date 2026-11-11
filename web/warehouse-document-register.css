@@ -1,0 +1,19 @@
+.wdr-panel, .wdr-detail { display: grid; gap: 12px; min-width: 0; }
+.wdr-panel p { margin: 4px 0; overflow-wrap: anywhere; }
+.wdr-panel .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.wdr-filters, .wdr-export, .wdr-pages { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.wdr-panel label { display: flex; flex-direction: column; gap: 5px; min-width: 140px; max-width: 100%; }
+.wdr-panel input, .wdr-panel select { max-width: 100%; }
+.wdr-panel label.wdr-check { flex-direction: row; align-items: center; min-width: 0; }
+.wdr-check input { flex: 0 0 auto; }
+.wdr-scroll { overflow-x: auto; min-width: 0; max-width: 100%; }
+.wdr-scroll table { min-width: 800px; width: 100%; border-collapse: collapse; text-align: left; }
+.wdr-scroll th, .wdr-scroll td { padding: 8px; border-bottom: 1px solid #d5dbe5; vertical-align: top; }
+.wdr-scroll small { display: block; font-size: 11px; overflow-wrap: anywhere; }
+.wdr-detail { padding: 12px; border: 1px solid #d5dbe5; border-radius: 10px; }
+.wdr-panel .button:focus-visible, .wdr-panel input:focus-visible, .wdr-panel select:focus-visible { outline: 2px solid #276bc0; outline-offset: 2px; }
+@media (max-width: 520px) {
+  .wdr-filters, .wdr-export { flex-direction: column; align-items: stretch; }
+  .wdr-panel label { min-width: 0; }
+  .wdr-detail { padding: 8px; }
+}

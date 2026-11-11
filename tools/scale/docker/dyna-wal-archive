@@ -1,0 +1,20 @@
+#!/bin/sh
+# archive_command (postgresql.scale.conf): dyna-wal-archive %p %f
+# Compresses one WAL/history file into /wal-archive as <name>.zst and makes it durable (file + directory
+# fsync) before reporting success, so an acknowledged segment survives a crash of the server or the VM.
+# A second call for an already archived name succeeds only when the content is identical (PostgreSQL may
+# retry after a crash between the copy and its own status update); different content is refused.
+set -eu
+src="$1"; name="$2"; dir="${DYNA_WAL_ARCHIVE_DIR:-/wal-archive}"
+dst="$dir/$name.zst"
+if [ -e "$dst" ] || [ -e "$dir/$name" ]; then
+  if [ -e "$dst" ] && zstd -q -dc "$dst" | cmp -s - "$src"; then exit 0; fi
+  if [ -e "$dir/$name" ] && cmp -s "$dir/$name" "$src"; then exit 0; fi
+  echo "dyna-wal-archive: $name is already archived with different content" >&2
+  exit 1
+fi
+tmp="$dir/.$name.zst.tmp"
+zstd -q -1 -f -o "$tmp" "$src"
+sync "$tmp"
+mv "$tmp" "$dst"
+sync "$dir"

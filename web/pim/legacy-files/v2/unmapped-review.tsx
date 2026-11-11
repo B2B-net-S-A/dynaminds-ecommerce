@@ -1,0 +1,6 @@
+/** Read-only intended standalone component. Parent v2 mount remains OPEN. */
+import React from 'react';import {buildUnmappedReview,type UnmappedReview} from './unmapped-model';
+export function NestedUnmappedReview({original,descriptors}:{original:unknown;descriptors:unknown}){
+ let review:UnmappedReview;try{review=buildUnmappedReview(original,descriptors);}catch{return <section aria-label="Zachowane pola bez mapowania"><p role="alert">Nie można odczytać pełnej listy zachowanych pól. Odśwież źródło przed sprawdzeniem mapowania.</p></section>;}
+ return <section aria-label="Zachowane pola bez mapowania"><h4>Zachowane pola bez mapowania</h4><p>Te pola pozostają w oryginalnym źródle. Nie są przypisane do parametrów katalogu. Indeksy list są liczone od 0.</p>{review.fields.length===0?<p>Wszystkie pola źródła są objęte mapowaniem.</p>:<ul>{review.fields.map(field=><li key={field.descriptor}><span style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{field.label}</span><span style={{display:'block',whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{field.summary}</span></li>)}</ul>}<details><summary>Szczegóły techniczne zachowanych pól</summary><pre>{JSON.stringify({unmapped_fields:review.descriptors,original:review.original},null,2)}</pre></details></section>;
+}

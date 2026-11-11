@@ -1,0 +1,104 @@
+{
+  "schema": "dynaminds-mirakl-test-evidence-summary/v1",
+  "run": "mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d",
+  "recorded_at": "2026-10-17T17:04:06.728Z",
+  "scope": "The stated Mirakl tests only; no overall working-tree or emitted-package acceptance",
+  "working_head": "968545b4b689f7807e767e1a375d2c460edd2c09",
+  "mirakl_source_commit": "6fd6ebc5e9d5e87d5fe539632bea5081e63aa2d4",
+  "test_files_match_mirakl_source_commit": true,
+  "source_files_stable_during_run": true,
+  "source_pin_count": 1064,
+  "groups": [
+    {
+      "group": "group1",
+      "execution": {
+        "exit_code": 0,
+        "signal": null,
+        "tests": 36,
+        "passed": 36,
+        "failed": 0,
+        "skipped": 0,
+        "elapsed_ms": 2683
+      },
+      "layers": [
+        "real disposable PostgreSQL control/metadata tests",
+        "controlled source SQL and factory ports"
+      ],
+      "receipt": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group1.receipt.corrected.private.json",
+        "bytes": 3907,
+        "sha256": "c2bf7ce92cbd1e2985e7d833880f915e6513aa05ba84a44c86911d4321d6f6a9"
+      },
+      "raw_stdout": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group1.stdout.private.log",
+        "bytes": 4494,
+        "sha256": "83c775b595b45766da4470cbe86ae3c6ee89474902fcb83318a2794b9fb752e2"
+      },
+      "raw_stderr": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group1.stderr.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "group": "group2",
+      "execution": {
+        "exit_code": 0,
+        "signal": null,
+        "tests": 76,
+        "passed": 76,
+        "failed": 0,
+        "skipped": 0,
+        "elapsed_ms": 3394
+      },
+      "layers": [
+        "controlled transport/Fastify API tests",
+        "React/JSDOM with controlled API responses"
+      ],
+      "receipt": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group2.receipt.corrected.private.json",
+        "bytes": 3881,
+        "sha256": "9de4daf6a5aadc4a4ae8039ba92406d4d22d7b50449d7301647c7be170069602"
+      },
+      "raw_stdout": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group2.stdout.private.log",
+        "bytes": 9121,
+        "sha256": "cd00dc54225edb9e7587cf75d377f288cba871726fcd592ee45e15ba5c6b01d8"
+      },
+      "raw_stderr": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.group2.stderr.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "total_tests": 112,
+  "accepted_levels": [
+    "isolated PostgreSQL control and session-authority metadata tests",
+    "controlled transport, SQL, Fastify and React/JSDOM test scopes"
+  ],
+  "not_accepted": [
+    "emitted package04 cold start or complete runtime",
+    "real OMS import transaction and Native business writes",
+    "official sandbox and provider account",
+    "cache05 correctness, performance or runtime",
+    "full Base parity Goal"
+  ],
+  "package04_reference": {
+    "directory": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-development-04",
+    "manifest_sha256": "fdfa97ae174eede7cc7e97f1025ee970aa02ee13f44b69d2a572e9d589a95ebc",
+    "reference_only_not_executed": true
+  },
+  "dirty_emitted_source_differences": [
+    {
+      "path": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-catalogue-reader.mjs",
+      "package_sha256": "cb0675420ace0afde87d488ad9aa3ac37c78471f9e5513728cb3831fa0625730",
+      "working_source_sha256": "880b4f4a3c93558a42f012dd1255640305ab50d6f83775de5061bd43d641ffc1"
+    }
+  ],
+  "combined_receipt": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/local-builds/full-base-preview-20261017/test-receipts04/mirakl-112-2026-10-17T17-02-53-048Z-3af70c0d.combined.corrected.private.json",
+    "bytes": 5850,
+    "sha256": "5301140b68ad896aeb3db77681f5f645df371973a6561e54ed8619829075ff40"
+  }
+}

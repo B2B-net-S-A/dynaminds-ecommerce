@@ -1,0 +1,194 @@
+import {assertOrdinaryConnectorJobExecution,type OrdinaryConnectorJobExecution} from './ordinary-connector-jobs';
+import {MIRAKL_CONTROL_DATABASE} from './mirakl-read-postgres';
+import {inspectOrdinaryConnectorTransport} from './provider-read-transport';
+import type {MiraklReadRepository} from './mirakl-channel';
+/** Ordinary local app factory. Import is inert; no seed, workers or ready importer. */
+import assert from 'node:assert/strict';
+import {watchDbClient,watchDbPool} from './db-connection-errors';
+import {normalizeOrdinaryLegacyOwnerAcls} from './ordinary-legacy-schema.mjs';
+import {assertDatabaseTempPrivilege} from './database-temp-privilege';
+import {validateTrustedLocalUiOrigin} from './local-ui-origin';
+import {prepareOrdinaryProviderReads,prepareOrdinaryConnectorAccess,type OrdinaryConnectorAccessConfiguration,prepareOrdinaryAmazonMcfReads,type AmazonMcfReadConfiguration,prepareOrdinaryNbpRates,type OrdinaryNbpRatesConfiguration,type ProviderReadPolicy} from './ordinary-provider-reads';
+import {performance} from 'node:perf_hooks';
+import {prepareStockWriterActivation,disposeStockWriterActivation,type StockWriterActivation} from './catalog-stock-writer-coverage';
+import path from 'node:path';
+import type {InstalledOrdinaryProducerInput} from './large-import/ordinary-producer';
+type OrdinaryInstalledLargeImportInput=Omit<InstalledOrdinaryProducerInput,'release'|'databaseUrl'|'cursorKey'|'sessionName'|'sharedWriterScope'|'approvedStartup'>&{releasedHistoryAudit?:ReleasedHistoryAuditSelector};
+function snapshotInstalledInput(input:OrdinaryInstalledLargeImportInput|undefined){
+ if(input===undefined)return undefined;
+ assert(input&&typeof input==='object','ordinary-private-installed-input');
+ assert(input.coreCheckpoint===undefined||input.coreCheckpoint==='known-partial203','ordinary-private-native-checkpoint-selection');const releasedHistoryAudit=input.releasedHistoryAudit;assert(releasedHistoryAudit===undefined||typeof releasedHistoryAudit==='function','ordinary-private-finished-history-audit-selector');
+ assert.deepEqual(Object.keys(input).sort(),['ceilings','cleanupFailure',...(Object.hasOwn(input,'coreCheckpoint')?['coreCheckpoint']:[]),'custody','installed',...(Object.hasOwn(input,'releasedHistoryAudit')?['releasedHistoryAudit']:[]),'root']);
+ assert(typeof input.cleanupFailure==='function'&&typeof input.installed?.inventoryWithControlPlane==='function','ordinary-private-installed-functions');
+ const registry=input.installed.registryInput;
+ assert(registry&&registry.source&&typeof registry.source==='object','ordinary-private-installed-source-bindings');
+ return {...input,...(Object.hasOwn(input,'releasedHistoryAudit')?{releasedHistoryAudit}:{}),custody:{...input.custody},ceilings:structuredClone(input.ceilings),installed:{...input.installed,...(input.installed.legacyQuarantine?{legacyQuarantine:structuredClone(input.installed.legacyQuarantine)}:{}),registryInput:{source:structuredClone(registry.source),...(registry.evidence?{evidence:structuredClone(registry.evidence)}:{})}}};
+}
+import {constants,type BigIntStats} from 'node:fs';
+import {open,lstat,realpath} from 'node:fs/promises';
+import type {SharedWriterScope,ReleasedHistoryAuditSelector} from './large-import/shared-session-writer';
+import {createPortableReviewedStartup,activateRuntimeGeneration,inspectCompositeStartup,recheckReviewedStartupEvidence,type ReviewedStartup} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/runtime-api';
+import {installRuntimeResources} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/runtime-resources.mjs';
+import {assertMfXsdRelease} from './mf-xsd';
+import {createOrdinaryRequestLifetime,beginOrdinaryShutdown,drainOrdinaryRequests,inspectOrdinaryRequests} from './ordinary-request-lifetime';
+import type {LocalWooFixtureConfiguration,LocalWooHttpFixture} from './local-woo-http-fixture';
+import type {LocalWooHttpRegistry} from './local-woo-http-registry';
+import {MAX_LOCAL_WOO_STORES} from '../shared/local-woo-origins';
+import {localWooOrigin} from './local-woo-http-transport';
+export type OrdinaryLocalConfiguration={releaseDirectory:string;manifestSha:string;expectedOwner:'postgres';databaseUrl:string;localConfigurationPath:string;revision:string};
+function identity(s:BigIntStats){return [s.dev,s.ino,s.mode,s.uid,s.nlink,s.size,s.mtimeNs,s.ctimeNs].join(':');}
+async function validateLocalConfiguration(input:OrdinaryLocalConfiguration){
+ assert.deepEqual(Object.keys(input).sort(),['databaseUrl','expectedOwner','localConfigurationPath','manifestSha','releaseDirectory','revision']);
+ assert.equal(input.expectedOwner,'postgres');assert(/^[a-f0-9]{64}$/.test(input.manifestSha));
+ for(const p of [input.releaseDirectory,input.localConfigurationPath]){assert(path.isAbsolute(p)&&path.resolve(p)===p);assert.equal(await realpath(p),p);}
+ const url=new URL(input.databaseUrl);assert.equal(url.protocol,'postgres:');assert.equal(url.username,'postgres');assert(['127.0.0.1','localhost','[::1]'].includes(url.hostname),'ordinary-local-database-required');
+ assert(/^\/[a-zA-Z0-9_]+$/.test(url.pathname)&&url.search===''&&url.hash==='');assert(input.revision.length>0&&input.revision.length<=120);
+ assert.equal(process.env.NODE_PG_FORCE_NATIVE,undefined,'ordinary-selected-normal-pg-required');
+ const file=input.localConfigurationPath,before=await lstat(file,{bigint:true});assert(before.isFile()&&!before.isSymbolicLink()&&before.nlink===1n&&before.uid===BigInt(process.getuid!())&&(before.mode&0o777n)===0o600n&&before.size<=16384n,'ordinary-private-local-configuration');
+ const fd=await open(file,constants.O_RDONLY|constants.O_NOFOLLOW);let failed=false;
+ try{assert.equal(identity(await fd.stat({bigint:true})),identity(before));const bytes=await fd.readFile();assert.equal(BigInt(bytes.length),before.size);assert.equal(identity(await fd.stat({bigint:true})),identity(before));assert.equal(identity(await lstat(file,{bigint:true})),identity(before));assert.equal(await realpath(file),file);
+  const config=JSON.parse(new TextDecoder('utf8',{fatal:true}).decode(bytes));assert(typeof config.dbPassword==='string'&&config.dbPassword.length>0&&typeof config.encryptionKey==='string'&&config.encryptionKey.length>0,'ordinary-existing-config-required');assert.equal(decodeURIComponent(url.password),config.dbPassword,'ordinary-selected-config-password-mismatch');
+ }catch(first){failed=true;throw first;}finally{try{await fd.close();}catch(close){if(!failed)throw close;}}
+}
+let claimed=false;
+export async function createOrdinaryLocalApplication(input0:OrdinaryLocalConfiguration,options:{readOnly?:boolean;onReviewedStartup?:(startup:ReviewedStartup)=>void|Promise<void>;trustedLocalUiOrigin?:string;scopedAutomationEnabled?:boolean;installedLargeImport?:OrdinaryInstalledLargeImportInput;installedLargeImportSelection?:{path:string;sha256:string};localWooFixture?:LocalWooFixtureConfiguration;localWooFixtures?:readonly LocalWooFixtureConfiguration[];localWooReadEnabled?:boolean;localWooStockEnabled?:boolean;providerReads?:ProviderReadPolicy;connectorAccess?:OrdinaryConnectorAccessConfiguration;connectorJobExecution?:OrdinaryConnectorJobExecution;miraklReadState?:{database:string};amazonMcfReads?:AmazonMcfReadConfiguration;nbpRates?:OrdinaryNbpRatesConfiguration;stockWriterActivation?:{mode:'verified_local_physical_writers'}}={}){
+ assert(Object.keys(options).every(k=>k==='scopedAutomationEnabled'||k==='installedLargeImport'||k==='installedLargeImportSelection'||k==='localWooFixture'||k==='localWooFixtures'||k==='localWooReadEnabled'||k==='localWooStockEnabled'||k==='providerReads'||k==='connectorAccess'||k==='connectorJobExecution'||k==='miraklReadState'||k==='amazonMcfReads'||k==='nbpRates'||k==='stockWriterActivation'||k==='trustedLocalUiOrigin'||k==='readOnly'||k==='onReviewedStartup'));
+ const readOnlyInput=options.readOnly;
+ assert(readOnlyInput===undefined||typeof readOnlyInput==='boolean','ordinary-readonly-boolean');
+ const readOnly=readOnlyInput===true;
+ const miraklReadState=options.miraklReadState===undefined?undefined:structuredClone(options.miraklReadState);
+ if(miraklReadState!==undefined){assert(miraklReadState&&typeof miraklReadState==='object'&&!Array.isArray(miraklReadState),'ordinary-mirakl-read-state-object');assert.deepEqual(Object.keys(miraklReadState),['database']);assert(typeof miraklReadState.database==='string'&&MIRAKL_CONTROL_DATABASE.test(miraklReadState.database),'ordinary-mirakl-control-database');assert(!readOnly,'ordinary-readonly-no-mirakl-read-state');}
+ const onReviewedStartup=options.onReviewedStartup;assert(onReviewedStartup===undefined||typeof onReviewedStartup==='function','ordinary-reviewed-startup-hook-function');
+ const originInput=options.trustedLocalUiOrigin;
+ const trustedLocalUiOrigin=originInput===undefined?undefined:validateTrustedLocalUiOrigin(originInput);
+ const stockMode=options.stockWriterActivation===undefined?undefined:structuredClone(options.stockWriterActivation);
+ if(stockMode!==undefined){assert(stockMode&&typeof stockMode==='object','stock-writer-mode-object');assert.deepEqual(Object.keys(stockMode),['mode']);assert.equal(stockMode.mode,'verified_local_physical_writers');}
+ let installedInput=snapshotInstalledInput(options.installedLargeImport);const installedSelection=options.installedLargeImportSelection===undefined?undefined:structuredClone(options.installedLargeImportSelection);assert(!(installedInput&&installedSelection),'ordinary-one-installed-selection');assert(options.scopedAutomationEnabled===undefined||typeof options.scopedAutomationEnabled==='boolean');
+ const scopedAutomationEnabled=options.scopedAutomationEnabled===true;
+ const localWooFixtureInput=options.localWooFixture===undefined?undefined:structuredClone(options.localWooFixture);
+ const localWooFixturesInput=options.localWooFixtures===undefined?undefined:structuredClone(options.localWooFixtures);
+ assert(!(localWooFixtureInput&&localWooFixturesInput),'ordinary-one-local-Woo-selection');
+ if(localWooFixturesInput!==undefined)assert(Array.isArray(localWooFixturesInput)&&localWooFixturesInput.length>=1&&localWooFixturesInput.length<=MAX_LOCAL_WOO_STORES,'ordinary-one-to-five-local-Woo-stores');
+ const hasLocalWoo=localWooFixtureInput!==undefined||localWooFixturesInput!==undefined;
+ assert(options.localWooReadEnabled===undefined||typeof options.localWooReadEnabled==='boolean','ordinary-local-Woo-read-boolean');
+ const localWooReadEnabled=options.localWooReadEnabled===true;
+ assert(options.localWooStockEnabled===undefined||typeof options.localWooStockEnabled==='boolean','ordinary-local-Woo-stock-boolean');
+ const localWooStockEnabled=options.localWooStockEnabled===true;
+ assert(!localWooStockEnabled||(!readOnly&&localWooFixturesInput!==undefined),'ordinary-local-Woo-stock-requires-selected-registry');
+ assert(!localWooReadEnabled||(!readOnly&&localWooFixturesInput!==undefined),'ordinary-local-Woo-reads-require-selected-registry');
+ const providerPolicy=options.providerReads===undefined?undefined:structuredClone(options.providerReads);
+ const providerReadTransport=prepareOrdinaryProviderReads(providerPolicy,{readOnly,localWooFixture:hasLocalWoo});
+ const ordinaryConnectorTransport=prepareOrdinaryConnectorAccess(options.connectorAccess,{readOnly,localWooFixture:hasLocalWoo});
+ if(miraklReadState!==undefined)assert(ordinaryConnectorTransport&&inspectOrdinaryConnectorTransport(ordinaryConnectorTransport).providers.some(p=>p.provider==='mirakl'),'ordinary-mirakl-read-state-requires-selected-connector');
+ const connectorJobExecution=options.connectorJobExecution===undefined?undefined:structuredClone(options.connectorJobExecution);
+ assertOrdinaryConnectorJobExecution(connectorJobExecution,ordinaryConnectorTransport,readOnly,hasLocalWoo);
+ const amazonMcfReadTransport=prepareOrdinaryAmazonMcfReads(options.amazonMcfReads,{readOnly,localWooFixture:hasLocalWoo});
+ const nbpRates=prepareOrdinaryNbpRates(options.nbpRates,providerPolicy,providerReadTransport,{readOnly,localWooFixture:hasLocalWoo});
+ // Read-only serving still uses genuine migration/cold/Startup lifecycle on the selected copy.
+ // Mutation-capable construction options refuse before claim, configuration reads or resources.
+ if(readOnly){assert(onReviewedStartup===undefined,'ordinary-readonly-no-startup-hook');assert(installedInput===undefined&&installedSelection===undefined,'ordinary-readonly-no-installed-importer');assert(stockMode===undefined,'ordinary-readonly-no-stock-writer');assert(!scopedAutomationEnabled,'ordinary-readonly-no-scoped-automation');assert(!hasLocalWoo,'ordinary-readonly-no-local-woo-fixture');}
+ let localWooOrderImport:ReturnType<typeof import('./local-woo-order-import')['createLocalWooOrderImport']>|undefined;
+ let localWooStockLane:ReturnType<typeof import('./local-woo-stock-lane')['createLocalWooStockLane']>|undefined;
+ let localWooReadLane:ReturnType<typeof import('./local-woo-read-lane')['createLocalWooReadLane']>|undefined;
+ let localWooFixture:LocalWooHttpFixture|undefined;let localWooRegistry:LocalWooHttpRegistry|undefined;let stockActivation:StockWriterActivation|undefined;
+ assert(!claimed,'ordinary-single-installation-per-process');claimed=true;
+ const factoryStarted=performance.now();let migrateMs=0,coldValidationMs=0;
+ const input=structuredClone(input0);await validateLocalConfiguration(input);
+ const lifetime=createOrdinaryRequestLifetime();
+ let db:typeof import('./db')|undefined,app:Awaited<ReturnType<typeof import('./app')['buildApp']>>|undefined,startup:ReviewedStartup|undefined;
+ let miraklControlPool:import('pg').Pool|undefined,miraklReadRepository:MiraklReadRepository|undefined;
+ let sharedWriterScope:SharedWriterScope|undefined;
+ let sharedWriterRuntime:typeof import('./large-import/shared-session-writer')|undefined;
+ let installedImporter:Awaited<ReturnType<typeof import('./large-import/ordinary-producer')['createOrdinaryInstalledProducer']>>|undefined;
+ let closing:Promise<void>|undefined;const owners=new Set<import('pg').Client>();
+ const close=()=>{
+  if(closing)return closing;beginOrdinaryShutdown(lifetime);
+  closing=(async()=>{let failed=false,first:unknown;const attempt=async(work:()=>Promise<unknown>)=>{try{await work();}catch(e){if(!failed){failed=true;first=e;}}};
+   // Seal startup-only readers before pool shutdown; retain first cleanup cause.
+   if(db)await attempt(()=>db!.sealOrdinaryConstructionPimScope());
+   // Initiate Fastify close immediately; keep its rejection handled while real work drains.
+   const appClose=Promise.resolve().then(()=>app?.close());let appFailed=false,appFirst:unknown;const handledAppClose=appClose.catch(e=>{appFailed=true;appFirst=e;});
+   await handledAppClose;if(appFailed&&!failed){failed=true;first=appFirst;}await attempt(()=>drainOrdinaryRequests(lifetime));
+   if(localWooReadLane)await attempt(()=>localWooReadLane!.close());
+   if(localWooOrderImport)await attempt(()=>localWooOrderImport!.close());
+   if(localWooStockLane)await attempt(()=>localWooStockLane!.close());
+   if(stockActivation)await attempt(async()=>disposeStockWriterActivation(stockActivation!));
+   await attempt(async()=>localWooFixture?.close());
+   await attempt(async()=>localWooRegistry?.close());
+   // Close the actual producer only after public requests drain, while its shared native
+   // pool is still alive. It owns dedicated clients and retained evidence rechecks.
+   if(installedImporter)await attempt(()=>installedImporter!.close());if(sharedWriterScope)await attempt(()=>sharedWriterRuntime!.closeSharedWriterScope(sharedWriterScope!));
+   if(miraklControlPool)await attempt(async()=>{try{await miraklControlPool!.end();}catch{throw new Error('ordinary-mirakl-read-state-close-unconfirmed');}});
+   for(const c of owners)await attempt(()=>c.end());owners.clear();if(db)await attempt(()=>db!.pool.end());
+   await attempt(async()=>assert.equal(process.env.NODE_PG_FORCE_NATIVE,undefined,'ordinary-selected-normal-pg-required'));
+   if(startup)await attempt(()=>recheckReviewedStartupEvidence(startup!));if(failed)throw first;
+  })();return closing;
+ };
+ try{
+  if(miraklReadState){
+   try{
+    const controlUrl=new URL(input.databaseUrl);assert.notEqual(controlUrl.pathname,'/'+miraklReadState.database,'ordinary-mirakl-control-database-must-be-separate');controlUrl.pathname='/'+miraklReadState.database;
+    const pg=await import('pg'),control=await import('./mirakl-read-postgres');
+    // Idle and checked-out clients of the control pool log/count a lost connection (db-connection-errors.ts).
+    miraklControlPool=watchDbPool(new pg.default.Pool({connectionString:controlUrl.href,max:4,connectionTimeoutMillis:5000,idleTimeoutMillis:30000,query_timeout:8000,
+     options:'-c jit=off -c statement_timeout=5000 -c lock_timeout=3000 -c idle_in_transaction_session_timeout=10000 -c timezone=UTC'}),'mirakl-read-state');
+    await control.verifyMiraklReadPostgres(miraklControlPool);
+    miraklReadRepository=control.createMiraklReadPostgresRepository(miraklControlPool);
+   }catch{throw new Error('ordinary-mirakl-read-state-not-ready');}
+  }
+  // Exact resource private state is installed before any module initializes the pool.
+  await installRuntimeResources({releaseDirectory:input.releaseDirectory,manifestSha:input.manifestSha});
+  // A release without the MF schemas or the engine must not start: it would hand out FA(3)/JPK files unchecked.
+  await assertMfXsdRelease();
+  process.env.DATABASE_URL=input.databaseUrl;process.env.DYNA_LOCAL_CONFIG_PATH=input.localConfigurationPath;process.env.APP_REVISION=input.revision;
+  // Defer the shared writer's durable-epoch→db dependency until resources and
+  // selected normal configuration exist. SAME canonical modules/Startup, no env workaround.
+  sharedWriterRuntime=await import('./large-import/shared-session-writer');
+  // DYNA_TEST is deliberately untouched. No seed or background worker entry is imported.
+  db=await import('./db');const migrateStarted=performance.now();await db.migrate();migrateMs=performance.now()-migrateStarted;
+  // 262: a clone or a logical restore brings back TEMPORARY for PUBLIC under a ledger that says 262 ran; refuse to start
+  // (same check as server/index.ts) before the cold validation, the startup and the app.
+  await assertDatabaseTempPrivilege(db.pool);
+  const coldStarted=performance.now();
+  startup=await createPortableReviewedStartup({releaseDirectory:input.releaseDirectory,manifestSha:input.manifestSha,expectedOwner:input.expectedOwner});
+  const pg=await import('pg'),owner=watchDbClient(new pg.default.Client({connectionString:input.databaseUrl}),'ordinary-startup-owner');owners.add(owner);
+  let nativeFailed=false,nativeFirst:unknown;
+  try{await owner.connect();await owner.query("SET SESSION statement_timeout='120s'");await owner.query("SET SESSION lock_timeout='8s'");await owner.query('SET SESSION jit=off');await owner.query("SET SESSION timezone='UTC'");await normalizeOrdinaryLegacyOwnerAcls(owner);await activateRuntimeGeneration(owner,startup);await inspectCompositeStartup(owner,startup);db.installOrdinarySchemaRuntime(startup);if(stockMode)stockActivation=await prepareStockWriterActivation(owner,startup,{releaseDirectory:input.releaseDirectory,manifestSha:input.manifestSha,expectedOwner:input.expectedOwner});}
+  catch(e){nativeFailed=true;nativeFirst=e;}finally{try{await owner.end();owners.delete(owner);}catch(e){if(!nativeFailed){nativeFailed=true;nativeFirst=e;}}}if(nativeFailed)throw nativeFirst;coldValidationMs=performance.now()-coldStarted;
+  if(installedSelection){const {createPublicInstalledInput}=await import('./large-import/public-installed-input');installedInput=snapshotInstalledInput(await createPublicInstalledInput(input,installedSelection,startup,e=>{throw e;}));}
+  if(installedInput){
+   const producer=await import('./large-import/ordinary-producer');
+   sharedWriterScope=await sharedWriterRuntime.createSharedWriterScope({startup,...(installedInput.releasedHistoryAudit===undefined?{}:{releasedHistoryAudit:installedInput.releasedHistoryAudit}),databaseUrl:input.databaseUrl,rawRoot:installedInput.root,controlPlaneRoot:installedInput.custody.root,expectedOwner:'postgres',cleanupFailure:installedInput.cleanupFailure});
+   installedImporter=await producer.createOrdinaryInstalledProducer({...installedInput,sharedWriterScope,approvedStartup:startup,release:{releaseDirectory:input.releaseDirectory,manifestSha:input.manifestSha,expectedOwner:input.expectedOwner},databaseUrl:input.databaseUrl,cursorKey:db.localConfig.encryptionKey,sessionName:'dyna_session'});
+  }
+  if(localWooFixtureInput)localWooFixture=await(await import('./local-woo-http-fixture')).createLocalWooHttpFixture(localWooFixtureInput);
+  if(localWooFixturesInput)localWooRegistry=await(await import('./local-woo-http-registry')).createLocalWooHttpRegistry(localWooFixturesInput);
+  if(localWooReadEnabled){
+   assert(localWooRegistry&&localWooFixturesInput,'ordinary-local-Woo-read-registry');
+   const installed=(await db.pool.query("SELECT EXISTS(SELECT FROM public.migrations WHERE name='212_local_woo_read_lane') installed212,EXISTS(SELECT FROM public.migrations WHERE name='213_local_woo_read_reconciliation') installed213")).rows;
+   assert(installed.length===1&&installed[0].installed212===true&&installed[0].installed213===true,'ordinary-local-Woo-read-schema-not-installed');
+   const importInstalled=(await db.pool.query("SELECT EXISTS(SELECT FROM public.migrations WHERE name='216_local_woo_order_import') installed216")).rows;
+   assert(importInstalled.length===1&&importInstalled[0].installed216===true,'ordinary-local-Woo-import-schema-not-installed');
+   localWooOrderImport=(await import('./local-woo-order-import')).createLocalWooOrderImport(localWooRegistry,localWooFixturesInput.map(({tenantId,userId,channelId,fixtureId,origin})=>({tenantId,userId,channelId,fixtureId,origin:localWooOrigin(origin)})));
+   localWooReadLane=(await import('./local-woo-read-lane')).createLocalWooReadLane(localWooRegistry,localWooFixturesInput.map(({tenantId,userId,channelId,fixtureId,origin})=>({tenantId,userId,channelId,fixtureId,origin:localWooOrigin(origin)})),{orderImport:localWooOrderImport});
+  }
+  if(localWooStockEnabled){
+   assert(localWooRegistry&&localWooFixturesInput,'ordinary-local-Woo-stock-registry');
+   const installed=(await db.pool.query("SELECT EXISTS(SELECT FROM public.migrations WHERE name='214_offer_sync_commands') installed214")).rows;
+   assert(installed.length===1&&installed[0].installed214===true,'ordinary-local-Woo-stock-schema-not-installed');
+   localWooStockLane=(await import('./local-woo-stock-lane')).createLocalWooStockLane(localWooRegistry,localWooFixturesInput.map(({tenantId,userId,channelId,fixtureId,origin})=>({tenantId,userId,channelId,fixtureId,origin:localWooOrigin(origin)})));
+  }
+  const module=await import('./app');
+  app=await module.buildApp({trustedLocalUiOrigin,logging:false,readOnly,backgroundWorkersEnabled:false,scopedAutomationEnabled,largeImportDrivers:installedImporter?.drivers,largeImportRecovery:installedImporter?.recovery,ordinaryRequestLifetime:lifetime,staticRoot:path.join(input.releaseDirectory,'dist'),
+   localWooFixture,localWooRegistry,localWooReadLane,localWooStockLane,localWooOrderImport,nbpRates,amazonMcfReadTransport,ordinaryConnectorTransport,connectorJobExecution,miraklReadRepository,stockWriterActivation:stockActivation,integrationTransport:localWooRegistry?.transport??localWooFixture?.transport??providerReadTransport??(async()=>{throw new Error('Ordinary local provider transport disabled');})});
+  await db.sealOrdinaryConstructionPimScope();
+  if(onReviewedStartup){assert(startup&&!closing,'ordinary-reviewed-startup-hook-after-success');await onReviewedStartup(startup);assert(!closing,'ordinary-reviewed-startup-hook-not-closing');}
+  return Object.freeze({app,close,timings:Object.freeze({migrate_ms:migrateMs,cold_validation_ms:coldValidationMs,total_factory_ms:performance.now()-factoryStarted}),inspectLifecycle:()=>inspectOrdinaryRequests(lifetime),
+   // Private checker commands must finish before close; public request lifetime only
+   // drains normal Fastify work. Candidate is construction material for that checker. It is
+   // never an HTTP route or a readiness setter. Normal app registration independently
+   // verifies the genuine registry and same original request/native binding.
+   largeImportCandidate:installedImporter?.candidate,
+   importer:{available:installedImporter?.available===true,reason:installedImporter?.available===true?'GENUINE_INSTALLED_ADAPTERS_CONNECTED_PUBLIC_FLOW_ACCEPTANCE_PENDING' as const:'GENUINE_INSTALLED_ADAPTER_ACCEPTANCE_AND_PUBLIC_BINDING_PENDING' as const}});
+ }catch(first){try{await close();}catch{/* Preserve the real construction cause; no replay. */}throw first;}
+}

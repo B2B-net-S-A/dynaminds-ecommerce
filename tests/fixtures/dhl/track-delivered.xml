@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture: authored by hand from the public DHL24 WebAPI2 documentation, not recorded from DHL. -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="https://dhl24.com.pl/webapi2/provider/service.html?ws=1"><SOAP-ENV:Body><ns1:getTrackAndTraceInfoResponse><getTrackAndTraceInfoResult><shipmentId>90000000123</shipmentId><receivedBy>J. Kowalski</receivedBy><events>
+<item><status>PNO</status><description>Przesyłka zarejestrowana</description><terminal>Warszawa</terminal><timestamp>2026-10-26 08:00:00</timestamp></item>
+<item><status>SORT</status><description>Przesyłka w sortowni</description><terminal>Pruszków</terminal><timestamp>2026-10-26 21:15:00</timestamp></item>
+<item><status>XYZ</status><description>Komunikat informacyjny</description><terminal>Pruszków</terminal><timestamp>2026-10-27 06:00:00</timestamp></item>
+<item><status>DWP</status><description>Wydana do doręczenia</description><terminal>Kraków</terminal><timestamp>2026-10-27 07:30:00</timestamp></item>
+<item><status>DOR</status><description>Doręczona</description><terminal>Kraków</terminal><timestamp>2026-10-27 12:45:00</timestamp></item>
+</events></getTrackAndTraceInfoResult></ns1:getTrackAndTraceInfoResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>

@@ -1,0 +1,38 @@
+/* FV-S (230) views; the printable invoice keeps its own server stylesheet. Plain, flat sections separated by rules. */
+.invoice230-panel { min-width: 0; display: grid; gap: 14px; color: var(--text, #172033); }
+.invoice230-panel.panel { padding: 24px; }
+.invoice230-panel h3, .invoice230-panel h4, .invoice230-panel p { margin: 0; }
+.invoice230-panel h3 { font-size: 16px; font-weight: 800; }
+.invoice230-panel h4 { font-size: 14px; font-weight: 700; }
+.invoice230-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.invoice230-panel .invoice230-fields { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+.invoice230-panel legend { padding: 0 0 6px; font-weight: 700; }
+.invoice230-panel label { min-width: 0; margin: 0; display: grid; gap: 6px; line-height: 1.5; }
+.invoice230-panel input:not([type='checkbox']), .invoice230-panel select { width: 100%; min-width: 0; min-height: 40px; box-sizing: border-box; padding: 8px 10px; border: 1px solid #94a3b8; border-radius: 6px; background: #fff; color: inherit; font: inherit; }
+.invoice230-panel input[readonly] { background: #f1f5f9; }
+.invoice230-panel .invoice230-check { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; }
+.invoice230-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.invoice230-panel .invoice230-fields > p, .invoice230-panel .invoice230-fields > ul, .invoice230-panel .invoice230-fields > button { grid-column: 1 / -1; }
+.invoice230-panel .button, .invoice230-panel .text-button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.invoice230-panel .invoice230-problems { margin: 0; padding-left: 20px; color: var(--muted, #64748b); font-size: 13px; }
+.invoice230-panel .invoice230-calculation, .invoice230-panel .invoice230-document { min-width: 0; display: grid; gap: 12px; padding-top: 14px; border-top: 1px solid var(--border, #dbe2ea); }
+.invoice230-panel .invoice230-snapshot { min-width: 0; display: grid; gap: 12px; }
+.invoice230-panel .invoice230-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.invoice230-panel .invoice230-badge { display: inline-block; padding: 2px 8px; border: 1px solid #334155; border-radius: 4px; font-size: 12px; font-weight: 700; line-height: 1.6; }
+.invoice230-panel .invoice230-nbp { padding-left: 10px; border-left: 3px solid var(--border, #dbe2ea); }
+.invoice230-panel .invoice230-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.invoice230-panel .invoice230-pending { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid #fed7aa; border-radius: 6px; background: #fff7ed; }
+.invoice230-panel .invoice230-blockers ul { margin: 4px 0 0; padding-left: 20px; }
+.invoice230-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.invoice230-panel table { width: 100%; border-collapse: collapse; }
+.invoice230-panel th, .invoice230-panel td { padding: 8px 10px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border, #dbe2ea); }
+.invoice230-panel th { font-size: 12px; font-weight: 700; }
+.invoice230-panel th.num, .invoice230-panel td.num { text-align: right; white-space: nowrap; }
+.invoice230-panel td:first-child { min-width: 160px; overflow-wrap: anywhere; }
+.invoice230-panel small { display: block; margin-top: 3px; color: var(--muted, #64748b); font-size: 12px; }
+.invoice230-panel [role='alert'] { padding: 10px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
+.invoice230-panel input:focus-visible, .invoice230-panel select:focus-visible, .invoice230-panel button:focus-visible, .invoice230-panel a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+@media (max-width: 680px) {
+  .invoice230-panel.panel { padding: 16px; }
+  .invoice230-panel .invoice230-fields { grid-template-columns: minmax(0, 1fr); }
+}

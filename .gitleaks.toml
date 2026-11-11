@@ -1,0 +1,31 @@
+# Gitleaks — DYNAMINDS Ecommerce (CI Gate, docs/ci/README.md).
+# Domyślne reguły + allowlista po WARTOŚCI, nie po ścieżce: wpis ścieżkowy wyłączałby skaner
+# na całym pliku na zawsze, także dla reguł, które dopiero powstaną (lekcja z NEXUSA).
+# Każdy wzorzec niżej opisuje klasę nie-sekretów, które zapaliły regułę `generic-api-key`
+# albo `private-key` przy pierwszym skanie (11.11.2026, 81 trafień, wszystkie fałszywe).
+# Nowe trafienie: najpierw sprawdź, czy to nie sekret. Prawdziwy sekret = rotacja, nie wpis tutaj.
+title = "DYNAMINDS Ecommerce gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Skróty SHA-256, UUID, klucze miejsc lintu SQL, nazwy klonów i syntetyczne wartości testowe"
+regexTarget = "match"
+regexes = [
+  # Odciski SHA-256 przypiętych źródeł i funkcji (migracje *.sql, manifesty build-input, docs/parity).
+  '''(?i)["']?[a-z0-9_.\-/]*(?:access|sha256|commercial|effects)["']?\s*:\s*["'][0-9a-f]{64}["']''',
+  '''\.(?:ts|tsx|mjs|sql)["']\s*:\s*["'][0-9a-f]{64}["']''',
+  # Klucze miejsc w tests/sql-text-allowlist.json i dowodach audytu SQL (16 znaków hex).
+  '''key"\s*:\s*"[0-9a-f]{16}"''',
+  # UUID (klucze idempotencji w testach) — identyfikator, nie sekret.
+  '''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}''',
+  # Syntetyczne wartości w testach i narzędziach parytetu.
+  '''(?i)["'](?:synthetic|fake|wrong|qa127)[a-z0-9_\-]*["']''',
+  '''-----BEGIN PRIVATE KEY-----\\nFAKEKEYMATERIAL\\n''',
+  '''["']0123456789abcdef["']''',
+  # Nazwy klonów bazy w notatkach (dynaminds_m235_20261026_12).
+  '''dynaminds_[a-z0-9]+_\d{8}_\d{2}''',
+  # Identyfikatory kluczy rekordów (r.key==='ordinary…', key:'order_…').
+  '''key\s*(?:===?|:)\s*["'](?:ordinary|order|return)[a-z0-9_]*["']''',
+]

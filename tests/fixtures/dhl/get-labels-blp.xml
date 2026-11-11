@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture: authored by hand from the public DHL24 WebAPI2 documentation, not recorded from DHL. -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="https://dhl24.com.pl/webapi2/provider/service.html?ws=1"><SOAP-ENV:Body><ns1:getLabelsResponse><getLabelsResult><item><shipmentId>90000000123</shipmentId><labelType>BLP</labelType><labelName>90000000123.pdf</labelName><labelData>JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZz4+ZW5kb2JqCnRyYWlsZXI8PC9Sb290IDEgMCBSPj4KJSVFT0YK</labelData><labelMimeType>application/pdf</labelMimeType></item></getLabelsResult></ns1:getLabelsResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>

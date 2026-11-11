@@ -1,0 +1,128 @@
+.payment-imports-panel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.payment-imports-panel .pi-body {
+  padding: 0 24px 24px;
+}
+.payment-imports-panel .panel-heading {
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.payment-imports-panel p {
+  margin: 12px 0;
+  line-height: 1.6;
+}
+.payment-imports-panel h3 {
+  margin: 22px 0 12px;
+}
+.payment-imports-panel h4 {
+  margin: 18px 0 12px;
+}
+.payment-imports-panel .pi-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.payment-imports-panel .pi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+.payment-imports-panel label,
+.payment-imports-panel input,
+.payment-imports-panel select,
+.payment-imports-panel textarea {
+  min-width: 0;
+  max-width: 100%;
+}
+.payment-imports-panel .pi-check {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 16px 0;
+  line-height: 1.6;
+}
+.payment-imports-panel .pi-check input {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  padding: 0;
+  margin: 3px 0 0;
+}
+.payment-imports-panel fieldset,
+.payment-imports-panel .pi-editor,
+.payment-imports-panel .pi-review {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 18px 0;
+  min-width: 0;
+}
+.payment-imports-panel .pi-review {
+  background: #f8fafc;
+}
+.payment-imports-panel pre {
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 280px;
+  overflow: auto;
+  margin: 8px 0;
+}
+.payment-imports-panel td {
+  vertical-align: top;
+  min-width: 100px;
+}
+.payment-imports-panel td small {
+  display: block;
+  margin-top: 6px;
+}
+.payment-imports-panel .pi-row,
+.payment-imports-panel .pi-execution {
+  padding: 16px 0;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+.payment-imports-panel .pi-history {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  max-height: 360px;
+  overflow: auto;
+}
+.payment-imports-panel .pi-history .button {
+  text-align: left;
+  justify-content: flex-start;
+}
+@media (max-width: 600px) {
+  .payment-imports-panel .pi-body {
+    padding: 0 12px 18px;
+  }
+  .payment-imports-panel .pi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-imports-panel table caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 10px 0;
+}
+.payment-imports-panel .pi-result-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 30px;
+  margin: 18px 0;
+}
+.payment-imports-panel .pi-result-counts dt {
+  color: var(--muted, #64748b);
+  font-size: 13px;
+}
+.payment-imports-panel .pi-result-counts dd {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+}

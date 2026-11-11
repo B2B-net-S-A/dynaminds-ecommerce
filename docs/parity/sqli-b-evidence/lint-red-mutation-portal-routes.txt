@@ -1,0 +1,9 @@
+not ok 1 - every .query() SQL text in server/ and shared/ is a literal, built from constants, or reviewed
+    +   'server/portal-routes.ts:328 registerPortalRoutes key=f40d9c6651097a75\n' +
+    +     "    SELECT * FROM documents WHERE id=$1 AND order_id=$2 AND kind<>'${(req.body as any).x}'`\n" +
+    +     '    ← `.text` of `.x` of `.body` of parameter `req` of anonymous function: callback of get (callers unknown)'
+      server/portal-routes.ts:328 registerPortalRoutes key=f40d9c6651097a75
+          SELECT * FROM documents WHERE id=$1 AND order_id=$2 AND kind<>'${(req.body as any).x}'`
+          ← `.text` of `.x` of `.body` of parameter `req` of anonymous function: callback of get (callers unknown)
+# pass 220
+# fail 1

@@ -1,0 +1,392 @@
+/** Mirakl MMP Seller reads. CODE_NOT_CONNECTED_NOT_ACCOUNT_ACCEPTED.
+ * No registry/runtime wiring, worker, external calls at import, or provider acceptance.
+ * Primary contract read 2026-10-17:
+ * https://developer.mirakl.com/specs/content/product/mmp/rest/seller/openapi3-download.json?download=
+ * SHA256 7405cdd62c3c824e43ec051d3d84c78864ad4ee083b6e09f7ab3ee5ea3347cc8 (1194628 bytes).
+ * A01_Response_200; OR11_Response_200_Orders{,_Customer_ShippingAddress,_OrderLines};
+ * OF21_Response_200_Offers. Extra wire fields/enumeration values are forward compatible.
+ * Required projection fields below are local admission requirements, not a claim
+ * that every optional OpenAPI property is always present on every operator's account.
+ */
+import { z } from 'zod';
+import { ensure, Problem } from './errors';
+import type { Transport } from './integrations';
+import type { CanonicalOrder } from './imports';
+
+export const MIRAKL_ADAPTER_STATUS = 'CODE_NOT_CONNECTED_NOT_ACCOUNT_ACCEPTED' as const;
+const currency = z.enum(['PLN', 'EUR', 'USD', 'GBP', 'CZK']);
+const text = (max: number) => z.string().min(1).max(max).refine(v => !/[\x00-\x1f\x7f]/.test(v));
+const id = text(160);
+const decimalId = z.string().regex(/^[1-9]\d{0,15}$/).refine(v => BigInt(v) <= BigInt(Number.MAX_SAFE_INTEGER));
+const integerId = z.number().int().positive().safe();
+const amount = z.number().finite().min(0).refine(v => {
+  try { miraklMoney(v); return true; } catch { return false; }
+});
+const time = z.iso.datetime({offset: true});
+const array = <T extends z.ZodType>(schema: T) => z.array(schema).max(100);
+function parse<T extends z.ZodType>(schema: T, value: unknown, status = 502): z.output<T> {
+  const out = schema.safeParse(value);
+  ensure(out.success, status, 'Mirakl: nieprawidłowe dane lub nieobsługiwany zakres');
+  return out.data;
+}
+export function miraklInstance(value: unknown): string {
+  ensure(typeof value === 'string', 422, 'Mirakl: wymagana konkretna instancja HTTPS');
+  let u: URL;
+  try { u = new URL(value); } catch { throw new Problem(422, 'Mirakl: nieprawidłowa instancja'); }
+  ensure(u.protocol === 'https:' && /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.mirakl\.net$/.test(u.hostname)
+    && !u.port && !u.username && !u.password && u.pathname === '/' && !u.search && !u.hash,
+    422, 'Mirakl: wymagany własny origin instancji *.mirakl.net');
+  return u.origin;
+}
+const configSchema = z.strictObject({
+  instance_url: z.string().transform(miraklInstance), shop_id: decimalId, currency,
+});
+export type MiraklSettings = z.input<typeof configSchema>;
+const credentialsSchema = z.strictObject({api_key: z.string().min(1).max(4096).regex(/^[\x21-\x7e]+$/)});
+const accountSchema = z.object({shop_id: integerId, shop_name: text(200), currency_iso_code: text(3),
+  shop_state: text(80), model: text(80)});
+export type MiraklAccount = z.infer<typeof accountSchema>;
+const addressSchema = z.object({firstname: text(100).optional(), lastname: text(100).optional(),
+  street_1: text(200).optional(), street_2: text(200).optional(), city: text(100).optional(),
+  zip_code: text(20).optional(), country_iso_code: text(3).optional(), phone: z.string().max(30).optional()});
+const lineSchema = z.object({order_line_id: id, offer_id: integerId, offer_sku: text(160),
+  product_title: text(200), quantity: z.number().int().min(1).max(100000), price: amount,
+  shipping_price: amount, total_price: amount, order_line_state: text(80),
+  cancelations: array(z.unknown()), refunds: array(z.unknown()), fees: array(z.unknown()),
+  price_amount_breakdown: z.unknown().optional(), shipping_price_amount_breakdown: z.unknown().optional(),
+  purchase_information: z.unknown().optional(), measurement: z.unknown().optional()});
+const orderSchema = z.object({order_id: id, currency_iso_code: currency, order_state: text(80),
+  last_updated_date: time, order_tax_mode: z.enum(['TAX_INCLUDED', 'TAX_EXCLUDED']),
+  customer: z.object({firstname: text(100).optional(), lastname: text(100).optional(),
+    shipping_address: addressSchema.nullable().optional()}),
+  customer_notification_email: z.email().optional(), customer_debited_date: time.nullable().optional(),
+  customer_directly_pays_seller: z.boolean(), payment_workflow: text(80),
+  payment_type: text(200).optional(),
+  fully_refunded: z.boolean(), has_incident: z.boolean(),
+  price: amount, shipping_price: amount, total_price: amount,
+  order_lines: z.array(lineSchema).min(1).max(100),
+  fulfillment: z.unknown().optional(), shipping_pudo_id: z.string().max(160).nullable().optional(),
+  order_refunds: array(z.unknown()).optional()});
+export type MiraklOrder = z.infer<typeof orderSchema>;
+const offerSchema = z.object({offer_id: integerId, shop_sku: text(160), product_sku: text(160),
+  product_title: text(200), currency_iso_code: currency, price: amount,
+  quantity: z.number().int().min(0).max(10000000), active: z.boolean(), state_code: text(80)});
+export type MiraklOffer = z.infer<typeof offerSchema>;
+const pageSize = z.number().int().min(1).max(100).default(50);
+const windowSchema = z.strictObject({start_update_date: time, end_update_date: time}).superRefine((w, c) => {
+  const span = Date.parse(w.end_update_date) - Date.parse(w.start_update_date);
+  if (!(span > 0 && span <= 31 * 86400000)) c.addIssue({code: 'custom', message: 'Bounded update window required'});
+});
+const ordersQuerySchema = z.strictObject({window: windowSchema, max: pageSize});
+const offersQuerySchema = z.strictObject({max: pageSize, sku: text(160).optional()});
+export type MiraklOrdersQuery = z.input<typeof ordersQuerySchema>;
+export type MiraklOffersQuery = z.input<typeof offersQuerySchema>;
+/** OR11 order_ids: original pinned OpenAPI7405cdd6 defines a comma-separated
+ * string with maximum:100 despite type:string. Official OR11 rechecked18.10.2026:
+ * https://developer.mirakl.com/content/product/mmp/rest/seller/openapi3/orders/or11
+ * The unit of that bound is ambiguous. These are CONSERVATIVE LOCAL limits,
+ * not a claim that Mirakl permits100orders: up to100requested IDs, grouped into
+ * at most100UTF8bytes per comma-joined GET. One explicit group per invocation;
+ * every subsequent group must acquire the same durable OR11 budget again.
+ */
+export type MiraklOrderIdsQuery = Readonly<{order_ids: readonly string[]; group?: number}>;
+const orderIdsQuerySchema = z.strictObject({order_ids: z.array(id.refine(v => !v.includes(',') && Buffer.from(v, 'utf8').toString('utf8') === v)).min(1).max(100),
+  group: z.number().int().min(0).max(99).default(0)});
+export function parseMiraklOrderIdsQuery(value: unknown) {
+  const q = parse(orderIdsQuerySchema, value, 422);
+  ensure(new Set(q.order_ids).size === q.order_ids.length, 422, 'Mirakl: powtórzony identyfikator odczytu');
+  const groups: string[][] = []; let current: string[] = [], bytes = 0;
+  for (const value of q.order_ids) {
+    const size = Buffer.byteLength(value, 'utf8');
+    if (size > 100) throw new Problem(422, 'Mirakl: identyfikator przekracza konserwatywny lokalny limit 100 bajtów UTF-8', 'MIRAKL_EXACT_IDS_LOCAL_LIMIT');
+    if (bytes + (current.length ? 1 : 0) + size > 100) {groups.push(current); current = []; bytes = 0;}
+    bytes += (current.length ? 1 : 0) + size; current.push(value);
+  }
+  groups.push(current);
+  if (q.group >= groups.length) throw new Problem(422, 'Mirakl: nieistniejąca grupa identyfikatorów', 'MIRAKL_EXACT_IDS_GROUP_INVALID');
+  return Object.freeze({order_ids: Object.freeze(q.order_ids), group: q.group,
+    groups: Object.freeze(groups.map(group => Object.freeze(group)))});
+}
+export type MiraklOrderReadback = {data: Array<MiraklOrder & {id: string}>; total_count: number;
+  requested_order_ids: string[]; group_index: number; group_count: number; group_order_ids: string[];
+  group_missing_order_ids: string[]; has_more_groups: boolean; next_group: number|null;
+  readback_scope: 'single_group'; readback_complete: boolean};
+
+/** Object identity is checked in the originating client; JSON or another client cannot forge it. */
+export type MiraklReadCursor = Readonly<{offset: number}>;
+type CursorState = {kind: 'orders'|'offers'; query: string; seen: readonly string[]; total: number; offset: number};
+export type MiraklPage<T> = {data: T[]; offset: number; total_count: number; has_more: boolean; next_cursor: MiraklReadCursor|null};
+export class MiraklReadDeferred extends Problem {
+  constructor(readonly seconds: number, status = 429) {
+    super(status, 'Mirakl: odczyt odroczony; wymagany wspólny trwały budżet dostawcy', 'MIRAKL_READ_DEFERRED');
+  }
+}
+/** Exact conversion of the documented JSON number; no binary multiplication or rounding. */
+export function miraklMoney(value: unknown): number {
+  ensure(typeof value === 'number' && Number.isFinite(value), 422, 'Mirakl: nieprawidłowa kwota');
+  const s = String(value);
+  ensure(/^(0|[1-9]\d{0,7})(?:\.\d{1,2})?$/.test(s) && !Object.is(value, -0), 422, 'Mirakl: nieprawidłowa precyzja kwoty');
+  const [whole, fraction = ''] = s.split('.');
+  const minor = Number(BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0')));
+  ensure(Number.isSafeInteger(minor) && minor <= 2147483647, 422, 'Mirakl: kwota przekracza limit');
+  return minor;
+}
+
+// Private fixed response diagnostics never escape to the caller. Rebuild public
+// errors from these frozen scalars; arbitrary transport/stream Problem objects
+// (including a mutated error from an earlier call) carry no authority here.
+class MiraklResponseFailure extends Error {
+  constructor(readonly status: number, message: string, readonly seconds: number|null = null) {
+    super(message); Object.freeze(this);
+  }
+}
+function responseCheck(condition: unknown, status: number, message: string): asserts condition {
+  if (!condition) throw new MiraklResponseFailure(status, message);
+}
+
+export class Mirakl {
+  #settings: z.output<typeof configSchema>;
+  #apiKey: string;
+  #transport: Transport;
+  #account?: Promise<MiraklAccount>;
+  #verified = false;
+  #cursors = new WeakMap<MiraklReadCursor, CursorState>();
+  constructor(settings: MiraklSettings, credentials: {api_key: string}, transport: Transport) {
+    this.#settings = Object.freeze(parse(configSchema, settings, 422));
+    this.#apiKey = parse(credentialsSchema, credentials, 422).api_key;
+    ensure(typeof transport === 'function', 422, 'Mirakl: wymagany jawny transport');
+    this.#transport = transport;
+  }
+  /** One A01 attempt per client lifetime; failed/unknown attempts are not retried automatically.
+   * Integrating runtime must impose durable once/day account budget and shared cooldown. */
+  async account(): Promise<MiraklAccount> {
+    this.#account ??= this.#read('/api/account').then(raw => {
+      const a = parse(accountSchema, raw);
+      ensure(String(a.shop_id) === this.#settings.shop_id && a.currency_iso_code === this.#settings.currency,
+        502, 'Mirakl: odpowiedź dotyczy innego sklepu lub waluty');
+      ensure(a.model === 'MARKETPLACE', 422, 'Mirakl: model sklepu wymaga osobnej normalizacji');
+      this.#verified = true;
+      return a;
+    });
+    return structuredClone(await this.#account);
+  }
+  async orders(query: MiraklOrdersQuery, after?: MiraklReadCursor): Promise<MiraklPage<MiraklOrder & {id: string}>> {
+    const q = parse(ordersQuerySchema, query, 422);
+    const params = {max: String(q.max), start_update_date: q.window.start_update_date,
+      end_update_date: q.window.end_update_date, order_tax_mode: 'TAX_INCLUDED', sort: 'dateCreated', order: 'asc'};
+    return this.#page('orders', q, params, orderSchema, 'order_id', after);
+  }
+  /** Restartable single-page port. Durable cross-page identity/total checks belong to the
+   * caller's atomic checkpoint; this method still checks every wire row and own shop. */
+  async ordersPage(query: MiraklOrdersQuery, offset: number): Promise<Omit<MiraklPage<MiraklOrder & {id: string}>, 'next_cursor'>> {
+    const q = parse(ordersQuerySchema, query, 422);
+    ensure(Number.isSafeInteger(offset) && offset >= 0 && offset <= 10000, 422, 'Mirakl: nieprawidłowy offset');
+    const params = {max: String(q.max), start_update_date: q.window.start_update_date,
+      end_update_date: q.window.end_update_date, order_tax_mode: 'TAX_INCLUDED', sort: 'dateCreated', order: 'asc'};
+    const {next_cursor: _cursor, ...page} = await this.#page('orders', q, params, orderSchema, 'order_id', undefined, offset);
+    return page;
+  }
+  /** Manual exact-ID readback only. Does not stage/import orders or issue a
+   * continuation automatically. Missing IDs are unknown/not observed, not deleted.
+   */
+  async ordersByIds(query: MiraklOrderIdsQuery): Promise<MiraklOrderReadback> {
+    const plan = parseMiraklOrderIdsQuery(query);
+    ensure(this.#verified, 422, 'Mirakl: najpierw wymagany odczyt własnego sklepu A01');
+    const requested = plan.groups[plan.group];
+    const raw = await this.#read('/api/orders', {order_ids: requested.join(','), max: '100', offset: '0',
+      order_tax_mode: 'TAX_INCLUDED', sort: 'dateCreated', order: 'asc'});
+    const result = parse(z.object({orders: z.array(orderSchema).max(requested.length),
+      total_count: z.number().int().min(0).max(requested.length), has_more: z.boolean().optional()}), raw);
+    ensure(result.total_count === result.orders.length && result.has_more !== true, 502,
+      'Mirakl: niepełny wynik grupy dokładnych identyfikatorów');
+    const seen = new Set<string>();
+    const data = result.orders.map(order => {
+      ensure(requested.includes(order.order_id) && !seen.has(order.order_id), 502,
+        'Mirakl: obcy lub powtórzony rekord odczytu identyfikatorów');
+      ensure(order.currency_iso_code === this.#settings.currency && order.order_tax_mode === 'TAX_INCLUDED',
+        502, 'Mirakl: niezgodna waluta lub tryb podatków');
+      seen.add(order.order_id); return {...order, id: order.order_id};
+    });
+    const missing = requested.filter(id => !seen.has(id)), hasMore = plan.group + 1 < plan.groups.length;
+    return {data, total_count: result.total_count, requested_order_ids: [...plan.order_ids],
+      group_index: plan.group, group_count: plan.groups.length, group_order_ids: [...requested],
+      group_missing_order_ids: missing, has_more_groups: hasMore, next_group: hasMore ? plan.group + 1 : null,
+      readback_scope: 'single_group', readback_complete: plan.groups.length === 1 && missing.length === 0};
+  }
+  async offers(query: MiraklOffersQuery = {}, after?: MiraklReadCursor): Promise<MiraklPage<MiraklOffer & {id: string}>> {
+    const q = parse(offersQuerySchema, query, 422);
+    return this.#page('offers', q, {max: String(q.max), ...(q.sku === undefined ? {} : {sku: q.sku})}, offerSchema, 'offer_id', after);
+  }
+  /** One explicitly requested OF21 page; official contract supports offset
+   * pagination and usage on each offers-page view:
+   * https://developer.mirakl.com/content/product/mmp/rest/seller/openapi3/offers/of21
+   * The offset cap is local policy, not a provider limit or a claim of a stable
+   * snapshot across separate reads. */
+  async offersPage(query: MiraklOffersQuery = {}, offset = 0): Promise<Omit<MiraklPage<MiraklOffer & {id: string}>, 'next_cursor'>> {
+    const q = parse(offersQuerySchema, query, 422);
+    ensure(Number.isSafeInteger(offset) && offset >= 0 && offset <= 10000, 422, 'Mirakl: nieprawidłowy offset');
+    const {next_cursor: _cursor, ...page} = await this.#page('offers', q,
+      {max: String(q.max), ...(q.sku === undefined ? {} : {sku: q.sku})}, offerSchema, 'offer_id', undefined, offset);
+    return page;
+  }
+  async #page<T extends z.ZodType>(kind: 'orders'|'offers', query: {max: number}, params: Record<string,string>,
+    item: T, key: string, after?: MiraklReadCursor, initialOffset = 0): Promise<MiraklPage<z.output<T> & {id: string}>> {
+    ensure(this.#verified, 422, 'Mirakl: najpierw wymagany odczyt własnego sklepu A01');
+    const queryKey = JSON.stringify(query), previous = after ? this.#cursors.get(after) : undefined;
+    ensure(!after || (previous?.kind === kind && previous.query === queryKey), 422, 'Mirakl: obcy cursor lub zmienione filtry');
+    const offset = previous?.offset ?? initialOffset;
+    const path = kind === 'orders' ? '/api/orders' : '/api/offers';
+    const raw = await this.#read(path, {...params, offset: String(offset)});
+    const result = parse(z.object({total_count: z.number().int().min(0).max(1000000)}).passthrough(), raw);
+    const rows = parse(z.array(item).max(query.max), result[kind]);
+    const total = result.total_count;
+    ensure(!previous || total === previous.total, 502, 'Mirakl: zmieniony zbiór paginacji; wymagane nowe okno');
+    ensure(offset + rows.length <= total && (rows.length > 0 || offset === total), 502, 'Mirakl: brak postępu paginacji');
+    const seen = new Set(previous?.seen ?? []);
+    const data = rows.map(row => {
+      const value = String((row as Record<string, unknown>)[key]);
+      ensure(!seen.has(value), 502, 'Mirakl: powtórzony rekord paginacji');
+      seen.add(value);
+      if (kind === 'orders') {
+        const order = row as MiraklOrder;
+        ensure(order.currency_iso_code === this.#settings.currency && order.order_tax_mode === 'TAX_INCLUDED',
+          502, 'Mirakl: niezgodna waluta lub tryb podatków');
+        // OR11 deliberately overlaps start_update_date on the server; do not reject older lower-bound rows.
+        const end = Date.parse((query as z.output<typeof ordersQuerySchema>).window.end_update_date);
+        ensure(Date.parse(order.last_updated_date) <= end, 502, 'Mirakl: rekord wykracza poza koniec okna');
+      } else ensure((row as MiraklOffer).currency_iso_code === this.#settings.currency, 502, 'Mirakl: niezgodna waluta oferty');
+      return {...(row as Record<string, unknown>), id: value} as z.output<T> & {id: string};
+    });
+    const hasMore = offset + data.length < total;
+    ensure(seen.size <= 10000 && (!hasMore || seen.size < 10000), 502, 'Mirakl: przekroczono lokalny limit okna; podziel zakres');
+    let next: MiraklReadCursor|null = null;
+    if (hasMore) {
+      next = Object.freeze({offset: offset + data.length});
+      this.#cursors.set(next, {kind, query: queryKey, seen: [...seen], total, offset: next.offset});
+    }
+    return {data, offset, total_count: total, has_more: hasMore, next_cursor: next};
+  }
+  async #read(path: '/api/account'|'/api/orders'|'/api/offers', params: Record<string,string> = {}): Promise<unknown> {
+    const u = new URL(this.#settings.instance_url + path);
+    u.searchParams.set('shop_id', this.#settings.shop_id);
+    for (const [k,v] of Object.entries(params)) u.searchParams.set(k,v);
+    let r: Response;
+    try { r = await this.#transport(u.toString(), {method: 'GET', redirect: 'error', headers: {
+      Authorization: this.#apiKey, Accept: 'application/json'}}); }
+    catch { throw new Problem(502, 'Mirakl: niepotwierdzona odpowiedź odczytu'); }
+    try {
+      responseCheck(r instanceof Response, 502, 'Mirakl: nieprawidłowa odpowiedź HTTP');
+      const status = r.status;
+      responseCheck(Number.isInteger(status) && status >= 100 && status <= 599, 502, 'Mirakl: nieprawidłowa odpowiedź HTTP');
+      responseCheck(!r.redirected && (!r.url || r.url === u.href), 502, 'Mirakl: odpowiedź spoza żądanego adresu');
+      if (status === 429 || status >= 500) {
+        const header = r.headers.get('retry-after');
+        responseCheck(header === null || typeof header === 'string', 502, 'Mirakl: nieprawidłowy limit oczekiwania');
+        const seconds = header && /^\d+$/.test(header) ? Number(header) : 60;
+        // Never shorten a valid Retry-After; fail closed rather than overflow the scheduler.
+        responseCheck(Number.isSafeInteger(seconds) && seconds >= 0 && seconds <= 2147483647, 502, 'Mirakl: nieprawidłowy limit oczekiwania');
+        throw new MiraklResponseFailure(status === 429 ? 429 : 502, 'Mirakl: odczyt odroczony', Math.max(1, seconds));
+      }
+      responseCheck(status === 200, status === 401 || status === 403 ? status : 502,
+        'Mirakl: odczyt HTTP ' + status);
+      responseCheck(/^application\/json(?:\s*;|$)/i.test(r.headers.get('content-type') ?? ''), 502, 'Mirakl: wymagany JSON');
+      const reader = r.body?.getReader();
+      responseCheck(reader, 502, 'Mirakl: brak odpowiedzi JSON');
+      const chunks: Uint8Array[] = []; let bytes = 0;
+      try {
+        while (true) {
+          const part = await reader.read(); if (part.done) break;
+          bytes += part.value.byteLength;
+          responseCheck(bytes <= 2 * 1024 * 1024, 502, 'Mirakl: odpowiedź przekracza limit');
+          chunks.push(part.value);
+        }
+        const body = new TextDecoder('utf-8', {fatal: true}).decode(Buffer.concat(chunks));
+        const parsed: unknown = JSON.parse(body);
+        // JSON numbers must not silently round a wire amount/identifier before schema validation.
+        // Quoted strings (including escaped quotes) are consumed as a whole and never interpreted as numbers.
+        for (const match of body.matchAll(/"(?:[^"\\]|\\.)*"|(-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)/g)) {
+          if (match[1] === undefined) continue;
+          const n = Number(match[1]);
+          responseCheck(Number.isFinite(n) && decimalIdentity(match[1]) === decimalIdentity(String(n)),
+            502, 'Mirakl: nie można zachować precyzji liczby JSON');
+        }
+        return parsed;
+      } catch (e) {
+        if (e instanceof MiraklResponseFailure) throw e;
+        throw new MiraklResponseFailure(502, 'Mirakl: nieprawidłowa odpowiedź JSON');
+      } finally { try { await reader.cancel(); } catch { /* Cleanup cannot expose remote payload/errors. */ } }
+    } catch (e) {
+      if (e instanceof MiraklResponseFailure) {
+        if (e.seconds !== null) throw new MiraklReadDeferred(e.seconds, e.status);
+        throw new Problem(e.status, e.message);
+      }
+      throw new Problem(502, 'Mirakl: niepotwierdzona odpowiedź odczytu');
+    } finally { try { if (!r.body?.locked) await r.body?.cancel(); } catch { /* Redacted. */ } }
+  }
+}
+
+function decimalIdentity(value: string): string {
+  const [mantissa, exponent = '0'] = value.toLowerCase().split('e');
+  const power = Number(exponent);
+  ensure(Number.isSafeInteger(power) && Math.abs(power) <= 1000000, 502, 'Mirakl: nieprawidłowy wykładnik JSON');
+  const [whole, fraction = ''] = mantissa.replace(/^-/, '').split('.');
+  let digits = (whole + fraction).replace(/^0+/, ''), scale = fraction.length - power;
+  if (!digits) return '0';
+  const trimmed = digits.replace(/0+$/, '');
+  scale -= digits.length - trimmed.length; digits = trimmed;
+  return (mantissa.startsWith('-') ? '-' : '') + digits + '@' + scale;
+}
+
+/** Canonical import projection; source history/advanced modes are blocked rather than silently reinterpreted. */
+export function normalizeMiraklOrder(raw: unknown, expectedCurrency: z.infer<typeof currency>): CanonicalOrder {
+  const o = parse(orderSchema, raw, 422), blockers: string[] = [];
+  ensure(o.currency_iso_code === expectedCurrency && o.order_tax_mode === 'TAX_INCLUDED', 422, 'Mirakl: niezgodna waluta lub podatki');
+  const a = o.customer.shipping_address;
+  ensure(a?.street_1 && a.city && a.zip_code && a.country_iso_code, 422, 'Mirakl: brak pełnego adresu dostawy');
+  // Country interpretation is explicit; unknown alpha-3 requires mapping, never defaults to Poland.
+  const iso3: Record<string,string> = {POL:'PL',DEU:'DE',FRA:'FR',GBR:'GB',USA:'US',CZE:'CZ',ITA:'IT',ESP:'ES',NLD:'NL',BEL:'BE',AUT:'AT',SVK:'SK'};
+  const country = /^[A-Z]{2}$/.test(a.country_iso_code) ? a.country_iso_code : iso3[a.country_iso_code];
+  ensure(country, 422, 'Mirakl: kraj dostawy wymaga jawnego mapowania');
+  const name = [a.firstname ?? o.customer.firstname, a.lastname ?? o.customer.lastname].filter(Boolean).join(' ');
+  ensure(name.length >= 2 && name.length <= 200 && o.customer_notification_email, 422, 'Mirakl: brak danych odbiorcy');
+  const street = [a.street_1, a.street_2].filter(Boolean).join(', ');
+  ensure(street.length <= 200, 422, 'Mirakl: adres przekracza limit');
+  if (o.order_state !== 'SHIPPING' || o.order_lines.some(l => l.order_line_state !== 'SHIPPING')) blockers.push('Status Mirakl wymaga uzgodnienia przed lokalną realizacją');
+  if (o.has_incident || o.fully_refunded || o.order_refunds?.length) blockers.push('Incydent lub zwrot Mirakl wymaga uzgodnienia');
+  if (o.fulfillment != null || o.shipping_pudo_id) blockers.push('Fulfillment lub odbiór Mirakl wymaga osobnej realizacji');
+  const workflows = ['PAY_ON_ACCEPTANCE','PAY_ON_SHIPMENT','PAY_ON_DELIVERY'];
+  const paymentKnown = workflows.includes(o.payment_workflow) && !o.customer_directly_pays_seller;
+  if (!paymentKnown) blockers.push('Przepływ płatności Mirakl wymaga uzgodnienia');
+  if (paymentKnown && !o.customer_debited_date) blockers.push('Brak potwierdzonego obciążenia klienta Mirakl; metoda rozliczenia wymaga uzgodnienia');
+  const seen = new Set<string>(); let shipping = 0, merchandise = 0;
+  const items = o.order_lines.map(l => {
+    ensure(!seen.has(l.order_line_id), 422, 'Mirakl: powtórzona pozycja zamówienia'); seen.add(l.order_line_id);
+    const price = miraklMoney(l.price), delivery = miraklMoney(l.shipping_price);
+    ensure(price + delivery === miraklMoney(l.total_price), 422, 'Mirakl: nieuzgodniona kwota pozycji');
+    shipping += delivery; merchandise += price;
+    if (l.cancelations.length || l.refunds.length || l.fees.length || l.price_amount_breakdown != null
+      || l.shipping_price_amount_breakdown != null || l.purchase_information != null || l.measurement != null)
+      blockers.push('Korekta, opłata lub zaawansowana pozycja Mirakl wymaga uzgodnienia');
+    return {external_id: String(l.offer_id), remote_line_id: l.order_line_id, sku: l.offer_sku,
+      name: l.product_title, quantity: l.quantity, line_total: price};
+  });
+  const total = miraklMoney(o.total_price);
+  ensure(merchandise === miraklMoney(o.price) && shipping === miraklMoney(o.shipping_price)
+    && merchandise + shipping === total && shipping <= 1000000, 422, 'Mirakl: nieuzgodniona suma zamówienia');
+  const paid = paymentKnown && !o.fully_refunded && !o.order_refunds?.length
+    && !o.order_lines.some(l => l.refunds.length || l.cancelations.length) && !!o.customer_debited_date;
+  return {external_id: o.order_id, currency: o.currency_iso_code, customer_name: name,
+    email: o.customer_notification_email, address: {street, city: a.city, postal_code: a.zip_code, country, phone: a.phone ?? ''},
+    shipping_cost: shipping, total, paid, paid_amount: paid ? total : 0,
+    // Workflow and payment method are distinct fields; neither is a courier COD instruction here.
+    // Supported platform-debited orders need no further collection by the seller.
+    // Direct/unknown/unconfirmed payments remain blocked above; payment_type is source metadata only.
+    payment_mode: 'prepaid',
+    source_status: o.order_state, note: '', items, blockers: [...new Set(blockers)]};
+}
+export function normalizeMiraklOffer(raw: unknown, expectedCurrency: z.infer<typeof currency>) {
+  const o = parse(offerSchema, raw, 422);
+  ensure(o.currency_iso_code === expectedCurrency, 422, 'Mirakl: niezgodna waluta oferty');
+  return {external_id: String(o.offer_id), sku: o.shop_sku, name: o.product_title, price: miraklMoney(o.price),
+    stock: o.quantity, quantity: o.quantity, currency: o.currency_iso_code, active: o.active, source_status: o.state_code};
+}

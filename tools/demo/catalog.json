@@ -1,0 +1,75 @@
+{
+  "company": {
+    "name": "Pracownia Smaków Sp. z o.o.",
+    "short": "Pracownia Smaków",
+    "street": "ul. Piotrkowska 112",
+    "postal_code": "90-006",
+    "city": "Łódź",
+    "series_prefix": "PS",
+    "payment_instructions": "Przelew na rachunek 12 1020 3352 0000 1102 0123 4567 (PKO BP), tytuł: numer faktury",
+    "jpk": { "kod_urzedu": "1009", "wojewodztwo": "łódzkie", "powiat": "Łódź", "gmina": "Łódź", "miejscowosc": "Łódź", "kod_pocztowy": "90-006", "ulica": "Piotrkowska", "nr_domu": "112" }
+  },
+  "users": [
+    { "key": "owner", "name": "Marta Zielińska", "email": "marta.zielinska@pracownia-smakow.example", "role": "admin", "label": "Właścicielka (administrator)" },
+    { "key": "warehouse", "name": "Tomasz Krawczyk", "email": "tomasz.krawczyk@pracownia-smakow.example", "role": "operator", "label": "Magazynier (operator)" },
+    { "key": "accounting", "name": "Ewa Domańska", "email": "ewa.domanska@pracownia-smakow.example", "role": "viewer", "label": "Księgowa (podgląd)" }
+  ],
+  "warehouses": [
+    { "code": "MAIN", "name": "Magazyn główny Łódź" },
+    { "code": "ZGI", "name": "Magazyn Zgierz" }
+  ],
+  "products": [
+    { "sku": "PS-KAW-001", "name": "Kawa ziarnista Brazylia Santos 1 kg", "category": "Kawa", "price": 8900, "vat": 23, "weight_grams": 1050, "location": "A-01-1", "lot": "K2609", "cost": 5200, "expiry_days": 300, "qty": 60, "color": "#6b4226", "manufacturer": "Palarnia Łódzka", "description": "Średnio palona kawa z regionu Santos. Nuty orzecha laskowego i mlecznej czekolady. Świeżo palona w Łodzi." },
+    { "sku": "PS-KAW-002", "name": "Kawa ziarnista Etiopia Yirgacheffe 250 g", "category": "Kawa", "price": 5490, "vat": 23, "weight_grams": 270, "location": "A-01-2", "lot": "K2610", "cost": 3100, "expiry_days": 270, "qty": 80, "color": "#8a5a3b", "manufacturer": "Palarnia Łódzka", "description": "Jasno palona, kwiatowa i cytrusowa. Polecana do przelewu (drip, chemex)." },
+    { "sku": "PS-KAW-003", "name": "Kawa mielona Kolumbia Supremo 500 g", "category": "Kawa", "price": 4990, "vat": 23, "weight_grams": 520, "location": "A-01-3", "lot": "K2608", "cost": 2700, "expiry_days": 240, "qty": 70, "color": "#7a4b2a", "manufacturer": "Palarnia Łódzka", "description": "Mielona do ekspresu przelewowego i kawiarki. Słodka, z nutą karmelu." },
+    { "sku": "PS-HER-001", "name": "Herbata zielona Sencha 100 g", "category": "Herbata", "price": 3200, "vat": 23, "weight_grams": 120, "location": "A-02-1", "lot": "H2607", "cost": 1600, "expiry_days": 540, "qty": 90, "color": "#5c8a3a", "manufacturer": "Herbaciarnia Pod Lipą", "description": "Japońska herbata zielona, parzona w 70–80°C. Świeża, trawiasta." },
+    { "sku": "PS-HER-002", "name": "Herbata czarna Assam liściasta 200 g", "category": "Herbata", "price": 2750, "vat": 23, "weight_grams": 220, "location": "A-02-2", "lot": "H2605", "cost": 1300, "expiry_days": 600, "qty": 90, "color": "#9b3d23", "manufacturer": "Herbaciarnia Pod Lipą", "description": "Mocna, słodowa herbata z Assamu. Idealna z mlekiem." },
+    { "sku": "PS-MIO-001", "name": "Miód lipowy z Podlasia 400 g", "category": "Miody", "price": 3490, "vat": 5, "weight_grams": 560, "location": "B-01-1", "lot": "M2606-LIP", "cost": 1900, "expiry_days": 700, "qty": 120, "color": "#e3b23c", "manufacturer": "Pasieka Bartnik", "description": "Miód nektarowy lipowy z pasieki na Podlasiu. Słoik szklany 400 g." },
+    { "sku": "PS-MIO-002", "name": "Miód gryczany 950 g", "category": "Miody", "price": 5900, "vat": 5, "weight_grams": 1250, "location": "B-01-2", "lot": "M2607-GRY", "cost": 3300, "expiry_days": 700, "qty": 60, "color": "#8c4a1c", "manufacturer": "Pasieka Bartnik", "description": "Ciemny, wyrazisty miód gryczany. Duży słoik 950 g." },
+    { "sku": "PS-MIO-003", "name": "Miód wielokwiatowy kremowany 250 g", "category": "Miody", "price": 2290, "vat": 5, "weight_grams": 340, "location": "B-01-3", "lot": "M2608-WIE", "cost": 1150, "expiry_days": 700, "qty": 150, "color": "#f0c96a", "manufacturer": "Pasieka Bartnik", "description": "Kremowany miód wielokwiatowy o gładkiej konsystencji." },
+    { "sku": "PS-PRZ-001", "name": "Konfitura z czarnej porzeczki 280 g", "category": "Przetwory", "price": 1850, "vat": 5, "weight_grams": 420, "location": "B-02-1", "lot": "P2609-POR", "cost": 900, "expiry_days": 365, "qty": 140, "color": "#4b1e4f", "manufacturer": "Spiżarnia Babuni", "description": "Konfitura o wysokiej zawartości owoców, bez konserwantów." },
+    { "sku": "PS-PRZ-002", "name": "Ogórki kiszone babuni 870 g", "category": "Przetwory", "price": 1690, "vat": 5, "weight_grams": 1450, "location": "B-02-2", "lot": "P2609-OGO", "cost": 800, "expiry_days": 300, "qty": 100, "color": "#5f7f2e", "manufacturer": "Spiżarnia Babuni", "description": "Tradycyjnie kiszone ogórki z koprem i czosnkiem." },
+    { "sku": "PS-PRZ-003", "name": "Powidła śliwkowe węgierka 300 g", "category": "Przetwory", "price": 1990, "vat": 5, "weight_grams": 440, "location": "B-02-3", "lot": "P2609-SLI", "cost": 950, "expiry_days": 365, "qty": 110, "color": "#3e2449", "manufacturer": "Spiżarnia Babuni", "description": "Smażone powidła ze śliwek węgierek, bez dodatku cukru." },
+    { "sku": "PS-PRY-001", "name": "Pieprz kolorowy ziarnisty 50 g", "category": "Przyprawy", "price": 1490, "vat": 5, "weight_grams": 70, "location": "C-01-1", "lot": "S2604", "cost": 650, "expiry_days": 720, "qty": 160, "color": "#a33b2f", "manufacturer": "Przyprawy Świata", "description": "Mieszanka pieprzu czarnego, białego, zielonego i różowego." },
+    { "sku": "PS-PRY-002", "name": "Zioła prowansalskie 40 g", "category": "Przyprawy", "price": 1150, "vat": 5, "weight_grams": 60, "location": "C-01-2", "lot": "S2605", "cost": 500, "expiry_days": 720, "qty": 160, "color": "#6f8f4f", "manufacturer": "Przyprawy Świata", "description": "Tymianek, rozmaryn, bazylia, oregano i lawenda." },
+    { "sku": "PS-OLI-001", "name": "Oliwa z oliwek extra virgin 500 ml", "category": "Oliwy i octy", "price": 4500, "vat": 5, "weight_grams": 900, "location": "C-02-1", "lot": "O2603-GR", "cost": 2600, "expiry_days": 480, "qty": 80, "color": "#7d8c2a", "manufacturer": "Kreta Olive Co.", "description": "Oliwa z pierwszego tłoczenia na zimno, Kreta, butelka szklana." },
+    { "sku": "PS-AKC-001", "name": "Młynek do kawy ręczny ceramiczny", "category": "Akcesoria", "price": 12900, "vat": 23, "weight_grams": 650, "location": "D-01-1", "lot": "A2609-MLY", "cost": 6800, "qty": 25, "color": "#3b4a5a", "manufacturer": "Hario", "description": "Ręczny młynek z ceramicznymi żarnami i regulacją grubości mielenia." },
+    { "sku": "PS-AKC-002", "name": "Dzbanek do herbaty żeliwny 0,8 l", "category": "Akcesoria", "price": 14900, "vat": 23, "weight_grams": 1400, "location": "D-01-2", "lot": "A2609-DZB", "cost": 7900, "qty": 20, "color": "#2e2e2e", "manufacturer": "Tetsubin", "description": "Żeliwny dzbanek z sitkiem ze stali nierdzewnej, pojemność 0,8 l." },
+    { "sku": "PS-AKC-003", "name": "Deska do krojenia dębowa 40×25 cm", "category": "Akcesoria", "price": 9900, "vat": 23, "weight_grams": 1800, "location": "D-02-1", "lot": "A2609-DES", "cost": 4800, "qty": 30, "color": "#9c6b3e", "manufacturer": "Stolarnia Dąb", "description": "Deska z litego drewna dębowego, olejowana. Wyrób polski." },
+    { "sku": "PS-AKC-004", "name": "Kubek ceramiczny Łódź 350 ml", "category": "Akcesoria", "price": 3900, "vat": 23, "weight_grams": 380, "location": "D-02-2", "lot": "A2609-KUB", "cost": 1700, "qty": 60, "color": "#c0392b", "manufacturer": "Ćmielów Design", "description": "Kubek z grafiką łódzkich kamienic. Można myć w zmywarce." },
+    { "sku": "PS-AKC-005", "name": "Drip V60 ceramiczny z filtrami", "category": "Akcesoria", "price": 8900, "vat": 23, "weight_grams": 520, "location": "D-02-3", "lot": "A2609-V60", "cost": 4200, "qty": 35, "color": "#ecf0f1", "manufacturer": "Hario", "description": "Ceramiczny drip V60 rozmiar 02 i 40 papierowych filtrów." },
+    { "sku": "PS-KSI-001", "name": "Książka Kuchnia polska na nowo", "category": "Książki", "price": 6900, "vat": 5, "weight_grams": 900, "location": "E-01-1", "lot": "B2608", "cost": 3900, "qty": 40, "color": "#1f4e79", "manufacturer": "Wydawnictwo Smak", "description": "Tradycyjne polskie przepisy w nowoczesnym wydaniu. 320 stron, twarda oprawa." }
+  ],
+  "customers": [
+    { "name": "Anna Nowak", "street": "ul. Marszałkowska 84/12", "postal_code": "00-514", "city": "Warszawa", "phone": "+48501234567" },
+    { "name": "Piotr Kowalski", "street": "ul. Długa 15", "postal_code": "31-147", "city": "Kraków", "phone": "+48602345678" },
+    { "name": "Katarzyna Wiśniewska", "street": "ul. Świętojańska 40/3", "postal_code": "81-391", "city": "Gdynia", "phone": "+48603456789" },
+    { "name": "Michał Wójcik", "street": "ul. Ratajczaka 22", "postal_code": "61-815", "city": "Poznań", "phone": "+48604567890" },
+    { "name": "Agnieszka Kamińska", "street": "ul. Świdnicka 8/5", "postal_code": "50-066", "city": "Wrocław", "phone": "+48605678901" },
+    { "name": "Tomasz Lewandowski", "street": "ul. Piłsudskiego 31", "postal_code": "90-307", "city": "Łódź", "phone": "+48606789012" },
+    { "name": "Magdalena Zielińska", "street": "ul. Krakowskie Przedmieście 6", "postal_code": "20-002", "city": "Lublin", "phone": "+48607890123" },
+    { "name": "Krzysztof Szymański", "street": "ul. Mariacka 19", "postal_code": "40-014", "city": "Katowice", "phone": "+48608901234" },
+    { "name": "Joanna Woźniak", "street": "ul. Lipowa 5", "postal_code": "15-424", "city": "Białystok", "phone": "+48609012345" },
+    { "name": "Paweł Dąbrowski", "street": "ul. Gdańska 102/7", "postal_code": "85-022", "city": "Bydgoszcz", "phone": "+48510123456" },
+    { "name": "Monika Kozłowska", "street": "ul. Wojska Polskiego 11", "postal_code": "70-470", "city": "Szczecin", "phone": "+48511234567" },
+    { "name": "Marcin Jankowski", "street": "ul. Sienkiewicza 44", "postal_code": "25-007", "city": "Kielce", "phone": "+48512345678" },
+    { "name": "Aleksandra Mazur", "street": "ul. 3 Maja 17", "postal_code": "35-030", "city": "Rzeszów", "phone": "+48513456789" },
+    { "name": "Łukasz Kwiatkowski", "street": "ul. Szeroka 9", "postal_code": "87-100", "city": "Toruń", "phone": "+48514567890" },
+    { "name": "Natalia Krawczyk", "street": "ul. Kościuszki 70", "postal_code": "10-503", "city": "Olsztyn", "phone": "+48515678901" },
+    { "name": "Grzegorz Piotrowski", "street": "ul. Grunwaldzka 211", "postal_code": "80-266", "city": "Gdańsk", "phone": "+48516789012" },
+    { "name": "Karolina Grabowska", "street": "ul. Żeromskiego 3", "postal_code": "26-600", "city": "Radom", "phone": "+48517890123" },
+    { "name": "Jakub Nowakowski", "street": "ul. Ozimska 25", "postal_code": "45-058", "city": "Opole", "phone": "+48518901234" },
+    { "name": "Ewelina Pawłowska", "street": "ul. Zielona 14", "postal_code": "95-100", "city": "Zgierz", "phone": "+48519012345" },
+    { "name": "Wojciech Michalski", "street": "ul. Warszawska 56", "postal_code": "42-200", "city": "Częstochowa", "phone": "+48520123456" },
+    { "name": "Dorota Adamczyk", "street": "ul. Wrocławska 12", "postal_code": "65-427", "city": "Zielona Góra", "phone": "+48521234567" },
+    { "name": "Bartosz Dudek", "street": "ul. Mickiewicza 8/2", "postal_code": "43-300", "city": "Bielsko-Biała", "phone": "+48522345678" },
+    { "name": "Zofia Wieczorek", "street": "ul. Kilińskiego 150", "postal_code": "90-348", "city": "Łódź", "phone": "+48523456789" },
+    { "name": "Adam Jabłoński", "street": "ul. Legionów 32", "postal_code": "87-800", "city": "Włocławek", "phone": "+48524567890" }
+  ],
+  "businesses": [
+    { "name": "Kawiarnia Pod Arkadami s.c.", "street": "ul. Rynek 4", "postal_code": "50-106", "city": "Wrocław", "phone": "+48713440011", "email": "zamowienia@podarkadami.example" },
+    { "name": "Restauracja Stara Piekarnia Sp. z o.o.", "street": "ul. Ogrodowa 19", "postal_code": "91-065", "city": "Łódź", "phone": "+48426330022", "email": "biuro@starapiekarnia.example" },
+    { "name": "Hotel Nad Wartą Sp. z o.o.", "street": "ul. Nadbrzeżna 2", "postal_code": "61-891", "city": "Poznań", "phone": "+48618550033", "email": "zaopatrzenie@hotelnadwarta.example" },
+    { "name": "Delikatesy Smakosz Jan Malinowski", "street": "ul. Floriańska 27", "postal_code": "31-019", "city": "Kraków", "phone": "+48124220044", "email": "jan@delikatesysmakosz.example" }
+  ]
+}

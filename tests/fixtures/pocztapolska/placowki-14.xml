@@ -1,0 +1,3 @@
+<!-- SYNTETYCZNE: plik przygotowany ręcznie na podstawie publicznej dokumentacji Poczty Polskiej, nie jest nagraniem odpowiedzi dostawcy. -->
+<placowka><id>261234</id><nazwa>UP Warszawa 1</nazwa><ulica>Świętokrzyska</ulica><numerDomu>31/33</numerDomu><kodPocztowy>00-001</kodPocztowy><miejscowosc>Warszawa</miejscowosc><punktWydaniaEPrzesylki>true</punktWydaniaEPrzesylki><godzinyPracy><dniRobocze>08:00-20:00</dniRobocze><soboty>09:00-14:00</soboty></godzinyPracy></placowka>
+<placowka><id>261235</id><nazwa>Agencja Pocztowa (bez wydawania)</nazwa><ulica>Prosta</ulica><numerDomu>2</numerDomu><kodPocztowy>00-850</kodPocztowy><miejscowosc>Warszawa</miejscowosc><punktWydaniaEPrzesylki>false</punktWydaniaEPrzesylki></placowka>

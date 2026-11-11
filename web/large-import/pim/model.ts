@@ -1,0 +1,37 @@
+/** Browser-only durable Core identities and complete native PIM response binding. */
+import type {Job} from '../../../shared/large-import-dependencies/pim-large-import-http-binding-ui/contracts';
+import {parseLegacyIntake,legacyProductTokens,type FileInput} from './legacy-intake-browser';
+import {validateJob,type Context} from '../../../shared/large-import-dependencies/pim-large-import-job-flow-ui2/model';
+import {previewCustody,executionCustody,need,same,type CoreCustody} from '../../pim/legacy-files/handoff';
+import type {MappingTemplate} from '../../pim/legacy-files/session';
+import {verifyNestedStage,type NestedIntake} from '../../pim/legacy-files/v2/intake';
+import type {MappingV2} from '../../../shared/pim-legacy-mapping-v2';
+import {decodeDictionary,decodeProduct,decodePreview,decodeOperation,buildRequest} from '../../pim/batch/model';
+import {validatePlan,prepareTypedRows} from '../../pim/files/model';
+import type {Dictionary,ProductSource,Preview,Operation,PreviewInput} from '../../pim/dictionaries/contract2';
+export function committedCustody(job:Job,context:Context,batch:number,catalogId:string):CoreCustody{
+ validateJob(job,context,job.id);need(job.approved,'Najpierw zatwierdź zachowany plik');const c=job.core[batch];need(c?.preview&&c.execution&&c.request.catalog_id===catalogId,'Parametry wymagają trwałego zapisu tej partii w katalogu');
+ need(c.request.client_key===c.previewKey&&c.preview.ack.head.actor_id===context.userId&&c.execution.ack.head.actor_id===context.userId,'Inny właściciel lub klucz trwałego podglądu');
+ for(const frame of [c.preview,c.execution]){need(frame.pages.length>0&&frame.pages.length<=5,'Niepełne strony trwałego wyniku');let offset=0;for(const p of frame.pages){need(same(p.head,frame.ack.head)&&Array.isArray(p.rows)&&p.rows.length>0&&p.rows.length<=100,'Strona należy do innego potwierdzenia lub zakresu');need(p.rows.every((r:any,i:number)=>r.index===offset+i&&r.identity_value===c.identities[offset+i]),'Niepełna kolejność i tożsamość natywnych wierszy');offset+=p.rows.length;need(p.next===(offset<frame.ack.head.total?String(offset):null),'Nieprawidłowy natywny kursor stron');}need(offset===frame.ack.head.total,'Brak pełnych wierszy potwierdzenia');}
+ const preview=c.preview.ack.head as unknown as CoreCustody['preview'];need(preview.invalid===0&&preview.total===job.manifest.batches[batch].rows,'Podgląd nie obejmuje całej partii');const execution=c.execution.ack.head as unknown as CoreCustody['execution'];
+ const rows=c.execution.pages.flatMap(p=>p.rows) as CoreCustody['rows'];need(rows.every((r,i)=>r.index===i&&r.identity_value===c.identities[i]),'Tożsamość lub kolejność różni się od zachowanego importu');
+ return executionCustody(previewCustody(JSON.stringify([context,job.id,batch,job.plan_hash]),JSON.stringify(c.request),preview),execution,rows);
+}
+export type StageRead={dictionary:Dictionary;sources:ProductSource[];intake:any;nested:NestedIntake|null;request:Extract<PreviewInput,{kind:'product_values'}>|null;errors:unknown[]};
+export function stageRead(job:Job,n:number,custody:CoreCustody,dictionaryRaw:unknown):StageRead|null{
+ const attempt=job.pim[n]?.at(-1);if(!attempt?.stage)return null;const s=attempt.stage,m=attempt.mapping as MappingTemplate,q=job.core[n].request;need(typeof q.catalog_id==='string','Brak katalogu zapisanego importu');const dictionary=decodeDictionary(dictionaryRaw,q.catalog_id);
+ need(s.ready===true||s.ready===false,'Nieprawidłowy wynik pełnego sprawdzenia');let nested:NestedIntake|null=null;const intake:any=s.intake;
+ const prepared={ready:s.ready,intake,...(s.ready?{request:s.request,sources:s.sources,dictionary}:{errors:s.errors})};
+ const envelope={schema:'schema' in m&&m.schema==='legacy-pim-mapping/v2'?'committed-core-file-pim-stage/v2':'committed-core-file-pim-stage/v1',execution:{id:custody.execution.id,preview_id:custody.preview.id,scope_hash:custody.preview.scope_hash,total:custody.execution.total},prepared};
+ if(envelope.schema==='committed-core-file-pim-stage/v2')nested=verifyNestedStage(envelope,custody,m as MappingV2,attempt.previewKey);
+ else{const legacy=m as Exclude<MappingTemplate,MappingV2>,identity=q.format==='csv'?(q.mapping[q.identity]??q.identity):(q.xml_mapping?.fields[q.identity]?.path??q.identity);need(m.catalog_id===q.catalog_id&&legacy.product_source===identity,'Mapa musi używać tożsamości i katalogu zapisanego importu');const file:FileInput=q.format==='csv'?{format:'csv',content:q.content,delimiter:q.delimiter}:{format:'xml',content:q.content,record_path:q.xml_mapping?.record_path??'/catalog/product'},tokens=legacyProductTokens(file,identity);need(tokens.length===custody.rows.length,'Niepełne oryginalne tożsamości');const {product_source,...fields}=legacy,expected=parseLegacyIntake(file,{...fields,product:{encoding:'explicit',source:product_source,entries:tokens.map((token,i)=>({legacy:token,product_id:custody.rows[i].product_id}))}});need(same(expected,intake),'Drugi etap zmienił cały zachowany plik, mapę, tożsamości lub nieprzypisane dane v1');}
+
+ need(Array.isArray(intake.rows)&&intake.rows.every((r:any,i:number)=>r.index===i&&r.product_id===custody.rows[i].product_id&&Array.isArray(r.unmapped_fields)&&r.unmapped_fields.every((x:unknown)=>typeof x==='string')),'Parametry nie używają pełnego trwałego zakresu produktów');
+ need(same(s.unmapped,intake.rows.map((r:any)=>({index:r.index,fields:r.unmapped_fields}))),'Niepełny przegląd zachowanych pól');
+ if(!s.ready){need(!Object.hasOwn(s,'request')&&!Object.hasOwn(s,'sources')&&Array.isArray(s.errors)&&s.errors.length>0&&s.errors.every((e:any)=>e&&Number.isSafeInteger(e.row)&&e.row>=0&&e.row<intake.rows.length&&typeof e.field==='string'&&typeof e.code==='string'&&(e.definition_id===null||typeof e.definition_id==='string')),'Odmowa nie może zawierać częściowego planu zapisu');return{dictionary,sources:[],intake,nested,request:null,errors:structuredClone(s.errors)};}
+ need(Array.isArray(s.sources)&&s.sources.length===custody.rows.length,'Brak pełnych świeżych źródeł');const sources=intake.rows.map((r:any,i:number)=>decodeProduct((s.sources as unknown[])[i],dictionary,r.product_id));
+ const plan=validatePlan({schema:'pim-values/v1',catalog_id:q.catalog_id,rows:intake.rows.map((r:any)=>({catalog_id:q.catalog_id,product_id:r.product_id,category_id:r.category_id,values:r.values}))},q.catalog_id),review=prepareTypedRows(dictionary,sources,plan);need(review.ready,'Pełna mapa nie przechodzi walidacji');const request=buildRequest(dictionary,sources,review.rows,attempt.previewKey);need(same(request,s.request),'Plan lub źródła parametrów uległy zmianie');
+ return{dictionary,sources,intake,nested,request,errors:[]};
+}
+export function previewRead(job:Job,n:number,stage:StageRead):Preview|null{const catalog=job.core[n].request.catalog_id;need(typeof catalog==='string','Brak katalogu');const p=job.pim[n]?.at(-1)?.preview;if(!p)return null;need(stage.request,'Brak kompletnego planu');const result=decodePreview(p.body,stage.request,catalog,job.principal.userId);need(result.id===p.id&&result.scope_hash===p.scope_hash,'Potwierdzenie podglądu należy do innego zakresu');return result;}
+export function operationRead(job:Job,n:number,p:Preview):Operation|null{const catalog=job.core[n].request.catalog_id;need(typeof catalog==='string','Brak katalogu');const a=job.pim[n]?.at(-1)?.applied;if(!a)return null;const o=decodeOperation(a.body,p,catalog,job.principal.userId);need(o.id===a.id&&o.scope_hash===a.scope_hash,'Potwierdzenie zapisu należy do innego zakresu');return o;}

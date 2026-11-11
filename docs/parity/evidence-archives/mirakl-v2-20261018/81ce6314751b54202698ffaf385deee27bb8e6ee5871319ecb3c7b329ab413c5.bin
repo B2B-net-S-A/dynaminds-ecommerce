@@ -1,0 +1,98 @@
+import {useEffect,useRef,useState,type ChangeEvent} from 'react';
+import {api,ApiError} from './api';
+type Props={channelId:string;tenantId:string;userId:string;admin:boolean;readOnly:boolean};
+type Kind='account'|'offers'|'orders';
+type Observation={key:string;ticket:number;kind:Kind;result:any};
+class ReadError extends Error{}
+const uuid=(v:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+const text=(v:unknown,max=200):v is string=>typeof v==='string'&&v.length>0&&v.length<=max&&!/[\x00-\x1f\x7f]/.test(v);
+const integer=(v:unknown,min=0,max=Number.MAX_SAFE_INTEGER):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=min&&v<=max;
+const currency=(v:unknown):v is string=>typeof v==='string'&&['PLN','EUR','USD','GBP','CZK'].includes(v);
+const amount=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v)&&!Object.is(v,-0)&&/^(0|[1-9]\d{0,7})(?:\.\d{1,2})?$/.test(String(v))&&v<=21474836.47;
+const iso=(v:unknown):v is string=>{
+ if(typeof v!=='string'||!/^\d{4}-\d\d-\d\dT(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(v)||!Number.isFinite(Date.parse(v)))return false;
+ const day=new Date(v.slice(0,10)+'T00:00:00Z');return Number.isFinite(day.getTime())&&day.toISOString().slice(0,10)===v.slice(0,10);
+};
+function validEnvelope(v:any,channel:string,kind:Kind){
+ if(!v||v.channel_id!==channel||!['live','sandbox'].includes(v.mode)||v.scope!=='external_read'||v.read_only!==true||v.account_verified!==false||v.provider_acceptance!==false||v.status!=='CODE_NOT_CONNECTED_NOT_ACCOUNT_ACCEPTED'||v.stages_orders!==false||v.imports_orders!==false)return false;
+ const r=v.result;
+ if(kind==='account')return r&&integer(r.shop_id,1)&&text(r.shop_name)&&currency(r.currency_iso_code)&&text(r.shop_state,80)&&r.model==='MARKETPLACE';
+ if(!r||!Array.isArray(r.data)||r.data.length>100||!integer(r.offset,0,10000)||!integer(r.total_count,0,1000000)||typeof r.has_more!=='boolean'||r.offset+r.data.length>r.total_count||r.has_more!==(r.offset+r.data.length<r.total_count)||(r.has_more&&r.data.length===0))return false;
+ if(new Set(r.data.map((row:any)=>kind==='offers'?row?.offer_id:row?.order_id)).size!==r.data.length)return false;
+ return r.data.every((row:any)=>row&&currency(row.currency_iso_code)&&(kind==='offers'
+  ?integer(row.offer_id,1)&&text(row.shop_sku,160)&&text(row.product_sku,160)&&text(row.product_title)&&amount(row.price)&&integer(row.quantity,0,10000000)&&typeof row.active==='boolean'&&text(row.state_code,80)
+  :text(row.order_id,160)&&text(row.order_state,80)&&iso(row.last_updated_date)&&amount(row.total_price)));
+}
+const states:Record<string,string>={OPEN:'Otwarty',OPENED:'Otwarty',CLOSED:'Zamknięty',SUSPENDED:'Zawieszony',WAITING_ACCEPTANCE:'Oczekuje na akceptację',WAITING_DEBIT:'Oczekuje na płatność',SHIPPING:'W przygotowaniu',SHIPPED:'Wysłane',RECEIVED:'Odebrane',CANCELED:'Anulowane',CANCELLED:'Anulowane',REFUNDED:'Zwrócone środki'};
+const state=(v:string)=>Object.hasOwn(states,v)?states[v]:'Stan nierozpoznany';
+const price=(n:number,c:string)=>new Intl.NumberFormat('pl-PL',{style:'currency',currency:c}).format(n);
+export function MiraklReadsPanel(p:Props){
+ const [offersMax,setOffersMax]=useState('50'),[sku,setSku]=useState(''),[ordersMax,setOrdersMax]=useState('50'),[offset,setOffset]=useState('0'),[start,setStart]=useState(''),[end,setEnd]=useState('');
+ const principal=[p.channelId,p.tenantId,p.userId,p.admin,p.readOnly].join(':');
+ const key=JSON.stringify([principal,offersMax,sku,ordersMax,offset,start,end]);
+ const [observation,setObservation]=useState<Observation|null>(null),[failure,setFailure]=useState<{key:string;ticket:number;message:string}|null>(null),[busy,setBusy]=useState<{key:string;ticket:number}|null>(null),[capability,setCapability]=useState<{principal:string;epoch:number;available:boolean}|null>(null);
+ const current=useRef(key),ticket=useRef(0),alive=useRef(true),flight=useRef<number|null>(null),allowed=useRef(false);
+ const previousPrincipal=useRef(principal),principalEpoch=useRef(0);
+ if(previousPrincipal.current!==principal){previousPrincipal.current=principal;principalEpoch.current++;}
+ if(current.current!==key){current.current=key;ticket.current++;flight.current=null;}
+ allowed.current=p.admin===true&&p.readOnly===false&&[p.channelId,p.tenantId,p.userId].every(uuid);
+ useEffect(()=>{alive.current=true;return()=>{alive.current=false;ticket.current++;flight.current=null;};},[]);
+ const own=(n:number)=>alive.current&&current.current===key&&ticket.current===n&&allowed.current;
+ const result=allowed.current&&observation?.key===key&&observation.ticket===ticket.current?observation:null;
+ const error=allowed.current&&failure?.key===key&&failure.ticket===ticket.current?failure.message:null;
+ const unavailable=capability?.principal===principal&&capability.epoch===principalEpoch.current&&capability.available===false;
+ const working=busy?.key===key&&busy.ticket===ticket.current;
+ const disabled=!allowed.current||working||unavailable;
+ const clear=()=>{ticket.current++;flight.current=null;setObservation(null);setFailure(null);setBusy(null);};
+ async function sameActor(n:number){
+  if(!own(n))throw new ReadError('Sesja lub widok zmieniły się.');
+  const me=await api('/auth/me');
+  if(!own(n)||me.restore_preview!==false||(Object.hasOwn(me,'read_only')&&me.read_only!==false)||me.user?.tenant_id!==p.tenantId||me.user?.id!==p.userId||me.user?.role!=='admin')throw new ReadError('Odczyt wymaga bieżącej sesji administratora tej firmy.');
+ }
+ async function read(kind:Kind){
+  if(disabled||flight.current!==null)return;
+  clear();const n=++ticket.current;flight.current=n;setBusy({key,ticket:n});
+  try{
+   let query='';
+   if(kind==='offers'){if(!/^(?:[1-9]|[1-9]\d|100)$/.test(offersMax)||sku.length>160||/[\x00-\x1f\x7f]/.test(sku))throw new ReadError('Podaj limit od 1 do 100 i poprawne SKU.');query='?'+new URLSearchParams({max:offersMax,...(sku?{sku}:{})});}
+   if(kind==='orders'){const span=Date.parse(end)-Date.parse(start);if(!iso(start)||!iso(end)||!(span>0&&span<=31*86400000)||!/^(?:[1-9]|[1-9]\d|100)$/.test(ordersMax)||!/^(?:0|[1-9]\d{0,3}|10000)$/.test(offset))throw new ReadError('Podaj daty ISO ze strefą czasu, zakres do 31 dni, limit od 1 do 100 i pozycję od 0 do 10000.');query='?'+new URLSearchParams({start_update_date:start,end_update_date:end,max:ordersMax,offset});}
+   await sameActor(n);const health=await api('/health');if(!own(n))return;
+   if(health.mirakl_reads_available!==true){setCapability({principal,epoch:principalEpoch.current,available:false});throw new ReadError('Odczyty Mirakl są niedostępne w tym uruchomieniu.');}
+   setCapability({principal,epoch:principalEpoch.current,available:true});
+   // This is the only provider-facing request; every action is a deliberate click.
+   const value=await api('/integrations/'+p.channelId+'/mirakl/'+(kind==='account'?'account':kind+'-preview')+query);
+   await sameActor(n);if(!validEnvelope(value,p.channelId,kind))throw new ReadError('Nie potwierdzono odpowiedzi dla tego kanału.');
+   if(kind!=='account'&&(value.result.offset!==(kind==='offers'?0:Number(offset))||value.result.data.length>Number(kind==='offers'?offersMax:ordersMax)))throw new ReadError('Nie potwierdzono zakresu strony tego odczytu.');
+   if(own(n))setObservation({key,ticket:n,kind,result:value.result});
+  }catch(e){if(own(n))setFailure({key,ticket:n,message:e instanceof ApiError?(e.status===429?'Odczyt odroczony przez dostawcę. Odczekaj przed kolejną ręczną próbą.':'Nie udało się potwierdzić odczytu Mirakl. Sprawdź sesję i konfigurację kanału.'):e instanceof ReadError?e.message:'Nie potwierdzono odczytu Mirakl.'});}
+  finally{if(flight.current===n){flight.current=null;if(current.current===key&&alive.current)setBusy(null);}}
+ }
+ const change=(set:(v:string)=>void)=>(e:ChangeEvent<HTMLInputElement>)=>{clear();set(e.target.value);};
+ return <section className="ops-result" aria-label="Odczyty Mirakl">
+  <h4>Odczyty Mirakl</h4><p>Pobierz dane na żądanie. Podgląd nie importuje zamówień i nie potwierdza odbioru konta u dostawcy.</p>
+  {!allowed.current&&<p>Odczyty wymagają administratora własnej firmy i aktywnego trybu pracy.</p>}
+  {unavailable&&<p>Odczyty Mirakl są niedostępne w tym uruchomieniu.</p>}
+  <button type="button" disabled={disabled} onClick={()=>void read('account')}>Odczytaj konto</button>
+  <fieldset><legend>Oferty — pierwsza strona</legend>
+   <label>Limit ofert<input aria-label="Limit ofert" inputMode="numeric" value={offersMax} onChange={change(setOffersMax)}/></label>
+   <label>SKU oferty<input aria-label="SKU oferty" value={sku} onChange={change(setSku)}/></label>
+   <button type="button" disabled={disabled} onClick={()=>void read('offers')}>Odczytaj oferty</button>
+  </fieldset>
+  <fieldset><legend>Zamówienia — wybrany zakres</legend>
+   <label>Od (ISO ze strefą)<input aria-label="Zamówienia od" placeholder="2026-10-01T00:00:00Z" value={start} onChange={change(setStart)}/></label>
+   <label>Do (ISO ze strefą)<input aria-label="Zamówienia do" placeholder="2026-10-02T00:00:00Z" value={end} onChange={change(setEnd)}/></label>
+   <label>Limit zamówień<input aria-label="Limit zamówień" inputMode="numeric" value={ordersMax} onChange={change(setOrdersMax)}/></label>
+   <label>Pozycja początkowa<input aria-label="Pozycja początkowa" inputMode="numeric" value={offset} onChange={change(setOffset)}/></label>
+   <button type="button" disabled={disabled} onClick={()=>void read('orders')}>Odczytaj zamówienia</button>
+  </fieldset>
+  {working&&<p role="status">Trwa odczyt…</p>}{error&&<p role="alert">{error}</p>}
+  {result?.kind==='account'&&<table><caption>Odczyt konta</caption><tbody>
+   <tr><th>Nazwa sklepu</th><td>{result.result.shop_name}</td></tr><tr><th>Numer sklepu</th><td>{result.result.shop_id}</td></tr>
+   <tr><th>Waluta</th><td>{result.result.currency_iso_code}</td></tr><tr><th>Stan sklepu</th><td>{state(result.result.shop_state)}</td></tr>
+  </tbody></table>}
+  {result&&result.kind!=='account'&&<><p role="status">Pokazano {result.result.data.length} z {result.result.total_count} pozycji; początek: {result.result.offset}.</p>
+   {result.result.data.length===0?<p>Brak pozycji w tym odczycie.</p>:result.kind==='offers'?<table><caption>Podgląd ofert</caption><thead><tr><th>SKU oferty</th><th>Produkt</th><th>Ilość</th><th>Cena</th><th>Aktywna</th></tr></thead><tbody>{result.result.data.map((r:any)=><tr key={r.offer_id}><td>{r.shop_sku}</td><td>{r.product_title}</td><td>{r.quantity}</td><td>{price(r.price,r.currency_iso_code)}</td><td>{r.active?'Tak':'Nie'}</td></tr>)}</tbody></table>:<table><caption>Podgląd zamówień</caption><thead><tr><th>Numer zamówienia</th><th>Stan</th><th>Ostatnia zmiana</th><th>Wartość</th></tr></thead><tbody>{result.result.data.map((r:any)=><tr key={r.order_id}><td>{r.order_id}</td><td>{state(r.order_state)}</td><td>{new Date(r.last_updated_date).toLocaleString('pl-PL')}</td><td>{price(r.total_price,r.currency_iso_code)}</td></tr>)}</tbody></table>}
+   {result.result.has_more&&<p>Są dalsze pozycje. Kolejna strona nie jest pobierana automatycznie.</p>}
+  </>}
+ </section>;
+}

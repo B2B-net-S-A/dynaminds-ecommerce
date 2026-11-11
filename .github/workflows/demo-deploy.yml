@@ -1,0 +1,133 @@
+# Demo CD: a green main builds the release and pushes it to the private deploy repository; Coolify deploys every push to
+# its main (webhook). Decision of 11.11.2026: the demo deploys right after a green main, no deploy window.
+# The release must be built on macOS: tools/build/resource-io.mjs and resource-format210.mjs pin the sha of the
+# gzip -9 output, and zlib on Linux produces other bytes (checked 11.11.2026). The demo data (data/demo.dump) is made
+# locally (tools/demo/render/build-image.sh) and is never changed here: a new release on the same dump only migrates.
+name: Demo deploy
+
+on:
+  workflow_run:
+    workflows: ["CI Gate"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit of main to deploy (default: the newest)"
+        required: false
+
+concurrency:
+  group: demo-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  DEMO_URL: ${{ vars.DEMO_URL || 'https://demo.dynaminds.pl' }}
+  DEPLOY_REPO: artur-t-96/dynaminds-demo-deploy
+  N29_SHA: 548e34291ded9998cef9c7db7392e7ff4a5f377ed833c332e51f0209cd90cc06
+
+jobs:
+  release:
+    name: Build and publish the demo release
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: macos-15
+    timeout-minutes: 30
+    outputs:
+      sha: ${{ steps.pick.outputs.sha }}
+      changed: ${{ steps.publish.outputs.changed }}
+    steps:
+      - id: pick
+        name: Pick the commit
+        run: |
+          sha="${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"; echo "Deploying $sha"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ steps.pick.outputs.sha }}
+          path: src
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.0
+          cache: npm
+          cache-dependency-path: src/package-lock.json
+      - name: Install dependencies
+        working-directory: src
+        run: npm ci --no-audit --no-fund
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.DEMO_DEPLOY_SSH_KEY }}
+      - name: Check out the deploy repository
+        run: git clone --depth 1 "git@github.com:${DEPLOY_REPO}.git" deploy
+      - name: Unpack the N29 base contract
+        run: |
+          mkdir -p "$RUNNER_TEMP/n29"
+          tar -xzf deploy/ci/n29-source-contract.tar.gz -C "$RUNNER_TEMP/n29"
+      - name: Build the release
+        working-directory: src
+        run: |
+          node tools/scale/release-build.mjs --out "$RUNNER_TEMP/rb/out" --base-contract "$RUNNER_TEMP/n29/source-contract" \
+            --base-contract-sha "$N29_SHA" | tail -5
+          test -f "$RUNNER_TEMP/rb/out/release-build.json"
+          node -e 'const r=require(process.argv[1]); if (r.commit !== process.argv[2]) { console.error("commit", r.commit); process.exit(1); }' \
+            "$RUNNER_TEMP/rb/out/release-build.json" "${{ steps.pick.outputs.sha }}"
+      - name: Assemble the image context
+        run: |
+          RB="$RUNNER_TEMP/rb/out/release-build.json"
+          REL="$(node -p 'require(process.argv[1]).release_directory' "$RB")"
+          rsync -a --delete "$REL/" deploy/release-canonical/
+          cp "$RB" deploy/release-build.json
+          cp src/tools/demo/render/{edge.mjs,entrypoint.sh,Dockerfile,postgresql.demo.conf} deploy/
+          cp src/server/262_revoke_public_temporary.sql deploy/data/
+          (cd src && npx esbuild tools/demo/fakes.mts --bundle --platform=node --format=esm --outfile=../deploy/fakes.mjs \
+            --log-level=warning --define:import.meta.url='"file:///demo-fakes-bundle"' \
+            --banner:js="import{createRequire as __cr}from'node:module';const require=__cr(import.meta.url);")
+          chmod -R go+rX deploy
+          git -C deploy diff --quiet -- data/demo.dump data/images || { echo "::error::The demo data must not change in CI"; exit 1; }
+      - id: publish
+        name: Commit and push the release
+        run: |
+          cd deploy
+          git config user.name "dynaminds-demo-ci"; git config user.email "demo-ci@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; echo "Nothing to deploy"; exit 0; fi
+          sha="${{ steps.pick.outputs.sha }}"
+          git commit -q -m "chore: demo release ${sha:0:7}" -m "Built by ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  verify:
+    name: Verify the demo serves the release
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Wait for /api/health to report the commit
+        env:
+          SHA: ${{ needs.release.outputs.sha }}
+        run: |
+          # Coolify builds (about 1 min), stops the old container and starts the new one; migrations take a few minutes.
+          deadline=$(( $(date +%s) + 25*60 ))
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            body="$(curl -fsS --max-time 10 "$DEMO_URL/api/health" || true)"
+            if echo "$body" | jq -e --arg sha "$SHA" '.status == "ok" and .commit == $sha' >/dev/null 2>&1; then
+              echo "OK: $body"; exit 0
+            fi
+            echo "waiting: ${body:-no answer}"; sleep 15
+          done
+          echo "::error::$DEMO_URL did not report $SHA within 25 minutes"; exit 1
+      - name: Open an issue when the deploy fails
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ needs.release.outputs.sha }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Demo deploy failed for ${SHA:0:7}" \
+            --body "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Check Coolify → dynaminds-demo → Deployments; redeploy the previous one if the demo is down." || true
+    permissions:
+      contents: read
+      issues: write

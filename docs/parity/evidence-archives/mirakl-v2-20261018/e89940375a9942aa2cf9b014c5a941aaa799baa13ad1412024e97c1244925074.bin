@@ -1,0 +1,2043 @@
+import {assertOrdinaryConnectorJobExecution,registerOrdinaryConnectorJobs,type OrdinaryConnectorJobExecution} from './ordinary-connector-jobs';
+import {parseMiraklCredentials, safeMiraklPublicSettings, miraklChannelConnectionHash, type MiraklReadRepository} from './mirakl-channel';
+import {registerMiraklReadRoutes, captureMiraklReadActor, type MiraklReadActor} from './mirakl-read-routes';
+import {enlistMiraklSessionAuthorityInTx, assertMiraklSessionAuthorityInTx} from './mirakl-session-authority';
+import {stageOrders} from './imports';
+import {registerNbpRoutes,type NbpRatesPort} from './nbp-routes';
+import { orderStatusInput } from './order-status-input';
+import {registerAutomaticWorkerControl} from './local-automation-worker-control';
+import {startScopedAutomationWorker} from './scoped-automation-worker';
+import {installOrdinaryRequestLifetime,runOrdinaryRequestError,hasOrdinaryRequestAdmission,type OrdinaryRequestLifetime} from './ordinary-request-lifetime';
+import {validateRecoveredPimBeforeReadonly} from './pim-dictionaries/recovery-gate';
+import {createPimService} from './pim-dictionaries/service';
+import {registerPimRoutes} from './pim-dictionaries/routes';
+import {preflightPim} from './pim-dictionaries/runtime';
+import {preflightNestedPim} from './pim-dictionaries/nested-capability';
+import {createManualOffService,manualOffAvailable} from './manual-inventory-off';
+import {manualOffNativeHooks} from './manual-inventory-off-runtime';
+import {registerManualOffRoutes} from './manual-inventory-off-routes';
+import { inventoryAdjustInput, inventoryCorrectionPreviewInput } from './inventory-correction-schema';
+import { captureInventoryCorrectionActor, previewInventoryCorrection, readInventoryCorrectionPreview, executeInventoryCorrection, enlistInventoryLegacyAdjustmentInTx } from './inventory-correction';
+import {preflightPhysicalParcelWz,createPhysicalParcelWzService} from './physical-parcel-wz';
+import {registerPhysicalParcelWzRoutes} from './physical-parcel-wz-routes';
+import {registerB2bCreditRoutes} from './b2b-credit-routes';
+import {registerB2bInvoiceRoutes} from './b2b-invoice-routes';
+import {registerFa3DraftRoutes} from './fa3-draft-routes';
+import {localInvoicesAvailable,localInvoiceRequestActor,localInvoiceDetail} from './local-invoices';
+import {registerLocalInvoiceRoutes} from './local-invoice-routes';
+import {registerLocalConsumerCreditRoutes} from './local-consumer-credit-routes';
+import {localInvoicePrintHtml} from './local-invoice-print';
+import { packedLabelPrintAvailable } from './packed-label-print';
+import { registerPackedLabelPrintRoutes } from './packed-label-print-routes';
+import { registerProductRuleScheduleRoutes } from './product-rule-schedules';
+import {
+  registerB2bExternalOrderIntentRoutes,
+  b2bExternalOrderIntentsAvailable,
+} from './b2b-external-order-intents';
+import {
+  registerB2bExternalOrderImportRoutes,
+  b2bExternalOrderImportsAvailable,
+} from './b2b-external-order-imports';
+import {
+  registerB2bDropshippingReturnRoutes,
+  b2bDropshippingReturnsAvailable,
+} from './b2b-dropshipping-returns';
+import { b2bReturnLocalOriginsAvailable } from './b2b-return-local-origins';
+import { validateTrustedLocalUiOrigin } from './local-ui-origin';
+import { transitionDirectLegacyOnReturnInTx } from './legacy-return-on-command';
+import { returnExchangeAvailable, returnExchangeSubstitutionsAvailable } from './return-exchanges';
+import { registerSalesReportRoutes } from './sales-report-routes';
+import { registerProductRuleRoutes } from './product-rule-routes';
+import { registerOrderProductLogisticsRoutes } from './order-product-logistics';
+import { productLogisticsAvailable, productLogisticsRequestActor } from './product-logistics';
+import { productSkuAvailable } from './product-sku';
+import { registerInventoryBulkEditRoutes } from './inventory-bulk-edit-routes';
+import { registerPriceBulkEditRoutes } from './price-bulk-edit-routes';
+import { registerPriceFileImportRoutes } from './price-file-import-routes';
+import { priceFileImportAvailable } from './price-file-import';
+import { registerPriceMatrixImportRoutes } from './price-matrix-import-routes';
+import { priceMatrixImportAvailable } from './price-matrix-import';
+import { registerStockFileImportRoutes } from './stock-file-import-routes';
+import { registerLanguageFileImportRoutes } from './language-file-import-routes';
+import { languageFileImportAvailable } from './language-file-import';
+import { stockFileImportAvailable } from './stock-file-import';
+import { registerProductTranslationBulkEditRoutes } from './product-translation-bulk-edit-routes';
+import { registerPackingWorkstationRoutes } from './packing-workstation-routes';
+import { registerPackingPhotoRoutes } from './packing-photo-routes';
+import { assertWmsLegacyQuantityWriteInTx } from './wms-lots';
+import { registerWmsLotsRoutes } from './wms-lots-routes';
+import { registerWmsStocktakeRoutes } from './wms-stocktake-routes';
+import { registerStocktakeScanRoutes } from './stocktake-scan-routes';
+import { registerPaymentImportRoutes } from './payment-import-routes';
+import { paymentImportAllocationsAvailable } from './payment-import-allocations';
+import { proformasAvailable } from './proformas';
+import { registerProformaRoutes } from './proforma-routes';
+import { proformaBatchesAvailable } from './proforma-batches';
+import { registerProformaBatchRoutes } from './proforma-batch-routes';
+import { printJobsAvailable } from './print-jobs';
+import { registerPrintJobRoutes } from './print-job-routes';
+import { shipmentLabelPrintAvailable } from './shipment-label-print';
+import { registerShipmentLabelPrintRoutes } from './shipment-label-print-routes';
+import { shipmentLabelCacheAvailable } from './shipment-label-cache';
+import { registerShipmentLabelCacheRoutes } from './shipment-label-cache-routes';
+import { shipmentLabelBatchesAvailable } from './shipment-label-batches';
+import { registerShipmentLabelBatchRoutes } from './shipment-label-batch-routes';
+import { orderParcelsAvailable } from './order-parcels';
+import { registerOrderParcelRoutes } from './order-parcels-routes';
+import { orderParcelReleasesAvailable } from './order-parcel-releases';
+import { registerOrderParcelReleaseRoutes } from './order-parcel-releases-routes';
+import { registerPaymentImportAllocationRoutes } from './payment-import-allocation-routes';
+import { registerOrderFieldRoutes } from './order-field-routes';
+import { registerOrderFieldBatchRoutes } from './order-field-batch-routes';
+import { registerOrderFieldMappingRoutes } from './order-field-mapping-routes';
+import { orderFieldFiltersSchema, orderFieldColumnsSchema } from './order-fields-schema';
+import { orderFieldListScopeInTx, projectOrderFieldColumnsInTx } from './order-fields';
+import { registerWorkspaceBillingRoutes } from './workspace-billing-routes';
+import { registerCatalogAiRoutes } from './catalog-ai-routes';
+import { registerDeepLRoutes } from './deepl-catalog-routes';
+import { registerDeepLBatchRoutes } from './deepl-batch-routes';
+import { deeplSettings, deeplCredentials } from './deepl';
+import { registerShopifySubscriptionRoutes } from './shopify-subscription-routes';
+import { registerShopifyTranslationRoutes } from './shopify-translation-routes';
+import { registerShopifyTranslationBatchRoutes } from './shopify-translation-batch-routes';
+import { registerShopifyOAuthRoutes } from './shopify-oauth-routes';
+import { registerShopifyWebhookRoutes } from './shopify-webhook-routes';
+import { shopifyConnectionCredentials, shopifyRedirect } from './shopify-auth-input';
+import { registerShopifyFulfillmentRoutes } from './shopify-fulfillment-routes';
+import { registerEmailRoutes } from './email-routes';
+import { inboundAvailable } from './email-inbound';
+import { registerEmailInboundRoutes } from './email-inbound-routes';
+import { smtpSettings, smtpCredentials } from './smtp';
+import { registerPasswordRecoveryRoutes } from './password-recovery';
+import {
+  workspaceMfaAvailable,
+  mfaSessionColumns,
+  mfaSessionJoins,
+  requireWorkspaceMfa,
+} from './mfa-policy';
+import { registerWorkspaceSecurityRoutes } from './workspace-security-routes';
+import { registerPickingWaveRoutes } from './picking-wave-routes';
+import { registerPickingWavePrintRoutes } from './picking-wave-print-routes';
+import { amazonSettings, amazonConnectionCredentials } from './amazon';
+import { registerIntegrationWorkspaceRoutes } from './integration-workspace';
+import {registerLocalWooHttpFixtureRoutes} from './local-woo-http-fixture-routes';
+import {assertLocalWooHttpFixture,localWooHttpFixtureChannelId,type LocalWooHttpFixture} from './local-woo-http-fixture';
+import {assertLocalWooHttpRegistry,localWooRegistryChannelIds,type LocalWooHttpRegistry} from './local-woo-http-registry';
+import { registerIntegrationRecoveryRoutes } from './integration-recovery-routes';
+import { registerAmazonOAuthRoutes } from './amazon-oauth-routes';
+import { readAmazonOrders, amazonReadPolicy } from './amazon-order-sync';
+import { registerAmazonFulfillmentRoutes } from './amazon-fulfillment-routes';
+import { registerAmazonMcfReadOnlyRoutes } from './amazon-mcf-readonly-routes';
+import {inspectOrdinaryConnectorTransport,ProviderReadError,type OrdinaryConnectorTransport,type AmazonMcfReadTransport} from './provider-read-transport';
+import { registerEbayFulfillmentRoutes } from './ebay-fulfillment-routes';
+import { readEbayOrders, ebayReadPolicy } from './ebay-order-sync';
+import { ebayConnectionCredentials, ebaySettings } from './ebay';
+import { registerOdooImageRoutes } from './odoo-image-imports';
+import { registerOdooCatalogSyncRoutes } from './odoo-catalog-sync';
+import { registerOdooExportRoutes } from './odoo-export-routes';
+import { Odoo, odooConfig } from './odoo';
+import { demoOdooContext } from './odoo-catalog';
+import { registerB2bNetworkRoutes } from './b2b-network';
+import {
+  registerB2bNetworkDropshippingRoutes,
+  b2bNetworkDropshippingAvailable,
+} from './b2b-network-dropshipping';
+import { registerB2bNetworkOrderRoutes } from './b2b-network-orders';
+import { registerB2bNetworkReturnRoutes } from './b2b-network-returns';
+import { registerB2bRoutes } from './b2b';
+import { registerDpdPickupScheduleRoutes } from './dpd-pickup-schedules';
+import {
+  inventoryQuery,
+  inventorySnapshotQuery,
+  movementQuery,
+  listInventory,
+  inventorySnapshot,
+  listMovements,
+} from './inventory';
+import { Shopify, shopifyStore, shopifyToken } from './shopify';
+import { registerStocktakeRoutes } from './stocktake-routes';
+import { registerSmsRoutes } from './sms-routes';
+import { registerSmsSubmissionRoutes } from './sms-submission-routes';
+import { registerStockLocationRoutes } from './stock-location-routes';
+import { locationScan } from './stock-locations';
+import Fastify from 'fastify';
+import cookie from '@fastify/cookie';
+import rateLimit from '@fastify/rate-limit';
+import { captureRateLimitPeer } from './http-peer-ip';
+import staticPlugin from '@fastify/static';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { randomUUID, createHash } from 'node:crypto';
+import { z } from 'zod';
+import { pool, tenantTx, tenantReadTx, localConfig, preflightOrdinaryConstructionPim } from './db';
+import { Problem, ensure } from './errors';
+import { checkPassword, tokenHash, encrypt, decrypt } from './security';
+import { registerWorkspaceRoutes, loginWorkspace, sessionCookie } from './workspace-routes';
+import { registerAccountSecurityRoutes, secureLogin } from './account-security';
+import { collectPublicRoutes, authenticateApiKey, registerDeveloperRoutes } from './developer-api';
+import { registerOutboundRoutes } from './outbound-routes';
+import { registerReturnRoutes } from './return-routes';
+import { registerReturnAssistantRoutes } from './return-assistant-routes';
+import { returnAssistantAvailable } from './return-assistant';
+import { returnAssistantQueuesAvailable } from './return-assistant-queues';
+import { registerReturnAssistantQueueRoutes } from './return-assistant-queues-routes';
+import { registerPaymentRoutes } from './payment-routes';
+import { registerSourcePaymentRoutes } from './source-payment-routes';
+import { registerPortalRoutes } from './portal-routes';
+import { registerCustomerMessageRoutes } from './customer-message-routes';
+import { registerCustomerMessageWorkflowRoutes } from './customer-message-workflow-routes';
+import { documentBody } from './portal-view';
+import { psId, psStateIds } from './prestashop-orders';
+import { registerImportRoutes, genericImportResponseDisposition } from './import-routes';
+import type { Transport } from './integrations';
+import { createProduct } from './catalog';
+import { registerCatalogSourceRoutes } from './catalog-source-routes';
+import { registerSupplierCatalogRoutes } from './supplier-catalog-routes';
+import { registerSupplierFileSourceRoutes } from './supplier-file-source-routes';
+import { supplierFileSourcesAvailable } from './supplier-file-sources';
+import { registerSupplierRemoteRoutes } from './supplier-remote-routes';
+import { supplierRemoteFeedsAvailable } from './supplier-remote-feeds';
+import { registerSupplierBulkRoutes } from './supplier-bulk-routes';
+import { registerSupplierScheduleRoutes } from './supplier-schedules';
+import { bigbuyToken } from './bigbuy';
+import { registerCatalogRoutes } from './catalog-routes';
+import { registerProductCatalogRoutes } from './product-catalogs-routes';
+import { productCatalogsAvailable } from './product-catalogs';
+import { warehouseInventoryPoliciesAvailable } from './warehouse-inventory-policies';
+import { registerWarehouseInventoryPolicyRoutes } from './warehouse-inventory-policies-routes';
+import { returnDestinationStatusesAvailable } from './return-destination-statuses';
+import { registerReturnDestinationStatusRoutes } from './return-destination-statuses-routes';
+import { returnDestinationsAvailable } from './return-destinations';
+import { registerReturnDestinationsRoutes } from './return-destinations-routes';
+import { stocktakeAdjustmentsAvailable } from './stocktake-adjustments';
+import { registerStocktakeAdjustmentRoutes } from './stocktake-adjustments-routes';
+import { registerWarehouseDocumentRegisterRoutes } from './warehouse-document-register-routes';
+import { catalogStockControlAvailabilityInTx } from './catalog-stock-control-transaction';
+import { registerCatalogStockControlRoutes } from './catalog-stock-control-routes';
+import {claimStockWriterActivation,type StockWriterActivation} from './catalog-stock-writer-coverage';
+import { registerCatalogStockCountRoutes } from './catalog-stock-count-routes';
+import { warehouseAutomaticWzAvailable } from './warehouse-automatic-wz';
+import { registerWarehouseAutomaticWzRoutes } from './warehouse-automatic-wz-routes';
+import { registerIssuedWzRoutes } from './warehouse-wz-issued-routes';
+import { issuedWzAvailable } from './warehouse-wz-issued';
+import { receiveReturnDestinationCoreInTx } from './return-destinations-core';
+import { applyReturnDestinationPhysicalInTx } from './return-destinations-stock';
+import { b2bCatalogScopeAvailable } from './b2b-catalog-scope';
+import { registerB2BCatalogScopeRoutes } from './b2b-catalog-scope-routes';
+import { registerCatalogBulkEditRoutes } from './catalog-bulk-edit-routes';
+import { registerCatalogExportRoutes } from './catalog-export-routes';
+import { registerCatalogExportProfileRoutes } from './catalog-export-profile-routes';
+import { registerCatalogFileImportRoutes } from './catalog-file-import-routes';
+import { registerWarehouseRoutes } from './warehouse-routes';
+import { registerPurchasingRoutes } from './purchasing-routes';
+import { registerReplenishmentPlanRoutes } from './replenishment-plan-routes';
+import { registerReplenishmentAutomationRoutes } from './replenishment-automation-routes';
+import { replenishmentAutomationsAvailable } from './replenishment-automations';
+import { orderMergesAvailable } from './order-merges';
+import { registerOrderMergeRoutes } from './order-merge-routes';
+import {
+  replenishmentForecastAvailable,
+  replenishmentAppendAvailable,
+} from './replenishment-plans';
+import { registerShippingRoutes, shipmentLabel } from './shipping-routes';
+import {registerLocalCarrierRoutes} from './local-carrier-routes';
+import { registerDpdRoutes, cachedDpdLabel } from './dpd-shipping';
+import { registerCollectionRoutes } from './dpd-collections';
+import { registerInvoiceRoutes, invoicePdf } from './invoice-routes';
+import { registerAutomationScheduleRoutes } from './automation-schedule-routes';
+import { registerOperationRoutes } from './operation-routes';
+import { registerVariantOfferRoutes } from './variant-offer-routes';
+import { registerAllegroBatchRoutes } from './allegro-batch-routes';
+import { registerShopifyOfferRoutes } from './shopify-offer-routes';
+import { registerOfferRoutes } from './offer-routes';
+import {registerLocalSimulationOfferRoutes} from './local-simulation-offer-routes';
+import {registerLocalWooFlowRoutes} from './local-woo-flow-routes';
+import {registerLocalAutomationRoutes} from './local-automation-routes';
+import { registerOfferSyncRoutes } from './offer-sync-routes';
+import { registerOrderStatusRoutes } from './order-status-routes';
+import { registerTrackingRoutes } from './tracking-routes';
+import { registerPricingRoutes } from './pricing-routes';
+import { registerRepricingRoutes } from './repricing-routes';
+import { registerCompetitorObservationRoutes } from './competitor-observations-routes';
+import { registerBuyerAddressRoutes } from './buyer-address-routes';
+import { effectiveDeliveryInTx } from './buyer-address';
+import { registerRepricingScheduleRoutes } from './repricing-schedules';
+import { registerSyncRoutes } from './sync-routes';
+import { channelRead, withAllegroRequestContext, enlistAllegroContextInTx, type IntegrationContext } from './channel-access';
+import {
+  createOrder,
+  getOrder,
+  orderSchema,
+  productSchema,
+  transition,
+  scan,
+  shipDemo,
+  issueDocument,
+  audit,
+  type Actor,
+} from './domain';
+import {
+  registry,
+  connector,
+  validateRemoteUrl,
+  InPost,
+  Allegro,
+  WooCommerce,
+  PrestaShop,
+  Fakturownia,
+} from './integrations';
+declare module 'fastify' {
+  interface FastifyRequest {
+    actor: Actor;
+    apiScopes?: string[];
+    currentUser: {
+      api_key_id?: string;
+      id: string;
+      plan: string;
+      name: string;
+      email: string;
+      tenant_name: string;
+      role: string;
+      tenant_id: string;
+      organization_requires_mfa?: boolean;
+      mfa_required?: boolean;
+      mfa_enrollment_required?: boolean;
+    };
+  }
+}
+const idOf = (params: unknown) => z.object({ id: z.uuid() }).parse(params).id;
+const canWrite = (a: Actor, admin = false) =>
+  ensure(
+    admin ? a.role === 'admin' : a.role !== 'viewer',
+    403,
+    admin ? 'Wymagana rola administratora' : 'Konto ma uprawnienia tylko do odczytu',
+  );
+const escape = (s: unknown) =>
+  String(s ?? '').replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
+  );
+const printLayout = (title: string, body: string, nativeProforma = false) =>
+  `<!doctype html><html lang="pl"><meta charset="utf-8"><title>${escape(title)}</title><style>body{font:16px system-ui;max-width:850px;margin:50px auto;color:#18263c}h1{font-size:26px}.demo{padding:16px;background:#fff2ce;border:1px solid #c89c23}table{width:100%;border-collapse:collapse;margin:30px 0}td,th{text-align:left;padding:12px;border-bottom:1px solid #ddd}button{padding:12px}@media print{button{display:none}}</style><h1>DYNAMINDS Ecommerce</h1><p class="demo">${nativeProforma ? 'Pro forma — propozycja rozliczenia. Nie jest fakturą księgową ani potwierdzeniem wpłaty.' : 'DEMO — dokument testowy. Nie jest dokumentem księgowym ani etykietą przewoźnika.'}</p>${body}<button onclick="window.print()">Drukuj</button></html>`;
+import {createLargeImportApplication,type NativeDrivers as LargeImportNativeDrivers} from './large-import/application';
+import {registerBusinessQuotaRecoveryRoutes} from './large-import/business-quota-recovery-routes';
+import type {BusinessQuotaRecoveryPort} from './large-import/business-quota-recovery';
+
+import {bindOrdinaryConnectorTransport} from './ordinary-connector-routing';
+export {bindOrdinaryConnectorTransport} from './ordinary-connector-routing';
+
+export async function buildApp({
+  logging = false,
+  integrationTransport,
+  amazonMcfReadTransport,
+  ordinaryConnectorTransport,
+  miraklReadRepository,
+  connectorJobExecution,
+  nbpRates,
+  oauthConfig,
+  readOnly = false,
+  previewPort = 4101,
+  backgroundWorkersEnabled = false,
+  scopedAutomationEnabled = false,
+  trustedLocalUiOrigin,
+  largeImportDrivers,
+  largeImportRecovery,
+  ordinaryRequestLifetime,
+  localWooFixture,
+  localWooRegistry,
+  stockWriterActivation,
+  staticRoot,
+}: {
+  logging?: boolean;
+  integrationTransport?: Transport;
+  amazonMcfReadTransport?: AmazonMcfReadTransport;
+  ordinaryConnectorTransport?: OrdinaryConnectorTransport;
+  miraklReadRepository?: MiraklReadRepository;
+  connectorJobExecution?: OrdinaryConnectorJobExecution;
+  nbpRates?: NbpRatesPort;
+  oauthConfig?: IntegrationContext['oauthConfig'];
+  readOnly?: boolean;
+  previewPort?: number;
+  backgroundWorkersEnabled?: boolean;
+  scopedAutomationEnabled?: boolean;
+  trustedLocalUiOrigin?: string;
+  largeImportDrivers?: LargeImportNativeDrivers;
+  largeImportRecovery?: BusinessQuotaRecoveryPort;
+  ordinaryRequestLifetime?: OrdinaryRequestLifetime;
+  localWooFixture?: LocalWooHttpFixture;
+  localWooRegistry?: LocalWooHttpRegistry;
+  stockWriterActivation?: StockWriterActivation;
+  staticRoot?: string;
+} = {}) {
+  // Validate trusted construction input before any database work. Requests are
+  // still compared literally; there is no wildcard or Origin normalization.
+  ensure(!(localWooFixture&&localWooRegistry),500,'one-local-Woo-construction-required');
+  if(localWooFixture)assertLocalWooHttpFixture(localWooFixture);if(localWooRegistry)assertLocalWooHttpRegistry(localWooRegistry);
+  const hasLocalWoo=!!(localWooFixture||localWooRegistry);
+  const localWooChannelIds=localWooRegistry?localWooRegistryChannelIds(localWooRegistry):localWooFixture?Object.freeze([localWooHttpFixtureChannelId(localWooFixture)]):Object.freeze([] as string[]);
+  const localWooTransport=localWooRegistry?.transport??localWooFixture?.transport;
+  if(localWooTransport){ensure(integrationTransport===undefined||integrationTransport===localWooTransport,500,'local-Woo-transport-must-match-owned-registry');integrationTransport=localWooTransport;}
+  if(ordinaryConnectorTransport!==undefined)ensure(!readOnly,423,'connector-access-readonly-conflict');
+  if(miraklReadRepository!==undefined)ensure(!readOnly&&ordinaryConnectorTransport&&inspectOrdinaryConnectorTransport(ordinaryConnectorTransport).providers.some(p=>p.provider==='mirakl'),423,'mirakl-read-state-requires-explicit-connector-access');
+  assertOrdinaryConnectorJobExecution(connectorJobExecution,ordinaryConnectorTransport,readOnly,hasLocalWoo);
+  ensure(!connectorJobExecution||!backgroundWorkersEnabled,423,'manual-connector-jobs-no-background-worker');
+  integrationTransport=bindOrdinaryConnectorTransport(integrationTransport,ordinaryConnectorTransport);
+  if(stockWriterActivation!==undefined)ensure(!readOnly,423,'stock-writer-readonly-construction');
+  const stockWriterInstallation=stockWriterActivation===undefined?undefined:await claimStockWriterActivation(stockWriterActivation);
+  const extraLocalUiOrigin = trustedLocalUiOrigin === undefined
+    ? [] : [validateTrustedLocalUiOrigin(trustedLocalUiOrigin)];
+  const accountSecurityAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.account_security') present")).rows[0].present,
+  );
+  const emailAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.email_messages') present")).rows[0].present,
+  );
+  const emailInboundAvailable = await inboundAvailable(pool);
+  const productCatalogsIsAvailable = await productCatalogsAvailable(pool);
+  if (readOnly) await validateRecoveredPimBeforeReadonly(pool);
+  const constructionPim = await preflightOrdinaryConstructionPim();
+  const pimDictionariesIsAvailable = constructionPim === undefined ? await preflightPim(pool) : constructionPim.pimAvailable;
+  const pimNestedMappingIsAvailable = constructionPim === undefined ? await preflightNestedPim(pool,pimDictionariesIsAvailable) : constructionPim.nestedAvailable;
+  const largeImports = await createLargeImportApplication(largeImportDrivers,readOnly);
+  const b2bCatalogScopeIsAvailable = await b2bCatalogScopeAvailable(pool);
+  const emailAttachmentsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.email_message_files') present")).rows[0].present,
+  );
+  const emailActionsAvailable = (
+    await pool.query(
+      "SELECT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=to_regclass('public.email_batches') AND attname='automation_run_id' AND NOT attisdropped) available",
+    )
+  ).rows[0].available;
+  const passwordRecoveryAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.account_password_resets') present")).rows[0]
+      .present,
+  );
+  const workspaceMfaPolicyAvailable = await workspaceMfaAvailable(pool);
+  const shopifyFulfillmentAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.shopify_fulfillment_plans') present")).rows[0]
+      .present,
+  );
+  const workspaceBillingAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.workspace_billing_accounts') present")).rows[0]
+      .present,
+  );
+  const catalogAiAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.ai_catalog_drafts') present")).rows[0].present,
+  );
+  const deeplAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.deepl_catalog_drafts') present")).rows[0].present,
+  );
+  const deeplBatchAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.deepl_catalog_batches') present")).rows[0]
+      .present,
+  );
+  const shopifySubscriptionsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.shopify_subscription_plans') present")).rows[0]
+      .present,
+  );
+  const shopifyTranslationsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.shopify_translation_plans') present")).rows[0]
+      .present,
+  );
+  const shopifyTranslationBatchesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.shopify_translation_batches') present")).rows[0]
+      .present,
+  );
+  const productRulesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.product_rules') present")).rows[0].present,
+  );
+  const catalogBulkEditAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.catalog_bulk_edit_previews') present")).rows[0]
+      .present,
+  );
+  const productLogisticsIsAvailable = await productLogisticsAvailable(pool as any);
+  const productSkuIsAvailable = await productSkuAvailable(pool as any);
+  const inventoryBulkEditAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.inventory_bulk_edit_previews') present")).rows[0]
+      .present,
+  );
+  const paymentImportsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.payment_import_executions') present")).rows[0]
+      .present,
+  );
+  const paymentImportAllocationsIsAvailable = await paymentImportAllocationsAvailable(pool);
+  const proformasIsAvailable = await proformasAvailable(pool);
+  const proformaBatchesIsAvailable = await proformaBatchesAvailable(pool);
+  const priceBulkEditAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.price_bulk_edit_previews') present")).rows[0]
+      .present,
+  );
+  const priceFileImportsAvailable = await priceFileImportAvailable(pool);
+  const priceMatrixImportsAvailable = await priceMatrixImportAvailable(pool);
+  const stockFileImportsAvailable = await stockFileImportAvailable(pool);
+  const languageFileImportsAvailable = await languageFileImportAvailable(pool);
+  const supplierFileFunctionPresent = Boolean(
+    (await pool.query("SELECT to_regprocedure('public.supplier_file_installed()') present")).rows[0]
+      .present,
+  );
+  const supplierFileSourcesIsAvailable =
+    supplierFileFunctionPresent && (await supplierFileSourcesAvailable(pool));
+  const supplierRemoteFeedsIsAvailable = await supplierRemoteFeedsAvailable(pool);
+  const returnExchangesIsAvailable = await returnExchangeAvailable(pool);
+  const returnExchangeSubstitutionsIsAvailable =
+    returnExchangesIsAvailable && (await returnExchangeSubstitutionsAvailable(pool));
+  const productTranslationBulkEditAvailable = Boolean(
+    (
+      await pool.query(
+        "SELECT to_regclass('public.product_translation_bulk_edit_previews') present",
+      )
+    ).rows[0].present,
+  );
+  const packingWorkstationAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.packing_receipts') present")).rows[0].present,
+  );
+  const returnAssistantIsAvailable = await returnAssistantAvailable(pool);
+  const returnAssistantQueuesIsAvailable = await returnAssistantQueuesAvailable(pool);
+  const warehouseInventoryPoliciesIsAvailable = await warehouseInventoryPoliciesAvailable(pool);
+  const returnDestinationStatusesIsAvailable = await returnDestinationStatusesAvailable(pool);
+  const returnDestinationsIsAvailable = await returnDestinationsAvailable(pool);
+  const stocktakeAdjustmentsIsAvailable = await stocktakeAdjustmentsAvailable(pool);
+  const warehouseAutomaticWzIsAvailable = await warehouseAutomaticWzAvailable(pool);
+  const warehouseWzIssuerIsAvailable = await issuedWzAvailable(pool);
+  const catalogStockControlStatus = await catalogStockControlAvailabilityInTx(pool);
+  const catalogStockControlIsAvailable = catalogStockControlStatus === 'available';
+  const printJobsIsAvailable = await printJobsAvailable(pool);
+  const packedLabelPrintIsAvailable = await packedLabelPrintAvailable(pool);
+  const localInvoicesIsAvailable = await localInvoicesAvailable(pool);
+  const shipmentLabelPrintIsAvailable = await shipmentLabelPrintAvailable(pool);
+  const shipmentLabelCacheIsAvailable = await shipmentLabelCacheAvailable(pool);
+  const shipmentLabelBatchesIsAvailable = await shipmentLabelBatchesAvailable(pool);
+  const physicalParcelWzIsAvailable = await preflightPhysicalParcelWz(pool);
+  const orderParcelsIsAvailable = await orderParcelsAvailable(pool);
+  const orderParcelReleasesIsAvailable = await orderParcelReleasesAvailable(pool);
+  const wmsLotsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.wms_policies') present")).rows[0].present,
+  );
+  const wmsStocktakesAvailable = Boolean(
+    (
+      await pool.query(`SELECT bool_and(to_regclass('public.'||name) IS NOT NULL) present
+      FROM unnest(ARRAY['wms_stocktakes','wms_stocktake_lines','wms_stocktake_scope_layers',
+      'wms_stocktake_measurements','wms_stocktake_measurement_layers','wms_stocktake_reviews',
+      'wms_stocktake_review_rows','wms_stocktake_postings']) name`)
+    ).rows[0].present,
+  );
+  const stocktakeScansAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.stocktake_scan_receipts') present")).rows[0]
+      .present,
+  );
+  const catalogExportProfilesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.catalog_export_profiles') present")).rows[0]
+      .present,
+  );
+  const catalogFileImportsAvailable = Boolean(
+    (
+      await pool.query(`SELECT bool_and(to_regclass('public.' || name) IS NOT NULL) present
+      FROM unnest(ARRAY['catalog_file_import_previews','catalog_file_import_rows',
+      'catalog_file_import_executions','catalog_file_import_execution_rows']) name`)
+    ).rows[0].present,
+  );
+  const orderFieldsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.order_field_definitions') present")).rows[0]
+      .present,
+  );
+  const replenishmentPlansAvailable = Boolean(
+    (
+      await pool.query(`SELECT
+      (SELECT bool_and(to_regclass('public.'||name) IS NOT NULL)
+       FROM unnest(ARRAY['replenishment_policies','purchasing_source_versions','purchasing_stock_changes',
+        'replenishment_previews','replenishment_rows','replenishment_executions',
+        'replenishment_execution_rows']) name)
+      AND to_regprocedure('public.purchasing_source_admit()') IS NOT NULL
+      AND to_regprocedure('public.purchasing_source_version()') IS NOT NULL
+      AND to_regprocedure('public.purchasing_stock_admit()') IS NOT NULL
+      AND (SELECT count(*)=2 FROM pg_attribute
+       WHERE attrelid=to_regclass('public.purchase_orders') AND NOT attisdropped
+       AND attname IN ('replenishment_execution_id','replenishment_group_index')) available`)
+    ).rows[0].available,
+  );
+  const replenishmentForecastIsAvailable = await replenishmentForecastAvailable(pool);
+  const replenishmentAppendIsAvailable = await replenishmentAppendAvailable(pool);
+  const replenishmentAutomationsIsAvailable = await replenishmentAutomationsAvailable(pool);
+  const orderMergesIsAvailable = await orderMergesAvailable(pool);
+  const b2bDropshippingIsAvailable = await b2bNetworkDropshippingAvailable(pool);
+  const b2bExternalOrderIntentsIsAvailable = await b2bExternalOrderIntentsAvailable(pool);
+  const b2bExternalOrderImportsIsAvailable = await b2bExternalOrderImportsAvailable(pool);
+  const b2bDropshippingReturnsIsAvailable = await b2bDropshippingReturnsAvailable(pool);
+  const b2bReturnLocalOriginsIsAvailable = await b2bReturnLocalOriginsAvailable(pool);
+  const orderMergeClaimsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.order_merge_claims') IS NOT NULL AS available"))
+      .rows[0].available,
+  );
+  const operationalOrderPredicate = orderMergeClaimsAvailable
+    ? 'NOT EXISTS(SELECT 1 FROM order_merge_claims m WHERE m.tenant_id=o.tenant_id AND m.source_order_id=o.id)'
+    : 'TRUE';
+  const orderFieldBatchesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.order_field_batch_previews') present")).rows[0]
+      .present,
+  );
+  const orderFieldMappingsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.order_field_mapping_profiles') present")).rows[0]
+      .present,
+  );
+  const customerMessagesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.customer_message_threads') present")).rows[0]
+      .present,
+  );
+  const customerMessageWorkflowsAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.customer_message_workflow_receipts') present"))
+      .rows[0].present,
+  );
+  const shopifyWebhooksAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.shopify_webhook_configs') present")).rows[0]
+      .present,
+  );
+  const amazonFulfillmentAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.amazon_fulfillment_plans') present")).rows[0]
+      .present,
+  );
+  const pickingWavesAvailable = Boolean(
+    (await pool.query("SELECT to_regclass('public.picking_waves') present")).rows[0].present,
+  );
+  const sessionName = readOnly ? `dyna_session_preview_${previewPort}` : 'dyna_session';
+  const context: IntegrationContext = {
+    transport: readOnly
+      ? async () => {
+          throw new Problem(423, 'Połączenia z dostawcami są wyłączone w podglądzie kopii');
+        }
+      : integrationTransport,
+    oauthConfig,
+    sessionName,
+    allegroSecurity: { accountSecurityAvailable, workspaceMfaPolicyAvailable, readOnly },
+    miraklImportAuthority:async(c,actor)=>{
+      await assertMiraklSessionAuthorityInTx(c,actor,{accountSecurityAvailable,workspaceMfaPolicyAvailable,readOnly});
+      enlistMiraklSessionAuthorityInTx(c,actor,{accountSecurityAvailable,workspaceMfaPolicyAvailable,readOnly});
+    },
+  };
+  let connectorJobsAvailable=false;
+  const app = Fastify({
+    logger: logging
+      ? {
+          serializers: {
+            req: (req: any) => ({
+              method: req.method,
+              url:
+                req.url.startsWith('/api/oauth/') || req.url.startsWith('/api/auth/password/')
+                  ? req.url.split('?')[0]
+                  : req.url.replace(/(\/api\/public\/orders\/)[a-f0-9]{48}/g, '$1[redacted]'),
+              remoteAddress: req.ip,
+            }),
+          },
+        }
+      : false,
+    bodyLimit: 1048576,
+  });
+  try {
+  if (ordinaryRequestLifetime) installOrdinaryRequestLifetime(app,ordinaryRequestLifetime);
+  const rateLimitPeer = captureRateLimitPeer(app.server);
+  app.addHook('onClose', async () => { rateLimitPeer.detach(); });
+  const bindPublicRoutes = collectPublicRoutes(app);
+  await app.register(cookie);
+  await app.register(rateLimit, { max: 600, timeWindow: '1 minute', keyGenerator: rateLimitPeer.keyGenerator });
+  app.decorateRequest('actor');
+  app.decorateRequest('apiScopes');
+  app.decorateRequest('currentUser');
+  app.setErrorHandler((err, req, reply) => {
+    const respond = () => {
+    let status = 500,
+      detail = 'Nieoczekiwany błąd serwera';
+    if (err instanceof Problem) {
+      status = err.status;
+      detail = err.message;
+    } else if (err instanceof z.ZodError) {
+      status = 422;
+      detail = err.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
+    } else if (
+      (err as any).code === 'P0001' &&
+      [
+        'Replenishment proof count quota exceeded',
+        'Replenishment proof storage quota exceeded',
+        'Replenishment preview exceeds eight MiB',
+      ].includes((err as Error).message)
+    ) {
+      const message = (err as Error).message;
+      status = message === 'Replenishment preview exceeds eight MiB' ? 413 : 429;
+      detail =
+        status === 413
+          ? 'Podgląd przekracza dopuszczalny rozmiar. Zmniejsz wybór produktów.'
+          : message === 'Replenishment proof count quota exceeded'
+            ? 'Osiągnięto limit trwałych planów'
+            : 'Przekroczono limit przechowywania planów tej organizacji';
+    } else if (
+      (err as any).code === 'P0001' &&
+      [
+        'Replenishment automation history limit',
+        'Replenishment automation pending limit',
+        'Replenishment automation byte limit',
+        'Replenishment automation rule limit',
+      ].includes((err as Error).message)
+    ) {
+      status = 429;
+      detail =
+        'Kolejka lub historia automatycznego uzupełniania jest pełna. Zmiana zapasu została wycofana; sprawdź reguły i oczekujące zadania.';
+    } else if ((err as any).code === 'P0001' || (err as any).code === 'P0002') {
+      status = 409;
+      detail = (err as Error).message.replace(
+        /\b(products|orders|channels|warehouses|memberships)\b/g,
+        (resource) =>
+          ({
+            products: 'produkty',
+            orders: 'zamówienia',
+            channels: 'połączenia',
+            warehouses: 'magazyny',
+            memberships: 'miejsca w zespole',
+          })[resource]!,
+      );
+    } else if (
+      (err as any).code === '23514' &&
+      [
+        'Realizacja zamówienia została przeniesiona przez łączenie',
+        'Realizacja źródłowego zamówienia została przejęta',
+        'Przeniesiona rezerwacja jest niezmienna',
+      ].includes((err as Error).message)
+    ) {
+      status = 409;
+      detail =
+        'Realizacja tego zamówienia została przeniesiona przez łączenie. Otwórz zamówienie wynikowe.';
+    } else if (
+      (err as any).code === '23514' &&
+      [
+        'Przekazanie przekracza bieżącą dostępną ilość dostawcy',
+        'Przekazanie przekracza bieżący wolny fragment wydania WMS',
+        'Przekazanie przekracza bieżący koszt dostawy dostawcy',
+      ].includes((err as Error).message)
+    ) {
+      status = 409;
+      detail =
+        'Zakres zwrotu koliduje z inną sprawą. Odczytaj aktualne ilości i fragmenty wydania.';
+    } else if ((err as any).code === '23505') {
+      status = 409;
+      detail = 'Rekord już istnieje';
+    } else if ((err as any).code === '23503') {
+      status = 422;
+      detail = 'Nieprawidłowe powiązanie danych';
+    } else if ((err as any).statusCode === 429) {
+      status = 429;
+      detail = 'Przekroczono limit żądań';
+    } else if ((err as any).statusCode >= 400 && (err as any).statusCode < 500) {
+      status = (err as any).statusCode;
+      detail = 'Nieprawidłowe żądanie';
+    } else app.log.error({ message: (err as Error).message, requestId: req.id }, 'Request failed');
+    reply
+      .code(status)
+      .type('application/problem+json')
+      .send({
+        type: 'about:blank',
+        title: status < 500 ? 'Nie można wykonać operacji' : 'Błąd serwera',
+        status,
+        detail,
+        ...(err instanceof Problem && err.code ? { code: err.code } : {}),
+        ...(err instanceof Problem && err.status >= 400 && err.status < 500 && genericImportResponseDisposition(err, req) ? {commit_disposition: genericImportResponseDisposition(err, req)} : {}),
+        request_id: req.id,
+      });
+    };
+    // A refused new request has no admitted async work; its original error response is synchronous.
+    return hasOrdinaryRequestAdmission(ordinaryRequestLifetime,req)
+      ? runOrdinaryRequestError(ordinaryRequestLifetime,req,respond) : respond();
+  });
+  app.addHook('onRequest', async (req, reply) => {
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('Referrer-Policy', 'no-referrer');
+    if (!req.url.startsWith('/api/')) return;
+    reply.header('Cache-Control', 'no-store');
+    if (readOnly && req.url.startsWith('/api/oauth/'))
+      throw new Problem(423, 'OAuth jest wyłączony w podglądzie kopii');
+    if (
+      readOnly &&
+      (req.url.split('?')[0] === '/api/inpost/points' ||
+        /^\/api\/integrations\/[^/]+\/preview(?:\?|$)/.test(req.url))
+    )
+      throw new Problem(423, 'Połączenia z dostawcami są wyłączone w podglądzie kopii');
+    if (readOnly && !['GET', 'HEAD', 'OPTIONS'].includes(req.method))
+      ensure(
+        req.method === 'POST' &&
+          ([
+            '/api/auth/login',
+            '/api/auth/logout',
+            '/api/workspaces/switch',
+            '/api/catalog/exports/file',
+            '/api/v1/catalog/exports/file',
+            '/api/catalog/exports/preview',
+            '/api/v1/catalog/exports/preview',
+          ].includes(req.url.split('?')[0]) ||
+            /^\/api\/public\/b2b\/[0-9a-f-]+\/(login|logout)$/.test(req.url.split('?')[0])),
+        423,
+        'Podgląd odtworzonej kopii jest tylko do odczytu. Operacja nie została wykonana.',
+      );
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.headers.origin) {
+      ensure(
+        [
+          'http://127.0.0.1:5173',
+          'http://localhost:5173',
+          'http://127.0.0.1:4100',
+          'http://localhost:4100',
+          ...extraLocalUiOrigin,
+          ...(readOnly
+            ? [`http://localhost:${previewPort}`, `http://127.0.0.1:${previewPort}`]
+            : []),
+        ].includes(req.headers.origin),
+        403,
+        'Niedozwolone pochodzenie żądania',
+      );
+    }
+    if (
+      [
+        '/api/auth/login',
+        '/api/auth/signup',
+        '/api/auth/password/request',
+        '/api/auth/password/reset',
+      ].includes(req.url.split('?')[0]) ||
+      req.url === '/api/health' ||
+      req.url.split('?')[0] === '/api/v1/openapi' ||
+      req.url.startsWith('/api/local-webhooks/') ||
+      req.url.startsWith('/api/webhooks/woocommerce/') ||
+      req.url.startsWith('/api/webhooks/shopify/') ||
+      req.url.startsWith('/api/public/orders/') ||
+      req.url.startsWith('/api/public/b2b/')
+    )
+      return;
+    const apiToken = req.headers.authorization?.startsWith('Bearer dyna_api_')
+      ? req.headers.authorization.slice(7)
+      : undefined;
+    const token =
+      apiToken ??
+      req.cookies[sessionName] ??
+      (req.headers.authorization?.startsWith('Bearer ')
+        ? req.headers.authorization.slice(7)
+        : undefined);
+    if (!token) throw new Problem(401, 'Zaloguj się do systemu',
+      req.headers.authorization ? undefined : 'AUTH_SESSION_EXPIRED');
+    const user = apiToken
+      ? await authenticateApiKey(req, apiToken, workspaceMfaPolicyAvailable)
+      : (
+          await pool.query(
+            `SELECT u.id,u.name,u.email,s.tenant_id,m.role,t.plan,t.name AS tenant_name${workspaceMfaPolicyAvailable ? mfaSessionColumns : ''} FROM sessions s JOIN users u ON u.id=s.user_id JOIN memberships m ON m.user_id=u.id AND m.tenant_id=s.tenant_id JOIN tenants t ON t.id=s.tenant_id ${accountSecurityAvailable ? 'LEFT JOIN account_security a ON a.user_id=u.id' : ''} ${workspaceMfaPolicyAvailable ? mfaSessionJoins : ''} WHERE s.token_hash=$1 AND s.expires_at>now() ${accountSecurityAvailable ? 'AND s.account_version=coalesce(a.version,0)' : ''}`,
+            [tokenHash(token)],
+          )
+        ).rows[0];
+    if (!user) throw new Problem(401, 'Sesja wygasła',
+      req.headers.authorization ? undefined : 'AUTH_SESSION_EXPIRED');
+    ensure(
+      !req.headers['x-workspace-id'] || req.headers['x-workspace-id'] === user.tenant_id,
+      409,
+      'Organizacja została zmieniona. Odśwież widok przed wykonaniem operacji.',
+    );
+    req.actor = {
+      tenantId: user.tenant_id,
+      userId: user.id,
+      role: user.role,
+      ...(apiToken ? { apiKeyId: user.api_key_id, source: 'api' as const } : {}),
+    };
+    req.apiScopes = apiToken ? user.scopes : undefined;
+    req.currentUser = user;
+    const routePath = req.url.split('?')[0];
+    const recoveryRoute =
+      ['/api/auth/me', '/api/auth/logout'].includes(routePath) ||
+      (routePath === '/api/workspaces' && req.method === 'GET') ||
+      (routePath === '/api/workspaces/switch' && req.method === 'POST') ||
+      /^\/api\/auth\/security(?:\/(?:enroll|confirm|verify|disable|recovery|password|sessions\/[a-f0-9-]+))?$/.test(
+        routePath,
+      );
+    if (!apiToken && !recoveryRoute) requireWorkspaceMfa(user);
+  });
+  app.get('/api/health', async () => {
+    const schema = await pool.query('SELECT name FROM migrations ORDER BY name DESC LIMIT 1');
+    return {
+      status: 'ok',
+      database: 'postgresql',
+      mode: 'local',
+      revision: process.env.APP_REVISION ?? 'local-development',
+      schema_revision: schema.rows[0]?.name,
+      restore_preview: readOnly,
+      warehouse_automatic_wz_configuration_available: warehouseAutomaticWzIsAvailable,
+      warehouse_automatic_wz_issuer_available: warehouseWzIssuerIsAvailable,
+      catalog_stock_control_available: catalogStockControlIsAvailable,
+      catalog_stock_control_status: catalogStockControlStatus,
+      background_workers_enabled: backgroundWorkersEnabled,
+      ordinary_connector_jobs_available: connectorJobsAvailable,
+      mirakl_reads_available: miraklReadRepository!==undefined,
+      scoped_automation_enabled: scopedAutomationEnabled&&!readOnly,
+      local_woo_flow_available: true,
+      b2b_dropshipping_available: b2bDropshippingIsAvailable,
+      b2b_external_order_intents_available: b2bExternalOrderIntentsIsAvailable,
+      b2b_external_order_imports_available: b2bExternalOrderImportsIsAvailable,
+      b2b_dropshipping_returns_available: b2bDropshippingReturnsIsAvailable,
+      b2b_local_return_origins_available: b2bReturnLocalOriginsIsAvailable,
+      email_available: emailAvailable,
+      email_inbound_available: emailInboundAvailable,
+      product_catalogs_available: productCatalogsIsAvailable,
+      pim_dictionaries_available: pimDictionariesIsAvailable,
+      pim_nested_mapping_available: pimNestedMappingIsAvailable,
+      large_import_available: largeImports.available,
+      large_import_quota_recovery_available: !!largeImportRecovery&&!readOnly,
+      large_import_independent_creates_available: largeImports.available && largeImports.independentCreates,
+      b2b_catalog_scope_available: b2bCatalogScopeIsAvailable,
+      email_actions_available: emailActionsAvailable,
+      email_attachments_available: emailAttachmentsAvailable,
+      password_recovery_available: passwordRecoveryAvailable,
+      workspace_mfa_available: workspaceMfaPolicyAvailable,
+      picking_waves_available: pickingWavesAvailable,
+      amazon_fulfillment_available: amazonFulfillmentAvailable,
+      shopify_fulfillment_available: shopifyFulfillmentAvailable,
+      shopify_webhooks_available: shopifyWebhooksAvailable,
+      shopify_subscriptions_available: shopifySubscriptionsAvailable,
+      shopify_translations_available: shopifyTranslationsAvailable,
+      shopify_translation_batches_available: shopifyTranslationBatchesAvailable,
+      customer_messages_available: customerMessagesAvailable,
+      customer_message_workflows_available: customerMessageWorkflowsAvailable,
+      product_rules_available: productRulesAvailable,
+      catalog_bulk_edit_available: catalogBulkEditAvailable,
+      catalog_file_imports_available: catalogFileImportsAvailable,
+      replenishment_plans_available: replenishmentPlansAvailable,
+      replenishment_forecast_available: replenishmentForecastIsAvailable,
+      replenishment_append_available: replenishmentAppendIsAvailable,
+      replenishment_automations_available: replenishmentAutomationsIsAvailable,
+      order_merges_available: orderMergesIsAvailable,
+      product_logistics_available: productLogisticsIsAvailable,
+      product_sku_edit_available: productSkuIsAvailable,
+      inventory_bulk_edit_available: inventoryBulkEditAvailable,
+      price_bulk_edit_available: priceBulkEditAvailable,
+      price_file_import_available: priceFileImportsAvailable,
+      price_matrix_import_available: priceMatrixImportsAvailable,
+      stock_file_import_available: stockFileImportsAvailable,
+      language_file_import_available: languageFileImportsAvailable,
+      supplier_file_sources_available: supplierFileSourcesIsAvailable,
+      supplier_remote_feeds_available: supplierRemoteFeedsIsAvailable,
+      return_exchanges_available: returnExchangesIsAvailable,
+      return_exchange_substitutions_available: returnExchangeSubstitutionsIsAvailable,
+      product_translation_bulk_edit_available: productTranslationBulkEditAvailable,
+      packing_workstation_available: packingWorkstationAvailable,
+      return_assistant_available: returnAssistantIsAvailable,
+      return_assistant_queues_available: returnAssistantQueuesIsAvailable,
+      warehouse_inventory_policies_available: warehouseInventoryPoliciesIsAvailable,
+      return_destination_statuses_available: returnDestinationStatusesIsAvailable,
+      return_destinations_available: returnDestinationsIsAvailable,
+      stocktake_adjustments_available: stocktakeAdjustmentsIsAvailable,
+      print_jobs_available: printJobsIsAvailable,
+      packed_label_print_available: packedLabelPrintIsAvailable,
+      local_invoices_available: localInvoicesIsAvailable,
+      shipment_label_print_available: shipmentLabelPrintIsAvailable,
+      shipment_label_cache_available: shipmentLabelCacheIsAvailable,
+      shipment_label_batches_available: shipmentLabelBatchesIsAvailable,
+      order_parcels_available: orderParcelsIsAvailable,
+      order_parcel_releases_available: orderParcelReleasesIsAvailable,
+      manual_order_lines_available: true,
+      wms_lots_available: wmsLotsAvailable,
+      wms_stocktakes_available: wmsStocktakesAvailable,
+      stocktake_scans_available: stocktakeScansAvailable,
+      payment_imports_available: paymentImportsAvailable,
+      payment_import_allocations_available: paymentImportAllocationsIsAvailable,
+      proformas_available: proformasIsAvailable,
+      proforma_batches_available: proformaBatchesIsAvailable,
+      order_fields_available: orderFieldsAvailable,
+      order_field_batches_available: orderFieldBatchesAvailable,
+      order_field_mappings_available: orderFieldMappingsAvailable,
+      workspace_billing_available: workspaceBillingAvailable,
+      catalog_ai_available: catalogAiAvailable,
+      deepl_available: deeplAvailable,
+      deepl_batches_available: deeplBatchAvailable,
+    };
+  });
+  app.post(
+    '/api/auth/login',
+    { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
+    async (req, reply) => {
+      const input = z
+        .object({
+          email: z.email(),
+          password: z.string().min(1).max(200),
+          code: z.string().max(80).optional(),
+          invitation_token: z
+            .string()
+            .regex(/^[a-f0-9]{64}$/)
+            .optional(),
+        })
+        .parse(req.body);
+      const user = (
+        await pool.query('SELECT * FROM users WHERE email=$1', [input.email.toLowerCase()])
+      ).rows[0];
+      const valid = checkPassword(
+        input.password,
+        user?.password_hash ??
+          '00000000000000000000000000000000:0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      );
+      ensure(user && valid, 401, 'Nieprawidłowy email lub hasło');
+      const result = accountSecurityAvailable
+        ? await secureLogin(user, user.password_hash, input.invitation_token, input.code, readOnly)
+        : await loginWorkspace(user, input.invitation_token, readOnly);
+      if ('mfa_required' in result) return result;
+      sessionCookie(reply, result.token, sessionName);
+      return { user: result.user };
+    },
+  );
+  app.get('/api/auth/me', async (req) => {
+    const scoped: { available: boolean; reason?: string } = largeImports.tenantAvailability(req);
+    const available = largeImports.available && scoped.available;
+    return { user: req.currentUser, restore_preview: readOnly,
+      large_import_availability: { available,
+        independent_creates: available && largeImports.independentCreates,
+        ...(scoped.reason ? { reason: scoped.reason } : {}),
+      },
+    };
+  });
+  registerPasswordRecoveryRoutes(app, passwordRecoveryAvailable);
+  registerWorkspaceRoutes(app, sessionName, workspaceBillingAvailable);
+  if (workspaceBillingAvailable) registerWorkspaceBillingRoutes(app);
+  if (workspaceMfaPolicyAvailable) registerWorkspaceSecurityRoutes(app, sessionName);
+  registerPickingWaveRoutes(app, pickingWavesAvailable);
+  registerNbpRoutes(app,{readOnly,port:nbpRates});
+  registerPickingWavePrintRoutes(app, {available:pickingWavesAvailable,readOnly});
+  if (accountSecurityAvailable) registerAccountSecurityRoutes(app, sessionName);
+  registerDeveloperRoutes(app, { readOnly, port: previewPort });
+  registerOutboundRoutes(app);
+  registerReturnRoutes(app,{sessionName});
+  registerReturnAssistantRoutes(app, { available: returnAssistantIsAvailable, readOnly });
+  registerReturnAssistantQueueRoutes(app, { available: returnAssistantQueuesIsAvailable, readOnly });
+  registerWarehouseInventoryPolicyRoutes(app, { available: warehouseInventoryPoliciesIsAvailable, readOnly });
+  registerReturnDestinationStatusRoutes(app, { available: returnDestinationStatusesIsAvailable, readOnly,
+    intakeAvailable: returnDestinationsIsAvailable });
+  registerReturnDestinationsRoutes(app, { available: returnDestinationsIsAvailable, readOnly,
+    receiveCore: receiveReturnDestinationCoreInTx, applyPhysical: applyReturnDestinationPhysicalInTx });
+  registerStocktakeAdjustmentRoutes(app, { available: stocktakeAdjustmentsIsAvailable, readOnly });
+  registerWarehouseDocumentRegisterRoutes(app, { available: stocktakeAdjustmentsIsAvailable, readOnly });
+  registerWarehouseAutomaticWzRoutes(app, { available: warehouseAutomaticWzIsAvailable, readOnly });
+  registerIssuedWzRoutes(app, { readOnly });
+  // Only the genuine normal factory capability enables BO activation; each
+  // physical effect and actor still passes the unchanged native transaction gates.
+  registerCatalogStockControlRoutes(app, { available: catalogStockControlIsAvailable, readOnly, stockWriterInstallation });
+  registerCatalogStockCountRoutes(app, { readOnly });
+  registerPaymentRoutes(app);
+  registerSourcePaymentRoutes(app);
+  app.post('/api/auth/logout', async (req, reply) => {
+    const token = req.cookies[sessionName] ?? req.headers.authorization?.slice(7) ?? '';
+    await pool.query('DELETE FROM sessions WHERE token_hash=$1', [tokenHash(token)]);
+    reply.clearCookie(sessionName, { path: '/' });
+    return { ok: true };
+  });
+  registerSalesReportRoutes(app, { readOnly });
+  app.get('/api/dashboard', async (req) =>
+    tenantReadTx(req.actor.tenantId, async (c) => {
+      const salePredicate =
+        operationalOrderPredicate +
+        (returnExchangesIsAvailable ? " AND o.fulfillment_kind='sale'" : '');
+      const orders = await c.query(
+        `SELECT o.status,o.currency,count(*)::int AS count,sum(o.total)::bigint AS total,coalesce(sum(r.refund_total),0)::bigint AS refund_total FROM orders o LEFT JOIN (SELECT order_id,sum(refund_amount)::bigint AS refund_total FROM return_cases WHERE received_at IS NOT NULL GROUP BY order_id) r ON r.order_id=o.id WHERE ${salePredicate} GROUP BY o.status,o.currency ORDER BY o.status,o.currency`,
+      );
+      const stock = await c.query(
+        'SELECT count(*)::int AS products,coalesce(sum(on_hand),0)::bigint AS on_hand,coalesce(sum(reserved),0)::bigint AS reserved FROM stock',
+      );
+      const sources = await c.query(
+        `SELECT o.source,o.currency,count(*)::int AS count,sum(o.total)::bigint AS total FROM orders o WHERE ${salePredicate} GROUP BY o.source,o.currency ORDER BY o.source,o.currency`,
+      );
+      const recent = await c.query(
+        `SELECT o.id,o.number,o.customer_name,o.total,o.currency,o.status,o.source,o.created_at FROM orders o WHERE ${salePredicate} ORDER BY o.created_at DESC,o.id DESC LIMIT 6`,
+      );
+      const jobs = await c.query('SELECT state,count(*)::int AS count FROM jobs GROUP BY state');
+      return {
+        orders: orders.rows,
+        stock: stock.rows[0],
+        sources: sources.rows,
+        recent: recent.rows,
+        jobs: jobs.rows,
+        currency: (await c.query('SELECT currency FROM tenants WHERE id=$1', [req.actor.tenantId]))
+          .rows[0].currency,
+      };
+    }),
+  );
+  app.get('/api/warehouses', async (req) =>
+    tenantReadTx(req.actor.tenantId, async (c) => ({
+      data: (await c.query('SELECT * FROM warehouses ORDER BY name')).rows,
+    })),
+  );
+  app.post('/api/warehouses', async (req) => {
+    canWrite(req.actor, true);
+    const b = z
+      .object({ name: z.string().min(2).max(120), code: z.string().min(1).max(30) })
+      .parse(req.body);
+    return tenantTx(req.actor.tenantId, async (c) => {
+      const w = (
+        await c.query(
+          'INSERT INTO warehouses(id,tenant_id,name,code) VALUES($1,$2,$3,$4) RETURNING *',
+          [randomUUID(), req.actor.tenantId, b.name, b.code],
+        )
+      ).rows[0];
+      await audit(c, req.actor, 'warehouse.create', w.id);
+      return w;
+    });
+  });
+  registerCatalogSourceRoutes(app);
+  registerOdooCatalogSyncRoutes(app);
+  registerSupplierCatalogRoutes(app, { fileSourcesAvailable: supplierFileSourcesIsAvailable });
+  registerSupplierFileSourceRoutes(app, { available: supplierFileSourcesIsAvailable, readOnly });
+  registerSupplierRemoteRoutes(app, { available: supplierRemoteFeedsIsAvailable, readOnly });
+  registerSupplierBulkRoutes(app);
+  registerSupplierScheduleRoutes(app);
+  registerCatalogRoutes(app, tenantReadTx);
+  registerProductCatalogRoutes(app, { available: productCatalogsIsAvailable, readOnly });
+  const pimService = createPimService({sessionName,readOnly,cursorKey:localConfig.encryptionKey,transaction:(actor,_write,work)=>tenantTx(actor.tenantId,work)});
+  registerPimRoutes(app,{service:pimService,captureActor:request=>pimService.captureActor(request),available:pimDictionariesIsAvailable,nestedAvailable:pimNestedMappingIsAvailable,readOnly});
+  registerB2BCatalogScopeRoutes(app, { available: b2bCatalogScopeIsAvailable, readOnly });
+  registerCatalogExportRoutes(app, { readOnly });
+  registerCatalogExportProfileRoutes(app, { readOnly, available: catalogExportProfilesAvailable });
+  registerCatalogFileImportRoutes(app, { readOnly, available: catalogFileImportsAvailable });
+  registerOrderProductLogisticsRoutes(app);
+  registerCatalogBulkEditRoutes(app, { available: catalogBulkEditAvailable, readOnly });
+  registerInventoryBulkEditRoutes(app, { available: inventoryBulkEditAvailable, readOnly });
+  registerPriceBulkEditRoutes(app, { available: priceBulkEditAvailable, readOnly });
+  registerPriceFileImportRoutes(app, { available: priceFileImportsAvailable, readOnly });
+  registerPriceMatrixImportRoutes(app, { available: priceMatrixImportsAvailable, readOnly });
+  registerStockFileImportRoutes(app, { available: stockFileImportsAvailable, readOnly });
+  registerLanguageFileImportRoutes(app, { available: languageFileImportsAvailable, readOnly });
+  registerProductTranslationBulkEditRoutes(app, {
+    available: productTranslationBulkEditAvailable,
+    readOnly,
+  });
+  registerPackingWorkstationRoutes(app, { available: packingWorkstationAvailable, readOnly });
+  registerPackingPhotoRoutes(app, { readOnly });
+  registerPrintJobRoutes(app, { available: printJobsIsAvailable, readOnly });
+  registerPackedLabelPrintRoutes(app,{available:packedLabelPrintIsAvailable,readOnly});
+  registerShipmentLabelPrintRoutes(app, { available: shipmentLabelPrintIsAvailable, readOnly, sessionName });
+  registerShipmentLabelCacheRoutes(app, { available: shipmentLabelCacheIsAvailable, readOnly }, context);
+  registerShipmentLabelBatchRoutes(app, { available: shipmentLabelBatchesIsAvailable, readOnly });
+  registerOrderParcelRoutes(app, { available: orderParcelsIsAvailable, readOnly, sessionName });
+  registerManualOffRoutes(app,{available:await manualOffAvailable(pool),readOnly,sessionName},createManualOffService({pool,hooks:manualOffNativeHooks,cursorKey:localConfig.encryptionKey,readOnly}));
+  registerPhysicalParcelWzRoutes(app,{available:physicalParcelWzIsAvailable,readOnly,sessionName},createPhysicalParcelWzService({tenantTx}));
+  registerOrderParcelReleaseRoutes(app, { available: orderParcelReleasesIsAvailable, readOnly, sessionName });
+  registerWmsLotsRoutes(app, { available: wmsLotsAvailable, readOnly });
+  registerWmsStocktakeRoutes(app, { available: wmsStocktakesAvailable, readOnly });
+  registerStocktakeScanRoutes(app, { available: stocktakeScansAvailable, readOnly });
+  registerProductRuleRoutes(app, { available: productRulesAvailable, readOnly });
+  registerProductRuleScheduleRoutes(app,{readOnly});
+  registerPaymentImportRoutes(app, { available: paymentImportsAvailable, readOnly });
+  registerPaymentImportAllocationRoutes(app, {
+    available: paymentImportAllocationsIsAvailable,
+    readOnly,
+  });
+  registerLocalInvoiceRoutes(app,{readOnly,sessionName});
+  registerLocalConsumerCreditRoutes(app,{readOnly,sessionName});
+  registerFa3DraftRoutes(app,{readOnly,sessionName});
+  registerB2bCreditRoutes(app,{readOnly,sessionName});
+  registerB2bInvoiceRoutes(app,{readOnly,sessionName});
+  registerProformaRoutes(app, {
+    available: proformasIsAvailable,
+    readOnly,
+    batchesAvailable: proformaBatchesIsAvailable,
+  });
+  registerProformaBatchRoutes(app, { available: proformaBatchesIsAvailable, readOnly });
+  registerOrderFieldRoutes(app, { available: orderFieldsAvailable, readOnly });
+  registerOrderFieldBatchRoutes(app, { available: orderFieldBatchesAvailable, readOnly });
+  registerOrderFieldMappingRoutes(app, {
+    available: orderFieldMappingsAvailable,
+    readOnly,
+    context,
+  });
+  registerCatalogAiRoutes(app, {
+    available: catalogAiAvailable,
+    readOnly,
+    transport: integrationTransport,
+  });
+  registerDeepLRoutes(app, context, {
+    available: deeplAvailable,
+    readOnly,
+    batchesAvailable: deeplBatchAvailable,
+  });
+  registerDeepLBatchRoutes(app, context, { available: deeplBatchAvailable, readOnly });
+  registerWarehouseRoutes(app);
+  registerPurchasingRoutes(app);
+  registerReplenishmentPlanRoutes(app, { available: replenishmentPlansAvailable, readOnly });
+  registerReplenishmentAutomationRoutes(app, {
+    available: replenishmentAutomationsIsAvailable,
+    readOnly,
+  });
+  registerOrderMergeRoutes(app, { available: orderMergesIsAvailable, readOnly });
+  registerStockLocationRoutes(app, tenantReadTx);
+  registerStocktakeRoutes(app);
+  app.post('/api/products', async (req, reply) => {
+    canWrite(req.actor, true);
+    const b = productSchema.parse(req.body);
+    return tenantTx(req.actor.tenantId, async (c) => {
+      const p = await createProduct(c, productLogisticsRequestActor(req), b);
+      reply.code(201);
+      return p;
+    });
+  });
+  app.get('/api/inventory', (req) => {
+    const q = inventoryQuery.parse(req.query);
+    return tenantTx(req.actor.tenantId, (c) => listInventory(c, q));
+  });
+  app.get('/api/inventory/snapshot', (req) => {
+    const q = inventorySnapshotQuery.parse(req.query);
+    return tenantTx(req.actor.tenantId, (c) => inventorySnapshot(c, q));
+  });
+  app.post('/api/inventory/adjust/previews', { onRequest: async () => ensure(!readOnly,423,'Kopia jest tylko do odczytu'), bodyLimit:2*1024*1024 }, async (req,reply) => {
+    ensure(wmsLotsAvailable,503,'Kopia nie zawiera WMS partii');
+    const actor=captureInventoryCorrectionActor(req,sessionName);
+    const result=await previewInventoryCorrection(actor,inventoryCorrectionPreviewInput.parse(req.body));
+    reply.header('Cache-Control','no-store').code(result.reused?200:201);
+    return result;
+  });
+  app.get('/api/inventory/adjust/previews/:id',async(req,reply)=>{
+    ensure(wmsLotsAvailable,503,'Kopia nie zawiera WMS partii');
+    const id=z.uuid().parse((req.params as {id:string}).id);
+    const result=await readInventoryCorrectionPreview(captureInventoryCorrectionActor(req,sessionName),id);
+    reply.header('Cache-Control','no-store');return result;
+  });
+  app.post('/api/inventory/adjust', { onRequest: async () => ensure(!readOnly,423,'Kopia jest tylko do odczytu') }, async (req,reply) => {
+    canWrite(req.actor,true);
+    const b=inventoryAdjustInput.parse(req.body);
+    if(b.protocol==='wms_adjustment090'){
+      ensure(wmsLotsAvailable,503,'Kopia nie zawiera WMS partii');
+      const result=await executeInventoryCorrection(captureInventoryCorrectionActor(req,sessionName),b);
+      reply.header('Cache-Control','no-store').code(result.reused?200:201);return result;
+    }
+    const correctionActor=captureInventoryCorrectionActor(req,sessionName,true);
+    return tenantTx(req.actor.tenantId, async (c) => {
+      await assertWmsLegacyQuantityWriteInTx(c, req.actor);
+      await enlistInventoryLegacyAdjustmentInTx(c, correctionActor, b.product_id);
+      const s = (
+        await c.query('SELECT * FROM stock WHERE product_id=$1 AND warehouse_id=$2 FOR UPDATE', [
+          b.product_id,
+          b.warehouse_id,
+        ])
+      ).rows[0];
+      ensure(s, 404, 'Nie znaleziono stanu');
+      ensure(
+        s.on_hand + b.delta >= s.reserved,
+        409,
+        'Korekta narusza rezerwacje lub daje ujemny stan',
+      );
+      await c.query('UPDATE stock SET on_hand=on_hand+$1 WHERE product_id=$2 AND warehouse_id=$3', [
+        b.delta,
+        b.product_id,
+        b.warehouse_id,
+      ]);
+      await c.query(
+        'INSERT INTO stock_movements(id,tenant_id,product_id,warehouse_id,delta,kind,note) VALUES($1,$2,$3,$4,$5,$6,$7)',
+        [
+          randomUUID(),
+          req.actor.tenantId,
+          b.product_id,
+          b.warehouse_id,
+          b.delta,
+          'adjustment',
+          b.note,
+        ],
+      );
+      await audit(c, req.actor, 'stock.adjust', b.product_id, { delta: b.delta, note: b.note });
+      return { ok: true };
+    });
+  });
+  app.get('/api/inventory/movements', (req) => {
+    const q = movementQuery.parse(req.query);
+    return tenantTx(req.actor.tenantId, (c) => listMovements(c, q));
+  });
+  app.get('/api/orders', async (req) => {
+    const q = z
+      .object({
+        status: z.string().max(100).optional(),
+        workflow_status_id: z.uuid().optional(),
+        tag: z.string().max(40).optional(),
+        search: z.string().max(200).default(''),
+        limit: z.coerce.number().int().min(1).max(200).default(50),
+        after: z.string().max(300).optional(),
+        field_filters: z.string().max(10000).optional(),
+        field_columns: z.string().max(1000).optional(),
+      })
+      .parse(req.query);
+    const wantsFields = q.field_filters !== undefined || q.field_columns !== undefined;
+    ensure(
+      !wantsFields || !req.apiScopes || req.apiScopes.includes('order-fields:read'),
+      403,
+      'Klucz wymaga zakresu order-fields:read',
+    );
+    ensure(!wantsFields || orderFieldsAvailable, 503, 'Kopia nie zawiera pól dodatkowych');
+    let fieldFilters: ReturnType<typeof orderFieldFiltersSchema.parse> = [];
+    let fieldColumns: ReturnType<typeof orderFieldColumnsSchema.parse> = [];
+    try {
+      fieldFilters = orderFieldFiltersSchema.parse(
+        q.field_filters ? JSON.parse(q.field_filters) : [],
+      );
+      fieldColumns = orderFieldColumnsSchema.parse(
+        q.field_columns ? JSON.parse(q.field_columns) : [],
+      );
+    } catch {
+      throw new Problem(422, 'Nieprawidłowe filtry lub kolumny pól dodatkowych');
+    }
+    let cursor: { date: string; id: string } | null = null;
+    if (q.after) {
+      try {
+        cursor = z
+          .object({ date: z.iso.datetime(), id: z.uuid() })
+          .parse(JSON.parse(Buffer.from(q.after, 'base64url').toString()));
+      } catch {
+        throw new Problem(422, 'Nieprawidłowy kursor');
+      }
+    }
+    const readOrders = wantsFields ? tenantTx : tenantReadTx;
+    return readOrders(req.actor.tenantId, async (c) => {
+      const fieldScope = wantsFields
+        ? await orderFieldListScopeInTx(c, req.actor, fieldFilters, fieldColumns, {
+            alias: 'o',
+            paramOffset: 7,
+          })
+        : { sql: '', params: [], columns: [] };
+      const rows = (
+        await c.query(
+          "SELECT o.*,to_char(o.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS cursor_time,(SELECT row_to_json(w) FROM workflow_statuses w WHERE w.id=o.workflow_status_id) AS workflow_status,(SELECT sum(quantity)::int FROM order_items WHERE order_id=o.id) AS item_count FROM orders o WHERE ($1::text IS NULL OR status=ANY(string_to_array($1,','))) AND (number ILIKE $2 OR customer_name ILIKE $2 OR email ILIKE $2) AND ($3::timestamptz IS NULL OR (created_at,id)<($3::timestamptz,$4::uuid)) AND ($6::uuid IS NULL OR workflow_status_id=$6) AND ($7::text IS NULL OR $7=ANY(tags)) " +
+            fieldScope.sql +
+            ' AND ' +
+            operationalOrderPredicate +
+            ' ORDER BY created_at DESC,id DESC LIMIT $5',
+          [
+            q.status ?? null,
+            `%${q.search}%`,
+            cursor?.date ?? null,
+            cursor?.id ?? null,
+            q.limit + 1,
+            q.workflow_status_id ?? null,
+            q.tag ?? null,
+            ...fieldScope.params,
+          ],
+        )
+      ).rows;
+      const more = rows.length > q.limit;
+      const data = rows.slice(0, q.limit);
+      if (fieldColumns.length) {
+        const projected = await projectOrderFieldColumnsInTx(
+          c,
+          req.actor,
+          data.map((row) => row.id),
+          fieldScope.columns,
+        );
+        for (const row of data) row.extra_fields = projected.get(row.id) ?? [];
+      }
+      const last = data.at(-1);
+      const nextCursor =
+        more && last
+          ? Buffer.from(JSON.stringify({ date: last.cursor_time, id: last.id })).toString(
+              'base64url',
+            )
+          : null;
+      for (const row of data) delete row.cursor_time;
+      return {
+        data,
+        meta: {
+          has_more: more,
+          cursor: nextCursor,
+        },
+      };
+    });
+  });
+  app.get('/api/orders/:id', async (req) =>
+    tenantReadTx(req.actor.tenantId, (c) => getOrder(c, idOf(req.params))),
+  );
+  app.post('/api/orders', async (req, reply) => {
+    canWrite(req.actor);
+    const b = orderSchema.parse(req.body),
+      key = req.headers['idempotency-key'];
+    ensure(
+      !b.initial_fields?.length || !req.apiScopes || req.apiScopes.includes('order-fields:write'),
+      403,
+      'Klucz wymaga zakresu order-fields:write',
+    );
+    if (key)
+      ensure(typeof key === 'string' && key.length <= 128, 422, 'Nieprawidłowy klucz idempotencji');
+    return tenantTx(req.actor.tenantId, async (c) => {
+      if (key) {
+        const hash = createHash('sha256').update(JSON.stringify(b)).digest('hex');
+        await c.query(
+          'INSERT INTO idempotency_keys(tenant_id,key,request_hash) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',
+          [req.actor.tenantId, key, hash],
+        );
+        const prior = (
+          await c.query('SELECT * FROM idempotency_keys WHERE key=$1 FOR UPDATE', [key])
+        ).rows[0];
+        ensure(prior.request_hash === hash, 409, 'Klucz idempotencji użyty z innymi danymi');
+        if (prior.response) return prior.response;
+        const order = await createOrder(c, req.actor, b, undefined, {
+          fieldSource: req.apiScopes ? 'api' : 'manual',
+          fieldWritesAllowed: !req.apiScopes || req.apiScopes.includes('order-fields:write'),
+        });
+        await c.query('UPDATE idempotency_keys SET response=$1 WHERE key=$2', [
+          JSON.stringify(order),
+          key,
+        ]);
+        reply.code(201);
+        return order;
+      }
+      reply.code(201);
+      return createOrder(c, req.actor, b, undefined, {
+        fieldSource: req.apiScopes ? 'api' : 'manual',
+        fieldWritesAllowed: !req.apiScopes || req.apiScopes.includes('order-fields:write'),
+      });
+    });
+  });
+  app.patch('/api/orders/:id/status', async (req) => {
+    canWrite(req.actor);
+    const { status, expected_version } = orderStatusInput.parse(req.body);
+    return tenantTx(req.actor.tenantId, (c) => transitionDirectLegacyOnReturnInTx(c, req.actor, idOf(req.params), status, expected_version));
+  });
+  app.post('/api/orders/:id/scan', async (req) => {
+    canWrite(req.actor);
+    const { code, location, layer_id, client_key } = locationScan.parse(req.body);
+    return tenantTx(req.actor.tenantId, (c) =>
+      scan(c, req.actor, idOf(req.params), code, location, undefined, { layer_id, client_key }),
+    );
+  });
+  app.post('/api/orders/:id/ship-demo', async (req) => {
+    canWrite(req.actor);
+    return tenantTx(req.actor.tenantId, (c) => shipDemo(c, req.actor, idOf(req.params)));
+  });
+  app.post('/api/orders/:id/documents', async (req) => {
+    canWrite(req.actor);
+    const { kind } = z.object({ kind: z.enum(['invoice', 'correction']) }).parse(req.body);
+    return tenantTx(req.actor.tenantId, (c) => issueDocument(c, req.actor, idOf(req.params), kind));
+  });
+  app.get('/api/documents', async (req) =>
+    tenantReadTx(req.actor.tenantId, async (c) => ({
+      data: (
+        await c.query(
+          'SELECT d.*,o.number AS order_number FROM documents d JOIN orders o ON o.id=d.order_id AND o.tenant_id=d.tenant_id ORDER BY d.created_at DESC LIMIT 100',
+        )
+      ).rows,
+    })),
+  );
+  app.get('/api/documents/:id/print', async (req, reply) => {
+    const mode = await tenantTx(
+      req.actor.tenantId,
+      async (c) =>
+        (await c.query('SELECT mode FROM documents WHERE id=$1', [idOf(req.params)])).rows[0]?.mode,
+    );
+    if (mode === 'local_invoice') {
+      const value=await localInvoiceDetail(localInvoiceRequestActor(req,sessionName),idOf(req.params));
+      return reply.type('text/html; charset=utf-8').header('Cache-Control','no-store').send(localInvoicePrintHtml(value.document));
+    }
+    if (mode === 'external') {
+      ensure(!readOnly, 423, 'Pobieranie dokumentu od dostawcy jest wyłączone w podglądzie kopii');
+      return reply
+        .type('application/pdf')
+        .header('Cache-Control', 'no-store')
+        .header('Content-Disposition', 'inline; filename=invoice.pdf')
+        .send(await invoicePdf(req.actor.tenantId, idOf(req.params), context));
+    }
+    return tenantTx(req.actor.tenantId, async (c) => {
+      const d = (await c.query('SELECT * FROM documents WHERE id=$1', [idOf(req.params)])).rows[0];
+      ensure(d, 404, 'Nie znaleziono dokumentu');
+      return reply
+        .type('text/html')
+        .header('Cache-Control', 'no-store')
+        .send(printLayout(d.number, documentBody(d), d.kind === 'proforma' && d.mode === 'local'));
+    });
+  });
+  app.get('/api/shipments/:id/label', async (req, reply) => {
+    const s = await tenantTx(
+      req.actor.tenantId,
+      async (c) => {
+        const shipment = (
+          await c.query(
+            'SELECT s.*,o.customer_name,o.address FROM shipments s JOIN orders o ON (o.tenant_id,o.id)=(s.tenant_id,s.order_id) WHERE s.id=$1',
+            [idOf(req.params)],
+          )
+        ).rows[0];
+        if (shipment?.mode === 'demo') {
+          const current = await effectiveDeliveryInTx(c, req.actor.tenantId, shipment.order_id, localConfig.encryptionKey);
+          if (current.delivery) return { ...shipment, customer_name: current.delivery.recipient_name,
+            address: { ...shipment.address, ...current.delivery } };
+        }
+        return shipment;
+      },
+    );
+    ensure(s, 404, 'Nie znaleziono przesyłki');
+    reply.header('Cache-Control', 'no-store');
+    if (s.mode !== 'demo' && s.carrier === 'DPD Polska')
+      return reply.type('application/pdf').send(await cachedDpdLabel(req.actor.tenantId, s.id));
+    if (s.mode !== 'demo') {
+      ensure(!readOnly, 423, 'Pobieranie etykiety od dostawcy jest wyłączone w podglądzie kopii');
+      return reply
+        .type('application/pdf')
+        .send(await shipmentLabel(req.actor.tenantId, s.id, context));
+    }
+    return reply
+      .type('text/html')
+      .send(
+        printLayout(
+          s.tracking_number,
+          `<h2>ETYKIETA TESTOWA</h2><h3>${escape(s.tracking_number)}</h3><p>${escape(s.customer_name)}</p><p>${escape(s.address.street)}<br>${escape(s.address.postal_code)} ${escape(s.address.city)}</p><p>Przewoźnik: ${escape(s.carrier)}</p>`,
+        ),
+      );
+  });
+  app.get('/api/audit', async (req) => {
+    ensure(req.actor.role === 'admin', 403, 'Wymagana rola administratora');
+    return tenantReadTx(req.actor.tenantId, async (c) => ({
+      data: (await c.query('SELECT * FROM audit_events ORDER BY created_at DESC LIMIT 100')).rows,
+    }));
+  });
+  registerSmsRoutes(app,sessionName);
+  registerSmsSubmissionRoutes(app,{readOnly,sessionName,auth:pool,tenantTx,encrypt});
+  registerEmailRoutes(app, emailAvailable, emailAttachmentsAvailable, context);
+  registerEmailInboundRoutes(app, { available: emailInboundAvailable, readOnly });
+  registerOperationRoutes(app);
+  registerAutomationScheduleRoutes(app);
+  app.get('/api/settings', async (req) =>
+    tenantReadTx(req.actor.tenantId, async (c) => ({
+      tenant: (await c.query('SELECT * FROM tenants')).rows[0],
+      warehouses: (await c.query('SELECT * FROM warehouses ORDER BY name')).rows,
+      capabilities: {
+        sessions: '8h',
+        roles: ['admin', 'operator', 'viewer'],
+        documents: 'demo',
+        external_writes: 'explicit_confirmation',
+      },
+    })),
+  );
+  registerImportRoutes(app, context);
+  registerOfferRoutes(app, context);
+  registerLocalSimulationOfferRoutes(app, {readOnly});
+  registerLocalWooFlowRoutes(app, {readOnly,sessionName});
+  registerLocalAutomationRoutes(app, {readOnly});
+  registerAutomaticWorkerControl(app,{readOnly,available:scopedAutomationEnabled&&!readOnly,localWooChannelIds});
+  if(scopedAutomationEnabled&&!readOnly){
+    let scopedWorker:ReturnType<typeof startScopedAutomationWorker>|undefined;
+    app.addHook('onListen',async()=>{scopedWorker=startScopedAutomationWorker(localWooTransport?{transport:localWooTransport,localWooChannelIds}:{});});
+    app.addHook('onClose',async()=>{await scopedWorker?.close();});
+  }
+  registerShopifyOfferRoutes(app, context);
+  registerVariantOfferRoutes(app);
+  registerAllegroBatchRoutes(app);
+  registerOfferSyncRoutes(app);
+  registerOrderStatusRoutes(app, context);
+  registerEbayFulfillmentRoutes(app, context);
+  registerAmazonFulfillmentRoutes(app, context, amazonFulfillmentAvailable);
+  registerAmazonMcfReadOnlyRoutes(app, context, readOnly, amazonMcfReadTransport);
+  registerShopifyFulfillmentRoutes(app, context, shopifyFulfillmentAvailable, readOnly);
+  registerPricingRoutes(app);
+  registerRepricingRoutes(app, { sessionName, readOnly });
+  registerCompetitorObservationRoutes(app, { pool, cursorKey: localConfig.encryptionKey, sessionName, readOnly });
+  registerBuyerAddressRoutes(app, { pool, encryptionKey: localConfig.encryptionKey, sessionName, readOnly });
+  registerRepricingScheduleRoutes(app);
+  registerShippingRoutes(app, context);
+  registerLocalCarrierRoutes(app, {readOnly});
+  registerDpdRoutes(app);
+  registerCollectionRoutes(app, context, readOnly);
+  registerDpdPickupScheduleRoutes(app);
+  registerB2bRoutes(app, { readOnly, previewPort, printLayout });
+  registerB2bNetworkRoutes(app);
+  registerB2bNetworkOrderRoutes(app, printLayout);
+  registerB2bNetworkDropshippingRoutes(app, { available: b2bDropshippingIsAvailable, readOnly });
+  registerB2bExternalOrderIntentRoutes(app, {
+    available: b2bExternalOrderIntentsIsAvailable,
+    readOnly,
+  });
+  registerB2bExternalOrderImportRoutes(
+    app,
+    { available: b2bExternalOrderImportsIsAvailable, readOnly },
+    context,
+  );
+  registerB2bNetworkReturnRoutes(app);
+  registerB2bDropshippingReturnRoutes(app, {
+    available: b2bDropshippingReturnsIsAvailable,
+    readOnly,
+  });
+  registerTrackingRoutes(app);
+  registerInvoiceRoutes(app, context);
+  registerOdooExportRoutes(app, context);
+  registerOdooImageRoutes(app, context);
+  registerSyncRoutes(
+    app,
+    context,
+    sessionName,
+    shopifyWebhooksAvailable,
+    shopifySubscriptionsAvailable,
+  );
+  if (
+    (await pool.query("SELECT to_regclass('public.amazon_oauth_states') present")).rows[0].present
+  )
+    registerAmazonOAuthRoutes(app, context, sessionName);
+  if (
+    (await pool.query("SELECT to_regclass('public.shopify_oauth_states') present")).rows[0].present
+  )
+    registerShopifyOAuthRoutes(app, context, sessionName, readOnly);
+  if (shopifyWebhooksAvailable) registerShopifyWebhookRoutes(app);
+  if (shopifySubscriptionsAvailable) registerShopifySubscriptionRoutes(app, context);
+  registerShopifyTranslationRoutes(app, context, {
+    available: shopifyTranslationsAvailable,
+    readOnly,
+  });
+  registerShopifyTranslationBatchRoutes(app, context, {
+    available: shopifyTranslationBatchesAvailable,
+    readOnly,
+  });
+  app.post('/api/integrations/odoo-example', async (req) => {
+    ensure(req.actor.role === 'admin', 403, 'Wymagana rola administratora');
+    return tenantTx(req.actor.tenantId, async (c) => {
+      await c.query('SELECT id FROM tenants WHERE id=$1 FOR UPDATE', [req.actor.tenantId]);
+      let ch = (
+        await c.query(
+          "SELECT id FROM channels WHERE provider='odoo' AND settings->>'simulation'='true' ORDER BY created_at LIMIT 1",
+        )
+      ).rows[0];
+      if (!ch)
+        ch = (
+          await c.query(
+            "INSERT INTO channels(id,tenant_id,provider,name,mode,credentials,settings,status) VALUES($1,$2,'odoo','Odoo — przykład lokalny','sandbox',$3,$4,'simulation') RETURNING id",
+            [
+              randomUUID(),
+              req.actor.tenantId,
+              encrypt({}),
+              JSON.stringify({
+                simulation: true,
+                company_id: '1',
+                warehouse_id: '1',
+                unit_id: '1',
+                price_mode: 'net',
+              }),
+            ],
+          )
+        ).rows[0];
+      return { channel_id: ch.id, scope: 'local_simulation', context: demoOdooContext };
+    });
+  });
+  app.post('/api/integrations/smtp-example', async (req) => {
+    ensure(emailAvailable, 404, 'Email nie jest dostępny w tym schemacie');
+    canWrite(req.actor, true);
+    return tenantTx(req.actor.tenantId, async (c) => {
+      await c.query('SELECT id FROM tenants WHERE id=$1 FOR UPDATE', [req.actor.tenantId]);
+      let ch = (
+        await c.query(
+          "SELECT id FROM channels WHERE provider='smtp' AND settings->>'delivery'='local_sink' ORDER BY created_at LIMIT 1",
+        )
+      ).rows[0];
+      if (!ch)
+        ch = (
+          await c.query(
+            "INSERT INTO channels(id,tenant_id,provider,name,mode,credentials,settings,status) VALUES($1,$2,'smtp','Lokalny SMTP — bez wysyłki zewnętrznej','sandbox',$3,$4,'local') RETURNING id",
+            [
+              randomUUID(),
+              req.actor.tenantId,
+              encrypt({}),
+              JSON.stringify({
+                delivery: 'local_sink',
+                host: '127.0.0.1',
+                port: 1025,
+                from_email: 'orders@dynaminds.example.test',
+                from_name: 'DYNAMINDS QA',
+              }),
+            ],
+          )
+        ).rows[0];
+      return { channel_id: ch.id, delivery: 'local_sink' };
+    });
+  });
+  app.get('/api/integrations', async (req) =>
+    tenantTx(req.actor.tenantId, async (c) => ({
+      registry,
+      channels: (
+        await c.query(
+          'SELECT id,provider,name,mode,settings,status,created_at,sync_enabled,last_sync_at,oauth_scopes FROM channels ORDER BY created_at DESC',
+        )
+      ).rows,
+      runs: (await c.query('SELECT * FROM integration_runs ORDER BY created_at DESC LIMIT 30'))
+        .rows,
+    })),
+  );
+  registerLocalWooHttpFixtureRoutes(app,{fixture:localWooFixture,registry:localWooRegistry,readOnly,sessionName});
+  connectorJobsAvailable=await registerOrdinaryConnectorJobs(app,{mode:connectorJobExecution,transport:ordinaryConnectorTransport,context,readOnly,localFixture:hasLocalWoo,sessionName});
+  registerIntegrationWorkspaceRoutes(app);
+  registerIntegrationRecoveryRoutes(app, { pool, cursorKey: localConfig.encryptionKey, sessionName, readOnly });
+  // Identity reads use the same current-session/MFA policy as ordinary middleware.
+  // Only tenant metadata is read inside the native read transaction; HTTP runs after it closes.
+  const currentMiraklChannel=async(actor:MiraklReadActor,channelId:string)=>{
+    return tenantReadTx(actor.tenantId,async c=>{
+      const security={accountSecurityAvailable,workspaceMfaPolicyAvailable,readOnly};
+      await assertMiraklSessionAuthorityInTx(c,actor,security);
+      const channel=(await c.query('SELECT * FROM channels WHERE tenant_id=$1 AND id=$2',[actor.tenantId,channelId])).rows[0]??null;
+      await assertMiraklSessionAuthorityInTx(c,actor,security);return channel;
+    });
+  };
+  const miraklReads=registerMiraklReadRoutes(app,{sessionName,readOnly,
+    externalReadsEnabled:miraklReadRepository!==undefined,repository:miraklReadRepository,
+    transport:ordinaryConnectorTransport,currentChannel:currentMiraklChannel,decryptCredentials:decrypt,
+    stageOrders:async(actor,channelId,connectionHash,rows)=>tenantTx(actor.tenantId,async c=>{
+      await context.miraklImportAuthority!(c,actor,channelId);
+      const channel=(await c.query('SELECT * FROM channels WHERE tenant_id=$1 AND id=$2 FOR SHARE',[actor.tenantId,channelId])).rows[0];
+      ensure(channel&&miraklChannelConnectionHash(channel)===connectionHash,409,'Mirakl: połączenie zmieniło się przed zapisem kolejki');
+      const data=rows.length?await stageOrders(c,{tenantId:actor.tenantId,userId:actor.userId,role:'admin'},channel,[...rows]):[];
+      await audit(c,{tenantId:actor.tenantId,userId:actor.userId,role:'admin'},'integration.mirakl.orders.stage',channelId,{count:data.length,connection_hash:connectionHash});
+      return {data};
+    })});
+  app.post('/api/integrations', async (req) => {
+    canWrite(req.actor, true);
+    const b = z
+      .object({
+        provider: z.enum([
+          'allegro',
+          'woocommerce',
+          'prestashop',
+          'shopify',
+          'inpost',
+          'dpd',
+          'fakturownia',
+          'smsapi',
+          'smtp',
+          'bigbuy',
+          'odoo',
+          'ebay',
+          'amazon',
+          'deepl',
+          'mirakl',
+        ]),
+        name: z.string().min(2).max(120),
+        mode: z.enum(['sandbox', 'live']),
+        credentials: z.record(z.string(), z.string().max(10000)),
+        settings: z.record(z.string(), z.string().max(2000)).default({}),
+      })
+      .parse(req.body);
+    const p = registry.find((p) => p.id === b.provider)!;
+    for (const field of p.fields) {
+      if (b.provider === 'shopify') continue;
+      if (b.provider === 'ebay' && ['refresh_token', 'ru_name'].includes(field)) continue;
+      if (b.provider === 'amazon' && field === 'refresh_token') continue;
+      if (b.provider === 'allegro' && field !== 'access_token') continue;
+      ensure(b.credentials[field]?.trim(), 422, `Brak pola: ${field}`);
+    }
+    for (const key of p.settings) {
+      if (['ebay', 'amazon', 'smtp', 'shopify', 'deepl', 'mirakl'].includes(b.provider)) continue;
+      ensure(b.settings[key], 422, `Brak pola: ${key}`);
+      if (b.provider === 'odoo' && key !== 'server_url') continue;
+      b.settings[key] =
+        key === 'sender'
+          ? z
+              .string()
+              .regex(/^[A-Za-z0-9 ._-]{1,11}$/)
+              .parse(b.settings[key])
+          : key === 'master_fid'
+            ? z
+                .string()
+                .regex(/^[1-9]\d{0,9}$/)
+                .refine((v) => Number(v) <= 2147483647)
+                .parse(b.settings[key])
+            : key === 'shop_id'
+              ? psId(b.settings[key])
+              : key === 'order_state_ids'
+                ? psStateIds(b.settings[key]).join(',')
+                : key === 'organization_id'
+                  ? z
+                      .string()
+                      .regex(/^[1-9]\d{0,17}$/)
+                      .parse(b.settings[key])
+                  : await validateRemoteUrl(b.settings[key]);
+    }
+    if (b.provider === 'smtp') {
+      const settings = smtpSettings.parse(b.settings);
+      ensure(
+        settings.delivery === 'external',
+        422,
+        'Użyj osobnej konfiguracji lokalnego odbiornika',
+      );
+      b.settings = settings as any;
+      b.credentials = smtpCredentials.parse(b.credentials);
+    }
+    if (b.provider === 'mirakl') {
+      b.settings = safeMiraklPublicSettings(b.settings);
+      b.credentials = parseMiraklCredentials(b.credentials);
+    }
+    if (b.provider === 'deepl') {
+      ensure(b.mode === 'live', 422, 'DeepL Free i Pro są rzeczywistymi API; brak sandboxu');
+      b.settings = deeplSettings.parse(b.settings);
+      b.credentials = deeplCredentials.parse(b.credentials);
+      ensure(
+        b.credentials.api_key.endsWith(':fx') === (b.settings.api_plan === 'free'),
+        422,
+        'Klucz :fx wymaga API Free',
+      );
+    }
+    if (b.provider === 'smsapi') {
+      ensure(b.mode === 'sandbox', 422, 'SMSAPI obsługuje obecnie wyłącznie test=1');
+      b.settings = { sender: b.settings.sender };
+      b.credentials = { access_token: b.credentials.access_token };
+    }
+    if (b.provider === 'dpd') {
+      b.settings = { master_fid: b.settings.master_fid };
+      b.credentials = {
+        username: z
+          .string()
+          .trim()
+          .min(1)
+          .max(100)
+          .regex(/^[^:\r\n]+$/)
+          .parse(b.credentials.username),
+        password: z
+          .string()
+          .min(1)
+          .max(1000)
+          .regex(/^[^\r\n]+$/)
+          .parse(b.credentials.password),
+      };
+    }
+    if (b.provider === 'bigbuy') {
+      b.settings = {};
+      b.credentials = { api_key: bigbuyToken.parse(b.credentials.api_key) };
+    }
+    if (b.provider === 'odoo') {
+      odooConfig(b.settings, b.credentials);
+      b.settings = Object.fromEntries(p.settings.map((key) => [key, b.settings[key]]));
+      b.credentials = { api_key: b.credentials.api_key };
+    }
+    if (b.provider === 'amazon') {
+      b.settings = amazonSettings.parse(b.settings) as any;
+      b.credentials = amazonConnectionCredentials.parse(b.credentials);
+    }
+    if (b.provider === 'ebay') {
+      b.settings = ebaySettings.parse(b.settings) as any;
+      b.credentials = ebayConnectionCredentials(b.credentials);
+    }
+    if (b.provider === 'shopify') {
+      z.object({ store_url: z.string(), oauth_redirect_uri: z.string().optional() })
+        .strict()
+        .parse(b.settings);
+      b.settings = {
+        store_url: shopifyStore(b.settings.store_url),
+        ...(b.settings.oauth_redirect_uri
+          ? { oauth_redirect_uri: shopifyRedirect(b.settings.oauth_redirect_uri) }
+          : {}),
+      };
+      b.credentials = Object.fromEntries(
+        Object.entries(
+          shopifyConnectionCredentials.parse(
+            Object.fromEntries(Object.entries(b.credentials).filter(([, v]) => v !== '')),
+          ),
+        ).filter(([, v]) => v !== undefined),
+      ) as Record<string, string>;
+    }
+    if (b.provider === 'prestashop') {
+      ensure(
+        /^[A-Za-z0-9]{32}$/.test(b.credentials.api_key),
+        422,
+        'Klucz Webservice PrestaShop musi mieć 32 znaki',
+      );
+      // Reject synthetic flags submitted as strings; examples are separate authenticated routes.
+      b.settings = {
+        store_url: b.settings.store_url,
+        shop_id: b.settings.shop_id,
+        order_state_ids: b.settings.order_state_ids,
+      };
+    }
+    if (b.provider === 'fakturownia')
+      ensure(
+        new URL(b.settings.account_url).hostname.endsWith('.fakturownia.pl'),
+        422,
+        'Wymagana domena konta Fakturownia',
+      );
+    return tenantTx(req.actor.tenantId, async (c) => {
+      const id = randomUUID();
+      await c.query(
+        'INSERT INTO channels(id,tenant_id,provider,name,mode,credentials,settings) VALUES($1,$2,$3,$4,$5,$6,$7)',
+        [
+          id,
+          req.actor.tenantId,
+          b.provider,
+          b.name,
+          b.mode,
+          encrypt(b.credentials),
+          JSON.stringify(b.settings),
+        ],
+      );
+      await audit(c, req.actor, 'integration.create', id, { provider: b.provider, mode: b.mode });
+      const pendingOAuth =
+        b.provider === 'allegro' ||
+        (b.provider === 'shopify' && !b.credentials.access_token) ||
+        (['ebay', 'amazon'].includes(b.provider) && !b.credentials.refresh_token);
+      if (pendingOAuth)
+        await c.query("UPDATE channels SET status='awaiting_oauth' WHERE id=$1", [id]);
+      return { id, status: pendingOAuth ? 'awaiting_oauth' : 'not_verified' };
+    });
+  });
+  app.post('/api/integrations/:id/test', async (req) => {
+    canWrite(req.actor, true);
+    const id = idOf(req.params);
+    const ch = await tenantTx(
+      req.actor.tenantId,
+      async (c) => (await c.query('SELECT * FROM channels WHERE id=$1', [id])).rows[0],
+    );
+    ensure(ch, 404, 'Nie znaleziono integracji');
+    ensure(!ch.settings.simulation, 422, 'To połączenie zawiera wyłącznie lokalny przykład');
+    const requestContext = withAllegroRequestContext(context, req, sessionName);
+    let result: string = 'verified_read',
+      failure: unknown;
+    try {
+      if (ch.provider === 'mirakl') await miraklReads.readAccount(req);
+      else if (ch.provider === 'amazon') await readAmazonOrders(req.actor, ch, undefined, context);
+      else if (ch.provider === 'ebay') await readEbayOrders(req.actor, ch, undefined, context);
+      else await channelRead(req.actor.tenantId, id, (client) => client.test(), requestContext);
+    } catch (e) {
+      result = 'error';
+      failure = e;
+    }
+    if(ch.provider==='mirakl'){
+      const latest=await currentMiraklChannel(captureMiraklReadActor(req,sessionName),id);
+      ensure(latest&&miraklChannelConnectionHash(latest)===miraklChannelConnectionHash(ch),409,'Mirakl: połączenie zmieniło się podczas testu');
+    }
+    await tenantTx(req.actor.tenantId, async (c) => {
+      if(ch.provider==='mirakl'){
+        const actor=captureMiraklReadActor(req,sessionName);
+        await context.miraklImportAuthority!(c,actor,id);
+        ensure((await c.query('SELECT public.offer_sync_is_admin($1) AS ok',[actor.userId])).rows[0]?.ok===true,403,'Mirakl: administrator utracił uprawnienia');
+        const latest=(await c.query('SELECT * FROM channels WHERE tenant_id=$1 AND id=$2 FOR UPDATE',[actor.tenantId,id])).rows[0];
+        ensure(latest&&miraklChannelConnectionHash(latest)===miraklChannelConnectionHash(ch),409,'Mirakl: połączenie zmieniło się przed zapisem wyniku testu');
+      }
+      if (ch.provider === 'allegro')
+        await enlistAllegroContextInTx(c, requestContext, req.actor.tenantId, id, req.actor.userId);
+      if (ch.provider === 'amazon') await amazonReadPolicy(c, req.actor, ch);
+      if (ch.provider === 'ebay') await ebayReadPolicy(c, req.actor, ch);
+      await c.query('UPDATE channels SET status=$1 WHERE id=$2', [result, id]);
+      await c.query(
+        'INSERT INTO integration_runs(id,tenant_id,channel_id,operation,status,detail) VALUES($1,$2,$3,$4,$5,$6)',
+        [
+          randomUUID(),
+          req.actor.tenantId,
+          id,
+          'connection',
+          result,
+          JSON.stringify(
+            failure
+              ? { error: failure instanceof Problem ? failure.message : 'Brak odpowiedzi dostawcy' }
+              : { scope: 'read_only' },
+          ),
+        ],
+      );
+      await audit(c, req.actor, 'integration.test', id, { status: result });
+    });
+    if (failure) throw failure;
+    return { ok: true, status: result, scope: 'read_only' };
+  });
+  app.get('/api/integrations/:id/preview', async (req) => {
+    ensure(req.actor.role === 'admin', 403, 'Wymagana rola administratora');
+    const q = z
+        .object({
+          cursor: z.string().min(1).max(2048).optional(),
+          resource: z.enum(['orders', 'products', 'invoices']).default('orders'),
+          page: z.coerce.number().int().min(1).max(1000).default(1),
+        })
+        .parse(req.query),
+      id = idOf(req.params);
+    const ch = await tenantTx(
+      req.actor.tenantId,
+      async (c) => (await c.query('SELECT * FROM channels WHERE id=$1', [id])).rows[0],
+    );
+    ensure(ch, 404, 'Nie znaleziono integracji');
+    ensure(!ch.settings.simulation, 422, 'To połączenie zawiera wyłącznie lokalny przykład');
+    if (ch.provider === 'ebay') {
+      ensure(
+        q.resource === 'orders' && q.page === 1,
+        422,
+        'eBay: podgląd zamówień korzysta z cursora',
+      );
+      return readEbayOrders(req.actor, ch, q.cursor, context);
+    }
+    return channelRead(
+      req.actor.tenantId,
+      id,
+      async (client) => {
+        if (client instanceof Odoo) {
+          ensure(
+            q.resource === 'products' && q.page === 1,
+            422,
+            'Odoo: podgląd katalogu używa cursora liczbowego; zamówienia i faktury wymagają osobnej integracji',
+          );
+          ensure(
+            q.cursor === undefined || /^[1-9]\d{0,9}$/.test(q.cursor),
+            422,
+            'Nieprawidłowy cursor Odoo',
+          );
+          return client.catalogPage(q.cursor ? Number(q.cursor) : 0);
+        }
+        if (client instanceof Shopify) {
+          ensure(
+            q.page === 1 && q.resource !== 'invoices',
+            422,
+            'Shopify używa cursora, podgląd faktur niedostępny',
+          );
+          return q.resource === 'orders' ? client.orders(q.cursor) : client.products(q.cursor);
+        }
+        if (client instanceof PrestaShop) {
+          ensure(
+            q.resource !== 'invoices',
+            422,
+            'Podgląd faktur nie jest dostępny dla tego kanału',
+          );
+          return q.resource === 'orders' ? client.orders(q.page) : client.products(q.page);
+        }
+        if (client instanceof WooCommerce)
+          return q.resource === 'orders' ? client.orders(q.page) : client.products(q.page);
+        if (client instanceof Allegro)
+          return q.resource === 'orders'
+            ? client.orders((q.page - 1) * 50)
+            : client.offers((q.page - 1) * 50);
+        if (client instanceof Fakturownia) return { data: await client.invoices(q.page) };
+        throw new Problem(422, 'Ta integracja nie oferuje tego podglądu');
+      },
+      withAllegroRequestContext(context, req, sessionName),
+    );
+  });
+  app.get('/api/inpost/points', async (req) => {
+    const { city, page } = z
+      .object({
+        city: z.string().trim().min(2).max(100),
+        page: z.coerce.number().int().min(1).max(100).default(1),
+      })
+      .parse(req.query);
+    const result = await new InPost('live', {}, integrationTransport).points(city, page);
+    return {
+      data: result.items.map((p: any) => ({
+        name: p.name,
+        type: p.type,
+        address: p.address,
+        status: p.status,
+        location: p.location,
+      })),
+      page: result.page,
+      count: result.count,
+    };
+  });
+  registerPortalRoutes(app, { readOnly, printLayout });
+  registerCustomerMessageRoutes(app, {
+    available: customerMessagesAvailable,
+    workflowAvailable: customerMessageWorkflowsAvailable,
+    readOnly,
+  });
+  registerCustomerMessageWorkflowRoutes(app, {
+    available: customerMessageWorkflowsAvailable,
+    readOnly,
+  });
+  // Same authenticated child/parser handles normal and public v1. Global auth is already installed.
+  await largeImports.register(app);
+  await registerBusinessQuotaRecoveryRoutes(app,{readOnly,port:largeImportRecovery});
+  bindPublicRoutes();
+  const dist = staticRoot === undefined ? resolve('dist') : staticRoot;
+  if (staticRoot !== undefined && resolve(staticRoot) !== staticRoot)
+    throw new Error('Application static root must be an absolute normalized path');
+  if (staticRoot !== undefined && !existsSync(resolve(staticRoot, 'index.html')))
+    throw new Error('Application static index missing');
+  if (existsSync(dist)) {
+    await app.register(staticPlugin, { root: dist });
+    app.setNotFoundHandler((req, reply) => {
+      if (req.url.startsWith('/api'))
+        return reply.code(404).send({ status: 404, detail: 'Nie znaleziono endpointu' });
+      return reply.sendFile('index.html');
+    });
+  }
+  return app;
+  } catch (first) {
+    try { await app.close(); } catch { /* Construction cause remains authoritative. */ }
+    throw first;
+  }
+}

@@ -1,0 +1,160 @@
+.language-file-import {
+  margin-block: 20px;
+  padding: 20px;
+  min-width: 0;
+  max-width: 100%;
+}
+.language-file-import h2,
+.language-file-import h3 {
+  margin-top: 0;
+}
+.language-file-import p,
+.language-file-import li,
+.language-file-import summary {
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+.language-file-import .lfi-toolbar,
+.language-file-import .lfi-counts,
+.language-file-import .lfi-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-block: 12px;
+}
+.language-file-import .lfi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.language-file-import label:not(.lfi-check) {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  margin-block: 10px;
+}
+.language-file-import input:not([type='checkbox']),
+.language-file-import textarea,
+.language-file-import select {
+  width: 100%;
+  min-width: 0;
+}
+.language-file-import fieldset {
+  min-width: 0;
+  margin-block: 16px;
+  padding: 16px;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+}
+.language-file-import legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.language-file-import .lfi-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-block: 12px;
+  line-height: 1.55;
+}
+.language-file-import .lfi-check input {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 4px;
+}
+.language-file-import .lfi-hint,
+.language-file-import .lfi-error,
+.language-file-import .lfi-status,
+.language-file-import .lfi-pending {
+  padding: 12px;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.language-file-import .lfi-hint {
+  color: #475569;
+  background: #f8fafc;
+}
+.language-file-import .lfi-error {
+  color: #991b1b;
+  background: #fef2f2;
+}
+.language-file-import .lfi-status {
+  color: #166534;
+  background: #f0fdf4;
+}
+.language-file-import .lfi-pending {
+  color: #854d0e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+.language-file-import .lfi-language,
+.language-file-import .lfi-history-row {
+  margin-block: 12px;
+  padding: 14px;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+}
+.language-file-import .lfi-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.language-file-import table {
+  width: 100%;
+  min-width: 1000px;
+  table-layout: fixed;
+}
+.language-file-import .lfi-summary-table {
+  min-width: 650px;
+}
+.language-file-import td,
+.language-file-import th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  padding: 10px 8px;
+}
+.language-file-import small,
+.language-file-import td b,
+.language-file-import td em,
+.language-file-import .lfi-text {
+  display: block;
+  margin-block: 5px;
+}
+.language-file-import .lfi-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.language-file-import details {
+  margin-block: 12px;
+}
+.language-file-import summary {
+  cursor: pointer;
+}
+.language-file-import pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 350px;
+  overflow: auto;
+}
+.language-file-import textarea {
+  resize: vertical;
+}
+@media (max-width: 850px) {
+  .language-file-import .lfi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 550px) {
+  .language-file-import {
+    padding: 12px;
+  }
+  .language-file-import .lfi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .language-file-import fieldset {
+    padding: 10px;
+  }
+}

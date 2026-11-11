@@ -1,0 +1,17 @@
+node_modules
+dist/
+data/
+output/
+*.log
+.env
+.env.*
+.local.json
+.recovery-key
+tools/demo/CREDENTIALS.local.md
+# Base.com/BaseLinker documentation captures: third-party material, local checkouts only
+# (tests that read them skip with a reason when absent, tools/parity/base-captures.mjs).
+docs/parity/base-api-*-sources-*.json.gz
+docs/parity/base-api-index-20261017.html.gz
+docs/parity/base-catalog-20261017.html.gz
+docs/parity/base-catalog-20261017.integrations.js.gz
+/output/

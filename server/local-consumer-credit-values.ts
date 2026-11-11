@@ -1,0 +1,17 @@
+import {z} from 'zod';
+import type {LocalInvoiceDocument,LocalInvoiceSnapshot} from './local-invoices';
+export const LOCAL_CONSUMER_CREDIT_LIMITS={returns:1000,lines:101,previews:2000,input_bytes:33554432,output_bytes:2097152,page:50,preview_minutes:15,yearly_numbers:999999} as const;
+export const creditUuid=z.uuid().transform(s=>s.toLowerCase());
+const version=z.string().regex(/^[1-9][0-9]{0,18}$/).refine(s=>BigInt(s)<=9223372036854775807n);
+export const localConsumerCreditPreviewInput=z.strictObject({client_key:creditUuid,original_document_id:creditUuid,return_id:creditUuid,expected_return_version:version,reason:z.string().trim().min(3).max(500).refine(s=>!/[\x00-\x1f\x7f]/.test(s)),ordinary_domestic_confirmed:z.literal(true),local_only:z.literal(true)});
+export const localConsumerCreditIssueInput=z.strictObject({client_key:creditUuid,scope_hash:z.string().regex(/^[a-f0-9]{64}$/),confirmed:z.literal(true),local_only:z.literal(true)});
+export const localConsumerCreditPageQuery=z.strictObject({cursor:creditUuid.optional()});
+export type CreditMoney={gross_minor:string;net_minor:string;vat_minor:string};
+export type CreditAmount=CreditMoney&{quantity:string};
+export type ConsumerAcceptance={return_id:string;receipt_id:string;receipt_sequence:number;received_at:string;financial_hash:string;refund_amount_minor:string;refunded_shipping_minor:string;items:{item_id:string;accepted:string;restocked:string;refund_amount_minor:string}[]};
+export type ConsumerCreditRow={ordinal:number;kind:'item'|'shipping';item_id:string|null;product_id:string|null;name:string;sku:string;unit:string;vat_rate:number;before:CreditAmount;after:CreditAmount;delta:CreditAmount;affected:boolean};
+export type ConsumerCreditCalculation={schema:'local-consumer-credit-calculation/v1';currency:'PLN';tax_method:'gross_line_half_up';original_document_id:string;original_receipt_id:string;original_number:string;original_scope_hash:string;return_id:string;return_receipt_id:string;receipt_sequence:number;financial_hash:string;previous_chain_hash:string;rows:ConsumerCreditRow[];totals:{before:CreditMoney;after:CreditMoney;delta:CreditMoney};vat_totals:{vat_rate:number;before:CreditMoney;after:CreditMoney;delta:CreditMoney}[]};
+export type ConsumerCreditSource={original:{document:LocalInvoiceDocument;receipt:{id:string;document_id:string;preview_id:string;number:string;scope_hash:string;snapshot:LocalInvoiceSnapshot}};acceptances:ConsumerAcceptance[];previous_credits:{document_id:string;receipt_id:string;return_id:string;return_receipt_id:string;receipt_sequence:number;calculation:ConsumerCreditCalculation;calculation_hash:string}[];selected_return_id:string};
+export type ConsumerCreditSnapshot={schema:'local-consumer-credit/v1';original_document:LocalInvoiceDocument;calculation:ConsumerCreditCalculation;reason:string;return_version:string;issue_date:string;local_only:true;ksef_state:'not_submitted';fiscalized:false};
+export type ConsumerCreditDocument={id:string;order_id:string;original_document_id:string;return_id:string;kind:'correction';mode:'local_consumer_credit';number:string;data:ConsumerCreditSnapshot&{number:string;preview_id:string;scope_hash:string;year:number;sequence:number};created_at:string};
+export type ConsumerCreditPreview={id:string;original_document_id:string;return_id:string;scope_hash:string;calculation_hash:string;snapshot:ConsumerCreditSnapshot;expires_at:string;can_issue:boolean;issued_document_id:string|null};

@@ -1,0 +1,125 @@
+.catalog-export-profiles {
+  padding: 16px;
+  margin-block: 18px;
+  border: 1px solid #dbe3ed;
+  border-radius: 9px;
+  max-width: 100%;
+}
+.catalog-export-profiles .cep-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 14px;
+}
+.catalog-export-profiles h3,
+.catalog-export-profiles h4 {
+  margin-top: 0;
+}
+.catalog-export-profiles p,
+.catalog-export-profiles li {
+  overflow-wrap: anywhere;
+}
+.catalog-export-profiles .cep-select {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+.catalog-export-profiles label:not(.cep-checkbox) {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  margin-block: 12px;
+}
+.catalog-export-profiles input:not([type='checkbox']),
+.catalog-export-profiles select {
+  width: 100%;
+  min-width: 0;
+}
+.catalog-export-profiles .cep-checkbox {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  gap: 9px;
+  cursor: pointer;
+  margin-block: 14px;
+}
+.catalog-export-profiles .cep-checkbox input {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  margin-top: 3px;
+}
+.catalog-export-profiles .cep-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block: 14px;
+}
+.catalog-export-profiles .cep-hint {
+  padding: 10px;
+  background: #f8fafc;
+  color: #475569;
+  border-radius: 7px;
+  font-size: 14px;
+}
+.catalog-export-profiles .cep-error {
+  padding: 12px;
+  background: #fef2f2;
+  color: #991b1b;
+  border-radius: 7px;
+}
+.catalog-export-profiles .cep-status {
+  padding: 12px;
+  background: #f0fdf4;
+  color: #166534;
+  border-radius: 7px;
+}
+.catalog-export-profiles .cep-pending {
+  padding: 14px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+  border-radius: 7px;
+}
+.catalog-export-profiles .cep-selected {
+  padding: 14px;
+  border: 1px solid #dbe3ed;
+  border-radius: 7px;
+  margin-block: 14px;
+}
+.catalog-export-profiles .cep-create,
+.catalog-export-profiles .cep-editor {
+  border-top: 1px solid #dbe3ed;
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.catalog-export-profiles details {
+  margin-block: 12px;
+}
+.catalog-export-profiles summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.catalog-export-profiles .cep-definition li span {
+  color: #64748b;
+}
+.catalog-export-profiles .cep-definition ol {
+  padding-left: 24px;
+}
+@media (max-width: 700px) {
+  .catalog-export-profiles {
+    padding: 12px;
+  }
+  .catalog-export-profiles .cep-heading {
+    flex-direction: column;
+  }
+  .catalog-export-profiles .cep-select {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .catalog-export-profiles .cep-actions .button {
+    width: 100%;
+  }
+}

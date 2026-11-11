@@ -1,0 +1,245 @@
+.wms-stocktakes {
+  padding: 20px;
+  margin: 18px 0;
+  border: 1px solid var(--border, #dce3ec);
+  border-radius: 14px;
+  background: var(--panel, #fff);
+  color: var(--text, #17213a);
+  min-width: 0;
+}
+.wms-stocktakes h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+}
+.wms-stocktakes h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+}
+.wms-stocktakes h4 {
+  margin: 14px 0 8px;
+}
+.wst-help {
+  color: var(--muted, #63708a);
+  line-height: 1.6;
+}
+.wst-actions,
+.wst-header,
+.wst-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+.wst-header {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.wst-tabs button[aria-pressed='true'] {
+  background: #e9eeff;
+  color: #263d91;
+  border-color: #7a8ed1;
+}
+.wst-card {
+  padding: 16px;
+  border: 1px solid var(--border, #dce3ec);
+  border-radius: 10px;
+  margin: 16px 0;
+  min-width: 0;
+}
+.wst-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.wst-full {
+  grid-column: 1/-1;
+}
+.wms-stocktakes label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.wms-stocktakes input,
+.wms-stocktakes select,
+.wms-stocktakes textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 7px;
+  border: 1px solid #ccd6e4;
+  border-radius: 8px;
+  background: var(--panel, #fff);
+  color: inherit;
+  font: inherit;
+}
+.wms-stocktakes textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.wms-stocktakes fieldset {
+  min-width: 0;
+  border: 1px solid #dce3ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0;
+}
+.wms-stocktakes legend {
+  font-weight: 700;
+  padding: 0 6px;
+}
+.wms-stocktakes fieldset:disabled {
+  opacity: 0.78;
+}
+.wst-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 9px;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+.wst-check input {
+  width: auto !important;
+  margin: 3px 0 0 !important;
+  flex: none;
+}
+.wst-scroll {
+  width: 100%;
+  overflow: auto;
+  overscroll-behavior-inline: contain;
+  margin: 12px 0;
+}
+.wst-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.wst-table th,
+.wst-table td {
+  padding: 12px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #e4eaf2;
+}
+.wst-table th {
+  background: #f5f7fc;
+  white-space: nowrap;
+}
+.wst-table small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted, #63708a);
+}
+.wst-table input {
+  min-width: 120px;
+}
+.wst-error,
+.wst-warning,
+.wst-success {
+  padding: 13px;
+  border: 1px solid;
+  border-radius: 9px;
+  line-height: 1.6;
+  margin: 12px 0;
+  white-space: pre-wrap;
+}
+.wst-error {
+  background: #fff0f0;
+  border-color: #efb6b6;
+  color: #972929;
+}
+.wst-warning {
+  background: #fff8e7;
+  border-color: #eed6a0;
+  color: #715321;
+}
+.wst-success {
+  background: #ebf7ee;
+  border-color: #b4d9bd;
+  color: #255d32;
+}
+.wst-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.wst-list button {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #dce3ec;
+  border-radius: 9px;
+  background: var(--panel, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+.wst-list button[aria-current='true'] {
+  border-color: #6b83d0;
+  background: #f0f3ff;
+}
+.wst-list button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.wst-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 14px;
+}
+.wst-stats span {
+  border: 1px solid #dce3ec;
+  padding: 9px 12px;
+  border-radius: 8px;
+}
+.wst-technical {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  margin: 10px 0;
+  color: var(--muted, #63708a);
+}
+.wst-technical code {
+  white-space: normal;
+}
+.wst-pages {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.wst-cost {
+  max-width: 210px;
+}
+.wst-fragments {
+  margin: 8px 0;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+.wms-stocktakes button:focus-visible,
+.wms-stocktakes input:focus-visible,
+.wms-stocktakes select:focus-visible,
+.wms-stocktakes textarea:focus-visible {
+  outline: 3px solid #8ca6ed;
+  outline-offset: 2px;
+}
+@media (max-width: 680px) {
+  .wms-stocktakes {
+    padding: 12px;
+  }
+  .wst-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wst-card {
+    padding: 12px;
+  }
+  .wst-header {
+    display: block;
+  }
+  .wst-actions .button {
+    flex: 1 1 auto;
+  }
+}

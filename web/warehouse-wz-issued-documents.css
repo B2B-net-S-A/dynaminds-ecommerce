@@ -1,0 +1,13 @@
+.warehouse-wz-issued { display: grid; gap: 16px; min-width: 0; padding: 20px; border: 1px solid var(--border, #ddd); border-radius: 8px; }
+.warehouse-wz-issued .wwi-filters, .warehouse-wz-issued .wwi-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.warehouse-wz-issued label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.warehouse-wz-issued label.wwi-check { flex-direction: row; align-items: flex-start; }
+.warehouse-wz-issued .wwi-check input { width: auto; flex: 0 0 auto; margin-top: 3px; }
+.warehouse-wz-issued .wwi-detail { display: grid; gap: 12px; min-width: 0; border-top: 1px solid var(--border, #ddd); padding-top: 16px; overflow-wrap: anywhere; }
+.warehouse-wz-issued .wwi-scroll { max-width: 100%; overflow-x: auto; }
+.warehouse-wz-issued table { width: 100%; min-width: 680px; text-align: left; }
+.warehouse-wz-issued th, .warehouse-wz-issued td { vertical-align: top; padding: 8px; }
+.warehouse-wz-issued small { display: block; overflow-wrap: anywhere; }
+.warehouse-wz-issued button { white-space: normal; overflow-wrap: anywhere; }
+.warehouse-wz-issued input, .warehouse-wz-issued select { max-width: 100%; min-width: 0; }
+@media (max-width: 700px) { .warehouse-wz-issued { padding: 14px; } .warehouse-wz-issued .wwi-filters { display: grid; } }

@@ -1,0 +1,142 @@
+.crm-workspace {
+  display: grid;
+  gap: 20px;
+}
+.crm-workspace .crm-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.crm-workspace .crm-columns {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) minmax(360px, 1.4fr);
+  gap: 20px;
+  align-items: start;
+}
+.crm-workspace .crm-card {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 18px;
+  background: #fff;
+  min-width: 0;
+}
+.crm-workspace .crm-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.crm-workspace label {
+  display: grid;
+  gap: 6px;
+}
+.crm-workspace label.crm-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crm-workspace textarea {
+  min-height: 90px;
+}
+.crm-workspace .crm-wide {
+  grid-column: 1/-1;
+}
+.crm-workspace .crm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 16px;
+}
+.crm-workspace .crm-danger {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 24px;
+  padding-top: 16px;
+}
+.crm-workspace .crm-selected {
+  background: #eef2ff;
+}
+.crm-workspace .crm-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf0f6;
+}
+.crm-workspace .crm-item h4,
+.crm-workspace .crm-item p {
+  margin: 0 0 6px;
+}
+.crm-workspace .crm-option-list {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.crm-workspace .crm-error {
+  color: #b91c1c;
+}
+.crm-workspace .crm-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.crm-workspace .crm-file {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .crm-workspace .crm-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 500px) {
+  .crm-workspace .crm-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep small choice controls at the start of each option, overriding global full-width inputs. */
+.crm-workspace label.crm-check {
+  justify-content: flex-start;
+  text-align: left;
+}
+.crm-workspace .crm-check input[type="checkbox"],
+.crm-workspace .crm-check input[type="radio"] {
+  width: 17px;
+  min-width: 17px;
+  max-width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  padding: 0;
+  margin: 0;
+}
+.crm-workspace .crm-fields fieldset:not(.crm-fields) {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+.crm-workspace .crm-definitions .crm-fields {
+  grid-template-columns: minmax(180px, 2fr) minmax(150px, 1fr) minmax(
+      100px,
+      0.6fr
+    );
+  gap: 10px;
+  align-items: end;
+}
+.crm-workspace .crm-definitions .crm-danger {
+  margin-top: 16px;
+  padding-top: 12px;
+}
+.crm-workspace .crm-definitions textarea {
+  min-height: 72px;
+}
+@media (max-width: 700px) {
+  .crm-workspace .crm-definitions .crm-fields {
+    grid-template-columns: 1fr;
+  }
+}

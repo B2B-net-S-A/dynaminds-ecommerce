@@ -1,0 +1,100 @@
+.email-inbound {
+  min-width: 0;
+  margin-top: 16px;
+}
+.email-inbound .info-body {
+  display: grid;
+  gap: 16px;
+}
+.email-inbound .panel-heading {
+  flex-wrap: wrap;
+}
+.email-inbound .ei-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 14px;
+}
+.email-inbound .ei-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.email-inbound .ei-card {
+  min-width: 0;
+  border: 1px solid var(--border, #dce2ed);
+  border-radius: 10px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+.email-inbound fieldset {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.email-inbound label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+.email-inbound label.ei-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.email-inbound .ei-check input {
+  width: auto;
+  flex: 0 0 auto;
+}
+.email-inbound input,
+.email-inbound select,
+.email-inbound textarea {
+  min-width: 0;
+  max-width: 100%;
+}
+.email-inbound .button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.email-inbound p,
+.email-inbound h3,
+.email-inbound small,
+.email-inbound td,
+.email-inbound li {
+  overflow-wrap: anywhere;
+}
+.email-inbound .ei-text {
+  white-space: pre-wrap;
+  max-height: 420px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border, #dce2ed);
+  border-radius: 7px;
+}
+.email-inbound .table-scroll {
+  max-width: 100%;
+  min-width: 0;
+}
+.email-inbound small {
+  display: block;
+}
+.email-inbound details > summary {
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.email-inbound .ei-selected {
+  border-color: var(--blue, #3759ed);
+}
+.email-inbound .ei-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.email-inbound .ei-tabs [aria-pressed='true'] {
+  border-color: var(--blue, #3759ed);
+  background: #edf2ff;
+}

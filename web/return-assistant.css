@@ -1,0 +1,21 @@
+.return-assistant { margin-top: 16px; min-width: 0; }
+.return-assistant .info-body { display: grid; gap: 16px; }
+.return-assistant h3, .return-assistant p { margin: 0; }
+.return-assistant .panel-heading { flex-wrap: wrap; }
+.return-assistant .ra-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(210px,100%),1fr)); gap: 12px; }
+.return-assistant h3, .return-assistant p, .return-assistant small { overflow-wrap: anywhere; }
+.return-assistant .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.return-assistant label { display: grid; gap: 6px; min-width: 0; }
+.return-assistant label.ra-check { display: flex; flex-direction: row; align-items: flex-start; gap: 10px; }
+.return-assistant .ra-check input { flex: 0 0 auto; width: auto; }
+.return-assistant .ra-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.return-assistant .ra-line { border: 1px solid var(--line, #dae0e7); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0; }
+.return-assistant .ra-part { display: grid; grid-template-columns: minmax(150px,1fr) 100px auto; gap: 10px; align-items: end; }
+.return-assistant .ra-part input { width: 100%; }
+.return-assistant .ra-photo { display: grid; gap: 8px; }
+.return-assistant .ra-photo img { max-width: 100%; max-height: 280px; object-fit: contain; }
+.return-assistant fieldset { min-inline-size: 0; padding: 0; margin: 0; border: 0; }
+.return-assistant .table-scroll { min-width: 0; max-width: 100%; }
+.return-assistant td, .return-assistant th { overflow-wrap: anywhere; }
+.return-assistant small { display: block; }
+@media (max-width: 560px) { .return-assistant .ra-part { grid-template-columns: 1fr 90px; } .return-assistant .ra-part button { grid-column: 1 / -1; } }

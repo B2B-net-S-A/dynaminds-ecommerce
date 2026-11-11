@@ -1,0 +1,44 @@
+/* Scoped to local FV views; the validated printable iframe keeps its own stylesheet. */
+.b2b-invoices-panel.panel { min-width: 0; padding: 24px; display: grid; gap: 16px; color: var(--text, #172033); }
+.b2b-invoices-panel h3, .b2b-invoices-panel h4, .b2b-invoices-panel p { margin: 0; }
+.b2b-invoices-panel h3 { font-size: 16px; font-weight: 800; }
+.b2b-invoices-panel h4 { font-size: 14px; font-weight: 700; }
+.b2b-invoices-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.b2b-invoices-panel .b2b-invoice-fields,
+.b2b-invoices-panel .b2b-invoice-review,
+.b2b-invoices-panel .b2b-invoice-detail { min-width: 0; margin: 0; padding: 18px; border: 1px solid var(--border, #dbe2ea); border-radius: 10px; }
+.b2b-invoices-panel .b2b-invoice-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.b2b-invoices-panel legend { padding: 0 6px; font-weight: 700; }
+.b2b-invoices-panel label { min-width: 0; margin: 0; display: grid; gap: 7px; line-height: 1.5; }
+.b2b-invoices-panel input:not([type='checkbox']), .b2b-invoices-panel select { width: 100%; min-width: 0; min-height: 42px; box-sizing: border-box; padding: 9px 11px; border: 1px solid #94a3b8; border-radius: 7px; background: #fff; color: inherit; font: inherit; }
+.b2b-invoices-panel .b2b-invoice-check { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; }
+.b2b-invoices-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.b2b-invoices-panel .b2b-invoice-fields > p,
+.b2b-invoices-panel .b2b-invoice-fields > button { grid-column: 1 / -1; }
+.b2b-invoices-panel .button, .b2b-invoices-panel .text-button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.b2b-invoices-panel .b2b-invoice-review,
+.b2b-invoices-panel .b2b-invoice-detail,
+.b2b-invoices-panel .b2b-invoice-snapshot { display: grid; gap: 14px; }
+.b2b-invoices-panel .b2b-invoice-review { background: #f8fafc; }
+.b2b-invoices-panel .b2b-invoice-parties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.b2b-invoices-panel .b2b-invoice-parties > p { padding: 12px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; background: #fff; }
+.b2b-invoices-panel .b2b-invoice-pending { display: grid; gap: 12px; padding: 16px; border: 1px solid #fed7aa; border-radius: 8px; background: #fff7ed; }
+.b2b-invoices-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.b2b-invoices-panel table { width: 100%; border-collapse: collapse; }
+.b2b-invoices-panel th, .b2b-invoices-panel td { padding: 10px 12px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border, #dbe2ea); }
+.b2b-invoices-panel th { font-size: 12px; line-height: 1.5; font-weight: 700; }
+.b2b-invoices-panel td:not(:first-child) { white-space: nowrap; }
+.b2b-invoices-panel td:first-child { min-width: 160px; overflow-wrap: anywhere; }
+.b2b-invoices-panel small { display: block; margin-top: 4px; color: var(--muted, #64748b); font-size: 12px; }
+.b2b-invoices-panel summary { padding: 10px 0; cursor: pointer; font-weight: 600; }
+.b2b-invoices-panel [role='alert'] { padding: 12px 14px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; }
+.b2b-invoices-panel input:focus-visible, .b2b-invoices-panel select:focus-visible,
+.b2b-invoices-panel button:focus-visible, .b2b-invoices-panel summary:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+@media (max-width: 680px) {
+  .b2b-invoices-panel.panel { padding: 16px; }
+  .b2b-invoices-panel .b2b-invoice-fields, .b2b-invoices-panel .b2b-invoice-parties { grid-template-columns: minmax(0, 1fr); }
+  .b2b-invoices-panel .b2b-invoice-fields, .b2b-invoices-panel .b2b-invoice-review, .b2b-invoices-panel .b2b-invoice-detail { padding: 14px; }
+}
+
+.b2b-invoice-fields > .b2b-invoice-snapshot { grid-column: 1 / -1; }
+.b2b-invoices-panel iframe { width:100%; min-height:600px; border:1px solid var(--border,#dbe2ea); }

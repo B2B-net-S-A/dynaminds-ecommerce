@@ -1,0 +1,2329 @@
+{
+  "schema": "dynaminds-base-api-inventory-configuration-contracts/v1",
+  "as_of": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Product catalog",
+      "group": "Inventories"
+    },
+    {
+      "family": "Product catalog",
+      "group": "Categories"
+    },
+    {
+      "family": "Product catalog",
+      "group": "Warehouses"
+    },
+    {
+      "family": "Product catalog",
+      "group": "Manufacturers"
+    }
+  ],
+  "method_count": 14,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "contract_review_complete_for_full_product_catalog": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-inventory-configuration-sources-20261017.json.gz",
+    "sha256": "55e6a8b29cc4882c372b5ed6a6add7e7f005917719e96c43b8b7c3c9c8a1c679",
+    "bytes": 140312,
+    "format": "gzip UTF-8 JSON;individual html_utf8 exactsourcebytes",
+    "individual_documents": 14
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented;upsert_existing_ID_is_not_unknown_create_or_delete_reconciliation"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "field_inventory": {
+    "input_table_rows": 41,
+    "output_table_rows": 77,
+    "embedded_output_prose_fields": 2
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T19:04:15.194Z",
+    "scope": "Read-only route/model hash and exactmethod/transport source search;no application/PG/account calls",
+    "searched_terms": [
+      "connector.php",
+      "X-BLToken",
+      "addInventory",
+      "deleteInventory",
+      "getInventories",
+      "addInventoryWarehouse",
+      "deleteInventoryWarehouse",
+      "getInventoryMapDetails",
+      "getInventoryMaps",
+      "getInventoryWarehouses",
+      "addInventoryCategory",
+      "deleteInventoryCategory",
+      "getInventoryCategories",
+      "addInventoryManufacturer",
+      "deleteInventoryManufacturer",
+      "getInventoryManufacturers"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_server_web_TS_TSX",
+    "anchors": [
+      {
+        "path": "server/product-catalogs-routes.ts",
+        "sha256": "324c4012923096554e1bb43ae849fb5f1cac6d37d28f5e79692073e7c8bcbc71",
+        "symbol_or_anchor": "registerProductCatalogRoutes",
+        "boundary": "own catalogue options/list/preview/commit;UUID/version/cursor"
+      },
+      {
+        "path": "server/product-catalogs-schema.ts",
+        "sha256": "bcfc83d449eac2bf90d8cfa13bdcf91780fcdd4ecef80aa34a986b00c648f424",
+        "symbol_or_anchor": "productCatalogSettings/productCatalogPreviewInput",
+        "boundary": "name120,languages extended codes,warehouseUUIDs,price_listUUIDs;does not establish Base defaults/reservations"
+      },
+      {
+        "path": "server/product-catalogs.ts",
+        "sha256": "541d06d1fbf4c4861e9dc42216f93a18d5a7789d8d9762efcb2f78c48b8616f1",
+        "symbol_or_anchor": "productCatalogList/previewProductCatalog/commitProductCatalog",
+        "boundary": "own configured catalogue authority and reference admission"
+      },
+      {
+        "path": "server/app.ts",
+        "sha256": "5e8c69022baf302b4a68d28091f9d2729c722425b1828e8babf5d061e44607b7",
+        "symbol_or_anchor": "GET/POST /api/warehouses",
+        "boundary": "own warehouse list/create name/code;not Base type/address/stock_edition upsert/delete"
+      },
+      {
+        "path": "server/warehouse-inventory-policies-routes.ts",
+        "sha256": "436e99788a252babc8c3d4116e1004a1284b23bfde1f067a571c888f4684b67a",
+        "symbol_or_anchor": "registerWarehouseInventoryPolicyRoutes",
+        "boundary": "own usage/sellability/enable policy preview/commit,not manualstock stock_edition alias"
+      },
+      {
+        "path": "server/warehouse-inventory-policies-schema.ts",
+        "sha256": "bd0e886eab224a864cd14dd3908914b883317580d84074bfe24746e2d240e916",
+        "symbol_or_anchor": "warehouseInventoryPolicyPreviewInput",
+        "boundary": "typed local policy and versions"
+      },
+      {
+        "path": "server/stock-location-routes.ts",
+        "sha256": "4648c5970be0bbf6da0d2ed3f7b4db7c9fcb03c084ed3e6699e046fe00f44172",
+        "symbol_or_anchor": "registerStockLocationRoutes",
+        "boundary": "stock location CRUD/relocate,not full visualmap JSON contract"
+      },
+      {
+        "path": "server/domain.ts",
+        "sha256": "fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476",
+        "symbol_or_anchor": "catalogFields.category",
+        "boundary": "product category text;not proof category tree/entity/cascade"
+      },
+      {
+        "path": "server/catalog.ts",
+        "sha256": "114a0b95083f2ec4e77251db6f2983a7f6a49896fb90d9a853924095d34157bb",
+        "symbol_or_anchor": "createProduct/editProduct",
+        "boundary": "product category and own hierarchy/bundle admission,not BasecategoryCRUD"
+      },
+      {
+        "path": "server/product-logistics-schema.ts",
+        "sha256": "858a9b30f268b5152c49c830c30c11ea269ace8b8b075fd0193962e135a87dd2",
+        "symbol_or_anchor": "productLogisticsPatchSchema/manufacturer",
+        "boundary": "nullable product manufacturer string,not account-unique manufacturer entity/contact/logo"
+      },
+      {
+        "path": "server/product-logistics.ts",
+        "sha256": "e193584194fa73981cfe532d8286c705d951f0f57dadf2cab0211adf0495b0bf",
+        "symbol_or_anchor": "writeProductLogisticsInTx",
+        "boundary": "local product logistics profile,not manufacturerCRUD"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "catalogues": {
+      "state": "adjacent_own_catalogue_workflow_not_Base_wire",
+      "anchors": [
+        "server/product-catalogs-routes.ts",
+        "server/product-catalogs-schema.ts",
+        "server/product-catalogs.ts"
+      ],
+      "route_candidates": [
+        "GET /api/product-catalogs",
+        "POST /api/product-catalogs/previews",
+        "POST /api/product-catalogs/previews/:id/commit"
+      ],
+      "open": [
+        "Local UUID/version/cursorpage50 and create/update preview differs Baseinteger-ID direct add/delete/list.",
+        "Own settings omit Base description/default_price_group/default_warehouse/reservations/is_default shape; reference lists/limits/language grammar differ.",
+        "Disable/active is not proof deleteInventory destructive contract."
+      ]
+    },
+    "warehouses": {
+      "state": "adjacent_own_warehouse_and_policy_workflows_not_Base_wire",
+      "anchors": [
+        "server/app.ts",
+        "server/warehouse-inventory-policies-routes.ts",
+        "server/warehouse-inventory-policies-schema.ts"
+      ],
+      "route_candidates": [
+        "GET /api/warehouses",
+        "POST /api/warehouses",
+        "POST /api/warehouse-inventory-policies/warehouses/:id/previews"
+      ],
+      "open": [
+        "Own UUID/name/code create is not warehouse_id upsert with description/address/country and autoexternal restrictions.",
+        "Own policy.enabled/usage/sellability is not stock_edition manualediting flag.",
+        "Typed external warehouse IDs/internal_warehouse_id/default/delete wire not established."
+      ]
+    },
+    "warehouse_maps": {
+      "state": "Base_visual_warehouse_map_list_detail_not_located_in_reviewed_source",
+      "anchors": [
+        "server/stock-location-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/stock-locations"
+      ],
+      "open": [
+        "Stock locations are not visualmaps, typed warehouse assignments or full opaque map_data.",
+        "No map layout writer is documented in these14methods; do not invent a Basewrite API from get method."
+      ]
+    },
+    "categories": {
+      "state": "Base_catalogue_category_entity_tree_and_delete_cascade_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/domain.ts",
+        "server/catalog.ts"
+      ],
+      "route_candidates": [
+        "POST /api/products",
+        "PATCH /api/products/:id"
+      ],
+      "open": [
+        "Product category text is not stable categoryID/tree/shared-vs-catalogue scope.",
+        "No proof native category deletion removes direct products and reparents childcategories as Base describes."
+      ]
+    },
+    "manufacturers": {
+      "state": "Base_account_manufacturer_entity_CRUD_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/product-logistics-schema.ts",
+        "server/product-logistics.ts"
+      ],
+      "route_candidates": [
+        "PATCH /api/products/:id"
+      ],
+      "open": [
+        "Product manufacturer string is not unique manufacturerID/contact/address/logo/account namespace.",
+        "Deprecatedname precedence and two paginationmodes not established."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "CONFIG-001",
+      "methods": [
+        "addInventory",
+        "addInventoryWarehouse"
+      ],
+      "issue": "Create samples omit ID, but unmarked IDtable fields do not define formal omission/blank semantics. Keep requiredness unknown.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-002",
+      "methods": [
+        "addInventory",
+        "getInventories"
+      ],
+      "issue": "Default membership is explicit; partial list replacement/reservation migration/default-catalogue selection is not.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-003",
+      "methods": [
+        "getInventoryWarehouses",
+        "getInventoryMaps",
+        "getInventoryMapDetails"
+      ],
+      "issue": "warehouse_id/internal_warehouse_id/type_id are not documented interchangeable IDs; examples of external types are not closedenum.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-004",
+      "methods": [
+        "addInventoryWarehouse",
+        "getInventoryWarehouses"
+      ],
+      "issue": "stock_editionfalse disables manual editing while API stock editing remains possible; not an APIreadonly guarantee.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-005",
+      "methods": [
+        "getInventoryMapDetails"
+      ],
+      "issue": "map_data declaredarray but described/exampled JSONobject; emptyobject no layout; cells nested schema onlyexample.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-006",
+      "methods": [
+        "addInventoryCategory"
+      ],
+      "issue": "Legacy crossreferences addCategory/addProducts/deleteCategory differ actual Inventory method names; no inferred aliases.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-007",
+      "methods": [
+        "deleteInventoryCategory"
+      ],
+      "issue": "Documented destructive removal of directproducts, preservation of childproducts and reparenting children needs exact business acceptance; extra cascades unspecified.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-008",
+      "methods": [
+        "addInventoryManufacturer",
+        "getInventoryManufacturers"
+      ],
+      "issue": "Deprecatedname and canonicalmanufacturer_name both present; precedenceconflict unknown; unique withinaccount, not necessarily catalogue.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-009",
+      "methods": [
+        "getInventoryManufacturers"
+      ],
+      "issue": "No page→up to10000 differs page→1000; first/end/ordering unspecified and cannot infer complete set from no page.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    },
+    {
+      "id": "CONFIG-010",
+      "methods": [
+        "addInventoryManufacturer",
+        "addInventoryWarehouse"
+      ],
+      "issue": "Empty-photo deletion and country create/update/clear are explicit; do not apply these omission/empty rules to all other address fields.",
+      "decision": "retain_individual_source_rule_and_explicit_unknown;no_runtime_acceptance_inferred"
+    }
+  ],
+  "dependencies_outside_selected_groups": [
+    "getInventoryPriceGroups",
+    "addInventoryProduct",
+    "getInventoryProductsData",
+    "getInventoryProductsStock",
+    "account_regional_setting",
+    "existing_products_and_stock_WMS_documents_reservations"
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-addInventory",
+      "method": "addInventory",
+      "family": "Product catalog",
+      "group": "Inventories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventory",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventory",
+        "retrieved_at": "2026-10-17T19:02:42.172341+00:00",
+        "http_status": 200,
+        "bytes": 51342,
+        "sha256": "4f1001055c29927a410292d9b0e458845118f86bd1af9908389d4440073321cd",
+        "snapshot_document_method": "addInventory"
+      },
+      "documented_intro": "The method allows you to add the Base catalogs. Adding a catalog with the same identifier again will cause updates of the previously saved catalog.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Ten sam inventory_id aktualizuje katalog; przykład tworzenia pomija ID, lecz tabela nie definiuje jawnie wymagania ani reprezentacji pustego ID. Nie przenosimy reguły pustego product_id z innej metody.",
+        "default_language musi należeć do languages, default_price_group do price_groups, default_warehouse do warehouses. Warehouse references mają type_id, nie samo int ID.",
+        "reservations określa obsługę rezerwacji, bez opisu migracji już aktywnych rezerwacji i stanów. Nie podano semantyki pominięcia/zastąpienia poszczególnych list przy aktualizacji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method **getInventories**.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Catalog name",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "description",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "description",
+            "documented_type": "text",
+            "documented_description": "Catalog description",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "languages",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "languages",
+            "documented_type": "array",
+            "documented_description": "An array of languages available in the inventory.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "default_language",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "default_language",
+            "documented_type": "char(2)",
+            "documented_description": "Default inventory language. Must be included in the \"languages\" parameter.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "price_groups",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "price_groups",
+            "documented_type": "array",
+            "documented_description": "An array of price group identifiers available in the inventory. The list of price group identifiers can be downloaded using the getInventoryPriceGroups method",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "default_price_group",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "default_price_group",
+            "documented_type": "int",
+            "documented_description": "ID of the price group default for the inventory. The identifier must be included in the \"price_groups\" parameter.",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "warehouses",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "warehouses",
+            "documented_type": "array",
+            "documented_description": "An array of warehouse identifiers available in the inventory. The list of warehouse identifiers can be retrieved using the getInventoryWarehouses API method. The format of the identifier should be as follows: \"[type:bl|shop|warehouse]_[id:int]\". (e.g. \"shop_2445\")",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "item_format": "[type:bl|shop|warehouse]_[id:int]"
+          },
+          {
+            "name": "default_warehouse",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "default_warehouse",
+            "documented_type": "varchar(30)",
+            "documented_description": "Identifier of the warehouse default for the inventory. The identifier must be included in the \"warehouses\" parameter.",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "format": "same_prefixed_identifier_as_warehouses"
+          },
+          {
+            "name": "reservations",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "reservations",
+            "documented_type": "bool",
+            "documented_description": "Does this inventory support reservations",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "parameter": "default_language",
+            "must_be_member_of": "languages"
+          },
+          {
+            "parameter": "default_price_group",
+            "must_be_member_of": "price_groups"
+          },
+          {
+            "parameter": "default_warehouse",
+            "must_be_member_of": "warehouses"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "inventory_id",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method **getInventories**.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "catalogues",
+      "proposed_acceptance": [
+        "Create and update identities separately; explicit default/list membership refusals; languages/pricegroups/typedwarehouse references roundtrip.",
+        "Changing reservations or lists must prove effects on existing stock/reservations/default catalogue; no silent assumed cascade.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteInventory",
+      "method": "deleteInventory",
+      "family": "Product catalog",
+      "group": "Inventories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteInventory",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteInventory",
+        "retrieved_at": "2026-10-17T19:02:39.711781+00:00",
+        "http_status": 200,
+        "bytes": 48642,
+        "sha256": "e5632d91fa9d77256d573b4f51e0c6a192a606481fb15fb49a8ec5d03130c9ab",
+        "snapshot_document_method": "deleteInventory"
+      },
+      "documented_intro": "The method allows you to delete a catalog from Base storage.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Usuwa wskazany katalog; brak opisu kaskad produktów, przypisań magazynów/cen, katalogu domyślnego, rezerwacji, ponowienia i odwrócenia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "catalogues",
+      "proposed_acceptance": [
+        "Define and verify own catalogue deletion with products/defaults/reservations/warehouse bindings and repeated/unknown result; no invented data cascade.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventories",
+      "method": "getInventories",
+      "family": "Product catalog",
+      "group": "Inventories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventories",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventories",
+        "retrieved_at": "2026-10-17T19:02:39.739485+00:00",
+        "http_status": 200,
+        "bytes": 51247,
+        "sha256": "fcbdf2839b53d1281e5bd40cdc9483fdef5d1729724f042b07154dd0f16ad7bf",
+        "snapshot_document_method": "getInventories"
+      },
+      "documented_intro": "The method allows you to retrieve a list of catalogs available in the Base storage.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Brak parametrów; katalogi obejmują języki, grupy cen, magazyny i domyślne referencje, reservations oraz is_default.",
+        "Brak paginacji, limitu i gwarancji kompletności; typy elementów list nie są w tej tabeli w pełni sformalizowane."
+      ],
+      "input": {
+        "parameters": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "inventories",
+            "documented_name": "inventories",
+            "documented_type": "array",
+            "documented_description": "An array of available catalogs",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "inventories[].inventory_id",
+            "documented_name": "| - inventory_id",
+            "documented_type": "int",
+            "documented_description": "ID of a catalog",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "inventories[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Catalog name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "inventories[].description",
+            "documented_name": "| - description",
+            "documented_type": "text",
+            "documented_description": "Catalog description",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "inventories[].languages",
+            "documented_name": "| - languages",
+            "documented_type": "array",
+            "documented_description": "An array of languages available in the inventory.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "inventories[].default_language",
+            "documented_name": "| - default_language",
+            "documented_type": "char(2)",
+            "documented_description": "Default language of the catalog.",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "inventories[].price_groups",
+            "documented_name": "| - price_groups",
+            "documented_type": "array",
+            "documented_description": "An array of price groups IDs available in the catalog",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "inventories[].default_price_group",
+            "documented_name": "| - default_price_group",
+            "documented_type": "int",
+            "documented_description": "ID of the price group default for the catalog",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "inventories[].warehouses",
+            "documented_name": "| - warehouses",
+            "documented_type": "array",
+            "documented_description": "An array of warehouse IDs available in the catalog",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "inventories[].default_warehouse",
+            "documented_name": "| - default_warehouse",
+            "documented_type": "varchar(30)",
+            "documented_description": "ID of the warehouse default for the catalog",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "inventories[].reservations",
+            "documented_name": "| - reservations",
+            "documented_type": "bool",
+            "documented_description": "Does this inventory support reservations",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "inventories[].is_default",
+            "documented_name": "| - is_default",
+            "documented_type": "bool",
+            "documented_description": "Is this catalog a default catalog",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "catalogues",
+      "proposed_acceptance": [
+        "Read all configured catalogues and each default/reference/reservations field; discover any actual truncation without claiming undocumented completeness.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryWarehouse",
+      "method": "addInventoryWarehouse",
+      "family": "Product catalog",
+      "group": "Warehouses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryWarehouse",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryWarehouse",
+        "retrieved_at": "2026-10-17T19:02:39.629097+00:00",
+        "http_status": 200,
+        "bytes": 50586,
+        "sha256": "b568150418e40000caa2ee1368649fca4a54f22decf0f13a38c23705fd46cdb1",
+        "snapshot_document_method": "addInventoryWarehouse"
+      },
+      "documented_intro": "The method allows you to add a new warehouse available in Base inventories. Adding a warehouse with the same identifier again will cause updates of the previously saved warehouse. The method does not allow editing warehouses created automatically for the purpose of keeping external stocks of shops, wholesalers etc. Such warehouse may be later used in addInventory method.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "To samo warehouse_id aktualizuje; tworzenie pustego ID pokazuje przykład, ale wymagalność/reprezentacja pustego ID nie są formalnie określone. Nie można edytować automatycznych magazynów stanów zewnętrznych.",
+        "stock_edition=false oznacza zakaz ręcznej edycji, ale pozwala edytować przez API; nie oznacza magazynu tylko do odczytu przez API.",
+        "country pominięte przy tworzeniu używa ustawienia regionalnego konta; pominięte przy aktualizacji zachowuje poprzednią wartość; pusty tekst czyści. Pozostałe pola adresowe nie mają jawnej takiej samej reguły."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "ID of the warehouse",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Warehouse name",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "description",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "description",
+            "documented_type": "text",
+            "documented_description": "Warehouse description",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "stock_edition",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "stock_edition",
+            "documented_type": "bool",
+            "documented_description": "Is manual editing of stocks permitted. A false value means that you can only edit your stock through the API.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "false_means": "manual_stock_editing_disabled_API_editing_still_possible"
+          },
+          {
+            "name": "country",
+            "required": false,
+            "requiredness_source": "explicit_omission_behavior",
+            "default_status": "not_documented",
+            "documented_name": "country",
+            "documented_type": "char(2)",
+            "documented_description": "Warehouse country as a 2-letter ISO 3166-1 country code (e.g. \"PL\", \"DE\", \"GB\"). When creating a new warehouse and this parameter is not provided, the country defaults to the account's regional setting. When updating and not provided, the country is not changed. Pass an empty string to clear.",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "format": "ISO_3166_1_alpha_2",
+            "on_create_omitted": "account_regional_setting",
+            "on_update_omitted": "preserve_existing",
+            "empty_string": "clear_country"
+          },
+          {
+            "name": "address",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "address",
+            "documented_type": "varchar(200)",
+            "documented_description": "Warehouse street address.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "postcode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Warehouse postal code.",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "city",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "city",
+            "documented_type": "varchar(80)",
+            "documented_description": "Warehouse city.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "the ID of created or updated warehouse",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouses",
+      "proposed_acceptance": [
+        "Native create/update and external-auto refusal; country omission on create/update versus empty clear; stock_edition false must not become API-readonly.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ],
+      "forbidden_target": "automatically_created_external_stock_warehouses"
+    },
+    {
+      "id": "BASE-API-deleteInventoryWarehouse",
+      "method": "deleteInventoryWarehouse",
+      "family": "Product catalog",
+      "group": "Warehouses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteInventoryWarehouse",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteInventoryWarehouse",
+        "retrieved_at": "2026-10-17T19:02:40.127666+00:00",
+        "http_status": 200,
+        "bytes": 48725,
+        "sha256": "6d36d7014195c2b9ad3adae79695f2a574e1c1a96b65c1be94ff5357ad19828b",
+        "snapshot_document_method": "deleteInventoryWarehouse"
+      },
+      "documented_intro": "The method allows you to remove the warehouse available in Base inventories. The method does not allow to remove warehouses created automatically for the purpose of keeping external stocks of shops, wholesalers etc.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Nie można usuwać magazynów automatycznie utworzonych dla zewnętrznych stanów sklepów/hurtowni.",
+        "Nie opisano zachowania dla istniejących stanów, rezerwacji, WMS, dokumentów, katalogu domyślnego i nieznanego wyniku."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "ID of the warehouse",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouses",
+      "proposed_acceptance": [
+        "Native deletion plus external-auto refusal; define behavior with stock/WMS/reservations/documents/default references before destructive acceptance.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ],
+      "forbidden_target": "automatically_created_external_stock_warehouses"
+    },
+    {
+      "id": "BASE-API-getInventoryMapDetails",
+      "method": "getInventoryMapDetails",
+      "family": "Product catalog",
+      "group": "Warehouses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryMapDetails",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryMapDetails",
+        "retrieved_at": "2026-10-17T19:02:41.629252+00:00",
+        "http_status": 200,
+        "bytes": 51432,
+        "sha256": "4ec0cb7d85d6cff715661d08162623af563c92e414fbad665f1e5369d36032b6",
+        "snapshot_document_method": "getInventoryMapDetails"
+      },
+      "documented_intro": "The method returns detailed information about a specific warehouse map, including the full JSON representation of the visual map layout.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Zwraca pojedynczą mapę z adresem, powiązanymi magazynami i pełnym map_data jako JSON object; gdy układu brak, map_data={}.",
+        "map_data zadeklarowano jako array, ale proza i przykład mówią object. Schemat cells/position/size/attrs jest wyłącznie przykładowy, bez formalnego kompletnego kontraktu i wersji.",
+        "Magazyn mapy jest parą warehouse_type/warehouse_id zgodną z getInventoryWarehouses, a nie automatycznie internal_warehouse_id."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "map_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "map_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse map identifier. The list of identifiers can be retrieved by the getInventoryMaps method (map_id field).",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "map_id",
+            "documented_name": "map_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse map identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "name",
+            "documented_name": "name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Warehouse map name",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "address_street",
+            "documented_name": "address_street",
+            "documented_type": "varchar(255)",
+            "documented_description": "Street address of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "address_city",
+            "documented_name": "address_city",
+            "documented_type": "varchar(255)",
+            "documented_description": "City of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "address_postcode",
+            "documented_name": "address_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Postal code of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "address_country",
+            "documented_name": "address_country",
+            "documented_type": "varchar(2)",
+            "documented_description": "Country code of the warehouse map location (ISO 3166-1 alpha-2)",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "format": "ISO_3166_1_alpha_2"
+          },
+          {
+            "path": "warehouses",
+            "documented_name": "warehouses",
+            "documented_type": "array",
+            "documented_description": "An array of warehouses assigned to this map. Identifiers match those returned by getInventoryWarehouses.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "warehouses[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier, matching the warehouse_id field from getInventoryWarehouses",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "warehouses[].warehouse_type",
+            "documented_name": "| - warehouse_type",
+            "documented_type": "varchar(30)",
+            "documented_description": "Warehouse type, matching the warehouse_type field from getInventoryWarehouses. The value \"bl\" identifies native warehouses; other values reflect the integration type.",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "map_data",
+            "documented_name": "map_data",
+            "documented_type": "array",
+            "documented_description": "The full visual map layout as a JSON object. Contains the complete map structure with cells, positions, and configurations. Returns an empty object if no map layout has been created.",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "shape": "JSON_object",
+            "empty_object": "no_visual_layout_created",
+            "full_schema": "not_documented",
+            "schema_version": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "warehouse_identity": "warehouse_type_plus_warehouse_id_matches_getInventoryWarehouses;not_internal_warehouse_id_alias",
+        "example_only_map_fields": [
+          "cells[]",
+          "cells[].type",
+          "cells[].warehouseName",
+          "cells[].position.x",
+          "cells[].position.y",
+          "cells[].size.width",
+          "cells[].size.height",
+          "cells[].attrs.label.text"
+        ],
+        "example_only_map_fields_are_not_formal_schema": true
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "warehouse_maps",
+      "proposed_acceptance": [
+        "Own map identity, address and typed warehouse tuple; empty layout must return{}; preserve full opaque JSON without dropping unknown keys or promoting example-only schema.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryMaps",
+      "method": "getInventoryMaps",
+      "family": "Product catalog",
+      "group": "Warehouses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryMaps",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryMaps",
+        "retrieved_at": "2026-10-17T19:02:40.154475+00:00",
+        "http_status": 200,
+        "bytes": 51063,
+        "sha256": "7f01d6982ffddd82224aeaa576e2ba407edd4600eeae631bf16df82154161b2f",
+        "snapshot_document_method": "getInventoryMaps"
+      },
+      "documented_intro": "The method allows you to retrieve a list of warehouse maps available in the Base inventory system. Each warehouse map represents a location with assigned warehouses and an optional visual map layout.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Brak parametrów; lista map z adresem i magazynami, bez map_data w formalnej tabeli. Szczegóły układu są osobną metodą.",
+        "Dwa pola warehouses są zadeklarowane w prozie wiersza: warehouse_id int i warehouse_type varchar(30). Separator HTML zachowujemy przed ekstrakcją.",
+        "Brak parametrów paginacji, limitu i gwarantowanej kolejności."
+      ],
+      "input": {
+        "parameters": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "maps",
+            "documented_name": "maps",
+            "documented_type": "array",
+            "documented_description": "An array of warehouse maps containing the fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "maps[].map_id",
+            "documented_name": "| - map_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse map identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "maps[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Warehouse map name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "maps[].address_street",
+            "documented_name": "| - address_street",
+            "documented_type": "varchar(255)",
+            "documented_description": "Street address of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "maps[].address_city",
+            "documented_name": "| - address_city",
+            "documented_type": "varchar(255)",
+            "documented_description": "City of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "maps[].address_postcode",
+            "documented_name": "| - address_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Postal code of the warehouse map location",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "maps[].address_country",
+            "documented_name": "| - address_country",
+            "documented_type": "varchar(2)",
+            "documented_description": "Country code of the warehouse map location (ISO 3166-1 alpha-2)",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "format": "ISO_3166_1_alpha_2"
+          },
+          {
+            "path": "maps[].warehouses",
+            "documented_name": "| - warehouses",
+            "documented_type": "array",
+            "documented_description": "An array of warehouses assigned to this map. Identifiers match those returned by getInventoryWarehouses.warehouse_id (int) - Warehouse identifier, matching the warehouse_id field from getInventoryWarehouseswarehouse_type (varchar(30)) - Warehouse type, matching the warehouse_type field from getInventoryWarehouses. The value \"bl\" identifies native warehouses; other values reflect the integration type.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "maps[].warehouses[].warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier, matching the warehouse_id field from getInventoryWarehouses",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 9
+          },
+          {
+            "path": "maps[].warehouses[].warehouse_type",
+            "documented_type": "varchar(30)",
+            "documented_description": "Warehouse type, matching the warehouse_type field from getInventoryWarehouses. The value \"bl\" identifies native warehouses; other values reflect the integration type.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 9
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "warehouse_identity": "warehouse_type_plus_warehouse_id_matches_getInventoryWarehouses;not_internal_warehouse_id_alias"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "warehouse_maps",
+      "proposed_acceptance": [
+        "Full list and source-declared nested warehouse_id/type with exact typed refs; no layout silently substituted for detail method.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryWarehouses",
+      "method": "getInventoryWarehouses",
+      "family": "Product catalog",
+      "group": "Warehouses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryWarehouses",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryWarehouses",
+        "retrieved_at": "2026-10-17T19:02:40.609694+00:00",
+        "http_status": 200,
+        "bytes": 51495,
+        "sha256": "352b761ac77369996d2fd2315b7abaada44f1090c5c17e68af668549c863b1a7",
+        "snapshot_document_method": "getInventoryWarehouses"
+      },
+      "documented_intro": "The method allows you to retrieve a list of warehouses available in Base inventories. The method also returns information about the warehouses created automatically for the purpose of keeping external stocks (shops, wholesalers etc.)",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Zwraca magazyny natywne i automatyczne zewnętrzne. warehouse_type=bl oznacza native; shop/warehouse/fulfillment/blconnect to przykłady integracji, nie pełny zamknięty enum.",
+        "warehouse_id, internal_warehouse_id i prefiksowane type_id w innych metodach to różne postaci identyfikacji; nie zakładamy ich równości. stock_edition=false nadal dopuszcza zmianę przez API.",
+        "Adres/kod/miasto/kraj mogą być puste; country to ISO3166-1 alpha-2, bez podanego pełnego mechanizmu walidacji."
+      ],
+      "input": {
+        "parameters": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "warehouses",
+            "documented_name": "warehouses",
+            "documented_type": "array",
+            "documented_description": "An array of warehouses containing the fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "warehouses[].warehouse_type",
+            "documented_name": "| - warehouse_type",
+            "documented_type": "varchar(30)",
+            "documented_description": "Warehouse type. The \"bl\" value identifies Base-native warehouses; other values reflect the integration type that owns the warehouse (e.g. \"shop\", \"warehouse\", \"fulfillment\", \"blconnect\").",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "native_value": "bl",
+            "integration_examples": [
+              "shop",
+              "warehouse",
+              "fulfillment",
+              "blconnect"
+            ],
+            "examples_are_closed_enum": false
+          },
+          {
+            "path": "warehouses[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "warehouses[].internal_warehouse_id",
+            "documented_name": "| - internal_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Internal warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "warehouses[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Warehouse name",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "warehouses[].description",
+            "documented_name": "| - description",
+            "documented_type": "text",
+            "documented_description": "Warehouse description",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "warehouses[].stock_edition",
+            "documented_name": "| - stock_edition",
+            "documented_type": "bool",
+            "documented_description": "Is manual stock editing permitted. A false value means that you can only edit your stock through the API.",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "false_means": "manual_stock_editing_disabled_API_editing_still_possible"
+          },
+          {
+            "path": "warehouses[].is_default",
+            "documented_name": "| - is_default",
+            "documented_type": "bool",
+            "documented_description": "Is this warehouse a default warehouse",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "warehouses[].address",
+            "documented_name": "| - address",
+            "documented_type": "varchar(200)",
+            "documented_description": "Warehouse street address. May be an empty string if no address is set.",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "warehouses[].postcode",
+            "documented_name": "| - postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Warehouse postal code. May be an empty string if no postal code is set.",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "warehouses[].city",
+            "documented_name": "| - city",
+            "documented_type": "varchar(80)",
+            "documented_description": "Warehouse city. May be an empty string if no city is set.",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "warehouses[].country",
+            "documented_name": "| - country",
+            "documented_type": "char(2)",
+            "documented_description": "Warehouse country as a 2-letter ISO 3166-1 country code (e.g. \"PL\", \"DE\", \"GB\"). May be an empty string if no country is set.",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "warehouses",
+      "proposed_acceptance": [
+        "Native and external types, internal versus external IDs, default/manual-edit flag and empty address fields; no assumed closed integration enum.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryCategory",
+      "method": "addInventoryCategory",
+      "family": "Product catalog",
+      "group": "Categories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryCategory",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryCategory",
+        "retrieved_at": "2026-10-17T19:02:42.011659+00:00",
+        "http_status": 200,
+        "bytes": 50114,
+        "sha256": "f8b6a8fed005b31f285077eaedc2cd6acfb0f9de29e8e58e77b54269351da93f",
+        "snapshot_document_method": "addInventoryCategory"
+      },
+      "documented_intro": "The method allows you to add a category to the Base catalog. Adding a category with the same identifier again, updates the previously saved category",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Pominięcie inventory_id tworzy kategorię wspólną dla wszystkich katalogów; podanie ogranicza do wskazanego. category_id tylko do aktualizacji; puste przy tworzeniu, bez formalnej reprezentacji pustego.",
+        "Dodawać od korzenia hierarchii; parent_id=0 dla najwyższego poziomu. Odwołania addCategory/addProducts/deleteCategory w opisie są historycznymi nazwami, nie metodami tej grupy.",
+        "Nie podano reguł cykli, przenoszenia między katalogami, dziedziczenia lub częściowej aktualizacji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": false,
+            "requiredness_source": "explicit_omission_selects_shared_categories",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved by the getInventories method (inventory_id field). To add a category available for all catalogs created in Base, this field should be omitted.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "omission": "categories_available_for_all_catalogues"
+          },
+          {
+            "name": "category_id",
+            "required": false,
+            "requiredness_source": "explicit_create_blank_update_identity",
+            "default_status": "not_documented",
+            "documented_name": "category_id",
+            "documented_type": "int",
+            "documented_description": "The category identifier to be provided for updates. Should be left blank when creating a new category.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "applicable_when": "update_existing",
+            "create_behavior": "blank_exact_wire_representation_not_documented"
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Category name",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "parent_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "parent_id",
+            "documented_type": "int",
+            "documented_description": "The parent category identifier obtained previously at the output of the addCategory method. Categories should be added starting from the hierarchy root so that the child is always added after the parent (you need to know the parent ID to add the child). For the top level category, 0 should be given as parent_id.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "root": 0
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "hierarchy_order": "parent_created_before_child"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "category_id",
+            "documented_name": "category_id",
+            "documented_type": "int",
+            "documented_description": "Number of a category added or updated in Base storage. In an external application you should create a link between the internal number and the number received here. It will later be used to update the added category. This number is also used in addProducts and deleteCategory methods.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "categories",
+      "proposed_acceptance": [
+        "Shared omission versus selected catalogue, create/update, parent-first/root0; duplicate/foreign parent and cycles require explicit outcome.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteInventoryCategory",
+      "method": "deleteInventoryCategory",
+      "family": "Product catalog",
+      "group": "Categories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteInventoryCategory",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteInventoryCategory",
+        "retrieved_at": "2026-10-17T19:02:41.120055+00:00",
+        "http_status": 200,
+        "bytes": 48801,
+        "sha256": "1907e3575c811ebaecd4d5ed2d161d80775ef971b884db63f3becc986eb27502",
+        "snapshot_document_method": "deleteInventoryCategory"
+      },
+      "documented_intro": "The method allows you to remove categories from Base warehouse. Along with the category, the products contained therein are removed (however, this does not apply to products in subcategories). The subcategories will be changed to the highest level categories.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Opis jawnie usuwa również produkty bezpośrednio w kategorii; nie dotyczy produktów w podkategoriach, a same podkategorie przenosi na najwyższy poziom.",
+        "To opis destrukcyjnego kontraktu, nie wykonana operacja. Brak reguł skutków dla bundle/wariantów/stanów/ofert/historii i odwrócenia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "category_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "category_id",
+            "documented_type": "int",
+            "documented_description": "The number of the category to be removed in the Base storage.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "categories",
+      "proposed_acceptance": [
+        "Own category with direct product and child category/product: prove documented direct-product removal and child reparenting without losing child products; inspect stock/history sideeffects and irreversible boundary.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ],
+      "documented_destructive_effect": {
+        "remove_products_directly_in_category": true,
+        "remove_products_in_subcategories": false,
+        "reparent_subcategories": "highest_level",
+        "execution_performed": false
+      }
+    },
+    {
+      "id": "BASE-API-getInventoryCategories",
+      "method": "getInventoryCategories",
+      "family": "Product catalog",
+      "group": "Categories",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryCategories",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryCategories",
+        "retrieved_at": "2026-10-17T19:02:41.795139+00:00",
+        "http_status": 200,
+        "bytes": 49502,
+        "sha256": "1bf919edba03ef44a7bf0d6d06e6f9e77511d06b5232802c4d0020fb765d5d1e",
+        "snapshot_document_method": "getInventoryCategories"
+      },
+      "documented_intro": "The method allows you to retrieve a list of categories for a Base catalog.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "inventory_id pominięte wybiera kategorie wspólne wszystkim katalogom; nie oznacza automatycznie unii wszystkich prywatnych kategorii.",
+        "Odpowiedź category_id/name/parent_id, bez paginacji, limitu, kolejności i pełnej deklaracji nakładania kategorii wspólnych z lokalnymi."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": false,
+            "requiredness_source": "explicit_omission_selects_shared_categories",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved by the getInventories method (inventory_id field). To retrieve categories available for all catalogs created in Base, this field should be omitted.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "omission": "categories_available_for_all_catalogues"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "categories",
+            "documented_name": "categories",
+            "documented_type": "array",
+            "documented_description": "An array of categories containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "categories[].category_id",
+            "documented_name": "| - category_id",
+            "documented_type": "int",
+            "documented_description": "Category ID.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "categories[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Category name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "categories[].parent_id",
+            "documented_name": "| - parent_id",
+            "documented_type": "int",
+            "documented_description": "Parent category identifier.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "categories",
+      "proposed_acceptance": [
+        "Shared selector omission versus selected catalogue; hierarchy/parent IDs and full list without invented union semantics.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryManufacturer",
+      "method": "addInventoryManufacturer",
+      "family": "Product catalog",
+      "group": "Manufacturers",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryManufacturer",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryManufacturer",
+        "retrieved_at": "2026-10-17T19:02:43.326151+00:00",
+        "http_status": 200,
+        "bytes": 51756,
+        "sha256": "3670d7e82ab98ff35fba73849d7f48a06d1a029e8acd821b14cf14667ae87757",
+        "snapshot_document_method": "addInventoryManufacturer"
+      },
+      "documented_intro": "The method allows you to add a manufacturer to the Base catalog. Adding a manufacturer with the same identifier again, updates the previously saved manufacturer",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "manufacturer_id dla aktualizacji; pusty przy tworzeniu. Nazwa musi być unikalna w koncie. name jest deprecated na rzecz manufacturer_name; pierwszeństwo przy podaniu obu nieopisane.",
+        "manufacturer_photo: data:base64 lub url:adres; pusty tekst usuwa zdjęcie. Brak jawnych MIME/limitów, reguły pominięcia i zabezpieczeń pobierania zewnętrznego URL.",
+        "Dane kontaktowe, adres, country_code ISO2; brak inventory_id w tej metodzie. Nie utożsamiamy tego z tekstowym manufacturer na produkcie."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "manufacturer_id",
+            "required": false,
+            "requiredness_source": "explicit_create_blank_update_identity",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "Manufacturer ID provided in case of an update. Should be blank when creating a new manufacturer.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "applicable_when": "update_existing",
+            "create_behavior": "blank_exact_wire_representation_not_documented"
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer name (deprecated, use manufacturer_name instead). The name must be unique within the account.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "deprecated": true,
+            "replacement": "manufacturer_name",
+            "uniqueness": "within_account",
+            "precedence_when_both_names_supplied": "not_documented"
+          },
+          {
+            "name": "manufacturer_name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer name. The name must be unique within the account.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "uniqueness": "within_account"
+          },
+          {
+            "name": "manufacturer_photo",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_photo",
+            "documented_type": "text",
+            "documented_description": "Manufacturer photo (e.g. a logo). You can submit a photo in binary format, or a link to an external photo. In case of binary format, the photo should be coded in base64 and at the very beginning of the photo string the prefix \"data:\" should be provided. In case of link to an external photo, the prefix \"url:\" must be given before the link. Providing an empty string will delete the photo.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "encoding": [
+              "data:base64",
+              "url:URL"
+            ],
+            "empty_string": "delete_photo",
+            "MIME_and_size": "not_documented",
+            "omission": "not_documented"
+          },
+          {
+            "name": "manufacturer_url",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_url",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer URL address",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "manufacturer_street",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_street",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer street",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "manufacturer_postcode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Manufacturer postal code",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "manufacturer_city",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_city",
+            "documented_type": "varchar(80)",
+            "documented_description": "Manufacturer city",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "name": "manufacturer_state",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Manufacturer state",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "name": "manufacturer_country_code",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_country_code",
+            "documented_type": "varchar(2)",
+            "documented_description": "Manufacturer country code (2-letter ISO code, e.g. \"PL\", \"DE\")",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "format": "two_letter_ISO_country_code"
+          },
+          {
+            "name": "manufacturer_email",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_email",
+            "documented_type": "varchar(100)",
+            "documented_description": "Manufacturer e-mail",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "name": "manufacturer_phone",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_phone",
+            "documented_type": "varchar(40)",
+            "documented_description": "Manufacturer phone number",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "manufacturer_id",
+            "documented_name": "manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "ID of a created or updated manufacturer",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "manufacturers",
+      "proposed_acceptance": [
+        "Account-unique canonical/deprecated names, explicit conflict behavior, create/update and contact data; photo data/url/empty-delete separately with URL/size validation.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteInventoryManufacturer",
+      "method": "deleteInventoryManufacturer",
+      "family": "Product catalog",
+      "group": "Manufacturers",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteInventoryManufacturer",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteInventoryManufacturer",
+        "retrieved_at": "2026-10-17T19:02:43.696064+00:00",
+        "http_status": 200,
+        "bytes": 48622,
+        "sha256": "bde7fd15f735f05a169c9447b295c15a80394c45cd9b7b90c39e176a322c65c1",
+        "snapshot_document_method": "deleteInventoryManufacturer"
+      },
+      "documented_intro": "The method allows you to remove manufacturer from Base catalog",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Usuwa producenta; nie opisano zachowania przypisanych produktów, stock, nazw kontaktowych, zdjęć i ponownego usunięcia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "manufacturer_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "The ID of the manufacturer removed from Base warehouse.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "manufacturers",
+      "proposed_acceptance": [
+        "Own manufacturer deletion with attached products/photo/contact history, foreign IDs and repeated/unknown result without invented cascade.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryManufacturers",
+      "method": "getInventoryManufacturers",
+      "family": "Product catalog",
+      "group": "Manufacturers",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryManufacturers",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryManufacturers",
+        "retrieved_at": "2026-10-17T19:02:42.501073+00:00",
+        "http_status": 200,
+        "bytes": 51189,
+        "sha256": "6ebc1e3a942ce50e4edf4f62368c2fa42834bd61351c03f9d2674624782456db",
+        "snapshot_document_method": "getInventoryManufacturers"
+      },
+      "documented_intro": "The method allows you to retrieve a list of manufacturers for a Base catalog. Results can be paginated by providing the page parameter (1000 manufacturers per page). Without the page parameter, up to 10000 manufacturers are returned.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "page opcjonalne: 1000 producentów na stronę. Bez page zwracane do10000, więc brak parametru nie gwarantuje kompletności większego zbioru.",
+        "Nie podano pierwszej/domyslnej strony, kolejności, total/next ani stabilności podczas zmian. Strona opisuje katalog, ale brak inventory_id; nie dopowiadamy zakresu selektora.",
+        "Odczyt zwraca name i manufacturer_name, a zdjęcie jako URL, nie data:base64."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (1000 manufacturers per page)",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "manufacturers",
+            "documented_name": "manufacturers",
+            "documented_type": "array",
+            "documented_description": "An array of manufacturers containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "manufacturers[].manufacturer_id",
+            "documented_name": "| - manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "Manufacturer ID.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "manufacturers[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer name.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "manufacturers[].manufacturer_name",
+            "documented_name": "| - manufacturer_name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer name.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "manufacturers[].manufacturer_photo",
+            "documented_name": "| - manufacturer_photo",
+            "documented_type": "text",
+            "documented_description": "Manufacturer photo URL.",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "encoding": "URL"
+          },
+          {
+            "path": "manufacturers[].manufacturer_url",
+            "documented_name": "| - manufacturer_url",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer URL address.",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "manufacturers[].manufacturer_street",
+            "documented_name": "| - manufacturer_street",
+            "documented_type": "varchar(200)",
+            "documented_description": "Manufacturer street.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "manufacturers[].manufacturer_postcode",
+            "documented_name": "| - manufacturer_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Manufacturer postal code.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "manufacturers[].manufacturer_city",
+            "documented_name": "| - manufacturer_city",
+            "documented_type": "varchar(80)",
+            "documented_description": "Manufacturer city.",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "manufacturers[].manufacturer_state",
+            "documented_name": "| - manufacturer_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Manufacturer state.",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "manufacturers[].manufacturer_country_code",
+            "documented_name": "| - manufacturer_country_code",
+            "documented_type": "varchar(2)",
+            "documented_description": "Manufacturer country code.",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "manufacturers[].manufacturer_email",
+            "documented_name": "| - manufacturer_email",
+            "documented_type": "varchar(100)",
+            "documented_description": "Manufacturer e-mail.",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "manufacturers[].manufacturer_phone",
+            "documented_name": "| - manufacturer_phone",
+            "documented_type": "varchar(40)",
+            "documented_description": "Manufacturer phone number.",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "optional_page_number",
+        "parameter": "page",
+        "page_size": 1000,
+        "when_page_omitted_result_cap": 10000,
+        "omitted_page_is_not_complete_above_cap": true,
+        "first_page": "not_documented",
+        "default_page": "not_applicable_omission_has_separate_cap",
+        "ordering": "not_documented",
+        "total_or_next": "not_documented",
+        "end_of_scan": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_configuration_mutation",
+      "current_code_mapping_ref": "manufacturers",
+      "proposed_acceptance": [
+        "Test page1000 and omission10000 using more than10000 records where authorized; no-page must not be treated as complete; preserve both names/contact/photoURL.",
+        "Exact wire and ordinary local UI/API/worker acceptance are separate from source similarity and sandbox/account. Verify current role/foreign IDs, durable intent,429/timeout/ACKloss/readback/recovery without duplicate effects."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "dynaminds-full-base-source-contract-derivation/v1",
+  "parent_manifest_sha256": "7d8b695a742657ed5679ad54d171f20f8c1ea551b91a0499d9c9ccb8935e39ff",
+  "manifest_sha256": "1c577293eb080a2aae18125be94c4eecc73ea6735513dcf5bd0f2a2ff703dc6f",
+  "changes": [
+    {
+      "path": "server/app.ts",
+      "before_sha256": "43918ab05d0f668ed7a9d7af9b295e0ce1408cfe0e999468d9e03815fa64f938",
+      "after_sha256": "8c5aa38831e06eb866b63bfd50039be092957fbd283d03087e29646150e602dd",
+      "reason": "disjoint trusted connector routing can coexist with owned local Woo; readonly refusal retained"
+    }
+  ],
+  "native_contract_unchanged": true,
+  "other_runtime_members_unchanged": true,
+  "business_acceptance": false,
+  "sandbox_acceptance": false
+}

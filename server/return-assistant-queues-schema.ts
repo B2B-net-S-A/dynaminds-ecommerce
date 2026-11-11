@@ -1,0 +1,16 @@
+import { z } from 'zod';
+import { assistantUuid } from './return-assistant-schema';
+export const RETURN_ASSISTANT_QUEUE_LIMITS = { items:200,page:50,queues:2000,operations:10000,retained_bytes:67108864 } as const;
+export const queueVersion=z.string().regex(/^(0|[1-9][0-9]{0,18})$/).refine(v=>/^(0|[1-9][0-9]{0,18})$/.test(v)&&BigInt(v)<=9223372036854775807n,'Nieprawidłowa wersja');
+export const navigationInput=z.strictObject({auto_next:z.boolean(),hide_accepted:z.boolean()});
+const caseField=z.enum(['number','order_number','created_at','kind','customer','commercial_value']);
+const productField=z.enum(['sku','name','quantity','line_total','ean','components','locations','stock']);
+export const settingsValues=z.strictObject({...navigationInput.shape,name_source:z.enum(['historical','current']),product_sort:z.enum(['historical','name','sku']),thumbnail_size:z.enum(['none','small','large']),case_fields:z.array(caseField).max(6).refine(v=>new Set(v).size===v.length,'Powtórzone pole'),product_fields:z.array(productField).max(8).refine(v=>new Set(v).size===v.length,'Powtórzone pole')});
+export const DEFAULT_RETURN_ASSISTANT_SETTINGS={auto_next:false,hide_accepted:false,name_source:'historical',product_sort:'historical',thumbnail_size:'none',case_fields:['number','order_number','created_at','kind'],product_fields:['sku','name','quantity','line_total']} as const;
+export const settingsInput=z.strictObject({client_key:assistantUuid,version:queueVersion,values:settingsValues});
+const uniqueIds=z.array(assistantUuid).max(200).refine(v=>new Set(v).size===v.length,'Powtórzona sprawa');
+export const createQueueInput=z.strictObject({client_key:assistantUuid,return_ids:uniqueIds.refine(v=>v.length>0,'Wybierz sprawy'),navigation:navigationInput});
+export const updateQueueInput=z.strictObject({client_key:assistantUuid,version:queueVersion.refine(v=>v!=='0','Kolejka wymaga wersji'),position:z.number().int().min(0).max(199),skipped_return_ids:uniqueIds,navigation:navigationInput});
+export const listQuery=z.strictObject({cursor:assistantUuid.optional(),limit:z.coerce.number().int().min(1).max(50).default(50)});
+export const itemsQuery=listQuery;
+export type ReturnAssistantSettingsValues=z.infer<typeof settingsValues>;

@@ -1,0 +1,179 @@
+.price-file-import {
+  margin-block: 20px;
+  padding: 20px;
+  min-width: 0;
+  max-width: 100%;
+}
+.price-file-import h2,
+.price-file-import h3 {
+  margin-top: 0;
+}
+.price-file-import p,
+.price-file-import li,
+.price-file-import summary {
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+.price-file-import .pfi-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-block: 12px;
+}
+.price-file-import .pfi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.price-file-import label:not(.pfi-check) {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  margin: 0;
+}
+.price-file-import input:not([type='checkbox']),
+.price-file-import select,
+.price-file-import textarea {
+  width: 100%;
+  min-width: 0;
+}
+.price-file-import textarea {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  resize: vertical;
+}
+.price-file-import fieldset {
+  min-width: 0;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  margin-block: 16px;
+  padding: 16px;
+}
+.price-file-import legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.price-file-import .pfi-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-block: 12px;
+  line-height: 1.55;
+}
+.price-file-import .pfi-check input[type='checkbox'] {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 4px;
+}
+.price-file-import .pfi-hint,
+.price-file-import .pfi-error,
+.price-file-import .pfi-status,
+.price-file-import .pfi-pending {
+  padding: 12px;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.price-file-import .pfi-hint {
+  color: #475569;
+  background: #f8fafc;
+}
+.price-file-import .pfi-error {
+  color: #991b1b;
+  background: #fef2f2;
+}
+.price-file-import .pfi-status {
+  color: #166534;
+  background: #f0fdf4;
+}
+.price-file-import .pfi-pending {
+  color: #854d0e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+.price-file-import .pfi-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-block: 12px;
+}
+.price-file-import .pfi-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.price-file-import table {
+  width: 100%;
+  min-width: 920px;
+  table-layout: fixed;
+}
+.price-file-import th,
+.price-file-import td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 10px 8px;
+  vertical-align: top;
+}
+.price-file-import small {
+  display: block;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.price-file-import .pfi-row {
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  margin-block: 10px;
+  padding: 12px;
+}
+.price-file-import .pfi-row summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.price-file-import .pfi-invalid {
+  border-color: #fca5a5;
+}
+.price-file-import .pfi-price {
+  display: grid;
+  gap: 5px;
+}
+.price-file-import .pfi-sources {
+  font-size: 13px;
+  color: #475569;
+}
+.price-file-import .pfi-history {
+  display: grid;
+  gap: 8px;
+}
+.price-file-import .pfi-history button {
+  text-align: left;
+  white-space: normal;
+}
+.price-file-import .pfi-definition {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.price-file-import .pfi-definition dt {
+  font-weight: 600;
+}
+.price-file-import .pfi-definition dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .price-file-import .pfi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .price-file-import {
+    padding: 14px;
+  }
+  .price-file-import .pfi-grid,
+  .price-file-import .pfi-definition {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .price-file-import fieldset {
+    padding: 12px;
+  }
+}

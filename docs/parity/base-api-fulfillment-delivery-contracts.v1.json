@@ -1,0 +1,1815 @@
+{
+  "schema": "dynaminds-base-api-fulfillment-delivery-contracts/v1",
+  "as_of": "2026-10-18",
+  "source_content_date": "2026-10-18",
+  "index_membership_date": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries"
+    }
+  ],
+  "method_count": 6,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "shared_transport_ref": {
+    "path": "base-api-inventory-configuration-contracts.v1.json",
+    "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+    "pointer": "/shared_transport"
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "contract_review_complete_for_selected_groups": true,
+  "documentation_only": true,
+  "operational_contract_fully_resolved": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "implementation_verified": false,
+  "wire_acceptance": false,
+  "provider_account_acceptance": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+    "bytes": 122971,
+    "sha256": "6b016b5366c4424dc8311136c9368af0738a0493f9b5208e3c4da9bafe9fea79",
+    "decoded_bytes": 701988,
+    "decoded_sha256": "1852345a169e2c8044e4d77d1edaf022ca8f1ca40e6ea087a6992acc9f192546",
+    "individual_documents": 12,
+    "selected_documents": 6,
+    "format": "gzip UTF-8 JSON; original documents[].html_utf8 retained; six source captures18.10 supplementary to index17.10"
+  },
+  "normalization_basis": {
+    "model": "base-api-stocktake-contracts.v1.json",
+    "sha256": "ac1e22254e22c3aaa956a9d3d1f376656d317853c88b574c9a8b4f7bf89cffdb",
+    "dom_parser_library": "existing jsdom/JSDOM; runScripts unset, no external resource loading",
+    "dom_parser_convention": {
+      "path": "../../tests/base-api-stocktake-contracts.test.mjs",
+      "bytes": 9831,
+      "sha256": "ebe08faf00550aaa845169634762eb895da1c0c639f0f6222ff7ed1e3e1f52df",
+      "note": "Reuses existing JSDOM three-cell/header/array-row normalization; no new parser module or fixture."
+    }
+  },
+  "secondary_markdown_ref": {
+    "path": "base-api-stocktake-fulfillment-contracts-20261018.md",
+    "bytes": 20839,
+    "sha256": "288d8a7e943db5053deb73a840f1d542edaa0c06c4c2687273071f130994ba2f"
+  },
+  "baseline_before_this_file": {
+    "structured_contract_files": [
+      {
+        "path": "base-api-client-contracts.v1.json",
+        "bytes": 52288,
+        "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330",
+        "method_count": 11
+      },
+      {
+        "path": "base-api-courier-contracts.v1.json",
+        "bytes": 101912,
+        "sha256": "0c2b45ec53228cb91115694154a81ec703fb06658a3c635c4b860d6ba8d77b47",
+        "method_count": 16
+      },
+      {
+        "path": "base-api-document-contracts.v1.json",
+        "bytes": 173087,
+        "sha256": "904b94d71b5759e0ab2fb503adca2a3c41ad42ba47eb9448a2a97a339a7c3d36",
+        "method_count": 20
+      },
+      {
+        "path": "base-api-inventory-configuration-contracts.v1.json",
+        "bytes": 105726,
+        "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+        "method_count": 14
+      },
+      {
+        "path": "base-api-inventory-products-contracts.v1.json",
+        "bytes": 182603,
+        "sha256": "c73cd60aedc281735a625ecfce0e216f03aa500aa746703925c164887f7d3285",
+        "method_count": 12
+      },
+      {
+        "path": "base-api-order-configuration-contracts.v1.json",
+        "bytes": 65947,
+        "sha256": "f02fafbc47b60f91612cc8b813f6a0ef5676aac0db09c9447d5e681cce17b784",
+        "method_count": 10
+      },
+      {
+        "path": "base-api-orders-contracts.v1.json",
+        "bytes": 146132,
+        "sha256": "7c94dea8645a575b4a326dafda86d314bc03bdd44e7e52ffee5a81a37e8a6534",
+        "method_count": 7
+      },
+      {
+        "path": "base-api-pickpack-contracts.v1.json",
+        "bytes": 43437,
+        "sha256": "aafa74afdd223ad25b2ca94ec75732707758bf7990432724c5784548f9b52716",
+        "method_count": 8
+      },
+      {
+        "path": "base-api-purchase-order-contracts.v1.json",
+        "bytes": 82084,
+        "sha256": "cffea36515949cc001c74a2483571b482acb4ffc7662655d22bb3cdee58c09fd",
+        "method_count": 9
+      },
+      {
+        "path": "base-api-return-contracts.v1.json",
+        "bytes": 101019,
+        "sha256": "a7d4aaeb8a62511a40565e7936bec1b0049e8b8dda0d8f8750c52380c425d525",
+        "method_count": 21
+      },
+      {
+        "path": "base-api-stocktake-contracts.v1.json",
+        "bytes": 57283,
+        "sha256": "ac1e22254e22c3aaa956a9d3d1f376656d317853c88b574c9a8b4f7bf89cffdb",
+        "method_count": 6
+      },
+      {
+        "path": "base-api-transfer-contracts.v1.json",
+        "bytes": 53624,
+        "sha256": "d0223caa05cd7cac46d59a3212588cb172da014fda5a0d2bbde164977ba6b9f9",
+        "method_count": 6
+      }
+    ],
+    "unique_method_count": 140,
+    "selected_methods_overlap": [],
+    "index_methods": 204,
+    "central_traceability": {
+      "path": "base-api-contract-traceability-20261018.json",
+      "bytes": 721919,
+      "sha256": "7dea2ac8274f87888a70cdf8c77f03cf0ac97759f8eb0d177b88704371bd0cb9",
+      "linked_methods": 204,
+      "structured_json_contracts": 134,
+      "markdown_only_contracts": 70,
+      "updated_by_this_change": false
+    },
+    "note": "Existing JSON files cover140 unique methods; central registry remains its historical134JSON/70Markdown projection. All204 already have source/contract links; this adds machine normalization, not new method discovery."
+  },
+  "field_inventory": {
+    "input_table_rows": 24,
+    "output_table_rows": 46,
+    "nested_input_table_rows": 2,
+    "nested_output_table_rows": 32,
+    "embedded_input_prose_fields": 0,
+    "embedded_output_prose_fields": 13
+  },
+  "methods": [
+    {
+      "id": "BASE-API-addInventoryFulfillmentDelivery",
+      "method": "addInventoryFulfillmentDelivery",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryFulfillmentDelivery",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryFulfillmentDelivery",
+        "retrieved_at": "2026-10-18T01:06:32.112426+00:00",
+        "http_status": 200,
+        "bytes": 49422,
+        "sha256": "394d688b96057f66d4b3d92b25a3c2e728420ab574ba0bd1096c0590978ddecf",
+        "snapshot_document_method": "addInventoryFulfillmentDelivery"
+      },
+      "documented_intro": "The method allows you to create a new fulfillment delivery in draft status. A fulfillment delivery represents a shipment of products from a source warehouse to a fulfillment center.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Source warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fulfillment_warehouse_id",
+            "documented_name": "fulfillment_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "name",
+            "documented_name": "name",
+            "documented_type": "varchar(80)",
+            "documented_description": "Delivery name",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Created delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "document_number",
+            "documented_name": "document_number",
+            "documented_type": "text",
+            "documented_description": "Generated document number",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Warehouse/integration compatibility, inventory reservations/stock movement, numbering and duplicate creation semantics are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "warehouse_id",
+            "int",
+            "Source warehouse identifier"
+          ],
+          [
+            "fulfillment_warehouse_id",
+            "int",
+            "Fulfillment warehouse identifier"
+          ],
+          [
+            "name",
+            "varchar(80)",
+            "Delivery name"
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "delivery_id",
+            "int",
+            "Created delivery identifier"
+          ],
+          [
+            "document_number",
+            "text",
+            "Generated document number"
+          ]
+        ],
+        "input_sha256": "95834a227f722dd3f7744979c85a1a50ef65b82c45ed7c64ebbe0aa47729731d",
+        "output_sha256": "64cf23a9c48ba37bcfc5a09cb34e85077dba4c9afe972238e6997bcf8dc92b5e"
+      },
+      "documented_effects": {
+        "created_status": "draft",
+        "direction": "source_warehouse_to_fulfillment_center",
+        "result_document_number_type": "text"
+      }
+    },
+    {
+      "id": "BASE-API-addInventoryFulfillmentDeliveryItems",
+      "method": "addInventoryFulfillmentDeliveryItems",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryFulfillmentDeliveryItems",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryFulfillmentDeliveryItems",
+        "retrieved_at": "2026-10-18T01:06:31.600749+00:00",
+        "http_status": 200,
+        "bytes": 50457,
+        "sha256": "29309a7f6aaa664ca4f0287777ef322cdf61fb431ea31c2c22fec51ca4c2312f",
+        "snapshot_document_method": "addInventoryFulfillmentDeliveryItems"
+      },
+      "documented_intro": "The method allows you to add products to a fulfillment delivery. Items can only be added to deliveries in draft status. Products must exist in inventory, bundles require the feature to be enabled for the account, and products must not be drafts or main products with variants.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "Array of items to add to the delivery",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity of the product",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "Array of added items",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Created item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "items[].product_sku",
+            "documented_name": "| - product_sku",
+            "documented_type": "text",
+            "documented_description": "Product SKU",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Total quantity after addition",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Matching/aggregation of duplicate products, overwrite versus increment, positive/zero/negative quantity acceptance, batch maximum and partial-failure atomicity are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "delivery_id",
+            "int",
+            "Fulfillment delivery identifier"
+          ],
+          [
+            "items",
+            "array",
+            "Array of items to add to the delivery"
+          ],
+          [
+            "| - product_id",
+            "int",
+            "Product identifier"
+          ],
+          [
+            "| - quantity",
+            "int",
+            "Quantity of the product"
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "items",
+            "array",
+            "Array of added items"
+          ],
+          [
+            "| - item_id",
+            "int",
+            "Created item identifier"
+          ],
+          [
+            "| - product_id",
+            "int",
+            "Product identifier"
+          ],
+          [
+            "| - product_sku",
+            "text",
+            "Product SKU"
+          ],
+          [
+            "| - quantity",
+            "int",
+            "Total quantity after addition"
+          ]
+        ],
+        "input_sha256": "2974101fb39ab45604c5e32a0bcc07efb31ac31636d8621ba84d1324046e3688",
+        "output_sha256": "b311a6eb3f3c606927983e9b1cc3935acd39ae40e7144d6bf7a0889821bfed65"
+      },
+      "documented_preconditions": [
+        {
+          "subject": "delivery_id",
+          "requirement": "draft_status"
+        },
+        {
+          "subject": "items[].product_id",
+          "requirement": "exists_in_inventory_not_draft_not_main_product_with_variants"
+        },
+        {
+          "subject": "bundle_products",
+          "requirement": "bundle_feature_enabled_for_account"
+        }
+      ],
+      "documented_effects": {
+        "output_quantity": "total_quantity_after_addition"
+      }
+    },
+    {
+      "id": "BASE-API-getInventoryFulfillmentDeliveries",
+      "method": "getInventoryFulfillmentDeliveries",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveries",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveries",
+        "retrieved_at": "2026-10-18T01:06:31.660983+00:00",
+        "http_status": 200,
+        "bytes": 53802,
+        "sha256": "ea72bc9c1e232f57433e29060f74a4fa5bc80c83f9ed5838114993bff5e05e72",
+        "snapshot_document_method": "getInventoryFulfillmentDeliveries"
+      },
+      "documented_intro": "The method allows you to retrieve a list of fulfillment deliveries with optional filtering. Results are paginated with 100 results per page.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "fulfillment_warehouse_id",
+            "documented_name": "fulfillment_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by fulfillment warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fulfillment_warehouse_ids",
+            "documented_name": "fulfillment_warehouse_ids",
+            "documented_type": "array",
+            "documented_description": "(optional) Filter by multiple fulfillment warehouse identifiers (array of ints)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type_source": "explicit_array_of_ints_or_strings_in_table_description"
+          },
+          {
+            "name": "external_warehouse_id",
+            "documented_name": "external_warehouse_id",
+            "documented_type": "text",
+            "documented_description": "(optional) Filter by external fulfillment center identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "external_warehouse_ids",
+            "documented_name": "external_warehouse_ids",
+            "documented_type": "array",
+            "documented_description": "(optional) Filter by multiple external fulfillment center identifiers (array of strings)",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "element_type": "string",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type_source": "explicit_array_of_ints_or_strings_in_table_description"
+          },
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by source warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "status",
+            "documented_name": "status",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by delivery status",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "statuses",
+            "documented_name": "statuses",
+            "documented_type": "array",
+            "documented_description": "(optional) Filter by multiple delivery statuses (array of ints)",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "element_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type_source": "explicit_array_of_ints_or_strings_in_table_description"
+          },
+          {
+            "name": "date_from",
+            "documented_name": "date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from filter (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_unit": "unix timestamp"
+          },
+          {
+            "name": "date_to",
+            "documented_name": "date_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Date to filter (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_unit": "unix timestamp"
+          },
+          {
+            "name": "filter_document_number",
+            "documented_name": "filter_document_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "(optional) Filter by document number (partial match)",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_match": "partial"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page (0-based, 100 results per page)",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "deliveries",
+            "documented_name": "deliveries",
+            "documented_type": "array",
+            "documented_description": "Array of fulfillment deliveries",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "deliveries[].delivery_id",
+            "documented_name": "| - delivery_id",
+            "documented_type": "int",
+            "documented_description": "Delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "deliveries[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(80)",
+            "documented_description": "Delivery name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "deliveries[].document_number",
+            "documented_name": "| - document_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "Full document number",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "deliveries[].date_created",
+            "documented_name": "| - date_created",
+            "documented_type": "int",
+            "documented_description": "Creation date (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "deliveries[].items_count",
+            "documented_name": "| - items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "deliveries[].received_items",
+            "documented_name": "| - received_items",
+            "documented_type": "int|null",
+            "documented_description": "Number of received items (null by default)",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "default_status": "documented",
+            "default": null
+          },
+          {
+            "path": "deliveries[].status",
+            "documented_name": "| - status",
+            "documented_type": "int",
+            "documented_description": "Delivery status (0-draft, 10-packing, 20-pending_registration, 30-registered, 40-in_transit, 50-unpacking, 60-completed, 70-cancelled)",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "documented_values": {
+              "0": "draft",
+              "10": "packing",
+              "20": "pending_registration",
+              "30": "registered",
+              "40": "in_transit",
+              "50": "unpacking",
+              "60": "completed",
+              "70": "cancelled"
+            }
+          },
+          {
+            "path": "deliveries[].notes",
+            "documented_name": "| - notes",
+            "documented_type": "text",
+            "documented_description": "Delivery notes",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "deliveries[].external_delivery_id",
+            "documented_name": "| - external_delivery_id",
+            "documented_type": "varchar(255)",
+            "documented_description": "External fulfillment delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "deliveries[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Source warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "deliveries[].fulfillment_warehouse_id",
+            "documented_name": "| - fulfillment_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "deliveries[].external_warehouse_id",
+            "documented_name": "| - external_warehouse_id",
+            "documented_type": "varchar(64)",
+            "documented_description": "External fulfillment center identifier",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "deliveries[].unit_type",
+            "documented_name": "| - unit_type",
+            "documented_type": "varchar(20)",
+            "documented_description": "Shipment unit type (carton, pallet, container)",
+            "source_kind": "table_row",
+            "source_table_row": 15,
+            "documented_values": [
+              "carton",
+              "pallet",
+              "container"
+            ]
+          },
+          {
+            "path": "deliveries[].unit_count",
+            "documented_name": "| - unit_count",
+            "documented_type": "int",
+            "documented_description": "Number of shipment units",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "deliveries[].additional_data",
+            "documented_name": "| - additional_data",
+            "documented_type": "array",
+            "documented_description": "Integration-specific delivery data. For Zalando ZFS contains zfs_advice_id.",
+            "source_kind": "table_row",
+            "source_table_row": 17,
+            "element_type": null
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": null,
+            "documented_name": "zfs_advice_id",
+            "parent_path": "deliveries[].additional_data",
+            "documented_type": null,
+            "documented_description": "Integration-specific delivery data. For Zalando ZFS contains zfs_advice_id.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 17,
+            "presence_condition": "integration=Zalando ZFS",
+            "path_status": "Child name documented; exact object/list representation and absolute child path not documented."
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "deliveries",
+        "first_page": 0,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Singular/plural filter precedence or combination, accepted filter statuses, date boundary inclusivity/timezone, ordering, page termination and concurrent-mutation consistency are not documented.",
+        "additional_data has literal type array; zfs_advice_id type and object/list encoding are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "fulfillment_warehouse_id",
+            "int",
+            "(optional) Filter by fulfillment warehouse identifier"
+          ],
+          [
+            "fulfillment_warehouse_ids",
+            "array",
+            "(optional) Filter by multiple fulfillment warehouse identifiers (array of ints)"
+          ],
+          [
+            "external_warehouse_id",
+            "text",
+            "(optional) Filter by external fulfillment center identifier"
+          ],
+          [
+            "external_warehouse_ids",
+            "array",
+            "(optional) Filter by multiple external fulfillment center identifiers (array of strings)"
+          ],
+          [
+            "warehouse_id",
+            "int",
+            "(optional) Filter by source warehouse identifier"
+          ],
+          [
+            "status",
+            "int",
+            "(optional) Filter by delivery status"
+          ],
+          [
+            "statuses",
+            "array",
+            "(optional) Filter by multiple delivery statuses (array of ints)"
+          ],
+          [
+            "date_from",
+            "int",
+            "(optional) Date from filter (unix timestamp)"
+          ],
+          [
+            "date_to",
+            "int",
+            "(optional) Date to filter (unix timestamp)"
+          ],
+          [
+            "filter_document_number",
+            "varchar(30)",
+            "(optional) Filter by document number (partial match)"
+          ],
+          [
+            "page",
+            "int",
+            "(optional) Results page (0-based, 100 results per page)"
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "deliveries",
+            "array",
+            "Array of fulfillment deliveries"
+          ],
+          [
+            "| - delivery_id",
+            "int",
+            "Delivery identifier"
+          ],
+          [
+            "| - name",
+            "varchar(80)",
+            "Delivery name"
+          ],
+          [
+            "| - document_number",
+            "varchar(30)",
+            "Full document number"
+          ],
+          [
+            "| - date_created",
+            "int",
+            "Creation date (unix timestamp)"
+          ],
+          [
+            "| - items_count",
+            "int",
+            "Number of items"
+          ],
+          [
+            "| - received_items",
+            "int|null",
+            "Number of received items (null by default)"
+          ],
+          [
+            "| - status",
+            "int",
+            "Delivery status (0-draft, 10-packing, 20-pending_registration, 30-registered, 40-in_transit, 50-unpacking, 60-completed, 70-cancelled)"
+          ],
+          [
+            "| - notes",
+            "text",
+            "Delivery notes"
+          ],
+          [
+            "| - external_delivery_id",
+            "varchar(255)",
+            "External fulfillment delivery identifier"
+          ],
+          [
+            "| - warehouse_id",
+            "int",
+            "Source warehouse identifier"
+          ],
+          [
+            "| - fulfillment_warehouse_id",
+            "int",
+            "Fulfillment warehouse identifier"
+          ],
+          [
+            "| - external_warehouse_id",
+            "varchar(64)",
+            "External fulfillment center identifier"
+          ],
+          [
+            "| - unit_type",
+            "varchar(20)",
+            "Shipment unit type (carton, pallet, container)"
+          ],
+          [
+            "| - unit_count",
+            "int",
+            "Number of shipment units"
+          ],
+          [
+            "| - additional_data",
+            "array",
+            "Integration-specific delivery data. For Zalando ZFS contains zfs_advice_id."
+          ]
+        ],
+        "input_sha256": "1efd71b3237a32f518f160f08b3570bcad1b021968fb32a38ec02855635c1746",
+        "output_sha256": "2333ae2ed85935f502fa4670ac4dd29086633c5a609d25ca9b84c7c0aac4f83b"
+      }
+    },
+    {
+      "id": "BASE-API-getInventoryFulfillmentDeliveryItems",
+      "method": "getInventoryFulfillmentDeliveryItems",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveryItems",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveryItems",
+        "retrieved_at": "2026-10-18T01:06:31.655036+00:00",
+        "http_status": 200,
+        "bytes": 50234,
+        "sha256": "1c1664413a2df3ac937c1e287f65326412b976f3e736ff3c33236dcc585485db",
+        "snapshot_document_method": "getInventoryFulfillmentDeliveryItems"
+      },
+      "documented_intro": "The method allows you to retrieve items from a specific fulfillment delivery. Results are paginated with 100 results per page.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page (0-based, 100 results per page)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "Array of delivery items",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Item position in the delivery",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "items[].product_name",
+            "documented_name": "| - product_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Product name",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "items[].product_ean",
+            "documented_name": "| - product_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "items[].product_sku",
+            "documented_name": "| - product_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product SKU",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "items[].received_quantity",
+            "documented_name": "| - received_quantity",
+            "documented_type": "int|null",
+            "documented_description": "Received quantity (null by default)",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "default_status": "documented",
+            "default": null
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "items",
+        "first_page": 0,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Item ordering, stable pagination while delivery changes, page termination and received-quantity reconciliation semantics are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "delivery_id",
+            "int",
+            "Fulfillment delivery identifier"
+          ],
+          [
+            "page",
+            "int",
+            "(optional) Results page (0-based, 100 results per page)"
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "items",
+            "array",
+            "Array of delivery items"
+          ],
+          [
+            "| - item_id",
+            "int",
+            "Item identifier"
+          ],
+          [
+            "| - position",
+            "int",
+            "Item position in the delivery"
+          ],
+          [
+            "| - product_id",
+            "int",
+            "Product identifier"
+          ],
+          [
+            "| - product_name",
+            "varchar(255)",
+            "Product name"
+          ],
+          [
+            "| - product_ean",
+            "varchar(32)",
+            "Product EAN"
+          ],
+          [
+            "| - product_sku",
+            "varchar(50)",
+            "Product SKU"
+          ],
+          [
+            "| - quantity",
+            "int",
+            "Quantity"
+          ],
+          [
+            "| - received_quantity",
+            "int|null",
+            "Received quantity (null by default)"
+          ]
+        ],
+        "input_sha256": "327ab427021151bfa178ab92de88b500909a56f211efc63370a8d3df407ca03d",
+        "output_sha256": "fa82196c65e84984981815426250ec9a9513bd631437ae63afda9046e9a81ceb"
+      }
+    },
+    {
+      "id": "BASE-API-getInventoryFulfillmentDeliveryLabels",
+      "method": "getInventoryFulfillmentDeliveryLabels",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveryLabels",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryFulfillmentDeliveryLabels",
+        "retrieved_at": "2026-10-18T01:06:32.131382+00:00",
+        "http_status": 200,
+        "bytes": 49902,
+        "sha256": "8162c3d3210d4ee89f2a24e157ee98d8d7a7e3ad06d9715ff2f9fceeb2b0a782",
+        "snapshot_document_method": "getInventoryFulfillmentDeliveryLabels"
+      },
+      "documented_intro": "The method allows you to download labels of a selected type for a specific fulfillment delivery.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "type",
+            "documented_name": "type",
+            "documented_type": "varchar(10)",
+            "documented_description": "Type of labels to download",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "labels",
+            "documented_name": "labels",
+            "documented_type": "array",
+            "documented_description": "Array of fulfillment delivery labels",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "labels[].type",
+            "documented_name": "| - type",
+            "documented_type": "varchar(10)",
+            "documented_description": "Label type: delivery, box, or item",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "documented_values": [
+              "delivery",
+              "box",
+              "item"
+            ]
+          },
+          {
+            "path": "labels[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Position of the label object in the delivery",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "labels[].box_position",
+            "documented_name": "| - box_position",
+            "documented_type": "int",
+            "documented_description": "Box position for box and item labels, 0 for delivery labels",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "documented_zero_meaning": "delivery label"
+          },
+          {
+            "path": "labels[].extension",
+            "documented_name": "| - extension",
+            "documented_type": "varchar(10)",
+            "documented_description": "Label file extension",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "labels[].label",
+            "documented_name": "| - label",
+            "documented_type": "text",
+            "documented_description": "Label encoded with base64 algorithm",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Input type has no explicitly closed enum; do not infer it from the output label type list. File MIME/extension set, maximum bytes, number of labels, streaming, prerequisites and empty-label result semantics are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "delivery_id",
+            "int",
+            "Fulfillment delivery identifier"
+          ],
+          [
+            "type",
+            "varchar(10)",
+            "Type of labels to download"
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "labels",
+            "array",
+            "Array of fulfillment delivery labels"
+          ],
+          [
+            "| - type",
+            "varchar(10)",
+            "Label type: delivery, box, or item"
+          ],
+          [
+            "| - position",
+            "int",
+            "Position of the label object in the delivery"
+          ],
+          [
+            "| - box_position",
+            "int",
+            "Box position for box and item labels, 0 for delivery labels"
+          ],
+          [
+            "| - extension",
+            "varchar(10)",
+            "Label file extension"
+          ],
+          [
+            "| - label",
+            "text",
+            "Label encoded with base64 algorithm"
+          ]
+        ],
+        "input_sha256": "5570c2bc4c337b77f9799fc925bb3684a70628801f880f9f3ba3b439d5d2704f",
+        "output_sha256": "03c6f039543afd21ad5611fd986098c05bba9bd64c4cd7e0bfde365cddccbcca"
+      },
+      "documented_effects": {
+        "label_content_encoding": "base64",
+        "download_scope": "selected_type_for_selected_delivery"
+      }
+    },
+    {
+      "id": "BASE-API-runInventoryFulfillmentDeliverySubmission",
+      "method": "runInventoryFulfillmentDeliverySubmission",
+      "family": "Product catalog",
+      "group": "Fulfillment deliveries",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=runInventoryFulfillmentDeliverySubmission",
+        "final_url": "https://api.baselinker.com/index.php?method=runInventoryFulfillmentDeliverySubmission",
+        "retrieved_at": "2026-10-18T01:06:31.971100+00:00",
+        "http_status": 200,
+        "bytes": 49673,
+        "sha256": "05912bdb488048209d2ed1ff462dbdf0cecc50e3423d854af2445feb8286d82b",
+        "snapshot_document_method": "runInventoryFulfillmentDeliverySubmission"
+      },
+      "documented_intro": "The method allows you to submit (register) a fulfillment delivery in draft or packing status. Products are treated as packed in simple packing mode and the shipment is registered in the fulfillment center. Optionally accepts date_arrival (unix timestamp) as the expected arrival date when required by the fulfillment integration. Currently supported for selected fulfillment integrations with simple packing mode.",
+      "contract_reviewed": true,
+      "documentation_only": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment delivery identifier to submit",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_arrival",
+            "documented_name": "date_arrival",
+            "documented_type": "int",
+            "documented_description": "(optional) Expected arrival date at the fulfillment center (unix timestamp). Required by some integrations that need a planned receipt date (e.g. DHL Fulfillment).",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_unit": "unix timestamp",
+            "required_when": {
+              "kind": "integration_specific",
+              "condition": "integration requires a planned receipt date",
+              "documented_example": "DHL Fulfillment",
+              "complete_integration_list": "not_documented"
+            }
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "delivery_id",
+            "documented_name": "delivery_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment delivery identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "external_id",
+            "documented_name": "external_id",
+            "documented_type": "varchar(100)",
+            "documented_description": "External fulfillment shipment identifier after successful registration",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "limits": {
+        "rate_limit": "not_documented_on_selected_individual_pages",
+        "batch_size": "not_documented",
+        "response_bytes": "not_documented"
+      },
+      "open_contract_issues": [
+        "Role/tenant/account permissions, precise errors, transaction boundaries and lost-ACK replay are not documented.",
+        "Null versus omission, unknown parameters and validation order are not documented.",
+        "Supported integration list, repeat-submit/unknown-ACK reconciliation, asynchronous completion, resulting status, partial failure and external registration idempotency are not documented."
+      ],
+      "literal_row_inventory": {
+        "normalization": "JSDOM textContent.replace(/\\s+/g,\" \").trim(); same DOM/table hierarchy convention as existing stocktake contract test",
+        "input": [
+          [
+            "delivery_id",
+            "int",
+            "Fulfillment delivery identifier to submit"
+          ],
+          [
+            "date_arrival",
+            "int",
+            "(optional) Expected arrival date at the fulfillment center (unix timestamp). Required by some integrations that need a planned receipt date (e.g. DHL Fulfillment)."
+          ]
+        ],
+        "output": [
+          [
+            "status",
+            "varchar(30)",
+            "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code"
+          ],
+          [
+            "delivery_id",
+            "int",
+            "Fulfillment delivery identifier"
+          ],
+          [
+            "external_id",
+            "varchar(100)",
+            "External fulfillment shipment identifier after successful registration"
+          ]
+        ],
+        "input_sha256": "f32e8aac6ccbe2e91688a177005a224ede5e1f32acddcb61f48cae0ad651f694",
+        "output_sha256": "a9c2c35c44b1cd2715db3dd9fe62663160dc8510af09d4c18d218de17c1f8c96"
+      },
+      "documented_preconditions": [
+        {
+          "subject": "delivery_id",
+          "requirement": "draft_or_packing_status"
+        },
+        {
+          "subject": "fulfillment_integration",
+          "requirement": "selected_supported_integration_with_simple_packing_mode"
+        }
+      ],
+      "documented_effects": {
+        "products": "treated_as_packed_in_simple_packing_mode",
+        "shipment": "registered_in_fulfillment_center",
+        "external_id": "external_fulfillment_shipment_identifier_after_successful_registration"
+      }
+    }
+  ],
+  "boundary": "SOURCE_ONLY/DOCUMENTATION_ONLY. Six existing18.10 primary pages are normalized, not discovered. Frozen17.10 index and existing sources, scope and central registry remain unchanged. No adapter, ordinary UI/API/worker, wire, WMS/stock, fulfillment-provider, scaling or business acceptance is granted. Unknown-outcome mutation retry is not authorized."
+}

@@ -1,0 +1,71 @@
+.supplier-remote-feeds {
+  border-top: 1px solid var(--border, #d9dfe8);
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+.supplier-remote-feeds nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.supplier-remote-feeds fieldset {
+  min-width: 0;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+.supplier-remote-feeds label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+.supplier-remote-feeds input:not([type='checkbox']),
+.supplier-remote-feeds select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+.supplier-remote-feeds .srf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+}
+.supplier-remote-feeds .srf-check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.supplier-remote-feeds .srf-check input {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+}
+.supplier-remote-feeds .button {
+  margin: 0.25rem 0.4rem 0.25rem 0;
+}
+.supplier-remote-feeds .srf-pending,
+.supplier-remote-feeds .srf-result {
+  padding: 1rem;
+  border: 1px solid var(--border, #d9dfe8);
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  overflow-wrap: anywhere;
+}
+.supplier-remote-feeds .srf-pending {
+  background: #fff7df;
+  color: #493c19;
+}
+.supplier-remote-feeds .srf-error {
+  color: #a92323;
+}
+.supplier-remote-feeds .srf-table {
+  overflow-x: auto;
+}
+.supplier-remote-feeds .srf-hint {
+  color: var(--muted, #586477);
+}
+@media (max-width: 640px) {
+  .supplier-remote-feeds .srf-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

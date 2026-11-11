@@ -1,0 +1,608 @@
+/* Order card built around fulfilment: breadcrumb, header + flow, products, section cards, bottom tabs. */
+.order-card-header {
+  padding: 22px 24px 18px;
+}
+/* .panel (styles.css, loaded later) clips its content; the "Więcej" menu must hang over the content below. */
+.panel.order-card-header {
+  overflow: visible;
+  position: relative;
+  z-index: 20;
+}
+.order-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.order-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.order-card-title h2 {
+  font-size: 21px;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+.order-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.order-card-meta strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.order-card-total {
+  text-align: right;
+}
+.order-card-total strong {
+  display: block;
+  font-size: 23px;
+  font-family: Manrope, sans-serif;
+}
+.order-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1f7;
+}
+.order-card-actions .order-primary {
+  margin-left: auto;
+}
+.order-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: #f2f5fa;
+  color: #3b4456;
+}
+.order-pill.ok {
+  background: #e7f6ee;
+  color: #1f7a4d;
+}
+.order-pill.cod {
+  background: #fff4e0;
+  color: #8a5a00;
+}
+.order-pill.due {
+  background: #fdecec;
+  color: #a12a2a;
+}
+.order-more {
+  position: relative;
+}
+.order-more > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.order-more > summary::-webkit-details-marker {
+  display: none;
+}
+.order-more-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  width: max-content;
+  max-width: min(340px, calc(100vw - 32px));
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  text-align: left;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(23, 34, 56, 0.12);
+}
+.order-flow {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+  list-style: none;
+  margin: 0 0 23px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.order-flow li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: #8792a6;
+  min-width: 0;
+}
+.order-flow-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #e3e7ee;
+}
+.order-flow li.done .order-flow-bar,
+.order-flow li.now .order-flow-bar {
+  background: var(--blue);
+}
+.order-flow li.done strong {
+  color: var(--ink);
+}
+.order-flow li.now strong {
+  color: #2341b8;
+  font-weight: 700;
+}
+.order-flow strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.order-flow small {
+  font-size: 11px;
+}
+.order-lines-total {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  padding: 14px 23px;
+  font-size: 13px;
+  border-top: 1px solid #edf1f7;
+}
+.order-lines-total span:nth-child(odd) {
+  color: var(--muted);
+}
+.order-lines-total strong {
+  text-align: right;
+}
+.order-line-qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.order-line-qty input {
+  width: 72px;
+}
+.order-add-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 16px 23px;
+  background: #f7f9fd;
+  border-top: 1px solid #edf1f7;
+}
+.order-add-item .catalog-picker {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.order-add-item label input {
+  width: 90px;
+}
+.order-note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 23px 14px;
+}
+.order-note-form textarea {
+  width: 100%;
+  resize: vertical;
+}
+.order-note-form .button {
+  align-self: flex-end;
+}
+.order-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 23px 10px;
+}
+.order-customer-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.order-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+/* Side-by-side fields: the form-wide gap between stacked labels would push the second one down. */
+.order-customer-form .order-form-row label {
+  margin-top: 0;
+}
+.order-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.order-kv {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 6px 10px;
+  font-size: 13px;
+}
+.order-kv > span:nth-child(odd) {
+  color: var(--muted);
+}
+.order-plain-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .order-flow {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+  .order-card-total {
+    text-align: left;
+  }
+  .order-card-actions .order-primary {
+    margin-left: 0;
+  }
+}
+/* Uwagi v3 §4/§6/§9: breadcrumb, badges, actions, section cards, scan bar and bottom tabs. */
+.order-breadcrumb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.order-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.order-breadcrumb li + li::before {
+  content: '›';
+  margin-right: 6px;
+  color: #a6b0c0;
+}
+.order-breadcrumb li[aria-current] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.order-breadcrumb .text-button,
+.order-neighbours .text-button {
+  font-size: 12px;
+}
+.order-neighbours {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.order-neighbours .text-button:disabled {
+  color: #b5bdca;
+}
+.order-state-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: #fff;
+  white-space: nowrap;
+}
+.order-card-actions-end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  margin-left: auto;
+}
+.order-more-menu.flip {
+  right: auto;
+  left: 0;
+}
+.order-more-menu .button {
+  justify-content: flex-start;
+}
+.order-menu-title {
+  font-size: 12px;
+  color: var(--ink);
+}
+.order-more-menu .portal-access {
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+}
+.order-more-menu .portal-access .toolbar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+.detail-grid.order-card-grid {
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+.order-card-aside {
+  min-width: 0;
+}
+/* Section cards in the aside: the "⋯" menu of KLIENT hangs over the cards below. */
+.panel.order-section-card {
+  overflow: visible;
+}
+.order-section-card .panel-heading {
+  padding-bottom: 12px;
+}
+.order-section-card .panel-heading h2 {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.order-section-card.editing {
+  border-color: #b9c6f5;
+  box-shadow: 0 0 0 3px #3759ed14;
+}
+.order-section-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.order-section-lock {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 11px;
+  color: #6e7e98;
+  text-align: right;
+}
+.order-section-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.order-section-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4c5973;
+}
+.order-section-form label.order-section-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.order-section-form input:not([type='checkbox']),
+.order-section-form select,
+.order-section-form textarea {
+  width: 100%;
+}
+.order-section-form .error {
+  margin: 0;
+  padding-left: 18px;
+}
+.order-customer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.order-customer-head h3,
+.order-customer-head p {
+  margin: 0;
+}
+.order-warning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #a35a00;
+  background: #fff6e6;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.order-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.order-card-menu > summary.icon-btn {
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.order-subsection {
+  border-top: 1px solid #edf1f7;
+  margin-top: 10px;
+  padding-top: 8px;
+}
+.order-subsection-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: #475776;
+}
+.order-shipment-state {
+  font-weight: 600;
+  color: #475776;
+}
+.order-shipment + .order-shipment {
+  border-top: 1px solid #edf1f7;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.order-scan-bar {
+  display: grid;
+  grid-template-columns: auto minmax(80px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 23px 14px;
+  font-size: 12px;
+  color: #4c5973;
+}
+.order-scan-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #e3e7ee;
+  overflow: hidden;
+}
+.order-scan-track > span {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  border-radius: 4px;
+}
+.order-products td code + code {
+  margin-left: 4px;
+}
+.order-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  margin: 8px 0 0;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 16px;
+}
+.order-tabs button {
+  border: 0;
+  background: none;
+  padding: 11px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6e7e98;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.order-tabs button.active {
+  color: #2341b8;
+  border-bottom-color: var(--blue);
+}
+.order-tabpanels {
+  margin-top: 16px;
+}
+.order-tab-group {
+  margin-bottom: 18px;
+}
+.order-tab-group > h3,
+.order-tab-intro {
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+.order-note-text {
+  white-space: pre-wrap;
+}
+.order-change-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.order-change-list .before {
+  color: #8a94a6;
+  text-decoration: line-through;
+}
+.order-change-list .after {
+  color: var(--ink);
+  font-weight: 600;
+}
+.order-history-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #6e7e98;
+  white-space: nowrap;
+}
+.order-history-filter select {
+  width: auto;
+  margin: 0;
+}
+.order-history-changes {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: #4c5973;
+}
+@media (max-width: 1100px) {
+  .detail-grid.order-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .order-card-actions-end {
+    margin-left: 0;
+  }
+  .order-scan-bar {
+    grid-template-columns: 1fr auto;
+  }
+  .order-scan-bar > span:first-child {
+    grid-column: 1 / -1;
+  }
+}
+.order-channel-data {
+  margin-bottom: 16px;
+}
+.order-channel-data tbody th {
+  width: 220px;
+  background: none;
+  color: #4c5973;
+  font-size: 11px;
+  white-space: normal;
+}
+.order-channel-value {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Lane J: "Zgłoś brak" at a line and "Symuluj status przewoźnika (DEMO)" in "Więcej". */
+.item-missing-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.item-missing-form input {
+  width: 64px;
+}
+.order-demo-carrier {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+}

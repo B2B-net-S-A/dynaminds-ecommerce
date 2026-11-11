@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;"><!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">]>
+<!-- SYNTHETIC fixture: authored by hand from the public DHL24 WebAPI2 documentation, not recorded from DHL. -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="https://dhl24.com.pl/webapi2/provider/service.html?ws=1"><SOAP-ENV:Body><ns1:getTrackAndTraceInfoResponse><getTrackAndTraceInfoResult><shipmentId>&lol3;</shipmentId></getTrackAndTraceInfoResult></ns1:getTrackAndTraceInfoResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>

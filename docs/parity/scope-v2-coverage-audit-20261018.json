@@ -1,0 +1,392 @@
+{
+  "schema": "dynaminds-scope-v2-source-coverage-audit/v1",
+  "as_of": "2026-10-18",
+  "mode": "FILE_ONLY_NO_NETWORK_NO_EXECUTION",
+  "scope_mutated": false,
+  "acceptance_granted": false,
+  "implementation_or_provider_acceptance_measured": false,
+  "sources": [
+    {
+      "path": "docs/parity/scope.v2.json",
+      "bytes": 1925550,
+      "sha256": "49d078d47a53438818bc375ea4489c0334eaafa3b57ba8d0ae7a0015969fecea"
+    },
+    {
+      "path": "docs/parity/scope-inputs/v2/domains.json",
+      "bytes": 389487,
+      "sha256": "e586ae249a4ea44d2c3016ba6e122e8b1cbb203c66f994efa4ec32408fa83eea"
+    },
+    {
+      "path": "docs/parity/scope-inputs/v2/integrations.json",
+      "bytes": 1252573,
+      "sha256": "029ddaf33b2195b5404a40c959e1f4ec711a83bcfd83aed7a62eb361798397a1"
+    },
+    {
+      "path": "docs/parity/scope-inputs/v2/base-provider-roster.json",
+      "bytes": 3672322,
+      "sha256": "b4c1ea152a16bdd2186c56d46d706299ad77ac3007798487b66fa16177e3915a"
+    },
+    {
+      "path": "docs/parity/domains.json",
+      "bytes": 408578,
+      "sha256": "67540725830bac67bb388059f27e974f95d1389fda652747c715640a0edb0d8d"
+    },
+    {
+      "path": "docs/parity/integrations.json",
+      "bytes": 1252573,
+      "sha256": "e4e9af5ce54685c122d335116184e36eda146aebb04d22488e34d99195133df0"
+    },
+    {
+      "path": "docs/parity/base-provider-roster.json",
+      "bytes": 3672322,
+      "sha256": "b4c1ea152a16bdd2186c56d46d706299ad77ac3007798487b66fa16177e3915a"
+    },
+    {
+      "path": "docs/parity/base-api-contract-traceability-20261018.json",
+      "bytes": 713797,
+      "sha256": "9a06fab6b9bbb82397c8659f62c04fd7845a2d21e36a30728681f6255b9d0984"
+    },
+    {
+      "path": "tools/parity/scope-freeze.mjs",
+      "bytes": 14655,
+      "sha256": "029a9299f946cd1c5c1c915d0b75d96a3db544744d328782c24ed49dc17538eb"
+    },
+    {
+      "path": "tools/parity/check.mjs",
+      "bytes": 8337,
+      "sha256": "3c6410e2cdbf7292f9148b956bd214a7051b0e9789fdbf015667b00a6baf9580"
+    }
+  ],
+  "scope_snapshot": {
+    "version": 2,
+    "as_of": "2026-10-17",
+    "snapshot_kind": "partial",
+    "scope_complete": false,
+    "requirement_count": 2585,
+    "required_ids": {
+      "domains": 146,
+      "integrations": 354,
+      "providerRoster": 2085
+    },
+    "by_kind": {
+      "gap": 33,
+      "operation": 459,
+      "registry_provider": 15,
+      "category": 7,
+      "provider": 2060,
+      "taxonomy": 11
+    },
+    "open_gap_count": 33,
+    "note": "Most requirements have null state; null is not accepted or complete. A frozen denominator is not a verified full product catalogue."
+  },
+  "exact_scope_complete_predicate": {
+    "source": "tools/parity/scope-freeze.mjs:157",
+    "required": [
+      "domains and integrations checkInventories.coverage_closed are both true",
+      "roster.inventory_complete === true",
+      "roster.coverage_complete === true",
+      "roster.summary.full_base_roster_complete !== false",
+      "every named gap has state resolved and its resolution evidence is file-pinned"
+    ],
+    "coverage_closed_source": "tools/parity/check.mjs:88",
+    "coverage_closed_requires": [
+      "inventory_complete === true",
+      "coverage_gaps.length === 0",
+      "summary.full_base_roster_complete !== false",
+      "scope.coverage_complete !== false"
+    ],
+    "separate_acceptance_boundary": "This predicate does not grant code/UI/API, provider account, Native, scale, recovery, or full Goal acceptance."
+  },
+  "concrete_scope_blockers": {
+    "domain": {
+      "row_count": 135,
+      "domain_count": 16,
+      "inventory_complete": false,
+      "source_catalogue_exhaustive": false,
+      "open_gaps": [
+        {
+          "id": "DOM-GAP-001",
+          "kind": "INVENTORY",
+          "closure": "Porównać pełny indeks pomocy i uzgodnione źródła z wszystkimi wierszami."
+        },
+        {
+          "id": "DOM-GAP-002",
+          "kind": "VARIANT-CONFLICT",
+          "closure": "Rozstrzygnąć aktualny kontrakt UI/importu przed rozszerzeniem DOM-PIM-007 i IMP."
+        },
+        {
+          "id": "DOM-GAP-003",
+          "kind": "STOCKTAKE-CONFLICT",
+          "closure": "Rozdzielić ręczną blokadę, WMS App i panel w DOM-WMS-014."
+        },
+        {
+          "id": "DOM-GAP-004",
+          "kind": "CONNECTOR-ROSTER",
+          "closure": "Zintegrować oddzielny konektorowy inwentarz Root z operacjami i poziomami dowodu."
+        },
+        {
+          "id": "DOM-GAP-005",
+          "kind": "AUTHENTICATED-OPTIONS",
+          "closure": "Autoryzowany przegląd panelu lub aktualnej specyfikacji z dokładnym zakresem."
+        },
+        {
+          "id": "DOM-GAP-006",
+          "kind": "API-SECURITY",
+          "closure": "Osobno zamrozić publiczny kontrakt API i wymagania bezpieczeństwa po primary review."
+        },
+        {
+          "id": "DOM-GAP-007",
+          "kind": "ACCOUNT-ECOSYSTEM",
+          "closure": "Osobne pierwotne źródła i rozdział funkcji software od usług biznesowych."
+        },
+        {
+          "id": "DOM-GAP-008",
+          "kind": "CODE-SEMANTICS",
+          "closure": "Per-row Source/UI review i kontrolowane testy przed statusem missing lub implemented."
+        },
+        {
+          "id": "DOM-GAP-009",
+          "kind": "FULL-GOAL-RECEPTION",
+          "closure": "Pełny normalny happy/negative/restart/permissions i właściwy poziom dostawcy."
+        },
+        {
+          "id": "DOM-GAP-010",
+          "kind": "DEPTH-VARIANTS",
+          "closure": "Dodać podwiersze po zamrożeniu źródeł, zamiast interpretować jeden wiersz jako wszystkie kombinacje."
+        },
+        {
+          "id": "DOM-GAP-011",
+          "kind": "RETENTION-AND-ARCHIVE",
+          "closure": "Add archive rows and a Root-approved retention policy; never infer permission for destructive history deletion."
+        }
+      ]
+    },
+    "integrations": {
+      "provider_count": 15,
+      "operation_rows": 324,
+      "category_gaps": [
+        {
+          "id": "base.category.marketplace",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "amazon",
+            "ebay",
+            "allegro"
+          ]
+        },
+        {
+          "id": "base.category.stores",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "woocommerce",
+            "shopify",
+            "prestashop"
+          ]
+        },
+        {
+          "id": "base.category.carriers",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "inpost",
+            "dpd"
+          ]
+        },
+        {
+          "id": "base.category.erp",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "odoo",
+            "fakturownia"
+          ]
+        },
+        {
+          "id": "base.category.sms",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "smsapi"
+          ]
+        },
+        {
+          "id": "base.category.other",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "deepl",
+            "smtp"
+          ]
+        },
+        {
+          "id": "base.category.wholesale",
+          "coverage_complete": false,
+          "registry_provider_ids": [
+            "bigbuy"
+          ]
+        },
+        {
+          "id": "base.category.pim",
+          "coverage_complete": false,
+          "registry_provider_ids": []
+        },
+        {
+          "id": "base.category.wms",
+          "coverage_complete": false,
+          "registry_provider_ids": []
+        },
+        {
+          "id": "base.category.fulfillment",
+          "coverage_complete": false,
+          "registry_provider_ids": []
+        },
+        {
+          "id": "base.category.coming-soon",
+          "coverage_complete": false,
+          "registry_provider_ids": []
+        }
+      ],
+      "cross_cutting_gaps": [
+        {
+          "id": "normal-worker-lifecycle",
+          "status": "source_limited"
+        },
+        {
+          "id": "registry-code-drift",
+          "status": "reconciliation_pending"
+        },
+        {
+          "id": "provider-contract-discovery",
+          "status": "pending"
+        },
+        {
+          "id": "mirakl-family-remaining-capabilities",
+          "status": "open"
+        }
+      ],
+      "operation_rows_without_endpoint_mapping": 298,
+      "note": "Count is from the dated inventory, not a fresh callsite audit; missing mapping is not proof that runtime code does not exist."
+    },
+    "roster": {
+      "entries": 2060,
+      "html_card_occurrences": 2056,
+      "html_distinct_ids": 2053,
+      "all_occurrences_have_entry_id": true,
+      "unmapped_new_catalog_entries": 1995,
+      "all_entries_operations_discovery": {
+        "pending_not_invented": 2060
+      },
+      "registry_relation_kinds": {
+        "name_and_primary_Base_detail_match": 12,
+        "not_in_current_registry; code_not_searched_here": 51,
+        "related_family_only_not_operation_support": 2,
+        "not_operation_mapped_in_roster_phase": 1995
+      },
+      "open_gaps": [
+        {
+          "id": "dynamic-catalog",
+          "status": "html_occurrences_extracted_cross_locale_discovery_open",
+          "closed": false
+        },
+        {
+          "id": "category-popular-only",
+          "status": "expanded_beyond_popular_cards_region_variant_validation_open",
+          "closed": false
+        },
+        {
+          "id": "pim-wms-other",
+          "status": "html_names_extracted_operations_and_variant_discovery_open",
+          "closed": false
+        },
+        {
+          "id": "unobserved-registry-members",
+          "status": "pending_discovery",
+          "closed": false
+        },
+        {
+          "id": "platform-partner-coming-soon",
+          "status": "pending_classification",
+          "closed": false
+        },
+        {
+          "id": "official-api-operations",
+          "status": "pending_discovery",
+          "closed": false
+        },
+        {
+          "id": "html-autocomplete-difference",
+          "status": "pending_reconciliation",
+          "closed": false
+        }
+      ],
+      "html_autocomplete_difference": {
+        "html_ids_not_in_autocomplete": [
+          "base-bridge",
+          "centauro2",
+          "meta",
+          "tallysolutions"
+        ],
+        "autocomplete_codes_not_in_html": [
+          "aliexpress",
+          "aliexpress_shipping",
+          "aliexpressshippingbr"
+        ],
+        "equal_sets": false
+      },
+      "registry_provider_ids_absent_from_matching_table": [
+        "mirakl"
+      ],
+      "explicit_present_but_unmapped": [
+        {
+          "provider_id": "mirakl",
+          "catalogue_entries": [
+            {
+              "id": "base.catalog.marketplace.mirakl",
+              "name": "Mirakl",
+              "relationship": {
+                "kind": "not_operation_mapped_in_roster_phase"
+              }
+            }
+          ]
+        }
+      ],
+      "no_primary_base_match": [
+        {
+          "provider_id": "deepl",
+          "status": "not_observed_in_bounded_discovery_not_proof_of_absence"
+        },
+        {
+          "provider_id": "smtp",
+          "status": "not_observed_in_bounded_discovery_not_proof_of_absence"
+        }
+      ],
+      "note": "Do not infer a provider identity by common URL, display name, category, family adapter or raw catalog ID; the three repeated HTML IDs and cross-source differences require source-backed reconciliation."
+    }
+  },
+  "newer_documentation_boundary": {
+    "api_methods": 204,
+    "unlinked_methods": 0,
+    "implementation_verified_by_trace_registry": 0,
+    "wire_verified_by_trace_registry": 0,
+    "provider_verified_by_trace_registry": 0,
+    "note": "204 linked public API method documents are a separate dated supplement. scope.v2 pins only domains/integrations/providerRoster; documentation completion does not populate provider operations or accept them. Any denominator changes require a new additive snapshot."
+  },
+  "smallest_next_source_only_increment": {
+    "action": "Create an explicit source-backed additive mapping proposal for existing Mirakl catalogue occurrence to existing registry provider mirakl; preserve both original IDs and distinguish Seller family from individual operator/region/version instances.",
+    "inputs": [
+      "base-provider-roster.json entries[id=base.catalog.marketplace.mirakl]",
+      "integrations.json providers[id=mirakl] and rows[provider=mirakl]",
+      "existing official Mirakl contract pins and dated Base catalogue capture"
+    ],
+    "required_output": [
+      "identity mapping with exact primary evidence, or explicit unresolved ambiguity",
+      "separate classification for generic family versus operator-instance entries",
+      "operation links only to source-pinned documented callsites; no propagation to all family cards",
+      "new additive scope proposal with before/after ID accounting; frozen v2 unchanged"
+    ],
+    "remaining_after_this_increment": "The other 1994 newly unmapped catalogue entries, all provider region/plan/version operation discovery and open domain/category gaps remain; mapping a single entry never closes scope."
+  },
+  "execution": {
+    "network_requests": 0,
+    "pg_calls": 0,
+    "tests_run": 0,
+    "builds_run": 0,
+    "source_files_modified": 0
+  }
+}

@@ -1,0 +1,26 @@
+.return-destinations-intake { min-width: 0; max-width: 100%; }
+.return-destinations-intake > header { padding: 1rem; }
+.rdi-body { display: grid; gap: 1rem; padding: 1rem; min-width: 0; }
+.rdi-actions { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; }
+.return-destinations-intake button { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.return-destinations-intake fieldset { min-width: 0; max-width: 100%; }
+.rdi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+.rdi-body label { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+.rdi-body label.rdi-check { flex-direction: row; align-items: flex-start; gap: .6rem; }
+.rdi-check input { flex: 0 0 auto; margin-top: .2rem; width: auto; }
+.rdi-body input, .rdi-body select, .rdi-body textarea { max-width: 100%; min-width: 0; }
+.rdi-part, .rdi-review { border: 1px solid var(--border, #dbe2ea); border-radius: .65rem; padding: 1rem; min-width: 0; }
+.rdi-part h4, .rdi-review h4 { margin-top: 0; }
+.rdi-body small, .rdi-body dd { overflow-wrap: anywhere; }
+.rdi-table { width: 100%; overflow-x: auto; min-width: 0; }
+.rdi-table table { min-width: 42rem; width: 100%; }
+.rdi-history { display: grid; gap: .65rem; padding-left: 1.25rem; }
+.rdi-summary { display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(0, 2fr); gap: .5rem 1rem; }
+.rdi-summary dd { margin: 0; }
+@media (max-width: 600px) {
+  .rdi-body, .return-destinations-intake > header { padding: .75rem; }
+  .rdi-part, .rdi-review { padding: .75rem; }
+  .rdi-actions > button { flex: 1 1 100%; }
+  .rdi-summary { grid-template-columns: 1fr; gap: .25rem; }
+  .rdi-summary dd { margin-bottom: .5rem; }
+}

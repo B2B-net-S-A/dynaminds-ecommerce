@@ -1,0 +1,1489 @@
+{
+  "schema": "dynaminds-base-api-order-configuration-contracts/v1",
+  "as_of": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Orders",
+      "group": "Payments"
+    },
+    {
+      "family": "Orders",
+      "group": "Statuses"
+    }
+  ],
+  "method_count": 10,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "contract_review_complete_for_all_Orders_family": false,
+  "classification_notes": [
+    "No separate Order fields group exists in index204; getOrderExtraFields belongs to full Orders / Other9 and is outside this selected10.",
+    "Payment setter belongs to real Orders / Payments2; no invented provider-payment group."
+  ],
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-order-configuration-sources-20261017.json.gz",
+    "sha256": "9f36c3d13f99fb95c8b9cb54390f02dfc2a47bf800e6cb45b900849f6481d559",
+    "bytes": 98555,
+    "format": "gzip UTF-8 JSON;individual html_utf8 exact source bytes",
+    "individual_documents": 10
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented;external_payment_id_and_status_update_ID_are_not_client_idempotency_guarantees"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "field_inventory": {
+    "input_table_rows": 24,
+    "output_table_rows": 24,
+    "embedded_input_prose_fields": 0,
+    "embedded_output_prose_fields": 7
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T21:05:04.691Z",
+    "scope": "read-only source routes/models/SQL and exactmethod/transport source search;no application/PG/account calls",
+    "searched_terms": [
+      "connector.php",
+      "X-BLToken",
+      "getOrderPaymentsHistory",
+      "setOrderPayment",
+      "addOrderStatus",
+      "addOrderStatusGroup",
+      "deleteOrderStatus",
+      "deleteOrderStatusGroup",
+      "getOrderStatusGroups",
+      "getOrderStatusList",
+      "setOrderStatus",
+      "setOrderStatuses"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_server_web_TS_TSX",
+    "anchors": [
+      {
+        "path": "server/payment-routes.ts",
+        "sha256": "b9e6e2b87ec3d6252fe362dc16618e6702ae5f6dd759ef34c93dd925abcd9c37",
+        "symbol_or_anchor": "registerPaymentRoutes",
+        "boundary": "own GET/POST payments and reverse; no Base dispatch"
+      },
+      {
+        "path": "server/payments.ts",
+        "sha256": "aa14325393d62d2bc0165a12d6c2956168ec1922bb77c7b395f09b15977af79e",
+        "symbol_or_anchor": "paymentInput/paymentHistory/recordPayment",
+        "boundary": "append-only integer minor-unit ledger + UUID key/version; not replace-current-paid-total float method; history cursor page50"
+      },
+      {
+        "path": "server/operation-routes.ts",
+        "sha256": "5ce13ede3a8f8620af25b32f53dfb64d051e8fa77eec6c7489997a4315c3d253",
+        "symbol_or_anchor": "registerOperationRoutes /api/workflow-statuses",
+        "boundary": "own create/PATCH UUID/version/active/stage; no Base group/delete migration contract"
+      },
+      {
+        "path": "server/order-operations.ts",
+        "sha256": "5fd015962a82a06bc460fb08edc2b1e0d2e90ee3a6b2fcd26cbb5b8c5d8a5bc4",
+        "symbol_or_anchor": "workflowInput/applyOrderAction",
+        "boundary": "own stage transition and workflow assignment; local events and guards, not Base analytics type"
+      },
+      {
+        "path": "server/operation-schema.ts",
+        "sha256": "bb44db39885f60e4dcf74debae3a35c2c78cc36e9a636acaca55f07546c2db45",
+        "symbol_or_anchor": "stages/orderAction",
+        "boundary": "11 local stages; set_status stage vs set_workflow UUID; not Base int status/type alias"
+      },
+      {
+        "path": "server/022_order_status.sql",
+        "sha256": "7237622e37fd3fc406d557446632997e40eba29d36ad6a900c156e3b0a5cfa07",
+        "symbol_or_anchor": "workflow_statuses",
+        "boundary": "own status entity, no status_group or main/primary/display fields shown in Base contract"
+      },
+      {
+        "path": "server/order-status-routes.ts",
+        "sha256": "79266e316a457fe2ca25d8ee935154c9fb7e40791ad60383dddc492219e55c24",
+        "symbol_or_anchor": "registerOrderStatusRoutes",
+        "boundary": "remote channel status preview/queue/reconcile is separate from Base local status definition/assignment"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "payments": {
+      "state": "adjacent_own_ledger_not_Base_wire_or_replace_total",
+      "anchors": [
+        "server/payment-routes.ts",
+        "server/payments.ts"
+      ],
+      "route_candidates": [
+        "GET /api/orders/:id/payments?before=UUID",
+        "POST /api/orders/:id/payments",
+        "POST /api/orders/:id/payments/reverse"
+      ],
+      "open": [
+        "Base setter overwrites cumulative paid total; local receipt adds immutable amount with client_key/version/confirmed, kind/currency/reference.",
+        "Base history defaults to externally identified subset and contains paid_before/paid_after/total_price; local history returns balance/data/next and own entries/reversals, including merge ownership.",
+        "Local idempotency is not evidence of Base external_payment_id deduplication or wire compatibility."
+      ]
+    },
+    "status_definitions": {
+      "state": "adjacent_own_workflow_statuses_not_Base_upsert_delete_migration",
+      "anchors": [
+        "server/operation-routes.ts",
+        "server/order-operations.ts",
+        "server/operation-schema.ts",
+        "server/022_order_status.sql"
+      ],
+      "route_candidates": [
+        "GET /api/workflow-statuses",
+        "POST /api/workflow-statuses",
+        "PATCH /api/workflow-statuses/:id"
+      ],
+      "open": [
+        "Own UUID/version/stage/active differs Base int analytics type, group,short_name,customer name,comments and primary.",
+        "No reviewed own delete route performing documented all-orders target migration. Deactivate is not delete.",
+        "No proof of insertion order within group or customer history hidden-by-empty-name semantics."
+      ]
+    },
+    "status_groups": {
+      "state": "Base_status_group_CRUD_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/operation-routes.ts",
+        "server/022_order_status.sql"
+      ],
+      "route_candidates": [],
+      "open": [
+        "No own group ID/name/main flag CRUD or delete-to-main migration located in reviewed files.",
+        "Workflow stage is not a visual status group."
+      ]
+    },
+    "order_status_assignment": {
+      "state": "adjacent_own_operations_not_Base_single_or_batch_wire",
+      "anchors": [
+        "server/operation-routes.ts",
+        "server/order-operations.ts",
+        "server/operation-schema.ts",
+        "server/order-status-routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/orders/:id/operations",
+        "POST /api/orders/:id/operations/preview"
+      ],
+      "open": [
+        "Own set_status stage or set_workflow UUID are separate from one Base int status_id.",
+        "Own automation batch/run contract is not proof of undocumented Base setOrderStatuses batch atomicity/limit/partial behavior.",
+        "Remote channel status mapping/queue must not be substituted for local Base status assignment."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "ORDERCONFIG-001",
+      "methods": [
+        "getOrderPaymentsHistory"
+      ],
+      "issue": "Default history excludes entries lacking external_payment_id; no pagination/cap/order/completeness specified.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-002",
+      "methods": [
+        "getOrderPaymentsHistory"
+      ],
+      "issue": "Prose types float/int disagree with sample JSON strings for amount/date.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-003",
+      "methods": [
+        "setOrderPayment"
+      ],
+      "issue": "Intro says add, field explicitly replaces paid total; never implement as additive receipt.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-004",
+      "methods": [
+        "setOrderPayment"
+      ],
+      "issue": "external_payment_id is optional, not documented idempotency key; no currency/precision/negative/overpayment/reduction/concurrency contract.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-005",
+      "methods": [
+        "addOrderStatus",
+        "addOrderStatusGroup"
+      ],
+      "issue": "Omitted/blank creates but blank int representation and omitted-other-field update semantics are unspecified.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-006",
+      "methods": [
+        "addOrderStatus",
+        "getOrderStatusList"
+      ],
+      "issue": "Status analytics enum differs own workflow stages; read omits short_name,type,comments and uses text vs bounded write varchar.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-007",
+      "methods": [
+        "deleteOrderStatus"
+      ],
+      "issue": "Deleting non-primary migrates all orders to different target; trigger/financial/stock/channel sideeffects and atomicity are unspecified.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-008",
+      "methods": [
+        "deleteOrderStatusGroup"
+      ],
+      "issue": "Deleting non-main migrates status definitions to main, not deleting their orders or statuses; position/atomicity unspecified.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-009",
+      "methods": [
+        "setOrderStatus",
+        "setOrderStatuses"
+      ],
+      "issue": "No transition/IAM/idempotency/automation effects; batch limit, duplicates, atomicity and per-order outcomes unspecified.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    },
+    {
+      "id": "ORDERCONFIG-010",
+      "methods": [
+        "getOrderStatusGroups",
+        "getOrderStatusList"
+      ],
+      "issue": "No pagination/limit/order/completeness guarantees; identity/primary assignment and group ordering writer not provided in selected methods.",
+      "decision": "retain_exact_source_and_unknown;no_acceptance_inferred"
+    }
+  ],
+  "dependencies_outside_selected_groups": [
+    "Orders / Other: getOrderExtraFields is not selected as a fake whole group",
+    "getOrders for actual order status and paid readback",
+    "account main/primary default configuration and automation/history effects",
+    "remote provider status synchronization is separate"
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-getOrderPaymentsHistory",
+      "method": "getOrderPaymentsHistory",
+      "family": "Orders",
+      "group": "Payments",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderPaymentsHistory",
+        "final_url": "https://api.baselinker.com/index.php?method=getOrderPaymentsHistory",
+        "retrieved_at": "2026-10-17T21:03:38.270112+00:00",
+        "http_status": 200,
+        "bytes": 50039,
+        "sha256": "2a754f7f049521b9d6e8da3b7c7c02570567d6dde42a1f3af43381d4a39c949e",
+        "snapshot_document_method": "getOrderPaymentsHistory"
+      },
+      "documented_intro": "The method allows you to retrieve payment history for a selected order, including an external payment identifier from the payment gateway. One order can have multiple payment history entries, caused by surcharges, order value changes, manual payment editing",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Historia może zawierać wiele wpisów po dopłatach, zmianie wartości zamówienia i ręcznej edycji płatności. Domyślny odczyt zwraca tylko wpisy z external_payment_id; nie jest pełną historią rozrachunku.",
+        "show_full_history=true obejmuje także zmiany wartości zamówienia i ręczne edycje. Brak identyfikatora wpisu, paginacji, limitu, kolejności i stabilnego kursora.",
+        "Typy float/int w opisie pól są w przykładzie zwracane jako JSON strings; zachowujemy tę rozbieżność bez wymyślania kanonicznej reprezentacji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from Base order manager",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "show_full_history",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "explicit_false",
+            "documented_name": "show_full_history",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Download full payment history, including order value change entries, manual order payment edits. False by default - only returns entries containing an external payment identifier (most commonly used)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "default": false,
+            "false_behavior": "only_entries_containing_external_payment_identifier",
+            "true_behavior": "also_order_value_changes_and_manual_payment_edits"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "payments",
+            "documented_name": "payments",
+            "documented_type": "array",
+            "documented_description": "An array of payments list. Each payment contains fields:paid_before (float) - total amount paid before the given changepaid_after (float) - total amount paid after the changetotal_price (float) - total order pricecurrency (varchar) - the currencyexternal_payment_id (varchar) - external payment identifierdate (int) - date of change record (unix time format)comment (varchar) - comment added when setting the payment for this order",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "payments[].paid_before",
+            "documented_type": "float",
+            "documented_description": "total amount paid before the given change",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].paid_after",
+            "documented_type": "float",
+            "documented_description": "total amount paid after the change",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].total_price",
+            "documented_type": "float",
+            "documented_description": "total order price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].currency",
+            "documented_type": "varchar",
+            "documented_description": "the currency",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].external_payment_id",
+            "documented_type": "varchar",
+            "documented_description": "external payment identifier",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].date",
+            "documented_type": "int",
+            "documented_description": "date of change record (unix time format)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          },
+          {
+            "path": "payments[].comment",
+            "documented_type": "varchar",
+            "documented_description": "comment added when setting the payment for this order",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 2
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "example_representation_conflicts": [
+          {
+            "fields": [
+              "payments[].paid_before",
+              "payments[].paid_after",
+              "payments[].total_price"
+            ],
+            "documented_type": "float",
+            "example_json_type": "string"
+          },
+          {
+            "fields": [
+              "payments[].date"
+            ],
+            "documented_type": "int",
+            "example_json_type": "string"
+          }
+        ]
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_write",
+      "current_code_mapping_ref": "payments",
+      "proposed_acceptance": [
+        "Default external-ID-only subset versus show_full_history=true on value changes/manual edits; preserve source fields, numerical wire representation conflict and complete authorized history.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrderPayment",
+      "method": "setOrderPayment",
+      "family": "Orders",
+      "group": "Payments",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderPayment",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrderPayment",
+        "retrieved_at": "2026-10-17T21:03:38.773590+00:00",
+        "http_status": 200,
+        "bytes": 49446,
+        "sha256": "5735e19fcd77dbffe919b3622e65b7a560ebb394a59cee7dfe9d5d69aab62f9e",
+        "snapshot_document_method": "setOrderPayment"
+      },
+      "documented_intro": "The method allows you to add a payment to the order.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "payment_done zastępuje aktualną łączną zapłaconą kwotę; nie dodaje kwoty do poprzedniego salda. Opis wstępny add a payment nie zmienia tej jawnej reguły pola.",
+        "Gdy kwota jest równa wartości zamówienia, zamówienie zostaje oznaczone jako opłacone. Zachowanie dla obniżenia/ujemnej kwoty/nadpłaty, waluty i zaokrągleń nie jest podane.",
+        "external_payment_id opcjonalny; nie opisano jego unikalności ani idempotencji. Brak klucza klienta, expected version i uzgodnienia wyniku nieznanego po timeout."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order ID number",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "payment_done",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "payment_done",
+            "documented_type": "float",
+            "documented_description": "The amount of the payment. The value changes the current payment in the order (not added to the previous value). If the amount matches the order value, the order will be marked as paid.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "effect": "replace_current_paid_total_not_additive",
+            "equal_to_order_value": "mark_order_paid",
+            "currency_source": "not_documented",
+            "decimal_scale_and_rounding": "not_documented",
+            "negative_overpayment_reduction": "not_documented"
+          },
+          {
+            "name": "payment_date",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "payment_date",
+            "documented_type": "int",
+            "documented_description": "Payment date unixtime.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "format": "unix_time"
+          },
+          {
+            "name": "payment_comment",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "payment_comment",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payments commentary.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "external_payment_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "external_payment_id",
+            "documented_type": "varchar(30)",
+            "documented_description": "(optional) External payment identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "uniqueness_and_idempotency": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "payments",
+      "proposed_acceptance": [
+        "Set totals0→100→70→order value, proving replacement rather than delta; verify paid state, history, external ID behavior, decimals/currency and exact unknown-outcome reconciliation before retry.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-addOrderStatus",
+      "method": "addOrderStatus",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderStatus",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderStatus",
+        "retrieved_at": "2026-10-17T21:03:39.270681+00:00",
+        "http_status": 200,
+        "bytes": 50826,
+        "sha256": "40423835e41d60e50f736d4cebab7b7b204032a7562cc26d3bae7ff7ee42b9d4",
+        "snapshot_document_method": "addOrderStatus"
+      },
+      "documented_intro": "Creates a new order status or updates an existing one if status_id is provided. A new status is appended at the end of the status list within its group.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "status_id pominięte lub puste tworzy, podane aktualizuje. Reprezentacja pustego int nie jest sprecyzowana. Nowy status jest dopisywany na końcu listy w swojej grupie.",
+        "name_for_customer puste ukrywa status w historii klienta, a nie usuwa statusu. type jest kategorią analityczną 0..6, nie dowodem efektów fizycznych lub finansowych.",
+        "group_id pominięte przy tworzeniu wybiera grupę główną, przy aktualizacji zachowuje grupę. Pominięcie innych pól przy aktualizacji nie ma takiej samej jawnej reguły."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "status_id",
+            "required": false,
+            "requiredness_source": "explicit_omit_or_blank_to_create",
+            "default_status": "not_documented",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "Status ID. Provide to update an existing status. Leave empty or omit when creating a new status.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "create": "omitted_or_blank_exact_blank_representation_unknown",
+            "update": "provide_existing_id"
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(30)",
+            "documented_description": "Status name (basic) displayed to the seller in the panel.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "short_name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "short_name",
+            "documented_type": "varchar(17)",
+            "documented_description": "Shortened status name displayed in places with limited width (e.g., all-orders table).",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "name_for_customer",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name_for_customer",
+            "documented_type": "varchar(250)",
+            "documented_description": "Full status name displayed to the customer on the order page. If empty, the status is not shown in the order status history on the customer-facing page.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "empty_string": "hide_status_from_customer_facing_history"
+          },
+          {
+            "name": "color",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "color",
+            "documented_type": "varchar(7)",
+            "documented_description": "Status color in hex format (e.g., \"#FF0000\").",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "format": "hex_color_example_#FF0000"
+          },
+          {
+            "name": "type",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "explicit_zero",
+            "documented_name": "type",
+            "documented_type": "int",
+            "documented_description": "Status type for analytics. 0: Other, 1: Unpaid, 2: In progress, 3: Sent, 4: Delivered, 5: Cancelled, 6: Return. Default: 0.",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "default": 0,
+            "documented_values": {
+              "0": "Other",
+              "1": "Unpaid",
+              "2": "In progress",
+              "3": "Sent",
+              "4": "Delivered",
+              "5": "Cancelled",
+              "6": "Return"
+            }
+          },
+          {
+            "name": "group_id",
+            "required": false,
+            "requiredness_source": "explicit_create_update_omission_behavior",
+            "default_status": "not_documented",
+            "documented_name": "group_id",
+            "documented_type": "int",
+            "documented_description": "Status group ID. The list of group IDs can be retrieved using getOrderStatusList or by first creating groups with addOrderStatusGroup. If omitted on create, the status is placed in the main (default) group. On update, if not provided, the existing group assignment is kept.",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "on_create_omitted": "main_default_group",
+            "on_update_omitted": "preserve_existing_group"
+          },
+          {
+            "name": "comments",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "comments",
+            "documented_type": "varchar(255)",
+            "documented_description": "Internal comment visible only on the statuses settings page.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "status_id",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "ID of the created or updated status.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "status_definitions",
+      "proposed_acceptance": [
+        "Create versus update with typed ID and default/preserved group; insertion order, analytics type0..6,short name and blank customer-name history visibility.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ],
+      "documented_effect": {
+        "create_position": "end_of_status_list_within_group",
+        "partial_update_for_other_fields": "not_documented"
+      }
+    },
+    {
+      "id": "BASE-API-addOrderStatusGroup",
+      "method": "addOrderStatusGroup",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderStatusGroup",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderStatusGroup",
+        "retrieved_at": "2026-10-17T21:03:39.750214+00:00",
+        "http_status": 200,
+        "bytes": 48986,
+        "sha256": "e79285464fe975a21d52cafb1e076cead13c635a80c3f7912b52eb767df42051",
+        "snapshot_document_method": "addOrderStatusGroup"
+      },
+      "documented_intro": "Creates a new order status group or updates an existing one if group_id is provided. Status groups are used to visually organize statuses in the panel sidebar.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "group_id pominięte lub puste tworzy grupę, podane aktualizuje. Grupy wizualnie organizują statusy w bocznym panelu.",
+        "Brak jawnej reguły unikalności nazwy, kolejności grup, pustego ID i aktualizacji częściowej."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "group_id",
+            "required": false,
+            "requiredness_source": "explicit_omit_or_blank_to_create",
+            "default_status": "not_documented",
+            "documented_name": "group_id",
+            "documented_type": "int",
+            "documented_description": "Group ID. Provide to update an existing group. Leave empty or omit when creating a new group.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "create": "omitted_or_blank_exact_blank_representation_unknown",
+            "update": "provide_existing_id"
+          },
+          {
+            "name": "name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "name",
+            "documented_type": "varchar(15)",
+            "documented_description": "Group name.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "group_id",
+            "documented_name": "group_id",
+            "documented_type": "int",
+            "documented_description": "ID of the created or updated status group.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "status_groups",
+      "proposed_acceptance": [
+        "Create versus update visual group and returned stableID; determine duplicate names, omission/blank and ordering without assumed group/status interchangeability.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteOrderStatus",
+      "method": "deleteOrderStatus",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrderStatus",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteOrderStatus",
+        "retrieved_at": "2026-10-17T21:03:40.285819+00:00",
+        "http_status": 200,
+        "bytes": 48920,
+        "sha256": "8cedbc1a2775553baa5681f97692505df9af2b12b20c07749d4497a70c175453",
+        "snapshot_document_method": "deleteOrderStatus"
+      },
+      "documented_intro": "Deletes an order status. All orders currently in the deleted status are moved to the specified target status. The primary (default) status cannot be deleted.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Wszystkie zamówienia w usuwanym statusie migrują do target_status_id; status domyślny nie może być usunięty. Cel musi być inny niż usuwany status.",
+        "Brak opisu atomowości migracji, automatyzacji, powiadomień, historii, rezerwacji, efektów kanałów i uzgodnienia po nieznanym wyniku."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "status_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "ID of the status to delete.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "target_status_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "target_status_id",
+            "documented_type": "int",
+            "documented_description": "ID of the status to which items with the deleted status will be migrated. Must be different from status_id.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "left": "target_status_id",
+            "operator": "must_differ_from",
+            "right": "status_id"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "status_definitions",
+      "proposed_acceptance": [
+        "Own non-primary status with multiple orders: migrate every order to different target and delete definition; refuse primary/equal/foreign target, inspect automation/history/notifications and atomic failure.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ],
+      "documented_destructive_effect": {
+        "migrate_all_orders_to_parameter": "target_status_id",
+        "delete_primary_status": false,
+        "execution_performed": false,
+        "atomicity_and_triggers": "not_documented"
+      }
+    },
+    {
+      "id": "BASE-API-deleteOrderStatusGroup",
+      "method": "deleteOrderStatusGroup",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrderStatusGroup",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteOrderStatusGroup",
+        "retrieved_at": "2026-10-17T21:03:40.932770+00:00",
+        "http_status": 200,
+        "bytes": 48646,
+        "sha256": "06ae0aec7426f8eda97e8393f6db366d22801e257e52e29f636ee6778d4c82ae",
+        "snapshot_document_method": "deleteOrderStatusGroup"
+      },
+      "documented_intro": "Deletes an order status group. All statuses in the deleted group are moved to the main (default) group. The main group itself cannot be deleted.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Statusy usuwanej grupy są przenoszone do grupy głównej; same statusy nie są opisane jako usuwane. Grupy głównej nie można usunąć.",
+        "Brak opisu pozycji przeniesionych statusów, migracji zamówień, atomowości i ponownego usunięcia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "group_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "group_id",
+            "documented_type": "int",
+            "documented_description": "ID of the status group to delete.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "status_groups",
+      "proposed_acceptance": [
+        "Own group containing multiple statuses: retain statuses and move them to main, refuse main deletion; inspect order history, ordering and atomic unknown result.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ],
+      "documented_destructive_effect": {
+        "move_all_group_statuses_to": "main_default_group",
+        "delete_main_group": false,
+        "delete_member_statuses": false,
+        "execution_performed": false,
+        "atomicity_and_position": "not_documented"
+      }
+    },
+    {
+      "id": "BASE-API-getOrderStatusGroups",
+      "method": "getOrderStatusGroups",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderStatusGroups",
+        "final_url": "https://api.baselinker.com/index.php?method=getOrderStatusGroups",
+        "retrieved_at": "2026-10-17T21:03:41.415737+00:00",
+        "http_status": 200,
+        "bytes": 49131,
+        "sha256": "b857a67c097bac2d68238bdf197d7a538c95d755296faa72914f53c0603bdd25",
+        "snapshot_document_method": "getOrderStatusGroups"
+      },
+      "documented_intro": "Returns the list of order status groups. Status groups are used to visually organize statuses in the panel sidebar.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Lista grup ma group_id, name i is_main_group (int 0/1). Nie ma parametrów paginacji, limitu ani gwarancji kolejności/kompletności."
+      ],
+      "input": {
+        "parameters": [],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "status_groups",
+            "documented_name": "status_groups",
+            "documented_type": "array",
+            "documented_description": "An array of status groups containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "status_groups[].group_id",
+            "documented_name": "| - group_id",
+            "documented_type": "int",
+            "documented_description": "Status group ID.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "status_groups[].name",
+            "documented_name": "| - name",
+            "documented_type": "text",
+            "documented_description": "Status group name.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "status_groups[].is_main_group",
+            "documented_name": "| - is_main_group",
+            "documented_type": "int",
+            "documented_description": "Whether this is the main (default) group (0 or 1).",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "documented_values": [
+              0,
+              1
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_write",
+      "current_code_mapping_ref": "status_groups",
+      "proposed_acceptance": [
+        "Read each group ID/name/main flag and reconcile list completeness/ordering with documented unknowns.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-getOrderStatusList",
+      "method": "getOrderStatusList",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderStatusList",
+        "final_url": "https://api.baselinker.com/index.php?method=getOrderStatusList",
+        "retrieved_at": "2026-10-17T21:03:42.114704+00:00",
+        "http_status": 200,
+        "bytes": 49902,
+        "sha256": "8d4dc6107070ddb4a2cebf8985c4bd62e5e11b0a2a5c4c5fca987966e7b956ce",
+        "snapshot_document_method": "getOrderStatusList"
+      },
+      "documented_intro": "Returns order statuses created by the user in the order manager.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Lista własnych statusów ma id/name/color/group_id/is_primary/name_for_customer. Nie zwraca w tabeli short_name/type/comments, mimo że zapis je przyjmuje.",
+        "name/color są w odczycie text, a w zapisie varchar(30)/varchar(7); nie ujednolicamy źródłowych typów. Brak paginacji i gwarancji kolejności."
+      ],
+      "input": {
+        "parameters": [],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "statuses",
+            "documented_name": "statuses",
+            "documented_type": "array",
+            "documented_description": "An array of statuses containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "statuses[].id",
+            "documented_name": "| - id",
+            "documented_type": "int",
+            "documented_description": "Status ID.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "statuses[].name",
+            "documented_name": "| - name",
+            "documented_type": "text",
+            "documented_description": "Status name.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "statuses[].color",
+            "documented_name": "| - color",
+            "documented_type": "text",
+            "documented_description": "Status color (hex, e.g. #1C8752).",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "statuses[].group_id",
+            "documented_name": "| - group_id",
+            "documented_type": "int",
+            "documented_description": "Status group ID. The group details can be retrieved with getOrderStatusGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "statuses[].is_primary",
+            "documented_name": "| - is_primary",
+            "documented_type": "int",
+            "documented_description": "Whether this is the primary (default) status (0 or 1).",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "path": "statuses[].name_for_customer",
+            "documented_name": "| - name_for_customer",
+            "documented_type": "text",
+            "documented_description": "Full status name displayed to the customer on the order status page.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_write",
+      "current_code_mapping_ref": "status_definitions",
+      "proposed_acceptance": [
+        "Read each status ID/group/primary/color/customer name and confirm read/write field asymmetries without synthesizing omitted fields.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrderStatus",
+      "method": "setOrderStatus",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderStatus",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrderStatus",
+        "retrieved_at": "2026-10-17T21:03:42.853405+00:00",
+        "http_status": 200,
+        "bytes": 48737,
+        "sha256": "112ae205b517456cbaa6ab7b46f95165b3c4e988458ee01bc27d6f48bc549807",
+        "snapshot_document_method": "setOrderStatus"
+      },
+      "documented_intro": "The method allows you to change order status.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Zmienia status wskazanego zamówienia na status pobrany z getOrderStatusList. Brak expected version, klientowego klucza, reguł przejść i jawnego opisu efektów ubocznych."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order ID number.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "status_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "Status ID number. The status list can be retrieved using getOrderStatusList.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "order_status_assignment",
+      "proposed_acceptance": [
+        "Assign own/foreign/invalid status, same-status repeat and stale/concurrent transitions; inspect state/history/automation side effects and unknown-outcome readback.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrderStatuses",
+      "method": "setOrderStatuses",
+      "family": "Orders",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderStatuses",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrderStatuses",
+        "retrieved_at": "2026-10-17T21:03:43.347227+00:00",
+        "http_status": 200,
+        "bytes": 48821,
+        "sha256": "2a6229a12299e02fee9c93aae58ae29992a66a2a03784e46fd6ec03af4793c33",
+        "snapshot_document_method": "setOrderStatuses"
+      },
+      "documented_intro": "The method allows you to batch set orders statuses",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Ustawia jeden status dla listy order_ids. Brak limitu rozmiaru, reguł duplikatów, atomowości batcha, wyników per element i ponawiania częściowej porażki."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_ids",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_ids",
+            "documented_type": "array",
+            "documented_description": "Array of Order ID numbers.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "status_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "Status ID number. The status list can be retrieved using getOrderStatusList.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "batch": {
+          "max_items": "not_documented",
+          "duplicates": "not_documented",
+          "all_or_nothing": "not_documented",
+          "partial_outcome_details": "not_documented"
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "order_status_assignment",
+      "proposed_acceptance": [
+        "Multiple own and foreign/missing IDs, duplicates and invalid target; discover authorized limit, atomicity, partial errors and reconciliation without blind retries.",
+        "Ordinary local UI/API/worker, exact Base wire protocol and real provider sandbox/account are independent evidence levels. Require durable intent, current IAM/tenant isolation and timeout/429/ACK-loss recovery; this document grants none."
+      ]
+    }
+  ]
+}

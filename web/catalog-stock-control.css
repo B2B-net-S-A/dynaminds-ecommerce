@@ -1,0 +1,41 @@
+/* BO presentation only. Availability, consent, custody and native writers stay in TSX. */
+.catalog-stock-control {
+  display: grid;
+  gap: 16px;
+  padding: 22px 24px 24px;
+  min-width: 0;
+}
+.catalog-stock-control > header { display: grid; gap: 8px; }
+.catalog-stock-control h2 { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -.15px; }
+.catalog-stock-control h3 { margin: 0; font-size: 14px; line-height: 1.45; }
+.catalog-stock-control p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.catalog-stock-control > header p { color: var(--muted, #7a8699); max-width: 90ch; }
+.catalog-stock-control label { display: flex; flex-direction: column; gap: 7px; margin: 0; min-width: 0; }
+.catalog-stock-control select { width: 100%; max-width: 520px; min-width: 0; margin: 0; }
+.catalog-stock-control label:has(input[type='checkbox']) { flex-direction: row; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.catalog-stock-control input[type='checkbox'] { flex: 0 0 auto; width: auto; margin: 3px 0 0; }
+.catalog-stock-control .button { justify-self: start; width: auto; max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.5; }
+.catalog-stock-control .button:disabled { cursor: not-allowed; }
+.catalog-stock-control > article,
+.catalog-stock-control > .notice { display: grid; gap: 14px; min-width: 0; padding: 18px; border: 1px solid var(--border, #e9edf3); border-radius: 9px; background: #fafbfe; margin: 0; }
+.catalog-stock-control > article.notice { background: #f4f7ff; }
+.catalog-stock-control dl { display: grid; grid-template-columns: minmax(130px, 200px) minmax(0, 1fr); gap: 10px 20px; padding: 14px 16px; margin: 0; border: 1px solid var(--border, #e9edf3); border-radius: 8px; background: white; line-height: 1.5; }
+.catalog-stock-control dt { color: var(--muted, #7a8699); }
+.catalog-stock-control dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.catalog-stock-control ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.catalog-stock-control li { line-height: 1.6; overflow-wrap: anywhere; }
+.catalog-stock-control li .button { display: flex; margin-top: 8px; }
+.catalog-stock-control [role='alert'] { padding: 10px 12px; border: 1px solid #f0d5bd; border-radius: 7px; background: #fff8f0; color: #78522b; }
+.catalog-stock-control table { width: 100%; border-collapse: collapse; text-align: left; }
+.catalog-stock-control caption { text-align: left; padding-bottom: 10px; font-weight: 600; }
+.catalog-stock-control th,
+.catalog-stock-control td { padding: 11px 12px; border-bottom: 1px solid var(--border, #e9edf3); vertical-align: top; }
+.catalog-stock-control th { font-size: 11px; color: var(--muted, #7a8699); }
+.catalog-stock-control td { font-size: 12px; }
+.catalog-stock-control td small { display: block; margin-top: 5px; overflow-wrap: anywhere; color: var(--muted, #7a8699); }
+@media (max-width: 700px) {
+  .catalog-stock-control { padding: 18px 14px; gap: 14px; }
+  .catalog-stock-control > article,
+  .catalog-stock-control > .notice { padding: 14px; }
+  .catalog-stock-control dl { grid-template-columns: minmax(100px, 42%) minmax(0, 1fr); gap: 10px 12px; padding: 12px; }
+}

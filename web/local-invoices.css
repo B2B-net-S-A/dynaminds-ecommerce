@@ -1,0 +1,43 @@
+/* Scoped to local FV views; the validated printable iframe keeps its own stylesheet. */
+.local-invoices-panel.panel { min-width: 0; padding: 24px; display: grid; gap: 16px; color: var(--text, #172033); }
+.local-invoices-panel h3, .local-invoices-panel h4, .local-invoices-panel p { margin: 0; }
+.local-invoices-panel h3 { font-size: 16px; font-weight: 800; }
+.local-invoices-panel h4 { font-size: 14px; font-weight: 700; }
+.local-invoices-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.local-invoices-panel .local-invoices-fields,
+.local-invoices-panel .local-invoices-review,
+.local-invoices-panel .local-invoices-detail { min-width: 0; margin: 0; padding: 18px; border: 1px solid var(--border, #dbe2ea); border-radius: 10px; }
+.local-invoices-panel .local-invoices-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.local-invoices-panel legend { padding: 0 6px; font-weight: 700; }
+.local-invoices-panel label { min-width: 0; margin: 0; display: grid; gap: 7px; line-height: 1.5; }
+.local-invoices-panel input:not([type='checkbox']), .local-invoices-panel select { width: 100%; min-width: 0; min-height: 42px; box-sizing: border-box; padding: 9px 11px; border: 1px solid #94a3b8; border-radius: 7px; background: #fff; color: inherit; font: inherit; }
+.local-invoices-panel .local-invoices-check { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; }
+.local-invoices-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.local-invoices-panel .local-invoices-fields > p,
+.local-invoices-panel .local-invoices-fields > button { grid-column: 1 / -1; }
+.local-invoices-panel .button, .local-invoices-panel .text-button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.local-invoices-panel .local-invoices-review,
+.local-invoices-panel .local-invoices-detail,
+.local-invoices-panel .local-invoices-snapshot { display: grid; gap: 14px; }
+.local-invoices-panel .local-invoices-review { background: #f8fafc; }
+.local-invoices-panel .local-invoices-parties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.local-invoices-panel .local-invoices-parties > p { padding: 12px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; background: #fff; }
+.local-invoices-panel .local-invoices-overflow-note { margin: 0; padding: 12px 14px; border: 1px solid #fed7aa; border-left: 4px solid #c2410c; border-radius: 8px; background: #fff7ed; line-height: 1.5; }
+.local-invoices-panel .local-invoices-overflow-note, .local-invoices-panel .local-invoices-overflow-issued p { font-size: 13px; }
+.local-invoices-panel .local-invoices-pending { display: grid; gap: 12px; padding: 16px; border: 1px solid #fed7aa; border-radius: 8px; background: #fff7ed; }
+.local-invoices-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.local-invoices-panel table { width: 100%; border-collapse: collapse; }
+.local-invoices-panel th, .local-invoices-panel td { padding: 10px 12px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border, #dbe2ea); }
+.local-invoices-panel th { font-size: 12px; line-height: 1.5; font-weight: 700; }
+.local-invoices-panel td:not(:first-child) { white-space: nowrap; }
+.local-invoices-panel td:first-child { min-width: 160px; overflow-wrap: anywhere; }
+.local-invoices-panel small { display: block; margin-top: 4px; color: var(--muted, #64748b); font-size: 12px; }
+.local-invoices-panel summary { padding: 10px 0; cursor: pointer; font-weight: 600; }
+.local-invoices-panel [role='alert'] { padding: 12px 14px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; }
+.local-invoices-panel input:focus-visible, .local-invoices-panel select:focus-visible,
+.local-invoices-panel button:focus-visible, .local-invoices-panel summary:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+@media (max-width: 680px) {
+  .local-invoices-panel.panel { padding: 16px; }
+  .local-invoices-panel .local-invoices-fields, .local-invoices-panel .local-invoices-parties { grid-template-columns: minmax(0, 1fr); }
+  .local-invoices-panel .local-invoices-fields, .local-invoices-panel .local-invoices-review, .local-invoices-panel .local-invoices-detail { padding: 14px; }
+}

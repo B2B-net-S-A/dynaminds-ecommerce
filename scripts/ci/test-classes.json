@@ -1,0 +1,13 @@
+{
+  "$comment": "Ręczne wyjątki dla scripts/ci/classify-tests.mjs (docs/ci/README.md). Klucz = ścieżka testu, wartość = powód. Wpis wygrywa z regułami automatycznymi.",
+  "ciDatabasePort": 55432,
+  "special": {
+    "tests/operational-delivery-consumers.test.ts": "wymaga DYNA_OPERATIONAL_DELIVERY_NATIVE=true i natywnego klastra na porcie 55432 z instalacją operational-delivery"
+  },
+  "quarantine": {},
+  "db": {},
+  "static": {
+    "tests/return-credit207-ordinary-api-acceptance.test.mjs": "testuje sam walidator profilu (port 4100 w helperze to dane testu, nie wymaganie); 23/23 zielone bez bazy 11.11.2026"
+  },
+  "freshDatabase": {}
+}

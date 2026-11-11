@@ -1,0 +1,219 @@
+.replenishment-plans {
+  min-width: 0;
+  max-width: 100%;
+  padding: 20px;
+}
+.replenishment-plans h2,
+.replenishment-plans h3,
+.replenishment-plans h4 {
+  margin-top: 0;
+}
+.replenishment-plans p,
+.replenishment-plans li,
+.replenishment-plans summary {
+  overflow-wrap: anywhere;
+}
+.replenishment-plans .rp-header,
+.replenishment-plans .rp-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.replenishment-plans .rp-tabs,
+.replenishment-plans .rp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block: 14px;
+}
+.replenishment-plans .rp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-block: 14px;
+}
+.replenishment-plans label:not(.rp-check) {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.replenishment-plans label + label {
+  margin-top: 0;
+}
+.replenishment-plans input:not([type='checkbox']),
+.replenishment-plans select,
+.replenishment-plans textarea {
+  width: 100%;
+  min-width: 0;
+}
+.replenishment-plans .rp-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 9px;
+  margin-block: 12px;
+}
+.replenishment-plans .rp-check input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  padding: 0;
+  margin-top: 3px;
+}
+.replenishment-plans fieldset {
+  min-width: 0;
+  border: 1px solid #dbe3ed;
+  border-radius: 9px;
+  margin-block: 16px;
+  padding: 16px;
+}
+.replenishment-plans legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.replenishment-plans .rp-hint,
+.replenishment-plans .rp-error,
+.replenishment-plans .rp-status,
+.replenishment-plans .rp-pending {
+  border-radius: 8px;
+  padding: 12px;
+  margin-block: 12px;
+}
+.replenishment-plans .rp-hint {
+  background: #f8fafc;
+  color: #475569;
+}
+.replenishment-plans .rp-error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+.replenishment-plans .rp-status {
+  background: #f0fdf4;
+  color: #166534;
+}
+.replenishment-plans .rp-pending {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+.replenishment-plans .rp-forecast-summary {
+  background: #eef4fb;
+  border: 1px solid #cbd9ec;
+  border-radius: 8px;
+  padding: 14px;
+  margin-block: 14px;
+}
+.replenishment-plans .rp-forecast-summary p:last-child,
+.replenishment-plans .rp-forecast-controls p:last-child {
+  margin-bottom: 0;
+}
+.replenishment-plans .rp-forecast-controls small {
+  color: #64748b;
+}
+.replenishment-plans .rp-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  background: #eef4fb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-block: 12px;
+}
+.replenishment-plans .rp-table {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-block: 14px;
+}
+.replenishment-plans table {
+  min-width: 900px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.replenishment-plans th,
+.replenishment-plans td {
+  vertical-align: top;
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+.replenishment-plans td small {
+  display: block;
+  color: #64748b;
+  margin-top: 4px;
+}
+.replenishment-plans .rp-row {
+  border: 1px solid #dbe3ed;
+  border-radius: 8px;
+  padding: 12px;
+  margin-block: 10px;
+}
+.replenishment-plans .rp-row summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.replenishment-plans .rp-invalid {
+  border-color: #fecaca;
+}
+.replenishment-plans .rp-facts {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 2fr;
+  gap: 8px 16px;
+  margin-block: 14px;
+}
+.replenishment-plans .rp-facts dt {
+  color: #64748b;
+}
+.replenishment-plans .rp-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.replenishment-plans .rp-history {
+  display: grid;
+  gap: 8px;
+}
+.replenishment-plans .rp-history .button {
+  text-align: left;
+  justify-content: flex-start;
+  white-space: normal;
+}
+.replenishment-plans pre {
+  overflow: auto;
+  max-height: 300px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f8fafc;
+  padding: 10px;
+}
+@media (max-width: 850px) {
+  .replenishment-plans .rp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .replenishment-plans {
+    padding: 14px;
+  }
+  .replenishment-plans .rp-grid,
+  .replenishment-plans .rp-facts {
+    grid-template-columns: 1fr;
+  }
+  .replenishment-plans .rp-header,
+  .replenishment-plans .rp-heading {
+    flex-direction: column;
+  }
+}
+
+.replenishment-plans .rp-destination {
+  border-top: 1px solid #dbe3ed;
+  padding-block: 14px;
+}
+.replenishment-plans .rp-destination select {
+  max-width: 720px;
+}
+.replenishment-plans .rp-append-detail {
+  background: #f8fafc;
+  border-left: 3px solid #94a3b8;
+  padding: 12px;
+  margin-block: 12px;
+}

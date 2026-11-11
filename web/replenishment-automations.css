@@ -1,0 +1,149 @@
+.replenishment-automations {
+  min-width: 0;
+  padding: 20px;
+}
+.replenishment-automations p,
+.replenishment-automations li,
+.replenishment-automations dd {
+  overflow-wrap: anywhere;
+}
+.replenishment-automations .ra-header,
+.replenishment-automations .ra-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  margin-block: 14px;
+}
+.replenishment-automations .ra-header {
+  justify-content: space-between;
+}
+.replenishment-automations .ra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-block: 14px;
+}
+.replenishment-automations label:not(.ra-check) {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.replenishment-automations label + label {
+  margin-top: 0;
+}
+.replenishment-automations input:not([type='checkbox']),
+.replenishment-automations select {
+  width: 100%;
+  min-width: 0;
+}
+.replenishment-automations .ra-check {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-block: 12px;
+}
+.replenishment-automations .ra-check input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  padding: 0;
+  margin-top: 3px;
+}
+.replenishment-automations fieldset,
+.replenishment-automations .ra-card {
+  border: 1px solid #dbe3ed;
+  border-radius: 8px;
+  padding: 14px;
+  margin-block: 14px;
+  min-width: 0;
+}
+.replenishment-automations legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.replenishment-automations h3,
+.replenishment-automations h4 {
+  margin-top: 0;
+}
+.replenishment-automations .ra-hint,
+.replenishment-automations .ra-error,
+.replenishment-automations .ra-status,
+.replenishment-automations .ra-pending {
+  padding: 12px;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.replenishment-automations .ra-hint {
+  background: #f8fafc;
+  color: #475569;
+}
+.replenishment-automations .ra-error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+.replenishment-automations .ra-status {
+  background: #f0fdf4;
+  color: #166534;
+}
+.replenishment-automations .ra-pending {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+.replenishment-automations .ra-table {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-block: 14px;
+}
+.replenishment-automations table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+.replenishment-automations th,
+.replenishment-automations td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.replenishment-automations td small {
+  display: block;
+  color: #64748b;
+  margin-top: 4px;
+}
+.replenishment-automations .ra-facts {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 2fr;
+  gap: 8px 16px;
+}
+.replenishment-automations dt {
+  color: #64748b;
+}
+.replenishment-automations dd {
+  margin: 0;
+}
+.replenishment-automations .ra-rule-list {
+  display: grid;
+  gap: 8px;
+}
+.replenishment-automations .ra-rule-list .button {
+  text-align: left;
+  white-space: normal;
+  justify-content: flex-start;
+}
+@media (max-width: 850px) {
+  .replenishment-automations .ra-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .replenishment-automations {
+    padding: 14px;
+  }
+  .replenishment-automations .ra-grid,
+  .replenishment-automations .ra-facts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,196 @@
+.report-analytics {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  --ra-bar: #2563eb;
+  --ra-bar-negative: #b91c1c;
+  --ra-axis: #94a3b8;
+  --ra-muted: #64748b;
+}
+.report-analytics h2,
+.report-analytics h3 {
+  margin: 0 0 10px;
+}
+.report-analytics p {
+  line-height: 1.55;
+  margin: 6px 0 10px;
+}
+.report-analytics-intro,
+.report-analytics-panel {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 0;
+}
+.report-analytics-panel {
+  display: grid;
+  gap: 16px;
+}
+.report-analytics-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  align-items: end;
+  gap: 12px;
+}
+.report-analytics-filters label,
+.report-analytics-inline {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.report-analytics-filters input,
+.report-analytics-filters select,
+.report-analytics-inline select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 40px;
+  border: 1px solid var(--border, #d5dce5);
+  border-radius: 7px;
+  padding: 8px 10px;
+  background: #fff;
+  color: inherit;
+}
+.report-analytics-inline {
+  max-width: 220px;
+}
+.report-analytics-tabs,
+.report-analytics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.report-analytics-actions span,
+.report-analytics-muted,
+.report-analytics-sub {
+  color: var(--ra-muted);
+  font-size: 13px;
+}
+.report-analytics-sub {
+  display: block;
+}
+.report-analytics-note {
+  border-left: 3px solid #d97706;
+  background: #fffbeb;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+.report-analytics-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.report-analytics-empty {
+  border: 1px dashed var(--border, #cbd5e1);
+  border-radius: 12px;
+  padding: 20px;
+  color: var(--ra-muted);
+}
+.report-analytics-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+.report-analytics-tile {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.report-analytics-tile span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ra-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.report-analytics-tile strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.report-analytics-tile small {
+  color: var(--ra-muted);
+}
+.report-analytics-chart {
+  margin: 0;
+}
+.report-analytics-chart figcaption {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.report-analytics-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.report-analytics-chart .bar {
+  fill: var(--ra-bar);
+}
+.report-analytics-chart .bar.negative {
+  fill: var(--ra-bar-negative);
+}
+.report-analytics-chart .bar:hover {
+  opacity: 0.8;
+}
+.report-analytics-chart .axis {
+  stroke: var(--ra-axis);
+}
+.report-analytics-chart .tick,
+.report-analytics-chart .max {
+  font-size: 11px;
+  fill: var(--ra-muted);
+}
+.report-analytics-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.report-analytics-table {
+  overflow-x: auto;
+}
+.report-analytics-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.report-analytics-table th,
+.report-analytics-table td {
+  text-align: left;
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--border, #eef2f7);
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+.report-analytics-table tfoot th {
+  border-top: 2px solid var(--border, #d5dce5);
+}
+.report-analytics-table .nowrap {
+  white-space: nowrap;
+}
+.report-analytics-table .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.report-analytics details summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+/* ANALYTICS-002: the comparison switch is a plain checkbox next to its text. */
+.report-analytics-filters label.report-analytics-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+.report-analytics-filters .report-analytics-check input {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+}

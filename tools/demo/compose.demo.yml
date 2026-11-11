@@ -1,0 +1,7 @@
+# Overlay for the demo instance (tools/demo/demo.sh): the demo PostgreSQL container also publishes the demo app.
+# The release CLI listens on 127.0.0.1:<port> inside this container's network namespace; tools/demo/forward.mjs
+# (same namespace) relays 0.0.0.0:14300 -> 127.0.0.1:<port>, published here on the host's loopback only.
+services:
+  pg:
+    ports:
+      - "127.0.0.1:${DEMO_HTTP_PORT:-4300}:14300"

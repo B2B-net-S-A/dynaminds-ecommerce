@@ -1,0 +1,2974 @@
+{
+  "schema": "dynaminds-base-api-order-return-contracts/v1",
+  "as_of": "2026-10-17",
+  "created_at": "2026-10-17T18:00:37.637Z",
+  "family": "Order returns",
+  "method_count": 21,
+  "status": "individual_public_documentation_reviewed_with_explicit_unknowns",
+  "family_index_enumerated": true,
+  "full_contract_inventory_complete": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "provider_account_requests": 0,
+  "scope_snapshot_modified": false,
+  "index": {
+    "path": "docs/parity/base-api-methods.v1.json",
+    "sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+    "required_methods": [
+      "addOrderReturn",
+      "getOrderReturnExtraFields",
+      "getOrderReturns",
+      "setOrderReturnFields",
+      "addOrderReturnProduct",
+      "deleteOrderReturnProduct",
+      "setOrderReturnProductFields",
+      "addOrderReturnStatus",
+      "addOrderReturnStatusGroup",
+      "deleteOrderReturnStatus",
+      "deleteOrderReturnStatusGroup",
+      "getOrderReturnProductStatuses",
+      "getOrderReturnReasonsList",
+      "getOrderReturnStatusGroups",
+      "getOrderReturnStatusList",
+      "setOrderReturnStatus",
+      "setOrderReturnStatuses",
+      "getOrderReturnPaymentsHistory",
+      "setOrderReturnRefund",
+      "getOrderReturnJournalList",
+      "runOrderReturnMacroTrigger"
+    ]
+  },
+  "sources": {
+    "public_origin": "https://api.baselinker.com",
+    "capture_bundle": {
+      "path": "docs/parity/base-api-return-sources-20261017.json.gz",
+      "bytes": 211873,
+      "sha256": "59834def63733ad30e74b98cfa3c2d2e562b1dbde1fdbe9035bd7c18875baae6",
+      "decoded_sha256": "5e79c8fc23042aee05895f8602b35cc91f4b2c4c4a27e1a8c6a63185770e39db"
+    },
+    "manifest_sha256": "0fd7cd609ae02b8193b58220f3be8c3b6841138f3bca143d940125f863ec985b",
+    "capture_manifest_note": "Acquisition manifest digest retained for audit; the portable public source bundle contains all21 captured documents, URLs, timestamps and individual hashes.",
+    "capture_window_utc": {
+      "first": "2026-10-17T17:55:52.930924+00:00",
+      "last": "2026-10-17T17:55:55.890599+00:00"
+    }
+  },
+  "request_envelope_from_documented_examples": {
+    "http_method": "POST",
+    "url": "https://api.baselinker.com/connector.php",
+    "authentication_header": "X-BLToken",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON-encoded parameters"
+    },
+    "executed": false
+  },
+  "review_boundaries": [
+    "Dokumentacja metod nie jest testem dostawcy ani pomiarem zgodności implementacji.",
+    "Required:true tylko z jawnego opisu; false z optional/omission albo oznaczonego przykładu; null oznacza brak jednoznacznego kontraktu.",
+    "Typy int/float/decimal/varchar i nazwy pól zachowano jako opis API, bez narzucania nieudokumentowanego JSON coercion/precision.",
+    "Zapisano pełny zestaw nazw/typów z tabel wejść/wyjść i jawnie opisane zagnieżdżone pola; przykład nie zastępuje tabeli w miejscu rozbieżności.",
+    "Mapowanie do kodu wskazuje pokrewne procesy i konkretne braki. Nie nadaje pokrycia Base API ani zgody na wykonywanie zewnętrznych mutacji."
+  ],
+  "local_source_snapshot": {
+    "git_head": "965335d9eff3a2f586e7c7085f7628d9de6d4e9d",
+    "file_hashes_are_authoritative": true,
+    "files": [
+      {
+        "path": "server/return-routes.ts",
+        "bytes": 3785,
+        "sha256": "43c1fdfd2a3586c1fe9f08bef36ad7346c68fcc2c1d8ace4bcd09f28488cd9b0"
+      },
+      {
+        "path": "server/return-query.ts",
+        "bytes": 4516,
+        "sha256": "6370b5681d89a712e9aa763b6c7b75c5b82a0fefb39f4baae959d26cdcf508e6"
+      },
+      {
+        "path": "server/returns.ts",
+        "bytes": 38350,
+        "sha256": "cce7b2cb21659c1637a44f5394f28cb74aadd9fed1a00ecabd2acad8ed42c7a0"
+      },
+      {
+        "path": "server/return-destination-statuses-routes.ts",
+        "bytes": 3184,
+        "sha256": "a76ad053c9af82a33ec43e92029955f5df25c937308d6e49a6aca528ba5f9d0f"
+      },
+      {
+        "path": "server/return-destination-statuses-schema.ts",
+        "bytes": 2951,
+        "sha256": "a542ef5f93eb6ac3d8d88a20dd2bfba5c362861554df7b6607553c65875485ea"
+      },
+      {
+        "path": "server/return-assistant-routes.ts",
+        "bytes": 3746,
+        "sha256": "325a51542198dbfc46281505c0b9dc988e577c549d81abf9d3f97fd8e4af348c"
+      },
+      {
+        "path": "server/return-credit206-routes.ts",
+        "bytes": 4313,
+        "sha256": "6b6dcb95d3c8375a5d3e155f2283ba814461360792c8badb575ff185d008db14"
+      },
+      {
+        "path": "server/developer-api.ts",
+        "bytes": 229352,
+        "sha256": "73b6b9d18abecae79e5e13fffdeb7a620deab9eb06f2bf865172bc3f1659b86b"
+      },
+      {
+        "path": "server/automation-schedule-routes.ts",
+        "bytes": 8440,
+        "sha256": "bce3ec90cfeb8f49b67b7d9ab5305e94ad3e7447b0690d6440e7b856e70d64ed"
+      },
+      {
+        "path": "server/app.ts",
+        "bytes": 102121,
+        "sha256": "5e8c69022baf302b4a68d28091f9d2729c722425b1828e8babf5d061e44607b7"
+      }
+    ]
+  },
+  "contracts": [
+    {
+      "id": "BASE-API-addOrderReturn",
+      "method": "addOrderReturn",
+      "group": "Returns",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderReturn",
+        "retrieved_at": "2026-10-17T17:55:53.065341+00:00",
+        "http_status": 200,
+        "sha256": "cc6fdfd5d9db7f819f0acda8b48e146b747e5b143232703ef385281389edbee3",
+        "bytes": 57306
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "order_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "custom_source_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "reference_number",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "date_add",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "currency",
+          "type_documented": "char(3)",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "refunded",
+          "type_documented": "bool",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "admin_comments",
+          "type_documented": "varchar(200)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 200
+        },
+        {
+          "name": "email",
+          "type_documented": "varchar(150)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 150
+        },
+        {
+          "name": "phone",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "user_login",
+          "type_documented": "varchar(30)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 30
+        },
+        {
+          "name": "delivery_price",
+          "type_documented": "float",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "delivery_fullname",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_company",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_address",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_postcode",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_city",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_state",
+          "type_documented": "varchar(20)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 20
+        },
+        {
+          "name": "delivery_country_code",
+          "type_documented": "char(2)",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "extra_field_1",
+          "type_documented": "varchar(50)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "extra_field_2",
+          "type_documented": "varchar(50)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "custom_extra_fields",
+          "type_documented": "array",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "value_shapes": {
+            "key": "extra_field_id",
+            "text": "string",
+            "delete_value": "",
+            "file": {
+              "title_type": "varchar(40)",
+              "file_type": "binary with data: prefix",
+              "documented_body_limit": "2MB; exact binary-vs-encoded byte accounting not specified"
+            }
+          }
+        },
+        {
+          "name": "products",
+          "type_documented": "array",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "element_fields": [
+            {
+              "name": "order_product_id",
+              "type_documented": "int",
+              "required": false
+            },
+            {
+              "name": "storage",
+              "type_documented": "varchar",
+              "required": null,
+              "documented_enum": [
+                "db",
+                "shop",
+                "warehouse"
+              ]
+            },
+            {
+              "name": "storage_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "product_id",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "variant_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "name",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "sku",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "ean",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "location",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "warehouse_id",
+              "type_documented": "int",
+              "required": false
+            },
+            {
+              "name": "attributes",
+              "type_documented": "varchar",
+              "required": null
+            },
+            {
+              "name": "price_brutto",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "tax_rate",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "quantity",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "weight",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "status_id",
+              "type_documented": "int",
+              "required": false
+            },
+            {
+              "name": "return_reason_id",
+              "type_documented": "int",
+              "required": null
+            }
+          ]
+        },
+        {
+          "name": "refund_account_number",
+          "type_documented": "varchar(50)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "refund_iban",
+          "type_documented": "varchar(34)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 34
+        },
+        {
+          "name": "refund_swift",
+          "type_documented": "varchar(11)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 11
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "return_id",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "custom_source_id pominięty: domyślne źródło zwrotu.",
+        "products[].storage: db/shop/warehouse; storage_id=0 oznacza własny magazyn Base.",
+        "Puste product_id/variant_id oznaczają nieznany identyfikator; warehouse_id i status_id mogą pochodzić z domyślnej konfiguracji.",
+        "custom_extra_fields: mapa ID→wartość; pusty string usuwa wartość; plik title≤40 znaków, body w formacie data:, limit 2 MB.",
+        "tax_rate: 0–100 oraz wyjątki −1,−0.02,−0.03; refunded=1 oznacza już zrefundowany zwrot."
+      ],
+      "documentation_inconsistencies": [
+        "Wariant ma typ int tutaj, lecz varchar(30) w metodach produktu i w odpowiedzi getOrderReturns.",
+        "Brak jawnej deklaracji required dla wielu pól; nie wnioskować jej wyłącznie z braku słowa optional."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:80",
+          "server/returns.ts:32"
+        ],
+        "related_local_routes": [
+          "POST /api/orders/:id/returns"
+        ],
+        "remaining_gaps": [
+          "Lokalny zwrot wymaga powiązanego zamówienia UUID, client_key, reason i istniejących item_id; Base dopuszcza brak order_id i podaje rozbudowane pola kupującego/źródła/produktu.",
+          "Nie potwierdzono importu ani mapowania liczbowych Base return_id/status_id do lokalnych identyfikatorów."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnExtraFields",
+      "method": "getOrderReturnExtraFields",
+      "group": "Returns",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnExtraFields",
+        "retrieved_at": "2026-10-17T17:55:52.930924+00:00",
+        "http_status": 200,
+        "sha256": "bc2a15f3b61b6885a91a9e93829e58008034633cbc172f7e5e7542102258fd3f",
+        "bytes": 50265
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "extra_fields",
+          "type_documented": "array",
+          "collection_shape": "ambiguous_keyed_map_in_description_vs_list_in_example"
+        },
+        {
+          "path": "extra_fields[].extra_field_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "extra_fields[].name",
+          "type_documented": "text"
+        },
+        {
+          "path": "extra_fields[].editor_type",
+          "type_documented": "text"
+        },
+        {
+          "path": "extra_fields[].options",
+          "type_documented": "array",
+          "required": false,
+          "required_basis": "explicit_optional",
+          "applies_to_editor_types": [
+            "select",
+            "checkbox",
+            "radio"
+          ]
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Edytory: text, number, select, checkbox, radio, date, file.",
+        "options dotyczy select/checkbox/radio; definicje nie są wartościami zwrotu."
+      ],
+      "documentation_inconsistencies": [
+        "Opis mówi o kluczowanej mapie ID pola do definicji, przykład pokazuje listę obiektów; kształt kolekcji wymaga potwierdzenia."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:1",
+          "server/returns.ts:32"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie znaleziono dedykowanego słownika dodatkowych pól zwrotów w przejrzanych modułach RMA.",
+          "Pola dodatkowe zamówień nie dowodzą konfigurowalnych pól zwrotów, typów edytora ani plików."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturns",
+      "method": "getOrderReturns",
+      "group": "Returns",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturns",
+        "retrieved_at": "2026-10-17T17:55:53.150232+00:00",
+        "http_status": 200,
+        "sha256": "58042d5b838ba07c5abfe9cc4b7871da4a0a9c981a681cc4ad0d9790ecf40e92",
+        "bytes": 61860
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "order_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "successful_documentation_example_omits_field"
+        },
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "successful_documentation_example_omits_field"
+        },
+        {
+          "name": "date_from",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "id_from",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "successful_documentation_example_omits_field"
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "filter_order_return_source",
+          "type_documented": "varchar(20)",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_max_characters": 20
+        },
+        {
+          "name": "filter_order_return_source_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "include_custom_extra_fields",
+          "type_documented": "bool",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_default": false
+        },
+        {
+          "name": "include_connect_data",
+          "type_documented": "bool",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_default": false
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "returns",
+          "type_documented": "array"
+        },
+        {
+          "path": "returns[].return_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].order_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].shop_order_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].external_order_id",
+          "type_documented": "varchar(50)",
+          "documented_max_characters": 50
+        },
+        {
+          "path": "returns[].reference_number",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].order_return_source",
+          "type_documented": "varchar(20)",
+          "documented_max_characters": 20
+        },
+        {
+          "path": "returns[].order_return_source_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].status_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].date_add",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].date_in_status",
+          "type_documented": "int"
+        },
+        {
+          "path": "returns[].user_login",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].currency",
+          "type_documented": "char(3)"
+        },
+        {
+          "path": "returns[].refunded",
+          "type_documented": "char(3)"
+        },
+        {
+          "path": "returns[].email",
+          "type_documented": "varchar(150)",
+          "documented_max_characters": 150
+        },
+        {
+          "path": "returns[].phone",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_price",
+          "type_documented": "float"
+        },
+        {
+          "path": "returns[].delivery_fullname",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_company",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_address",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_postcode",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_city",
+          "type_documented": "varchar(100)",
+          "documented_max_characters": 100
+        },
+        {
+          "path": "returns[].delivery_state",
+          "type_documented": "varchar(20)",
+          "documented_max_characters": 20
+        },
+        {
+          "path": "returns[].delivery_country",
+          "type_documented": "varchar(50)",
+          "documented_max_characters": 50
+        },
+        {
+          "path": "returns[].delivery_country_code",
+          "type_documented": "char(2)"
+        },
+        {
+          "path": "returns[].extra_field_1",
+          "type_documented": "varchar(50)",
+          "documented_max_characters": 50
+        },
+        {
+          "path": "returns[].extra_field_2",
+          "type_documented": "varchar(50)",
+          "documented_max_characters": 50
+        },
+        {
+          "path": "returns[].custom_extra_fields",
+          "type_documented": "array",
+          "value_shapes": {
+            "key": "extra_field_id",
+            "file": {
+              "title_type": "varchar(40)",
+              "url_type": "url"
+            }
+          }
+        },
+        {
+          "path": "returns[].admin_comments",
+          "type_documented": "varchar(200)",
+          "documented_max_characters": 200
+        },
+        {
+          "path": "returns[].delivery_package_module",
+          "type_documented": "varchar(20)",
+          "documented_max_characters": 20
+        },
+        {
+          "path": "returns[].delivery_package_nr",
+          "type_documented": "varchar(40)",
+          "documented_max_characters": 40
+        },
+        {
+          "path": "returns[].connect_data",
+          "type_documented": "array",
+          "element_fields": [
+            {
+              "name": "connect_integration_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "connect_contractor_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "connect_sale_id",
+              "type_documented": "int",
+              "required": null
+            }
+          ]
+        },
+        {
+          "path": "returns[].products",
+          "type_documented": "array",
+          "element_fields": [
+            {
+              "name": "storage",
+              "type_documented": "text",
+              "required": null,
+              "documented_enum": [
+                "db",
+                "shop",
+                "warehouse"
+              ]
+            },
+            {
+              "name": "storage_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "order_return_product_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "order_product_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "product_id",
+              "type_documented": "varchar(50)",
+              "required": null,
+              "documented_max_characters": 50
+            },
+            {
+              "name": "variant_id",
+              "type_documented": "varchar(30)",
+              "required": null,
+              "documented_max_characters": 30
+            },
+            {
+              "name": "name",
+              "type_documented": "varchar(200)",
+              "required": null,
+              "documented_max_characters": 200
+            },
+            {
+              "name": "sku",
+              "type_documented": "varchar(50)",
+              "required": null,
+              "documented_max_characters": 50
+            },
+            {
+              "name": "ean",
+              "type_documented": "varchar(32)",
+              "required": null,
+              "documented_max_characters": 32
+            },
+            {
+              "name": "location",
+              "type_documented": "varchar(50)",
+              "required": null,
+              "documented_max_characters": 50
+            },
+            {
+              "name": "warehouse_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "auction_id",
+              "type_documented": "varchar(50)",
+              "required": null,
+              "documented_max_characters": 50
+            },
+            {
+              "name": "attributes",
+              "type_documented": "varchar(350)",
+              "required": null,
+              "documented_max_characters": 350
+            },
+            {
+              "name": "price_brutto",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "tax_rate",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "quantity",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "weight",
+              "type_documented": "float",
+              "required": null
+            },
+            {
+              "name": "bundle_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "status_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "return_reason_id",
+              "type_documented": "int",
+              "required": null
+            },
+            {
+              "name": "return_reason_comment",
+              "type_documented": "varchar(500)",
+              "required": null,
+              "documented_max_characters": 500
+            }
+          ]
+        },
+        {
+          "path": "returns[].order_return_account_number",
+          "type_documented": "varchar(50)",
+          "documented_max_characters": 50
+        },
+        {
+          "path": "returns[].order_return_iban",
+          "type_documented": "varchar(34)",
+          "documented_max_characters": 34
+        },
+        {
+          "path": "returns[].order_return_swift",
+          "type_documented": "varchar(11)",
+          "documented_max_characters": 11
+        },
+        {
+          "path": "returns[].fulfillment_status",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": true,
+        "max_items": 100,
+        "parameters": [
+          "date_from",
+          "id_from"
+        ],
+        "next_cursor_field": null,
+        "unknown": [
+          "Inkluzywność date_from/id_from, stabilne sortowanie, reguła kolejnej strony i zachowanie remisów nie są opisane."
+        ]
+      },
+      "documented_rules": [
+        "Maksimum100 zwrotów w odpowiedzi.",
+        "filter_order_return_source_id wymaga filter_order_return_source; samo source_id nie ma globalnej unikalności.",
+        "include_custom_extra_fields i include_connect_data domyślnie false.",
+        "products[].order_product_id=0: brak powiązania z pozycją pierwotnego zamówienia; bundle_id=0: brak pochodzenia z rozbicia zestawu.",
+        "fulfillment_status:0 active,5 accepted,1 done,2 canceled.",
+        "Plik dodatkowy zwracany jako title/url, nie body."
+      ],
+      "documentation_inconsistencies": [
+        "Pole refunded opisano jako char(3), przykład ma wartość0.00; znaczenie/typ wymagają potwierdzenia.",
+        "Tabela podaje order_return_account_number/order_return_iban/order_return_swift, przykład JSON używa refund_account_number/refund_iban/refund_swift.",
+        "connect_data opisano jako array, przykład przedstawia obiekt; zachowano tę niejednoznaczność."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:61",
+          "server/return-query.ts:11"
+        ],
+        "related_local_routes": [
+          "GET /api/returns",
+          "GET /api/orders/:id/returns",
+          "GET /api/returns/:id"
+        ],
+        "remaining_gaps": [
+          "Lokalny limit/after i kursor timestamp+UUID różnią się od Base date_from/id_from i odpowiedzi returns.",
+          "Nie potwierdzono filtrów źródła, Base Connect ani pełnego zestawu pól odpowiedzi Base."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-setOrderReturnFields",
+      "method": "setOrderReturnFields",
+      "group": "Returns",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReturnFields",
+        "retrieved_at": "2026-10-17T17:55:52.931303+00:00",
+        "http_status": 200,
+        "sha256": "6a61bcbf4f122b1350ed0f4a6dc885adc6a5594c59badcb1756b4ce318db75e6",
+        "bytes": 51423
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": true,
+          "required_basis": "explicit_required"
+        },
+        {
+          "name": "admin_comments",
+          "type_documented": "varchar(200)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 200
+        },
+        {
+          "name": "email",
+          "type_documented": "varchar(150)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 150
+        },
+        {
+          "name": "phone",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "user_login",
+          "type_documented": "varchar(30)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 30
+        },
+        {
+          "name": "delivery_price",
+          "type_documented": "float",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "delivery_fullname",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_company",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_address",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_postcode",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_city",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_state",
+          "type_documented": "varchar(100)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "delivery_country_code",
+          "type_documented": "char(2)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "extra_field_1",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "extra_field_2",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "custom_extra_fields",
+          "type_documented": "array",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "value_shapes": {
+            "key": "extra_field_id",
+            "text": "string",
+            "delete_value": "",
+            "file": {
+              "title_type": "varchar(40)",
+              "file_type": "binary with data: prefix",
+              "documented_body_limit": "2MB; exact binary-vs-encoded byte accounting not specified"
+            }
+          }
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Patch: tylko przesłane pola są zmieniane; pominięte zachować.",
+        "custom_extra_fields: pusty string usuwa wartość; plik title≤40 znaków, body data:, limit 2 MB."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:1",
+          "server/returns.ts:32"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "W przejrzanym module brak ogólnego patch nagłówka zwrotu odpowiadającego temu kontraktowi.",
+          "Nie mapować tego wywołania na decyzję/przyjęcie zwrotu: to inne operacje."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-addOrderReturnProduct",
+      "method": "addOrderReturnProduct",
+      "group": "Return products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderReturnProduct",
+        "retrieved_at": "2026-10-17T17:55:53.368997+00:00",
+        "http_status": 200,
+        "sha256": "ee1b4063ef03188c76746b3769489838cda65ed93c3c20cd13ff7763f18ad85b",
+        "bytes": 52885
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": true,
+          "required_basis": "explicit_required"
+        },
+        {
+          "name": "order_product_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "storage",
+          "type_documented": "varchar(9)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 9,
+          "documented_enum": [
+            "db",
+            "shop",
+            "warehouse"
+          ]
+        },
+        {
+          "name": "storage_id",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "product_id",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "variant_id",
+          "type_documented": "varchar(30)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 30
+        },
+        {
+          "name": "auction_id",
+          "type_documented": "varchar(20)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 20
+        },
+        {
+          "name": "name",
+          "type_documented": "varchar(200)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 200
+        },
+        {
+          "name": "sku",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "ean",
+          "type_documented": "varchar(32)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 32
+        },
+        {
+          "name": "location",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "warehouse_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "attributes",
+          "type_documented": "varchar(350)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 350
+        },
+        {
+          "name": "price_brutto",
+          "type_documented": "float",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "tax_rate",
+          "type_documented": "float",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "quantity",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "weight",
+          "type_documented": "decimal(10,2)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_decimal": {
+            "precision": 10,
+            "scale": 2
+          }
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "return_reason_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "order_return_product_id",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "return_id jest jedynym jawnie wymaganym polem; dokumentacja określa pozostałe jako opcjonalne.",
+        "storage:db/shop/warehouse; warehouse_id domyślnie z istniejących produktów zwrotu, następnie ze źródła zwrotu.",
+        "status_id domyślnie z ustawień użytkownika; tax_rate ma wyjątki −1/−0.02/−0.03."
+      ],
+      "documentation_inconsistencies": [
+        "storage_id i variant_id opisano jako varchar, przykład przesyła liczby; nie zakładamy reguł konwersji JSON."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/returns.ts:32",
+          "server/return-routes.ts:80"
+        ],
+        "related_local_routes": [
+          "POST /api/orders/:id/returns"
+        ],
+        "remaining_gaps": [
+          "Lokalne pozycje są częścią żądania utworzenia RMA; brak potwierdzonego późniejszego dodania dowolnej pozycji do istniejącego zwrotu.",
+          "Base przechowuje własne metadane SKU/ceny/źródła; lokalna pozycja referencjonuje istniejący item_id."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-deleteOrderReturnProduct",
+      "method": "deleteOrderReturnProduct",
+      "group": "Return products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrderReturnProduct",
+        "retrieved_at": "2026-10-17T17:55:53.394172+00:00",
+        "http_status": 200,
+        "sha256": "3854be9702f18b0c9a05d7613182f1e7a47a6d6d969739ee57c450662a99b399",
+        "bytes": 48771
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "order_return_product_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:1",
+          "server/returns.ts:32"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie znaleziono endpointu usunięcia jednej pozycji istniejącego RMA w przejrzanych routes.",
+          "Usunięcie danych nie może omijać istniejących rezerwacji, audytu i skutków fizycznych."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-setOrderReturnProductFields",
+      "method": "setOrderReturnProductFields",
+      "group": "Return products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReturnProductFields",
+        "retrieved_at": "2026-10-17T17:55:54.551576+00:00",
+        "http_status": 200,
+        "sha256": "cb4fa86f104b1e08acc671027059c93d70f61286a39c567679b55145150965ed",
+        "bytes": 51936
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": true,
+          "required_basis": "explicit_required"
+        },
+        {
+          "name": "order_return_product_id",
+          "type_documented": "int",
+          "required": true,
+          "required_basis": "explicit_required"
+        },
+        {
+          "name": "storage",
+          "type_documented": "varchar(9)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 9,
+          "documented_enum": [
+            "db",
+            "shop",
+            "warehouse"
+          ]
+        },
+        {
+          "name": "storage_id",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "product_id",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "variant_id",
+          "type_documented": "varchar(30)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 30
+        },
+        {
+          "name": "auction_id",
+          "type_documented": "varchar(20)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 20
+        },
+        {
+          "name": "name",
+          "type_documented": "varchar(200)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 200
+        },
+        {
+          "name": "sku",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "ean",
+          "type_documented": "varchar(32)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 32
+        },
+        {
+          "name": "location",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "warehouse_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "attributes",
+          "type_documented": "varchar(350)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_max_characters": 350
+        },
+        {
+          "name": "price_brutto",
+          "type_documented": "float",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "tax_rate",
+          "type_documented": "float",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "quantity",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "weight",
+          "type_documented": "decimal(10,2)",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields",
+          "documented_decimal": {
+            "precision": 10,
+            "scale": 2
+          }
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        },
+        {
+          "name": "return_reason_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "method_documents_omitted_fields"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Patch zachowuje pominięte pola; wymagane return_id i order_return_product_id.",
+        "storage:db/shop/warehouse; tax_rate ma wyjątki −1/−0.02/−0.03."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:1",
+          "server/returns.ts:44"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Przyjęcie accepted/restocked to proces fizyczny, nie dowód edycji ceny/SKU/quantity/status_id/reason_id pojedynczej pozycji.",
+          "Nie potwierdzono zgodnego PATCH pozycji ani zachowania pominiętych pól."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-addOrderReturnStatus",
+      "method": "addOrderReturnStatus",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderReturnStatus",
+        "retrieved_at": "2026-10-17T17:55:53.631642+00:00",
+        "http_status": 200,
+        "sha256": "65612b57998ef5c936319267067cf0dd93d55359914fd5265401ce3a5ec46051",
+        "bytes": 50111
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "name",
+          "type_documented": "varchar(100)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 100
+        },
+        {
+          "name": "name_for_customer",
+          "type_documented": "text",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "color",
+          "type_documented": "varchar(7)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 7
+        },
+        {
+          "name": "group_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "status_id",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "status_id podany: update; pusty/pominięty:create.",
+        "Nowy status na końcu swojej grupy; color ma format #RRGGBB.",
+        "name_for_customer: zwykły tekst albo JSON-encoded string mapa języków; łączny serialized JSON ≤1000 znaków; create bez wartości używa name.",
+        "group_id pominięty:create do głównej grupy, update zachowuje istniejącą."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-routes.ts:7",
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [
+          "POST /api/return-assistant/statuses/previews",
+          "POST /api/return-assistant/statuses/previews/:id/commit"
+        ],
+        "remaining_gaps": [
+          "Status destinations opisuje accept/reject i sale/custody/none; nie jest potwierdzonym odpowiednikiem statusu nagłówka Base.",
+          "Brak potwierdzenia Base group_id, name_for_customer z językami, kolejności i create/update przez status_id."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-addOrderReturnStatusGroup",
+      "method": "addOrderReturnStatusGroup",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderReturnStatusGroup",
+        "retrieved_at": "2026-10-17T17:55:53.714660+00:00",
+        "http_status": 200,
+        "sha256": "94ff0ad14943ab0b73c5a33b5939507c0fd2c5ce8dae296e66d7422bc82924a1",
+        "bytes": 49018
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "group_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission"
+        },
+        {
+          "name": "name",
+          "type_documented": "varchar(15)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 15
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "group_id",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "group_id podany:update; pusty/pominięty:create.",
+        "name ma limit 15 znaków."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie potwierdzono grup statusów zwrotów, main group ani upsert przez group_id."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-deleteOrderReturnStatus",
+      "method": "deleteOrderReturnStatus",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrderReturnStatus",
+        "retrieved_at": "2026-10-17T17:55:53.750349+00:00",
+        "http_status": 200,
+        "sha256": "e418f5bb445d5979dd6b16f49e1ee6403101c14edc814d4bf5f87e3e35dd583e",
+        "bytes": 48946
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "target_status_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Wszystkie zwroty usuwanego statusu przechodzą do target_status_id; target różny od usuwanego.",
+        "Nie można usunąć primary/default status."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-routes.ts:7",
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie potwierdzono usuwania statusu Base z atomową migracją wszystkich zwrotów do target_status_id i ochroną primary.",
+          "Dezaktywacja lokalnego statusu destinations nie dowodzi tej semantyki."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-deleteOrderReturnStatusGroup",
+      "method": "deleteOrderReturnStatusGroup",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrderReturnStatusGroup",
+        "retrieved_at": "2026-10-17T17:55:54.241162+00:00",
+        "http_status": 200,
+        "sha256": "3f37924a995cd491a02ae57cdf9e3a0b9f816150a56bedf7cb9e616862f559f3",
+        "bytes": 48678
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "group_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Statusy usuwanej grupy przenoszone do głównej; nie można usunąć głównej grupy."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie potwierdzono grup, migracji statusów do main group ani zakazu usunięcia main group."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnProductStatuses",
+      "method": "getOrderReturnProductStatuses",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnProductStatuses",
+        "retrieved_at": "2026-10-17T17:55:54.396022+00:00",
+        "http_status": 200,
+        "sha256": "3a2e9067d43f62fa35907e23b6feed5a1642de8c069a1d71bc0dc55e3a28e580",
+        "bytes": 49199
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "order_return_product_statuses",
+          "type_documented": "array"
+        },
+        {
+          "path": "order_return_product_statuses[].status_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "order_return_product_statuses[].name",
+          "type_documented": "text"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [],
+      "documentation_inconsistencies": [
+        "Opis odsyła do setOrderReturnFields, chociaż ten nie dokumentuje statusu produktu; nie zakładać kompletności tego odnośnika."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-routes.ts:26",
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [
+          "GET /api/return-assistant/statuses"
+        ],
+        "remaining_gaps": [
+          "Istnieje lista własnych statusów destinations; ich rola i UUID różnią się od słownika Base status_id/name.",
+          "Wymagana jawna mapa semantyki i przypisania do pozycji, bez utożsamiania z nagłówkiem zwrotu."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnReasonsList",
+      "method": "getOrderReturnReasonsList",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnReasonsList",
+        "retrieved_at": "2026-10-17T17:55:54.248805+00:00",
+        "http_status": 200,
+        "sha256": "82024d74d800667796805ad30932658e54b5d4271078962a0ca1cdb7a738933e",
+        "bytes": 49382
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "return_reasons",
+          "type_documented": "array"
+        },
+        {
+          "path": "return_reasons[].return_reason_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "return_reasons[].name",
+          "type_documented": "text"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [],
+      "documentation_inconsistencies": [
+        "Opis odsyła do setOrderReturnFields, chociaż pola return_reason_id dokumentują metody produktu."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/returns.ts:37"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Lokalne reason jest tekstem zgłoszenia; nie potwierdzono słownika return_reason_id/name."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnStatusGroups",
+      "method": "getOrderReturnStatusGroups",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnStatusGroups",
+        "retrieved_at": "2026-10-17T17:55:54.607397+00:00",
+        "http_status": 200,
+        "sha256": "09c28d79d4d0c91a218dd2312471d9809460e1a3d85c6884f1ab70d093b200e8",
+        "bytes": 49163
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "status_groups",
+          "type_documented": "array"
+        },
+        {
+          "path": "status_groups[].group_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "status_groups[].name",
+          "type_documented": "text"
+        },
+        {
+          "path": "status_groups[].is_main_group",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "is_main_group: 0/1."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie potwierdzono słownika grup zwrotów z is_main_group."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnStatusList",
+      "method": "getOrderReturnStatusList",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnStatusList",
+        "retrieved_at": "2026-10-17T17:55:54.596589+00:00",
+        "http_status": 200,
+        "sha256": "97505346176d84250033cb907a1c975376bf65363b8c114468cda3213563a699",
+        "bytes": 49942
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "statuses",
+          "type_documented": "array"
+        },
+        {
+          "path": "statuses[].id",
+          "type_documented": "int"
+        },
+        {
+          "path": "statuses[].name",
+          "type_documented": "text"
+        },
+        {
+          "path": "statuses[].color",
+          "type_documented": "text"
+        },
+        {
+          "path": "statuses[].group_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "statuses[].is_primary",
+          "type_documented": "int"
+        },
+        {
+          "path": "statuses[].name_for_customer",
+          "type_documented": "text"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "is_primary: 0/1; group_id odsyła do getOrderReturnStatusGroups."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-query.ts:14",
+          "server/return-destination-statuses-schema.ts:20"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Stałe lokalne state oraz osobne statusy destinations nie dowodzą konfigurowalnego katalogu Base id/name/color/group_id/is_primary/name_for_customer."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-setOrderReturnStatus",
+      "method": "setOrderReturnStatus",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReturnStatus",
+        "retrieved_at": "2026-10-17T17:55:55.150647+00:00",
+        "http_status": 200,
+        "sha256": "84f540b19e0ff9b0b5874d39be540b19cfd33fef9cb2d92e4bbb1d54ae1d1493",
+        "bytes": 48779
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:84",
+          "server/return-routes.ts:91",
+          "server/returns.ts:54"
+        ],
+        "related_local_routes": [
+          "POST /api/returns/:id/receive",
+          "POST /api/returns/:id/decision"
+        ],
+        "remaining_gaps": [
+          "Lokalne przejścia są wersjonowanymi operacjami biznesowymi; nie potwierdzono dowolnego przypisania Base status_id.",
+          "Nie wolno zakładać skutków fizycznych/refund tylko ze zmiany statusu Base."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-setOrderReturnStatuses",
+      "method": "setOrderReturnStatuses",
+      "group": "Statuses",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReturnStatuses",
+        "retrieved_at": "2026-10-17T17:55:55.890599+00:00",
+        "http_status": 200,
+        "sha256": "01d8189b8eca447f9265610fd397c044f668c63b74eeb39270ebf8c7360d7768",
+        "bytes": 48877
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_ids",
+          "type_documented": "array",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "status_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:1"
+        ],
+        "related_local_routes": [],
+        "remaining_gaps": [
+          "Nie potwierdzono operacji zbiorczej ani jej atomowości/odpowiedzi częściowej."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnPaymentsHistory",
+      "method": "getOrderReturnPaymentsHistory",
+      "group": "Payments",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnPaymentsHistory",
+        "retrieved_at": "2026-10-17T17:55:55.194552+00:00",
+        "http_status": 200,
+        "sha256": "4a9152d4a4d44a1c2b9f8411b801a960fa41686933d0de07f4805f00f71e5157",
+        "bytes": 50359
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "show_full_history",
+          "type_documented": "bool",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_default": false
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "payments",
+          "type_documented": "array"
+        },
+        {
+          "path": "payments[].paid_before",
+          "type_documented": "float"
+        },
+        {
+          "path": "payments[].paid_after",
+          "type_documented": "float"
+        },
+        {
+          "path": "payments[].total_price",
+          "type_documented": "float"
+        },
+        {
+          "path": "payments[].currency",
+          "type_documented": "text"
+        },
+        {
+          "path": "payments[].external_payment_id",
+          "type_documented": "text"
+        },
+        {
+          "path": "payments[].date",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "show_full_history domyślnie false: tylko wpisy zawierające external_payment_id; true obejmuje także zmiany wartości i ręczne edycje.",
+        "Zwraca historię zapisów, bez dowodu wykonania refund przez dostawcę."
+      ],
+      "documentation_inconsistencies": [
+        "Opis mówi o wybranym order, ale parametr to return_id; nie utożsamiać z historią płatności zamówienia bez potwierdzenia.",
+        "Typy kwot/date w tabeli są float/int, przykład JSON zawiera stringi; reguły serializacji wymagają potwierdzenia."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/developer-api.ts:1184",
+          "server/returns.ts:705"
+        ],
+        "related_local_routes": [
+          "GET /api/v1/orders/:id/payments"
+        ],
+        "remaining_gaps": [
+          "Historia płatności zamówienia nie dowodzi historii zwrotu w kształcie paid_before/paid_after/total_price/external_payment_id.",
+          "Brak potwierdzenia show_full_history i filtrowania wpisów bez identyfikatora zewnętrznego."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-setOrderReturnRefund",
+      "method": "setOrderReturnRefund",
+      "group": "Payments",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReturnRefund",
+        "retrieved_at": "2026-10-17T17:55:55.096976+00:00",
+        "http_status": 200,
+        "sha256": "98b4488bfe626ec9d41180b81204e1c635f0f5f380e9cbb5b2e48b7f1e5cb09e",
+        "bytes": 49494
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "order_refund_done",
+          "type_documented": "float",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "refund_date",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "refund_comment",
+          "type_documented": "varchar(50)",
+          "required": null,
+          "required_basis": "not_explicitly_stated",
+          "documented_max_characters": 50
+        },
+        {
+          "name": "external_refund_id",
+          "type_documented": "varchar(50)",
+          "required": false,
+          "required_basis": "explicit_optional_or_omission",
+          "documented_max_characters": 50
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Wyłącznie deklaracja stanu refund, bez wykonania transferu pieniężnego.",
+        "order_refund_done zastępuje bieżącą kwotę, nie sumuje; według opisu kwota zgodna z order value oznacza zrefundowanie; znaczenie order value wymaga potwierdzenia.",
+        "refund_date:Unix timestamp; external_refund_id opcjonalny."
+      ],
+      "documentation_inconsistencies": [
+        "Dokumentacja porównuje kwotę z order value; nie rozstrzygamy, czy chodzi o całe pierwotne zamówienie czy wartość konkretnego zwrotu."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-routes.ts:97",
+          "server/returns.ts:705"
+        ],
+        "related_local_routes": [
+          "POST /api/returns/:id/refund"
+        ],
+        "remaining_gaps": [
+          "Lokalny recordRefund wymaga version/confirmed/reference, dokładnego salda i kwoty w minor units; dopisuje lokalną deklarację refund i zamyka stan.",
+          "To nie jest potwierdzenie Base replacement semantics order_refund_done ani zgodności float/date/external_refund_id; żadna z tych metod sama nie dowodzi przelewu."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-getOrderReturnJournalList",
+      "method": "getOrderReturnJournalList",
+      "group": "Other",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderReturnJournalList",
+        "retrieved_at": "2026-10-17T17:55:55.613648+00:00",
+        "http_status": 200,
+        "sha256": "4b5a6c2a42d50b59fb33f3885cca3e9452560f74f7d6c829c5b282768830d187",
+        "bytes": 50455
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "last_log_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "logs_types",
+          "type_documented": "array",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": false,
+          "required_basis": "successful_documentation_example_omits_field"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        },
+        {
+          "path": "logs",
+          "type_documented": "array"
+        },
+        {
+          "path": "logs[].id",
+          "type_documented": "int"
+        },
+        {
+          "path": "logs[].return_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "logs[].log_type",
+          "type_documented": "int"
+        },
+        {
+          "path": "logs[].object_id",
+          "type_documented": "int"
+        },
+        {
+          "path": "logs[].date",
+          "type_documented": "int"
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": true,
+        "history_window_days": 3,
+        "parameters": [
+          "last_log_id"
+        ],
+        "max_items": null,
+        "next_cursor_field": null,
+        "unknown": [
+          "Limit odpowiedzi, inkluzywność last_log_id, sortowanie i reguła następnej strony nie są opisane."
+        ]
+      },
+      "documented_rules": [
+        "Okno historii: ostatnie 3 dni; last_log_id, logs_types i return_id są parametrami filtrowania.",
+        "log_type: 1 utworzenie, 2 przyjęcie, 3 zakończenie, 4 anulowanie, 5 refund, 6 edycja dostawy, 7 dodanie produktu, 8 edycja produktu, 9 usunięcie produktu, 10 edycja zwrotu, 11 status nagłówka, 12 status pozycji.",
+        "object_id podaje produkt dla 9 i paczkę dla 14/15; typy 14/15 nie są wyjaśnione w enum log_type tej strony."
+      ],
+      "documentation_inconsistencies": [
+        "object_id opisuje typy 14/15, których brak w wyliczeniu log_type.",
+        "Tabela nazywa klucz zdarzenia id, przykład JSON używa log_id; przykład zawiera też niewyjaśniony typ13."
+      ],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/return-assistant-routes.ts:21",
+          "server/app.ts:1480",
+          "server/returns.ts:182"
+        ],
+        "related_local_routes": [
+          "GET /api/return-assistant/history",
+          "GET /api/audit"
+        ],
+        "remaining_gaps": [
+          "Audyt i historia Asystenta istnieją, ale nie potwierdzono 3-dniowego dziennika Base ani liczbowych log_type/object_id i last_log_id."
+        ]
+      }
+    },
+    {
+      "id": "BASE-API-runOrderReturnMacroTrigger",
+      "method": "runOrderReturnMacroTrigger",
+      "group": "Other",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=runOrderReturnMacroTrigger",
+        "retrieved_at": "2026-10-17T17:55:55.736298+00:00",
+        "http_status": 200,
+        "sha256": "10988a0d9d969dc28e29dc7153fec2cc337a9700e5b5527f4302918a0472b614",
+        "bytes": 48825
+      },
+      "documentation_reviewed": true,
+      "implementation_verified": false,
+      "provider_behavior_verified": false,
+      "account_acceptance": false,
+      "acceptance_granted": false,
+      "input_fields": [
+        {
+          "name": "return_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        },
+        {
+          "name": "trigger_id",
+          "type_documented": "int",
+          "required": null,
+          "required_basis": "not_explicitly_stated"
+        }
+      ],
+      "output_fields": [
+        {
+          "path": "status",
+          "type_documented": "varchar(30)",
+          "documented_max_characters": 30
+        }
+      ],
+      "error_contract": {
+        "status_values": [
+          "SUCCESS",
+          "ERROR"
+        ],
+        "error_detail_fields": [
+          "error_message",
+          "error_code"
+        ],
+        "individual_error_codes": null,
+        "http_status_codes": null
+      },
+      "pagination": {
+        "documented": false,
+        "parameters": [],
+        "max_items": null,
+        "unknown": [
+          "Brak opisanego mechanizmu paginacji nie dowodzi nieograniczonej kompletności odpowiedzi."
+        ]
+      },
+      "documented_rules": [
+        "Uruchamia osobisty trigger automatycznych akcji dla wskazanego zwrotu."
+      ],
+      "documentation_inconsistencies": [],
+      "unknowns": [
+        "Szczegółowe kody błędów i HTTP statusy nie są wyliczone w tej indywidualnej stronie.",
+        "Brak indywidualnie opisanych gwarancji idempotencji, retry, kolejności równoległych zapisów i limitów wywołań.",
+        "Pola required:null nie mają jednoznacznie zadeklarowanej wymagalności; potrzeba dalszej dokumentacji lub autoryzowanego testu konta."
+      ],
+      "local_mapping": {
+        "evidence_level": "source_review_only",
+        "base_wire_compatibility_verified": false,
+        "related_source_locations": [
+          "server/automation-schedule-routes.ts:122",
+          "server/automation-schedule-routes.ts:136"
+        ],
+        "related_local_routes": [
+          "POST /api/automation-schedules/:id/preview",
+          "POST /api/automation-schedules/:id/run"
+        ],
+        "remaining_gaps": [
+          "Uruchomienie własnego harmonogramu nie dowodzi osobistego trigger_id dla konkretnego return_id Base.",
+          "Wymagane osobne sprawdzenie uprawnień, selekcji zwrotu, skutków i nieznanego wyniku."
+        ]
+      }
+    }
+  ]
+}

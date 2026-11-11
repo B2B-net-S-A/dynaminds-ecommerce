@@ -1,0 +1,21 @@
+import {attributeValueText} from './catalog-attributes';
+import type {JsonValue} from '../shared/pim-json';
+import type {ReactNode} from 'react';
+/** Display only: no HTTP, authority, mutation, actor cache or guessed price basis. */
+type Price={frame:{list:{name:string;currency:string}};snapshot:{effective_price:number|null;override_present:boolean}};
+export type ProductRuleDisplayItem={product_id:string;source:{name:string;sku:string;category?:string;attributes?:Record<string,JsonValue>;tags?:string[];price_targets?:Record<string,Price>};projected:{category?:string;attributes?:Record<string,JsonValue>;tags?:string[];price_targets?:Record<string,number>};state?:string;error?:string|null};
+const labels:Record<string,string>={pending:'Oczekuje',changed:'Zmieniono',skipped:'Bez zmian',failed:'Nie wykonano'};
+function empty(v:JsonValue|undefined,missing:string){return v===undefined?missing:typeof v==='string'?(v===''?'(pusta wartość)':v):attributeValueText(v);}
+function money(v:number|null|undefined,currency:string){if(v===null)return 'Brak ceny wyjściowej';if(typeof v!=='number'||!Number.isSafeInteger(v)||v<0||v>100000000||!['PLN','EUR','USD','GBP','CZK'].includes(currency))return 'Niepełna cena — odczytaj wynik ponownie';const n=BigInt(v);return `${n/100n},${String(n%100n).padStart(2,'0')} ${currency}`;}
+function fields(i:ProductRuleDisplayItem){const rows:{label:string;before:ReactNode;after:ReactNode}[]=[{label:'Kategoria',before:empty(i.source.category,'Nie odczytano'),after:empty(i.projected.category,'Nie odczytano')}];
+ const source=i.source.attributes??{},projected=i.projected.attributes??{};for(const key of [...new Set([...Object.keys(source),...Object.keys(projected)])].sort())rows.push({label:'Atrybut: '+key,before:empty(Object.hasOwn(source,key)?source[key]:undefined,'(nie istnieje)'),after:empty(Object.hasOwn(projected,key)?projected[key]:undefined,'(usunięty)')});
+ if(i.source.tags!==undefined||i.projected.tags!==undefined)rows.push({label:'Tagi',before:i.source.tags===undefined?'Nie odczytano':i.source.tags.join(', ')||'(brak)',after:i.projected.tags===undefined?'Nie odczytano':i.projected.tags.join(', ')||'(brak)'});
+ const priceIds=[...new Set([...Object.keys(i.source.price_targets??{}),...Object.keys(i.projected.price_targets??{})])];for(const id of priceIds){const target=i.source.price_targets?.[id];if(!target?.frame?.list?.name||!target.snapshot){rows.push({label:'Cennik',before:'Niepełne dane cennika — odczytaj wynik ponownie',after:'Niepełne dane cennika — odczytaj wynik ponownie'});continue;}const touched=Object.hasOwn(i.projected.price_targets??{},id),value=touched?i.projected.price_targets![id]:target.snapshot.effective_price;rows.push({label:'Cennik: '+target.frame.list.name+' ('+target.frame.list.currency+')',before:<>{money(target.snapshot.effective_price,target.frame.list.currency)}{target.snapshot.effective_price!==null&&!target.snapshot.override_present&&<small> · cena wyliczona</small>}</>,after:<>{money(value,target.frame.list.currency)}<small>{touched?' · docelowa cena do zapisania w cenniku':' · bez akcji w tym cenniku'}</small></>});}
+
+ return rows;
+}
+export function ProductRuleResults({items,preview=false}:{items:readonly ProductRuleDisplayItem[];preview?:boolean}){return <section aria-label={preview?'Pełne pozycje podglądu harmonogramu':'Pełne pozycje wyniku harmonogramu'}>
+ <p>{items.length} produktów. {preview?'To podgląd. Zmiany nie zostały jeszcze wykonane.':'Kolumna celu pokazuje zatwierdzony stan; wykonanie potwierdza status każdego produktu.'}</p>
+ {items.map((i,index)=><article className="pr-product-result" key={i.product_id}><h5>{index+1}. {i.source.name} · {i.source.sku}</h5>{!preview&&<p><strong>Status: {labels[i.state??'']??'Brak potwierdzonego wyniku'}</strong></p>}{i.error&&<p role="alert">{i.error}</p>}
+ <div className="table-scroll"><table><caption>{i.source.name} — pełne pola i zatwierdzone ceny</caption><thead><tr><th scope="col">Pole</th><th scope="col">Przed</th><th scope="col">Zatwierdzony cel</th></tr></thead><tbody>{fields(i).map((r,index)=><tr key={index}><th scope="row">{r.label}</th><td style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{r.before}</td><td style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{r.after}</td></tr>)}</tbody></table></div></article>)}
+ </section>;}

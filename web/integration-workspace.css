@@ -1,0 +1,223 @@
+.integration-catalog .integration-card {
+  display: flex;
+  flex-direction: column;
+}
+.integration-catalog .integration-card p {
+  font-size: 13px;
+  color: #5e708a;
+  line-height: 1.65;
+  margin: 8px 0 17px;
+  min-height: 0;
+  flex: 1;
+}
+.integration-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.integration-history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 24px;
+}
+.integration-history-heading h3 {
+  font-size: 14px;
+}
+.integration-verification-history > .panel-heading {
+  align-items: start;
+  flex-direction: column;
+  gap: 8px;
+}
+.integration-verification-history .notice {
+  margin: 16px 24px;
+}
+.integration-tabs [aria-pressed='true'],
+.integration-category-list [aria-pressed='true'] {
+  color: #2559ce;
+  background: #eaf1ff;
+  border-color: #b7caf6;
+}
+.integration-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.integration-summary > div {
+  padding: 18px 22px;
+  border: 1px solid #e1e8f2;
+  background: white;
+  border-radius: 12px;
+}
+.integration-summary strong {
+  display: block;
+  font-size: 26px;
+  color: #273e61;
+}
+.integration-summary span {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #60718d;
+}
+.integration-demo {
+  padding: 0 24px 16px;
+}
+.integration-demo summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: #60718d;
+}
+.integration-demo .inline-actions {
+  flex-wrap: wrap;
+  padding-top: 14px;
+}
+.integration-filters {
+  padding: 16px 24px;
+  border-block: 1px solid #edf1f6;
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.integration-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: #60718d;
+  flex: 1 1 150px;
+}
+.integration-filters input,
+.integration-filters select,
+.integration-search input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: white;
+  color: #273e61;
+  font: inherit;
+  font-size: 13px;
+}
+.integration-filters .text-button {
+  min-height: 39px;
+}
+.integration-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.integration-catalog-heading {
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+.integration-catalog-heading h2 {
+  font-size: 18px;
+}
+.integration-catalog-heading p {
+  margin-top: 7px;
+  font-size: 13px;
+  color: #60718d;
+  line-height: 1.6;
+}
+.integration-catalog-heading > .muted {
+  flex-basis: 100%;
+  margin: 0;
+}
+.integration-catalog > .muted {
+  margin: 16px 0;
+  font-size: 12px;
+}
+.integration-search {
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  min-width: 260px;
+  flex: 1 1 280px;
+  max-width: 380px;
+  color: #60718d;
+}
+.integration-category-list {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.integration-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.integration-card-actions .text-button {
+  font-size: 11px;
+}
+.integration-provider-detail {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.integration-provider-detail p {
+  margin-bottom: 18px;
+}
+.integration-provider-detail .provider-summary {
+  font-weight: 600;
+  font-size: 15px;
+}
+.integration-provider-detail .integration-scope {
+  padding: 14px 0;
+}
+.integration-provider-detail summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.integration-provider-detail .inline-actions {
+  flex-wrap: wrap;
+}
+.integration-connection-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+.integration-connection-actions .inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+@media (max-width: 760px) {
+  .integration-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .integration-summary > div {
+    padding: 14px;
+  }
+  .integration-tabs .button {
+    flex: 1 1 140px;
+  }
+  .integration-filters,
+  .integration-catalog-heading {
+    padding: 16px;
+  }
+  .integration-catalog .integration-grid {
+    grid-template-columns: 1fr;
+  }
+  .integration-search {
+    min-width: 0;
+    max-width: none;
+  }
+}

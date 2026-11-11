@@ -1,0 +1,89 @@
+.catalog-export-sources {
+  margin-block: 18px;
+  padding: 16px;
+  border: 1px solid #dbe3ed;
+  border-radius: 9px;
+  min-width: 0;
+}
+.catalog-export-sources h3 {
+  margin-top: 0;
+}
+.catalog-export-sources p {
+  overflow-wrap: anywhere;
+}
+.catalog-export-sources .ces-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.catalog-export-sources .ces-group {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid #dbe3ed;
+  border-radius: 7px;
+}
+.catalog-export-sources .ces-group legend {
+  padding-inline: 5px;
+  font-weight: 600;
+}
+.catalog-export-sources .ces-group:disabled {
+  background: #f8fafc;
+}
+.catalog-export-sources .ces-choices {
+  max-height: 320px;
+  overflow: auto;
+  padding: 3px;
+}
+.catalog-export-sources .ces-choice {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  gap: 9px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+.catalog-export-sources .ces-choice input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 3px 0 0;
+}
+.catalog-export-sources .ces-choice span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.catalog-export-sources .ces-choice small {
+  display: block;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 400;
+}
+.catalog-export-sources .ces-unresolved small {
+  color: #9a3412;
+}
+.catalog-export-sources .ces-notice {
+  color: #9a3412;
+  background: #fff7ed;
+  padding: 10px;
+  border-radius: 6px;
+}
+.catalog-export-sources .ces-error {
+  color: #991b1b;
+  background: #fef2f2;
+  padding: 10px;
+  border-radius: 6px;
+}
+.catalog-export-sources .ces-hint {
+  color: #475569;
+  font-size: 13px;
+}
+@media (max-width: 700px) {
+  .catalog-export-sources {
+    padding: 12px;
+  }
+  .catalog-export-sources .ces-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

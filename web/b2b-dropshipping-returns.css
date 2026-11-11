@@ -1,0 +1,116 @@
+.dropship-returns {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border, #dbe3ec);
+  border-radius: 0.65rem;
+  background: var(--panel, #fff);
+}
+.dropship-returns h3,
+.dropship-returns h4 {
+  margin: 0.4rem 0 0.7rem;
+}
+.dropship-returns p {
+  margin: 0.65rem 0;
+}
+.dropship-returns .dr-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0.75rem 0;
+}
+.dropship-returns .dr-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.dropship-returns label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.dropship-returns input:not([type='checkbox']),
+.dropship-returns select,
+.dropship-returns textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.dropship-returns .dr-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.7rem 0;
+}
+.dropship-returns .dr-check input {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin: 0.15rem 0 0;
+}
+.dropship-returns .dr-scroll {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0.8rem 0;
+}
+.dropship-returns table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+}
+.dropship-returns td,
+.dropship-returns th {
+  padding: 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border, #dbe3ec);
+}
+.dropship-returns td input {
+  min-width: 5rem;
+  max-width: 8rem;
+}
+.dropship-returns small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted, #526273);
+}
+.dropship-returns .dr-notice {
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.4rem;
+  background: var(--notice, #eef5fc);
+}
+.dropship-returns .dr-error {
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.4rem;
+  background: #fff0ed;
+  color: #8d2214;
+}
+.dropship-returns .dr-card {
+  padding: 0.8rem;
+  margin: 0.7rem 0;
+  border: 1px solid var(--border, #dbe3ec);
+  border-radius: 0.45rem;
+}
+.dropship-returns .dr-full {
+  grid-column: 1 / -1;
+}
+.dropship-returns .dr-origin-table {
+  min-width: 900px;
+}
+.dropship-returns .dr-origin-table select {
+  min-width: 17rem;
+}
+.dropship-returns .dr-origin-table small,
+.dropship-returns .dr-card li {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  .dropship-returns .dr-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dropship-returns {
+    padding: 0.75rem;
+  }
+}

@@ -1,0 +1,58 @@
+import { after,before,test } from 'node:test';
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { buildApp } from '../server/app';
+import { pool,migrate } from '../server/db';
+import { seed } from './fixtures';
+import * as V from '../server/return-assistant-queues-schema';
+import { returnAssistantQueueFixture,returnAssistantQueueFacts,returnAssistantQueueBusiness } from './return-assistant-queues-fixture';
+assert.equal(process.env.DYNA_TEST,'true');
+const db=new URL(process.env.DATABASE_URL??'');assert(['localhost','127.0.0.1','[::1]'].includes(db.hostname));assert.match(db.pathname,/^\/dynaminds_test_\d+$/);
+let app:Awaited<ReturnType<typeof buildApp>>;
+before(async()=>{await migrate();await seed();app=await buildApp({integrationTransport:async()=>{throw Error('Personal return queues must never call a provider');}});});
+after(async()=>{try{await app?.close();}finally{await pool.end();}});
+const navigation={auto_next:true,hide_accepted:true};
+test('strict personal schemas bound conservation and reject hidden business fields without throwing BigInt errors',()=>{
+ const ids=Array.from({length:200},()=>randomUUID());assert(V.createQueueInput.safeParse({client_key:randomUUID(),return_ids:ids,navigation}).success);
+ assert(!V.createQueueInput.safeParse({client_key:randomUUID(),return_ids:[...ids,randomUUID()],navigation}).success);
+ assert(!V.createQueueInput.safeParse({client_key:randomUUID(),return_ids:[ids[0],ids[0].toUpperCase()],navigation}).success);
+ assert(!V.createQueueInput.safeParse({client_key:randomUUID(),return_ids:[ids[0]],navigation,start_session:true}).success);
+ for(const version of ['abc','1.5','9223372036854775808'])assert(!V.settingsInput.safeParse({client_key:randomUUID(),version,values:V.DEFAULT_RETURN_ASSISTANT_SETTINGS}).success);
+ assert(!V.settingsValues.safeParse({...V.DEFAULT_RETURN_ASSISTANT_SETTINGS,case_fields:['number','number']}).success);
+ assert(!V.settingsValues.safeParse({...V.DEFAULT_RETURN_ASSISTANT_SETTINGS,default_status:'sale'}).success);
+});
+test('saved personal presentation uses CAS and exact actor/body replay while later settings remain current',async()=>{
+ const f=await returnAssistantQueueFixture(app);const beforeRows=await returnAssistantQueueFacts(f.tenant);
+ const initial=await f.ok('/return-assistant/settings');assert.equal(initial.settings.version,'0');assert.deepEqual(initial.settings.values,V.DEFAULT_RETURN_ASSISTANT_SETTINGS);
+ const body={client_key:randomUUID(),version:'0',values:{...V.DEFAULT_RETURN_ASSISTANT_SETTINGS,...navigation,name_source:'current',product_sort:'sku',thumbnail_size:'large',case_fields:['number','customer','commercial_value'],product_fields:['ean','components','locations','stock']}};
+ const first=await f.ok('/return-assistant/settings','PATCH',body);assert.equal(first.settings.version,'1');assert.equal(first.reused,false);
+ const later=await f.ok('/return-assistant/settings','PATCH',{...body,client_key:randomUUID(),version:'1',values:{...body.values,auto_next:false}});assert.equal(later.settings.version,'2');
+ const afterRows=await returnAssistantQueueFacts(f.tenant);const retry=await f.ok('/return-assistant/settings','PATCH',body);assert.equal(retry.reused,true);assert.equal(retry.operation_id,first.operation_id);assert.deepEqual(retry.settings,first.settings);assert.deepEqual(await returnAssistantQueueFacts(f.tenant),afterRows);
+ assert.equal((await f.request('/return-assistant/settings','PATCH',{...body,values:{...body.values,hide_accepted:false}})).statusCode,409);
+ assert.equal((await f.request('/return-assistant/settings','PATCH',{...body,client_key:randomUUID()})).statusCode,409);
+ assert.equal((await f.ok('/return-assistant/settings')).settings.version,'2');assert.deepEqual(returnAssistantQueueBusiness(afterRows),returnAssistantQueueBusiness(beforeRows));
+});
+test('ordered immutable manifest, independent current state, scoped exact cursor and navigation have no core effects',async()=>{
+ const f=await returnAssistantQueueFixture(app);const beforeRows=await returnAssistantQueueFacts(f.tenant);
+ const body={client_key:randomUUID(),return_ids:[...f.return_ids].reverse(),navigation};const created=await f.ok('/return-assistant/queues','POST',body,201);const queue=created.queue;assert.equal(queue.count,2);assert.equal(queue.version,'1');
+ const first=await f.ok('/return-assistant/queues/'+queue.id+'/items?limit=1');assert.equal(first.data.length,1);assert.equal(first.data[0].return_id,body.return_ids[0]);assert.equal(first.data[0].current_session,null);assert.equal(first.data[0].receipt_id,null);assert.equal(first.data[0].accepted,false);assert.equal(first.next_cursor,body.return_ids[0]);
+ const second=await f.ok('/return-assistant/queues/'+queue.id+'/items?limit=1&cursor='+first.next_cursor);assert.equal(second.data[0].return_id,body.return_ids[1]);assert.equal(second.next_cursor,null);
+ assert.equal((await f.request('/return-assistant/queues/'+queue.id+'/items?cursor='+randomUUID())).statusCode,404);
+ const update={client_key:randomUUID(),version:'1',position:1,skipped_return_ids:[body.return_ids[0]],navigation:{auto_next:false,hide_accepted:false}};const changed=await f.ok('/return-assistant/queues/'+queue.id,'PATCH',update);assert.equal(changed.queue.version,'2');assert.equal(changed.queue.position,1);
+ const saved=await returnAssistantQueueFacts(f.tenant);const replay=await f.ok('/return-assistant/queues','POST',body);assert.equal(replay.reused,true);assert.deepEqual(replay.queue,queue);assert.equal((await f.ok('/return-assistant/queues/'+queue.id)).queue.version,'2');assert.deepEqual(await returnAssistantQueueFacts(f.tenant),saved);
+ assert.equal((await f.request('/return-assistant/queues/'+queue.id,'PATCH',{...update,client_key:randomUUID()})).statusCode,409);
+ assert.equal((await f.request('/return-assistant/queues/'+queue.id,'PATCH',{...update,client_key:randomUUID(),version:'2',skipped_return_ids:[randomUUID()]})).statusCode,409);
+ const items=await f.ok('/return-assistant/queues/'+queue.id+'/items');assert.equal(items.data[0].skipped,true);assert.equal(items.data[1].skipped,false);const list=await f.ok('/return-assistant/queues?limit=1');assert.equal(list.data[0].id,queue.id);assert(!('items'in list.data[0]));
+ assert.deepEqual(returnAssistantQueueBusiness(saved),returnAssistantQueueBusiness(beforeRows));for(const table of ['return_assistant_sessions','return_assistant_previews','return_assistant_receipts'])assert.equal(saved[table].length,0);
+});
+test('current presentation shows genuine own image/name and frozen physical metadata without rewriting historical authority',async()=>{
+ const f=await returnAssistantQueueFixture(app);const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a0FUAAAAASUVORK5CYII=','base64');
+ const uploaded=await f.ok('/product-images','POST',{data:bytes.toString('base64')},201);
+ const product=await f.ok('/products/'+f.product.id);await f.ok('/products/'+f.product.id,'PATCH',{version:Number(product.version),name:'Current own helper name',ean:'1400000000001',price:product.price,vat:product.vat,category:product.category,description:product.description,attributes:product.attributes,images:[uploaded.url],active:true,components:[]});
+ const frozen=f.rma.items[0];const session=(await f.ok('/return-assistant/sessions','POST',{client_key:randomUUID(),return_number:f.rma.number,station_id:f.station.id,station_version:String(f.station.version),lease_token:randomUUID()},201)).session;
+ assert.equal(session.lines[0].name,frozen.name);const p=session.presentation;assert.equal(p.return_id,f.rma.id);assert.equal(p.case.commercial_value,4401);assert.equal(p.case.order_number,f.order.number);
+ assert.equal(p.lines[0].historical_name,frozen.name);assert.equal(p.lines[0].current_catalog.name,'Current own helper name');assert.equal(p.lines[0].current_catalog.ean,'1400000000001');assert.equal(p.lines[0].current_catalog.image_url,uploaded.url);
+ assert(p.lines[0].stock.every((s:any)=>s.product_id===f.product.id&&s.warehouse_id===f.warehouse));assert(p.lines[0].locations.every((s:any)=>s.product_id===f.product.id&&s.warehouse_id===f.warehouse));
+ const beforeRows=await returnAssistantQueueFacts(f.tenant);const image=await f.request(uploaded.url);assert.equal(image.statusCode,200);assert.deepEqual(image.rawPayload,bytes);await f.ok('/return-assistant/sessions/'+session.id);assert.deepEqual(await returnAssistantQueueFacts(f.tenant),beforeRows);
+ assert(!JSON.stringify(p).includes('unit_cost_minor'));assert(!JSON.stringify(p).includes('lease_token'));assert(!JSON.stringify(p).includes('portal_token'));
+});

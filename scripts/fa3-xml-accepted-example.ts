@@ -1,0 +1,20 @@
+/** Save the genuine accepted native XML bytes as a local example, not a Chrome download. */
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {renderNativeB2bInvoiceFa3} from '../server/fa3-xml';
+const hash=(v:Buffer|string)=>createHash('sha256').update(v).digest('hex');
+const directory=resolve('data/qa-fa3-xml-1791436044774/native-xml1');
+const nativeBytes=await readFile(resolve(directory,'result.private.json'));assert.equal(hash(nativeBytes),'d3fab3460393323d888386aeaa2a37c1297d6f1a0f82f11dc495dedcccd2f827');const native=JSON.parse(nativeBytes.toString());
+const fixtureBytes=await readFile(native.fixture.path);assert.equal(hash(fixtureBytes),native.fixture.sha256);const fixture=JSON.parse(fixtureBytes.toString());
+const ownBytes=await readFile(fixture.artifacts.own.path);assert.equal(hash(ownBytes),fixture.artifacts.own.sha256);const own=JSON.parse(ownBytes.toString());
+const sourcesBytes=await readFile(native.sources.path);assert.equal(hash(sourcesBytes),native.sources.sha256);const sources=JSON.parse(sourcesBytes.toString());
+for(const[p,h]of Object.entries(sources)as[string,string][])assert.equal(hash(await readFile(p)),h);
+const rendered=renderNativeB2bInvoiceFa3(own.reply.document,{generated_at:own.reply.document.created_at.replace(/\+00:00$/,'Z')});
+assert.equal(rendered.xml_sha256,native.acceptance.xml_sha256);assert.equal(rendered.xml_sha256,own.expected_xml_sha256);
+const oracle=spawnSync('python3',['data/source-drafts/fa3-xml-xsd-oracle.py'],{input:rendered.xml,encoding:'utf8',timeout:10000,maxBuffer:4096});assert.equal(oracle.status,0);assert.equal(oracle.signal,null);assert.equal(oracle.error,undefined);assert.equal(JSON.parse(oracle.stdout).valid,true);
+const path=resolve(directory,rendered.number.replace(/\//g,'-')+'.fa3.xml');await writeFile(path,rendered.xml,{flag:'wx',mode:0o600});assert.equal(hash(await readFile(path)),rendered.xml_sha256);
+const result={status:'ROOT_GENUINE_ACCEPTED_FA3_XML_EXAMPLE_FILE_PASS',file:{path,sha256:rendered.xml_sha256},number:rendered.number,official_offline_xsd_valid:true,exact_accepted_api_bytes:true,native_result:{path:resolve(directory,'result.private.json'),sha256:hash(nativeBytes)},source:'ACTUAL_TWO_TENANT_NATIVE159_FIXTURE_OWN_ISSUED_DOCUMENT',not_chrome_download_artifact:true,ksef_submission_executed:false};
+const resultPath=resolve(directory,'example-result.json'),resultBytes=Buffer.from(JSON.stringify(result,null,2)+'\n');await writeFile(resultPath,resultBytes,{flag:'wx',mode:0o600});console.log(JSON.stringify({status:result.status,file:result.file,result:{path:resultPath,sha256:hash(resultBytes)}}));

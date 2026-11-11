@@ -1,0 +1,39 @@
+/* KOR-S (232) correction views, in the FV-S (230) style: flat sections separated by rules. */
+.invoice232-panel { min-width: 0; display: grid; gap: 12px; color: var(--text, #172033); }
+.invoice232-panel.panel { padding: 24px; }
+.invoice230-document .invoice232-panel { padding-top: 14px; border-top: 1px solid var(--border, #dbe2ea); }
+.invoice232-panel h3, .invoice232-panel h4, .invoice232-panel p { margin: 0; }
+.invoice232-panel h3 { font-size: 16px; font-weight: 800; }
+.invoice232-panel h4 { font-size: 14px; font-weight: 700; }
+.invoice232-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.invoice232-panel .invoice232-fields { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+.invoice232-panel legend { padding: 0 0 6px; font-weight: 700; }
+.invoice232-panel label { min-width: 0; margin: 0; display: grid; gap: 6px; line-height: 1.5; }
+.invoice232-panel input:not([type='checkbox']), .invoice232-panel select { width: 100%; min-width: 0; min-height: 40px; box-sizing: border-box; padding: 8px 10px; border: 1px solid #94a3b8; border-radius: 6px; background: #fff; color: inherit; font: inherit; }
+.invoice232-panel td input:not([type='checkbox']) { min-width: 90px; }
+.invoice232-panel .invoice232-wide { grid-column: 1 / -1; }
+.invoice232-panel .invoice232-check { display: flex; flex-direction: row; align-items: flex-start; gap: 10px; }
+.invoice232-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.invoice232-panel .button, .invoice232-panel .text-button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.invoice232-panel .invoice232-actions, .invoice232-panel .invoice232-returns { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.invoice232-panel .invoice232-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.invoice232-panel .invoice232-list > li { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border, #dbe2ea); }
+.invoice232-panel .invoice232-problems { margin: 0; padding-left: 20px; color: var(--muted, #64748b); font-size: 13px; }
+.invoice232-panel .invoice232-calculation, .invoice232-panel .invoice232-snapshot { min-width: 0; display: grid; gap: 12px; }
+.invoice232-panel .invoice232-calculation { padding-top: 14px; border-top: 1px solid var(--border, #dbe2ea); }
+.invoice232-panel .invoice232-nbp { padding-left: 10px; border-left: 3px solid var(--border, #dbe2ea); }
+.invoice232-panel .invoice232-pending { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid #fed7aa; border-radius: 6px; background: #fff7ed; }
+.invoice232-panel .invoice232-blockers ul { margin: 4px 0 0; padding-left: 20px; }
+.invoice232-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.invoice232-panel table { width: 100%; border-collapse: collapse; }
+.invoice232-panel th, .invoice232-panel td { padding: 8px 10px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border, #dbe2ea); }
+.invoice232-panel th { font-size: 12px; font-weight: 700; }
+.invoice232-panel th.num, .invoice232-panel td.num { text-align: right; white-space: nowrap; }
+.invoice232-panel td:first-child { min-width: 160px; overflow-wrap: anywhere; }
+.invoice232-panel small { display: block; margin-top: 3px; color: var(--muted, #64748b); font-size: 12px; }
+.invoice232-panel [role='alert'] { padding: 10px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
+.invoice232-panel input:focus-visible, .invoice232-panel select:focus-visible, .invoice232-panel button:focus-visible, .invoice232-panel a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+@media (max-width: 680px) {
+  .invoice232-panel.panel { padding: 16px; }
+  .invoice232-panel .invoice232-fields { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTETYCZNE: plik przygotowany ręcznie na podstawie publicznej dokumentacji Poczty Polskiej, nie jest nagraniem odpowiedzi dostawcy. -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://e-nadawca.poczta-polska.pl"><soapenv:Body><ns:addShipmentResponse><retval><guid>GUID_PLACEHOLDER</guid><error><errorNumber>12010</errorNumber><errorDesc>Nieprawidłowy kod pocztowy adresata</errorDesc></error><error><errorNumber>12020</errorNumber><errorDesc>Brak numeru domu</errorDesc></error></retval></ns:addShipmentResponse></soapenv:Body></soapenv:Envelope>

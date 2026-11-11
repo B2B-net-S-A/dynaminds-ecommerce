@@ -1,0 +1,7 @@
+{
+  "_synthetic": "SYNTETYCZNE: kształt według publicznej dokumentacji PayU REST API 2.1, nie nagranie z PayU",
+  "status": { "statusCode": "SUCCESS" },
+  "redirectUri": "https://merch-prod.snd.payu.com/pay/?orderId=FIXT9ZZ1ABC251026GUEST000P01&token=synthetic",
+  "orderId": "FIXT9ZZ1ABC251026GUEST000P01",
+  "extOrderId": "sess-fixture-1"
+}

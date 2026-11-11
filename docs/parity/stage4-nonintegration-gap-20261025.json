@@ -1,0 +1,2845 @@
+{
+ "schema": "dynaminds-stage4-noninteg-gap/v1",
+ "as_of": "2026-10-25",
+ "goal": "DYNAMINDS-FULL-BASE-20261017",
+ "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+ "branch": "goal/full-base-20261017",
+ "audited_commit": "4f521ea5f3a64634125f36d7ed835aaa6bfee4dc",
+ "scope_note": "Etap 4 bez integracji marketplace/sklepów/przewoźników/ERP (te: docs/parity/INTEGRATIONS-WAVE1-GAP-20261025.md). Repricing dołączony z warunku 4 Goala.",
+ "method": "Statyczny audyt kodu przez sześciu równoległych recenzentów i koordynatora (obszar 7). Każde z 537 odwołań plik:linia sprawdzone skryptem względem treści commitu audited_commit (git show; plik i linia istnieją) i przejrzane ręcznie pod kątem treści; 5 przesunięć oraz 7 linii testów przesuniętych przez niezatwierdzone zmiany innych agentów poprawiono do commitu. Testów z bazą nie uruchamiano (Postgres zajęty). Uruchomiono tylko czysty test node tests/source-ddl-migration-plan.test.mjs: 3/4, pada na :23.",
+ "state_definitions": {
+  "done": "kod osiągalny ze zwykłego API/UI/workera i lokalny test pokrywający wymaganie",
+  "partial": "kod jest, ale brakuje części zachowania, UI, callsite albo testu",
+  "missing": "brak kodu dla wymagania"
+ },
+ "boundary": "Stan kodu, nie odbiór. Statusy scope v6 i domains.json bez zmian. Testy z bazą nieuruchomione, więc ich zieloność jest niepotwierdzona.",
+ "totals": {
+  "requirements": 103,
+  "done": 35,
+  "partial": 50,
+  "missing": 18,
+  "migration_needed": 33
+ },
+ "by_stage4_area": {
+  "1": {
+   "name": "Portal klienta, komunikacja, B2B, dropshipping",
+   "requirements": 25,
+   "done": 9,
+   "partial": 12,
+   "missing": 4,
+   "migration_needed": 11
+  },
+  "2": {
+   "name": "Automatyzacje i harmonogramy",
+   "requirements": 9,
+   "done": 0,
+   "partial": 8,
+   "missing": 1,
+   "migration_needed": 1
+  },
+  "3": {
+   "name": "Odporność",
+   "requirements": 21,
+   "done": 17,
+   "partial": 3,
+   "missing": 1,
+   "migration_needed": 2
+  },
+  "4": {
+   "name": "Raportowanie i AI (+ repricing z celu 4)",
+   "requirements": 18,
+   "done": 2,
+   "partial": 11,
+   "missing": 5,
+   "migration_needed": 8
+  },
+  "5": {
+   "name": "Administracja",
+   "requirements": 18,
+   "done": 6,
+   "partial": 9,
+   "missing": 3,
+   "migration_needed": 10
+  },
+  "6": {
+   "name": "Migracje między wydaniami",
+   "requirements": 8,
+   "done": 1,
+   "partial": 4,
+   "missing": 3,
+   "migration_needed": 1
+  },
+  "7": {
+   "name": "Stabilność tests/developer.test.ts",
+   "requirements": 4,
+   "done": 0,
+   "partial": 3,
+   "missing": 1,
+   "migration_needed": 0
+  }
+ },
+ "areas": [
+  {
+   "key": "portal_communication",
+   "no": 1,
+   "name": "Portal klienta i komunikacja (email, SMS, wiadomości)",
+   "summary": "Rdzeń jest lokalnie kompletny i ma testy: email z szablonem tekst+HTML, podgląd per odbiorca, partie do 200 zamówień, SMS z podglądem i test=1, wątki portalu z przydziałem, IMAP z ręcznym przypisaniem, zwroty i zmiana adresu w portalu. Brakuje konektorów wiadomości marketplace i helpdesku, automatycznego pobierania i dopasowania odpowiedzi IMAP, załączników innych niż faktura, tagu linku portalu i powiadomienia klienta o odpowiedzi. Domyślny link portalu nie wygasa i leży w bazie jawnym tekstem. Ścieżka SMS provider_live nie ma lokalnego testu.",
+   "counts": {
+    "requirements": 14,
+    "done": 4,
+    "partial": 9,
+    "missing": 1,
+    "migration_needed": 5
+   },
+   "items": [
+    {
+     "id": "COM-001",
+     "domain_id": "DOM-COM-001",
+     "requirement": "Wiadomość z karty zamówienia z historią klienta (odbiorca, wysyłka, odczyt wątku)",
+     "state": "done",
+     "evidence": [
+      "web/main.tsx:3009 EmailPanel z orderId w karcie zamówienia",
+      "web/operations.tsx:359 OrderSmsHistory w karcie zamówienia",
+      "server/email-routes.ts:210 GET /api/email/messages z filtrem order_id",
+      "web/customer-messages.tsx:256 wątek portalu tylko na stronie Wiadomości klientów",
+      "server/order-communication.ts:31 oś email+SMS+portal+email przychodzący, zakres zamówienia lub kupującego (do 20 zamówień)",
+      "server/customer-message-routes.ts:109 GET /api/orders/:id/communication",
+      "web/main.tsx:3010 panel Historia komunikacji z kupującym w karcie zamówienia"
+     ],
+     "tests": [
+      "tests/email.test.ts:539 historia zachowuje precyzję mikrosekund i filtr zamówienia",
+      "tests/sms.test.ts:532 historia stronicuje bez powtórek i filtruje zamówienie",
+      "tests/customer-messages.test.ts:135 buyer → own inbox → local portal reply → private note",
+      "tests/messages-s5.database.test.ts:199 oś łączy kanały, notatka tylko dla admin/operator, zakres kupującego, obca firma 404"
+     ],
+     "missing": "Zrobione 26.10 (S5). Bez indeksu (tenant_id, order_id) w email_messages/sms_messages — skan po firmie; indeks wymaga migracji.",
+     "migration": false,
+     "migration_why": "Oś czasu da się złożyć zapytaniem po istniejących tabelach email_messages, sms_messages i customer_messages.",
+     "effort": "M",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-002",
+     "domain_id": "DOM-COM-002",
+     "requirement": "Szablon tekstowy i HTML podstawia dane (edycja, podgląd tagów, wysyłka)",
+     "state": "done",
+     "evidence": [
+      "server/email.ts:46 lista zmiennych: tylko 7 tagów",
+      "server/email.ts:122 podstawianie {{tag}} z escapowaniem w HTML",
+      "server/email-routes.ts:130 POST /api/email/preview",
+      "web/email.tsx:539 podgląd HTML w iframe srcDoc",
+      "server/message-variables.ts:64 tagi portal_link, products, delivery_address, delivery_method, invoice_number (email i SMS)",
+      "server/email-routes.ts:133 POST /api/email/templates/preview",
+      "server/sms-routes.ts:96 POST /api/sms/templates/preview",
+      "web/messages-template-preview.tsx:51 podgląd na żywo w edytorze"
+     ],
+     "tests": [
+      "tests/email.test.ts:222 nieznane zmienne, nagłówki CRLF, sanitacja HTML, idempotencja",
+      "tests/email.test.ts:268 podgląd rozwija kwoty i ucieka HTML klienta",
+      "tests/sms.test.ts:174 szablon zna tylko jawne zmienne",
+      "tests/messages-s5.database.test.ts:119 tagi przez podgląd → kolejkę → worker",
+      "tests/messages-s5.database.test.ts:161 SMS z tagami i podgląd na żywo bez zapisu",
+      "tests/messages-s5.test.ts:36 walidacja tagów"
+     ],
+     "missing": "Zrobione 26.10 (S5). Tag linku płatności czeka na COM-PORTAL-6 (PayU).",
+     "migration": false,
+     "migration_why": "Szablony są tekstem; wystarczy render i walidacja w kodzie.",
+     "effort": "M",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-003",
+     "domain_id": "DOM-COM-003",
+     "requirement": "Załącznik dokumentu lub zdjęcia trafia do właściwego odbiorcy",
+     "state": "partial",
+     "evidence": [
+      "server/063_email_attachments.sql:1 CHECK attachment IN('none','invoice','odoo_invoice')",
+      "server/063_email_attachments.sql:10 email_message_files tylko application/pdf i text/html",
+      "server/email.ts:137 załącznik wyliczany z szablonu dla zamówienia",
+      "server/email-routes.ts:144 pobranie załącznika wiadomości"
+     ],
+     "tests": [
+      "tests/email-attachments.test.ts:353 SMTP otrzymuje MIME załącznika z identycznymi bajtami",
+      "tests/email-attachments.test.ts:442 obca firma i anonim nie pobierają załącznika",
+      "tests/email-attachments.test.ts:640 operacja masowa dołącza gotowe faktury"
+     ],
+     "missing": "Załącznikiem może być tylko faktura (DEMO, Fakturownia, Odoo). Brak proformy, korekty, paragonu, etykiety i pliku od operatora. Odpowiedź z portalu nie przyjmuje załącznika (tests/customer-messages.test.ts:380).",
+     "migration": true,
+     "migration_why": "CHECK-i w 063 ograniczają rodzaj i content_type; pliki operatora potrzebują nowej tabeli. Ten sam CHECK zmienia tor L7 integracji (email.label_attachments), więc robić razem z L7.",
+     "effort": "L"
+    },
+    {
+     "id": "COM-004",
+     "domain_id": "DOM-COM-004",
+     "requirement": "Masowe wiadomości pokazują indywidualne wyniki (wybór, partia, odczyt)",
+     "state": "done",
+     "evidence": [
+      "server/email.ts:32 partia do 200 zamówień",
+      "web/email.tsx:512 podgląd partii z pozycją i stanem dla każdego odbiorcy",
+      "web/operations.tsx:363 BulkOperations (akcje email i SMS)",
+      "server/sms.ts:220 smsBatch zwraca pozycje ze stanem",
+      "web/messages-batch-results.tsx:32 eksport CSV wyników partii i ponowny wybór nieudanych (invalid/failed)"
+     ],
+     "tests": [
+      "tests/email.test.ts:614 200 wiadomości: ograniczona partia, atomowa kolejka, 201 odrzucone",
+      "tests/email-actions.test.ts:366 operacja masowa ma podgląd i atomowy wynik każdej pozycji",
+      "tests/email-actions.test.ts:711 100 emaili: 10 porcji i 100 intencji, bez sieci",
+      "tests/sms-automations.test.ts:358 operacja masowa SMS z wynikiem każdej pozycji",
+      "tests/messages-s5.test.ts:198 CSV z ochroną przed formułami; uncertain nie jest ponawiany"
+     ],
+     "missing": "Drobne zrobione 26.10 (S5).",
+     "migration": false,
+     "migration_why": "Wyniki są już per wiadomość.",
+     "effort": "S",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-005",
+     "domain_id": "DOM-COM-005",
+     "requirement": "Własna skrzynka (IMAP) przypisuje odpowiedź do zamówienia",
+     "state": "partial",
+     "evidence": [
+      "server/email-inbound-transport.ts:6 klient ImapFlow",
+      "server/email-inbound-routes.ts:113 ręczny odczyt skrzynki (POST accounts/:id/previews)",
+      "server/email-inbound.ts:578 bindInboundEmail: przypisanie tylko ręczne",
+      "server/141_email_inbound.sql:25 email_inbound_bindings.actor_id NOT NULL"
+     ],
+     "tests": [
+      "tests/email-inbound.test.ts:26 import skrzynki → ręczne przypisanie → odpowiedź SMTP",
+      "tests/email-inbound.test.ts:110 pusta skrzynka zachowuje kursor null",
+      "tests/email-inbound.test.ts:133 załącznik bez tekstu przypisuje się dokładnie"
+     ],
+     "missing": "Worker nie pobiera skrzynki cyklicznie. Brak automatycznego dopasowania po In-Reply-To/References i po numerze zamówienia w temacie. Każde przypisanie robi człowiek.",
+     "migration": true,
+     "migration_why": "Automatyczne przypisanie wymaga actor_id dopuszczającego NULL albo kolumny źródła dopasowania; cykliczny odczyt potrzebuje harmonogramu konta.",
+     "effort": "L"
+    },
+    {
+     "id": "COM-006",
+     "domain_id": "DOM-COM-006",
+     "requirement": "SMS: nadawca, szablon, wynik dostawcy",
+     "state": "done",
+     "evidence": [
+      "server/integrations.ts:337 ustawienie sender kanału SMSAPI",
+      "server/sms-routes.ts:93 POST /api/sms/preview",
+      "server/sms.ts:409 wynik live: provider_id, idx, status",
+      "server/sms-delivery-routes.ts:20 callback doręczenia /callbacks/smsapi/:endpointId"
+     ],
+     "tests": [
+      "tests/sms.test.ts:395 profil SMSAPI: stały host, Bearer, test=1, check_idx",
+      "tests/sms.test.ts:467 odrzucenie kodem i duplikat53 nie są doręczeniem",
+      "tests/sms-automations.test.ts:205 pojedynczy SMS: podgląd, potwierdzenie, idempotencja",
+      "tests/sms-provider-live.database.test.ts:144 sms.send: jeden POST, idx/check_idx/notify_url, callback z adresu SMSAPI, status w UI",
+      "tests/sms-provider-live.database.test.ts:201 utracona odpowiedź uncertain bez drugiego POST, odmowa failed",
+      "tests/sms-provider-live.database.test.ts:121 endpoint i wysyłka tylko z MFA i zgodą"
+     ],
+     "missing": "Test provider_live dodany 26.10 (S5). Nadawca nadal jeden na połączenie (bez zmian).",
+     "migration": false,
+     "migration_why": "Tabele live są w 200_sms_delivery_submission.sql; brakuje testu z fałszywym transportem.",
+     "effort": "M",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-007",
+     "domain_id": "DOM-COM-007",
+     "requirement": "Portal zamówienia umożliwia bezpieczną wiadomość (link, wiadomość, odczyt w panelu)",
+     "state": "done",
+     "evidence": [
+      "server/customer-message-routes.ts:181 POST /api/public/orders/:token/messages",
+      "server/portal-view.ts:65 sekcja Kontakt ze sprzedawcą w portalu",
+      "server/customer-messages.ts:280 odpowiedź staffu ma delivery local_portal, bez powiadomienia",
+      "web/return-queue.tsx:215 PortalAccess: link i rotacja w karcie",
+      "server/message-variables.ts:8 stały lokalny adres linku portalu",
+      "web/portal-reply-notify.tsx:17 powiadomienie kupującego po odpowiedzi (podgląd i zatwierdzenie email)",
+      "server/email.ts:91 filtr HTML przepuszcza http tylko dla linku portalu"
+     ],
+     "tests": [
+      "tests/customer-messages.test.ts:135 kupujący → skrzynka → odpowiedź w portalu → notatka",
+      "tests/customer-messages.test.ts:268 rotacja, wyłączenie i wygaśnięcie linku pod blokadą zamówienia",
+      "tests/customer-messages.test.ts:573 równoległe doręczenie tym samym kluczem raz, limity tokenu i IP",
+      "tests/messages-s5.database.test.ts:119 wyłączony link zatrzymuje wiadomość, rotacja unieważnia podgląd"
+     ],
+     "missing": "Zrobione 26.10 (S5). Link wskazuje 127.0.0.1:4100 (zakres lokalny); powiadomienie wymaga zatwierdzenia, bez automatycznej wysyłki.",
+     "migration": false,
+     "migration_why": "Tag i powiadomienie to zmiany renderu i workflow.",
+     "effort": "M",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-008",
+     "domain_id": "DOM-COM-008",
+     "requirement": "Wspólny inbox obejmuje marketplace i helpdesk (połączenie, wątek, przydział)",
+     "state": "partial",
+     "evidence": [
+      "server/customer-message-routes.ts:87 PATCH przydziału wątku",
+      "server/customer-message-workflow-routes.ts:92 reguły automatyzacji wątków",
+      "server/075_customer_messages.sql:2 wątek zawsze ma order_id NOT NULL",
+      "web/main.tsx:1603 skrzynka: CustomerMessages + EmailInboundWorkspace"
+     ],
+     "tests": [
+      "tests/customer-message-workflows.test.ts:360 przydział CAS i odpięcie, prywatność aktywności",
+      "tests/customer-message-workflows.test.ts:195 jedna trwała reguła, cztery lokalne akcje"
+     ],
+     "missing": "Brak konektorów wiadomości Allegro, eBay, Amazon i helpdesku. Wątek musi należeć do zamówienia (brak pytań przed zakupem) i nie zapisuje kanału.",
+     "migration": true,
+     "migration_why": "Kolumny kanału i zewnętrznego ID wątku, order_id dopuszczający NULL, nowy rodzaj wiadomości.",
+     "effort": "L"
+    },
+    {
+     "id": "COM-PORTAL-1",
+     "domain_id": null,
+     "requirement": "Publiczna strona zamówienia (status, pozycje, płatność, przesyłki) z CSP i bez danych osobowych",
+     "state": "done",
+     "evidence": [
+      "server/portal-routes.ts:180 GET /api/public/orders/:token (HTML z nonce CSP)",
+      "server/portal-routes.ts:89 data(): status, pozycje, saldo, przesyłki",
+      "server/portal-routes.ts:50 link śledzenia InPost/DPD dla przesyłek live"
+     ],
+     "tests": [
+      "tests/portal.test.ts:102 portal z CSP, bez danych osobowych, notatek i powiązań magazynu",
+      "tests/return-exchanges-portal.test.ts:7 portal wymiany czyta przesyłki bez historii płatności",
+      "tests/messages-s5.database.test.ts:319 live ma link, sandbox nie"
+     ],
+     "missing": "Link śledzenia dodany 26.10 (S5).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-PORTAL-2",
+     "domain_id": null,
+     "requirement": "Zwrot lub reklamacja zgłaszana przez kupującego w portalu",
+     "state": "done",
+     "evidence": [
+      "server/portal-routes.ts:213 POST /api/public/orders/:token/returns",
+      "server/portal-routes.ts:221 ponowne sprawdzenie linku pod blokadą zamówienia"
+     ],
+     "tests": [
+      "tests/portal.test.ts:137 zgłoszenie bez sesji, audyt oznacza kupującego",
+      "tests/portal.test.ts:158 równoczesny replay tworzy jedną sprawę",
+      "tests/portal.test.ts:336 przed wydaniem, obcy Origin i ponad pięć oczekujących są blokowane"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "COM-PORTAL-3",
+     "domain_id": null,
+     "requirement": "Zmiana adresu dostawy przez kupującego (podgląd, zgoda, zastosowanie)",
+     "state": "done",
+     "evidence": [
+      "server/buyer-address-routes.ts:26 baza /api/public/orders/:token/address",
+      "server/buyer-address-routes.ts:36 POST previews/:id/apply z limitem",
+      "server/portal-view.ts:70 BuyerAddressPortal166 w portalu"
+     ],
+     "tests": [
+      "tests/buyer-address.test.ts:253 opt-in operatora, podgląd i zastosowanie jednej wersji",
+      "tests/buyer-address-portal-ui166.test.ts:86 porównanie sześciu pól i osobna zgoda",
+      "tests/buyer-address.test.ts:340 zmiana kraju lub punktu i obce ACL są odrzucane bez zapisu"
+     ],
+     "missing": "Świadome ograniczenie: bez zmiany kraju i punktu odbioru.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "COM-PORTAL-4",
+     "domain_id": null,
+     "requirement": "Autoryzacja linku portalu: token, wygaśnięcie, rotacja, wyłączenie",
+     "state": "partial",
+     "evidence": [
+      "server/portal-routes.ts:32 resolveToken sprawdza portal_enabled i portal_expires_at",
+      "server/portal-routes.ts:272 rotacja i wyłączenie tylko dla admina",
+      "server/domain.ts:661 zamówienie dostaje portal_token bez portal_expires_at",
+      "server/schema.sql:12 orders.portal_token text UNIQUE NOT NULL (jawny tekst)"
+     ],
+     "tests": [
+      "tests/portal.test.ts:205 nieznany, wygasły i wyłączony link nie czyta ani nie zgłasza",
+      "tests/portal.test.ts:231 admin rotuje i wyłącza link tylko swojej firmy",
+      "tests/portal.test.ts:256 unieważnienie linku wygrywa z rozpoczętym zgłoszeniem"
+     ],
+     "missing": "Domyślny link nie wygasa (expires_at NULL). Brak domyślnej ważności w ustawieniach firmy. Token leży w bazie jawnym tekstem, choć 081 hashuje portal_token_hash.",
+     "migration": true,
+     "migration_why": "Backfill domyślnej ważności i przejście na hash tokenu zmieniają orders.",
+     "effort": "M"
+    },
+    {
+     "id": "COM-PORTAL-5",
+     "domain_id": null,
+     "requirement": "Pobranie faktury z portalu",
+     "state": "done",
+     "evidence": [
+      "server/portal-routes.ts:117 download_available tylko demo/simulation lub lokalna proforma",
+      "server/portal-routes.ts:264 odmowa: dokument dostawcy wymaga kontaktu ze sprzedawcą",
+      "server/portal-routes.ts:313 GET /api/public/orders/:token/documents/:id/file: PDF Fakturowni z cache 063 lub zweryfikowany Odoo, walidacja jak załącznik email, audyt"
+     ],
+     "tests": [
+      "tests/portal.test.ts:291 portal pobiera dokument tylko swojego zamówienia, bez wywołania dostawcy",
+      "tests/messages-s5.database.test.ts:236 PDF Fakturowni bez wywołania dostawcy; obcy, wyłączony, zmieniony dokument odrzucone",
+      "tests/messages-s5.database.test.ts:289 PDF Odoo zamiast wydruku DEMO; zmiana konta → 409"
+     ],
+     "missing": "Zrobione 26.10 (S5). Plik musi przygotować pracownik (portal nie woła dostawcy).",
+     "migration": false,
+     "migration_why": "Wystarczy istniejący cache.",
+     "effort": "M",
+     "lane_update": {
+      "lane": "S5",
+      "date": "2026-10-26",
+      "doc": "docs/parity/PORTAL-COMM-S5-20261026.md"
+     }
+    },
+    {
+     "id": "COM-PORTAL-6",
+     "domain_id": null,
+     "requirement": "Płatność za zamówienie z portalu",
+     "state": "missing",
+     "evidence": [
+      "server/portal-routes.ts:127 portal pokazuje tylko saldo, bez akcji zapłaty"
+     ],
+     "tests": [],
+     "missing": "Brak linku płatności i bramki płatniczej. Zależy od decyzji o dostawcy płatności (poza falą 1 integracji).",
+     "migration": true,
+     "migration_why": "Stan sesji płatności i powiązanie z bramką.",
+     "effort": "L"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/customer-messages.ts",
+     "server/customer-message-routes.ts",
+     "server/customer-message-workflows.ts",
+     "server/customer-message-workflow-routes.ts",
+     "server/email.ts",
+     "server/email-routes.ts",
+     "server/email-inbound*.ts",
+     "server/sms.ts",
+     "server/sms-routes.ts",
+     "server/portal-routes.ts",
+     "server/portal-view.ts",
+     "web/customer-messages.tsx",
+     "web/email.tsx",
+     "web/email-inbound.tsx",
+     "web/sms.tsx",
+     "tests/customer-messages*.test.ts",
+     "tests/email*.test.ts (bez email-attachments)",
+     "tests/sms.test.ts",
+     "tests/portal.test.ts"
+    ],
+    "shared_touch": [
+     "server/app.ts (rejestracja tras, tylko dopisywanie)",
+     "server/worker.ts (cykliczny odczyt IMAP)",
+     "server/domain.ts:661 (domyślna ważność portal_token)",
+     "web/main.tsx (panele w karcie zamówienia)",
+     "web/operations.tsx (ActionEditor, BulkOperations: właściciel tor S3)",
+     "server/email-attachments.ts i server/063_email_attachments.sql (właściciel tor L7 integracji)"
+    ]
+   }
+  },
+  {
+   "key": "b2b_dropshipping",
+   "no": 1,
+   "name": "B2B i dropshipping",
+   "summary": "Rdzeń B2B jest w kodzie, podpięty w trasach i workerze (b2b.catalog) i pokryty testami: udostępnianie asortymentu i cen, zaproszenie z akceptacją, import i powiązanie produktu, zamówienia sieciowe, dropshipping, zwroty i portal kontrahenta. Całkiem brakuje kredytu kupieckiego (b2b-credit* to korekty faktur) i publicznego katalogu dostawców. Niepełne: odłączenie połączenia, aktualizacja zmapowanego produktu, akceptacja zamówienia przez dostawcę i przeniesienie numeru przesyłki dropshippingu do zamówienia klienta. domains.json wskazuje ścieżki /local-app/, a nie development/full-base.",
+   "counts": {
+    "requirements": 11,
+    "done": 5,
+    "partial": 3,
+    "missing": 3,
+    "migration_needed": 6
+   },
+   "items": [
+    {
+     "id": "B2B-001",
+     "domain_id": "DOM-B2B-001",
+     "requirement": "Dostawca udostępnia wybrany asortyment i ceny kontrahentowi; druga firma to odczytuje",
+     "state": "done",
+     "evidence": [
+      "server/b2b-catalog-scope-routes.ts:44 POST zakresu katalogu dostawcy per konto (podgląd, potem zatwierdzenie)",
+      "server/b2b-network.ts:233 cennik przypisany do konta kontrahenta",
+      "server/b2b-network.ts:715 GET katalogu połączenia po stronie kupującego",
+      "server/worker.ts:271 zadanie b2b.catalog publikuje snapshot"
+     ],
+     "tests": [
+      "tests/b2b-catalog-scope.test.ts:49 pierwsza konfiguracja dostawcy zmienia tylko jawną konfigurację",
+      "tests/b2b-catalog-network-scopes.test.ts:60 publikacja w zakresie, tworzenie produktu docelowego",
+      "tests/b2b-network.test.ts:251 replay odświeżenia kolejkuje jedno zadanie, prywatne SKU nie wyciekają",
+      "tests/b2b.test.ts:197 katalog zawiera tylko jawnie przypisane ceny"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "Schemat 039, 144.",
+     "effort": "S"
+    },
+    {
+     "id": "B2B-002",
+     "domain_id": "DOM-B2B-002",
+     "requirement": "Kod połączenia wiąże dostawcę i sprzedawcę (kod, akceptacja, odłączenie)",
+     "state": "partial",
+     "evidence": [
+      "server/b2b-network.ts:545 POST network-invite; token ważny 24 h, adresowany na e-mail",
+      "server/b2b-network.ts:588 POST network/accept przez administratora odbiorcy",
+      "server/b2b-network.ts:656 PATCH links/:id zmienia tylko paused i schedule_minutes",
+      "server/b2b-network.ts:562 'Kontrahent ma juz polaczona firme' blokuje ponowne połączenie"
+     ],
+     "tests": [
+      "tests/b2b-network.test.ts:167 tylko adresowany administrator akceptuje raz",
+      "tests/b2b-network.test.ts:193 role, wygasłe i zastąpione zaproszenia blokują połączenie",
+      "tests/b2b-network.test.ts:447 cofnięcie konta zatrzymuje odczyty i publikację"
+     ],
+     "missing": "Brak odłączenia z prawem obu stron (stan linku, data, audyt, zakaz nowych zakupów przy zachowanej historii), brak cofnięcia oczekującego zaproszenia i ponownego połączenia po odłączeniu.",
+     "migration": true,
+     "migration_why": "b2b_links nie ma stanu ani disconnected_at (039_b2b_network.sql:23); CHECK zaproszeń dopuszcza tylko pending/accepted/revoked.",
+     "effort": "M"
+    },
+    {
+     "id": "B2B-003",
+     "domain_id": "DOM-B2B-003",
+     "requirement": "Sprzedawca mapuje produkt dostawcy do własnego (import, powiązanie, aktualizacja)",
+     "state": "partial",
+     "evidence": [
+      "server/b2b-network.ts:807 POST catalog/:item/product tworzy własny produkt ze snapshotu",
+      "server/b2b-network.ts:880 POST catalog/:item/bind wiąże z istniejącym produktem lub wariantem",
+      "server/b2b-network.ts:898 'Produkt ma już lokalne powiązanie'; brak odpięcia i przepięcia",
+      "web/b2b-network.tsx:270 UI powiązania"
+     ],
+     "tests": [
+      "tests/b2b-network.test.ts:554 produkt i obrazy należą do odbiorcy; bez synchronizacji stanu i ceny",
+      "tests/b2b-catalog-network-scopes.test.ts:103 powiązanie wymaga własnego produktu prostego lub wariantu",
+      "tests/b2b-network.test.ts:312 nowa cena i dostępność nie zmieniają własnego stanu"
+     ],
+     "missing": "Zmiana ceny lub dostępności u dostawcy odświeża tylko snapshot; brak synchronizacji ceny zakupu i stanu wirtualnego, odpięcia i przepięcia z historią oraz podglądu różnic.",
+     "migration": true,
+     "migration_why": "Powiązania są niezmienne, więc odpięcie wymaga tabeli zdarzeń; polityka synchronizacji wymaga nowych kolumn.",
+     "effort": "M"
+    },
+    {
+     "id": "B2B-004",
+     "domain_id": "DOM-B2B-004",
+     "requirement": "Zamówienie B2B zachowuje status obu stron (przekazanie, potwierdzenie, aktualizacja)",
+     "state": "done",
+     "evidence": [
+      "server/b2b-network-orders.ts:380 checkout tworzy zamówienie u dostawcy i zakup u kupującego",
+      "server/b2b-network-orders.ts:169 fulfillment() czyta status, przesyłki i płatności dostawcy",
+      "server/040_b2b_network_orders.sql:14 stan kupującego ordered/partial/received",
+      "server/b2b-network-returns.ts:173 anulowanie przez kupującego zwalnia rezerwację dostawcy"
+     ],
+     "tests": [
+      "tests/b2b-network-orders.test.ts:234 równoległy checkout: jedno zamówienie i jeden zakup",
+      "tests/b2b-network-orders.test.ts:290 tracking i częściowe przyjęcia, PZ raz",
+      "tests/b2b-network-orders.test.ts:450 anulowane zamówienie zwalnia rezerwację"
+     ],
+     "missing": "Status dostawcy to projekcja przy odczycie, bez zdarzenia u kupującego (B2B-004-X).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "B2B-004-X",
+     "domain_id": "DOM-B2B-004",
+     "requirement": "Akceptacja lub odrzucenie zamówienia przez dostawcę i powiadomienie kupującego",
+     "state": "missing",
+     "evidence": [
+      "server/b2b-network-orders.ts:380 checkout od razu rezerwuje towar u dostawcy, bez kroku akceptacji",
+      "server/b2b-network-orders.ts:201 przesyłki dostawcy czytane tylko przy GET szczegółów"
+     ],
+     "tests": [],
+     "missing": "Brak kroku 'dostawca potwierdza lub odrzuca' i zdarzenia u kupującego po zmianie statusu i nadaniu.",
+     "migration": true,
+     "migration_why": "Nowy stan w CHECK b2b_network_orders.state (040:14) albo tabela decyzji.",
+     "effort": "M"
+    },
+    {
+     "id": "B2B-005",
+     "domain_id": "DOM-B2B-005",
+     "requirement": "Dropshipping przekazuje adres i wynik realizacji",
+     "state": "partial",
+     "evidence": [
+      "server/b2b-network-dropshipping.ts:928 adres odbiorcy końcowego trafia do zamówienia dostawcy",
+      "server/b2b-network-dropshipping.ts:413 sprzedawca czyta przesyłki dostawcy",
+      "server/b2b-network-dropshipping.ts:1153 ręczne uzgodnienie ustawia u klienta status shipped",
+      "server/108_b2b_dropship_dispatch.sql:2 funkcja triggera nadania (shopify_capture_dispatch) utrwala dowód nadania"
+     ],
+     "tests": [
+      "tests/b2b-network-dropshipping.test.ts:444 pozycje detaliczne, odbiorca i rozliczenie hurtowe rozdzielone",
+      "tests/b2b-network-dropshipping.test.ts:663 pełna realizacja wymaga jawnego uzgodnienia",
+      "tests/b2b-network-dropshipping.test.ts:826 payload kuriera dostawcy ogrodzony"
+     ],
+     "missing": "Numer przesyłki dostawcy nie przechodzi do zamówienia klienta, więc sklep i marketplace nie dostają trackingu. Uzgodnienie tylko ręczne. Żaden test nie sprawdza trackingu.",
+     "migration": true,
+     "migration_why": "Kopiowanie trackingu wymaga nowego rodzaju akcji (CHECK kind w 108) albo tabeli mapowania przesyłek.",
+     "effort": "M"
+    },
+    {
+     "id": "B2B-005-X",
+     "domain_id": "DOM-B2B-005",
+     "requirement": "Dropshipping zamówień z kanałów zewnętrznych (intencje, import)",
+     "state": "done",
+     "evidence": [
+      "server/b2b-external-order-intents-routes.ts:58 POST intencji",
+      "server/b2b-external-order-imports-routes.ts:48 podgląd importu do intencji",
+      "server/app.ts:1630 rejestracja tras intencji"
+     ],
+     "tests": [
+      "tests/b2b-external-order-intent.test.ts:538 równoległy checkout zachowuje klienta zewnętrznego",
+      "tests/b2b-external-order-intent.test.ts:680 mieszane local/external wydaje tylko właściwą paczkę"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "B2B-006",
+     "domain_id": "DOM-B2B-006",
+     "requirement": "Zwrot B2B powiązany z realizacją dostawcy (wniosek, akceptacja, częściowe przyjęcie)",
+     "state": "done",
+     "evidence": [
+      "server/b2b-network-returns.ts:222 POST wniosku zwrotu",
+      "server/b2b-network-returns.ts:358 wysyłka zwrotu: WZ kupującego",
+      "server/b2b-network-returns.ts:456 odzysk: PZ po odrzuceniu",
+      "server/b2b-dropshipping-return-routes.ts:99 decyzja dostawcy w zwrocie dropshippingu"
+     ],
+     "tests": [
+      "tests/b2b-network-returns.test.ts:340 jedna WZ, odrzucenie nie odtwarza stanu",
+      "tests/b2b-network-returns.test.ts:400 częściowa akceptacja zwraca tylko nieprzyjęte sztuki",
+      "tests/b2b-dropshipping-returns.test.ts:323 odmowa i wycofanie nie symulują przyjęcia"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "B2B-007",
+     "domain_id": "DOM-B2B-007",
+     "requirement": "Kredyt kupiecki pilnuje limitu i waluty (nadanie, zakup, rozliczenie)",
+     "state": "missing",
+     "evidence": [
+      "server/038_b2b.sql:9 payment_mode tylko prepaid lub cod",
+      "server/b2b-credit-routes.ts:6 /api/b2b-corrections to korekty faktur, nie kredyt",
+      "server/b2b-network-orders.ts:166 tylko kontrola zgodności waluty zakupu"
+     ],
+     "tests": [],
+     "missing": "Całość: limit per konto z walutą, tryb płatności 'kredyt' w trzech checkoutach z atomową kontrolą ekspozycji (odmowa bez częściowego obciążenia), termin, rozliczenie wpłatą lub zwrotem, saldo po obu stronach, UI.",
+     "migration": true,
+     "migration_why": "Nowe tabele limitu i księgi ekspozycji, rozszerzenie CHECK payment_mode (038_b2b.sql:9).",
+     "effort": "L"
+    },
+    {
+     "id": "B2B-008",
+     "domain_id": "DOM-B2B-008",
+     "requirement": "Publiczny katalog dostawców ze zgłoszeniem i akceptacją",
+     "state": "missing",
+     "evidence": [
+      "server/b2b-network.ts:545 połączenie inicjuje wyłącznie dostawca zaproszeniem na znany e-mail",
+      "server/b2b-network.ts:588 akceptacja wymaga tokenu; brak prośby od sprzedawcy"
+     ],
+     "tests": [],
+     "missing": "Profil publiczny dostawcy (opt-in), wyszukiwarka, prośba sprzedawcy z akceptacją przez istniejące invite/accept, bez ujawniania cen przed akceptacją.",
+     "migration": true,
+     "migration_why": "Nowe tabele profili i próśb z RLS.",
+     "effort": "L"
+    },
+    {
+     "id": "B2B-PORTAL",
+     "domain_id": null,
+     "requirement": "Portal B2B dla kontrahenta bez firmy w systemie (logowanie, katalog, wycena, zamówienie, zwrot)",
+     "state": "done",
+     "evidence": [
+      "server/b2b.ts:501 zaproszenie kontrahenta do portalu",
+      "server/b2b.ts:639 katalog z przypisanymi cenami",
+      "server/b2b.ts:693 checkout wyceny",
+      "server/b2b.ts:823 zwrot z portalu"
+     ],
+     "tests": [
+      "tests/b2b.test.ts:242 równoległy replay checkoutu: jedno zamówienie i jedna rezerwacja",
+      "tests/b2b.test.ts:372 kupujący dochodzi do przesyłki, faktury, częściowego zwrotu i rozliczenia"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/b2b*.ts",
+     "server/b2b-merchant-credit*.ts (nowe)",
+     "server/b2b-supplier-directory*.ts (nowe)",
+     "web/b2b*.tsx",
+     "tests/b2b*.test.ts"
+    ],
+    "shared_touch": [
+     "server/app.ts (rejestracja tras)",
+     "server/db.ts + pakowanie migracji",
+     "server/worker.ts (opcjonalny automatyczny reconcile trackingu)",
+     "docs/parity/domains.json (ścieżki /local-app/ → full-base)"
+    ]
+   }
+  },
+  {
+   "key": "automations_schedules",
+   "no": 2,
+   "name": "Automatyzacje i harmonogramy",
+   "summary": "Zwykły runtime (server/index.ts) sam startuje globalny worker: 15 schedulerów i do 10 zadań na cykl co sekundę. Pauza i wznowienie istnieją dla każdego schedulera, ale tylko na ekranie danej funkcji; brak wspólnego widoku i metryk kolejki. Jeden wyjątek dowolnego schedulera przerywa cały cykl. Procesor scoped (bez replay) działa tylko z flagą CLI; w zwykłym runtime przełącznik zwraca 503.",
+   "counts": {
+    "requirements": 9,
+    "done": 0,
+    "partial": 8,
+    "missing": 1,
+    "migration_needed": 1
+   },
+   "items": [
+    {
+     "id": "AUTO-01",
+     "domain_id": "DOM-AUTO-009",
+     "requirement": "Workery i schedulery startują bez ręcznej akcji, awaria jednego nie zatrzymuje reszty",
+     "state": "partial",
+     "evidence": [
+      "server/index.ts:17 startWorker(), gdy DYNA_WORKER_DISABLED nie jest true",
+      "scripts/dev.ts:48 dev uruchamia server/index.ts",
+      "server/worker.ts:569 startWorker: setInterval 1 s, schedulery i tick ×10",
+      "server/worker.ts:591 jeden catch na wszystkie schedulery i tick, tylko console.error"
+     ],
+     "tests": [],
+     "missing": "Brak testu startWorker. Wyjątek jednego schedulera pomija pozostałe schedulery i tick w tym cyklu. Runtime ordinary ma globalne workery wyłączone (server/ordinary-local-runtime.ts:174).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "AUTO-02",
+     "domain_id": null,
+     "requirement": "Każdy kind i scheduler jest podpięty w workerze i ma test",
+     "state": "partial",
+     "evidence": [
+      "server/worker.ts:575 15 schedulerów w pętli (575-589)",
+      "server/worker.ts:403 nieznany kind → wyjątek (dotyczy automation.local_stock)",
+      "server/worker.ts:263 obsługa replenishment kolejkowanego triggerem"
+     ],
+     "tests": [
+      "tests/automation-schedules.test.ts:461 dwa schedulery, zaległe terminy",
+      "tests/dpd-collections.test.ts:837 równoległe schedulery DPD, jedno uruchomienie",
+      "tests/sync.test.ts:324 harmonogram zleca raz"
+     ],
+     "missing": "Brak testów scheduleProductRuleOccurrencesDue i scheduleSupplierRemoteFeedsDue. Globalny tick nie wyklucza automation.local_stock, więc takie zadanie kończy się błędem 'Nieobsługiwane zadanie'.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "AUTO-03",
+     "domain_id": null,
+     "requirement": "Pauza i wznowienie w UI dla każdego schedulera",
+     "state": "partial",
+     "evidence": [
+      "server/operation-routes.ts:284 PATCH enabled reguły (UI web/operations.tsx:1101)",
+      "server/automation-schedule-routes.ts:72 PATCH harmonogramu (UI web/automation-schedules.tsx:299)",
+      "server/product-rule-schedules.ts:58 tylko /pause; wznowienie = nowy podgląd i zatwierdzenie",
+      "server/ebay-fulfillment-routes.ts:48 przykład przełącznika per integracja"
+     ],
+     "tests": [
+      "tests/automation-schedules.test.ts:389 wyłączenie w połowie, wznowienie bez powtórek",
+      "tests/dpd-collections.test.ts:864 pauza anuluje zadania przed zapisem",
+      "tests/order-status.test.ts:558 pauza po utracie odpowiedzi"
+     ],
+     "missing": "Brak wspólnego widoku harmonogramów (stan, next_at, ostatni błąd, pauza i wznowienie). Product rule schedule nie ma prostego wznowienia ani testu pauzy.",
+     "migration": false,
+     "migration_why": "Agregujący odczyt istniejących tabel.",
+     "effort": "M"
+    },
+    {
+     "id": "AUTO-04",
+     "domain_id": "DOM-AUTO-006",
+     "requirement": "Uzgadnianie niepewnych skutków z UI",
+     "state": "partial",
+     "evidence": [
+      "server/integration-recovery-query.ts:24 kolejka odzysku obejmuje tylko fulfillment Shopify, Amazon i eBay",
+      "server/ebay-fulfillment-routes.ts:104 reconcile per funkcja",
+      "server/local-automation-worker-control.ts:177 reconciliation_required, automatic_retry:false"
+     ],
+     "tests": [
+      "tests/order-status.test.ts:339 niepewny zapis, uzgodnienie odczytem",
+      "tests/offers.test.ts:577 uzgodnienie odczytem bez PUT",
+      "tests/shopify-fulfillment.test.ts:262 ręczne uzgodnienie"
+     ],
+     "missing": "Brak wspólnej kolejki 'do uzgodnienia' dla SMS, email, DPD, invoice_plans, order_status_plans, offer_plans i shipping_plans.",
+     "migration": false,
+     "migration_why": "Odczyt istniejących stanów uncertain/failed.",
+     "effort": "M"
+    },
+    {
+     "id": "AUTO-05",
+     "domain_id": null,
+     "requirement": "Metryki workerów w UI: opóźnienie kolejki, błędy, ponowienia",
+     "state": "missing",
+     "evidence": [
+      "server/app.ts:1171 /api/dashboard liczy zadania per stan; dashboard tego nie pokazuje",
+      "server/operation-routes.ts:233 /api/automations zwraca liczniki zadań",
+      "server/app.ts:972 health ma tylko flagę background_workers_enabled, bez heartbeat"
+     ],
+     "tests": [],
+     "missing": "Endpoint i panel: najstarszy pending, running ze starym locked_at, failed i próby per kind, ostatni błąd, heartbeat pętli, provider_wait_until. Brak testów.",
+     "migration": false,
+     "migration_why": "jobs ma run_at, attempts, error, locked_at; heartbeat w pamięci lub w health.",
+     "effort": "M"
+    },
+    {
+     "id": "AUTO-06",
+     "domain_id": "DOM-AUTO-007",
+     "requirement": "Grupy warunków i akcje tworzą czytelny łańcuch z podglądem",
+     "state": "partial",
+     "evidence": [
+      "server/operation-schema.ts:101 match all/any, do 10 warunków, jeden poziom",
+      "web/operations.tsx:916 'Zdarzenie → warunki → akcje'",
+      "server/operation-routes.ts:336 POST podglądu reguły",
+      "server/automations.ts:232 akcje atomowo w SAVEPOINT"
+     ],
+     "tests": [
+      "tests/operations.test.ts:492 podgląd nie zmienia danych",
+      "tests/operations.test.ts:346 błąd drugiej akcji cofa całą regułę",
+      "tests/operations.test.ts:534 zmiana po podglądzie, pominięcie"
+     ],
+     "missing": "Brak zagnieżdżonych grup warunków i grup reguł; podgląd nie pokazuje łańcucha zależnych reguł i opóźnień.",
+     "migration": false,
+     "migration_why": "Definicja w automation_rules.config jsonb.",
+     "effort": "M"
+    },
+    {
+     "id": "AUTO-07",
+     "domain_id": "DOM-AUTO-008",
+     "requirement": "Harmonogram i zdarzenie własne tworzą trwałe zadanie z historią",
+     "state": "partial",
+     "evidence": [
+      "server/automation-schedules.ts:118 scheduleAutomationsDue",
+      "server/026_automation_schedules.sql:22 unikalne aktywne wykonanie",
+      "server/automation-schedule-routes.ts:160 historia wykonań",
+      "server/operation-schema.ts:21 lista wyzwalaczy bez zdarzenia własnego"
+     ],
+     "tests": [
+      "tests/automation-schedules.test.ts:461 zaległe terminy scalone",
+      "tests/automation-schedules.test.ts:520 odzysk wygasłej dzierżawy z checkpointu",
+      "web/automation-schedules-history.test.mjs:14 historia przez GET"
+     ],
+     "missing": "Brak zdarzeń własnych: definicji, akcji 'wywołaj zdarzenie', wywołania z API i UI, historii.",
+     "migration": true,
+     "migration_why": "Tabela definicji zdarzeń i wywołań z client_key.",
+     "effort": "M"
+    },
+    {
+     "id": "AUTO-08",
+     "domain_id": "DOM-AUTO-009",
+     "requirement": "Operator nadzoruje procesory (start, pauza, odzysk) bez codziennych helperów",
+     "state": "partial",
+     "evidence": [
+      "server/local-automation-worker-control.ts:137 POST włącz/wyłącz z kluczem idempotencji",
+      "server/local-automation-worker-control.ts:139 503, gdy procesor niedostępny",
+      "server/app.ts:1602 scoped worker tylko, gdy scopedAutomationEnabled",
+      "server/ordinary-local-cli.ts:37 wymaga flagi CLI --scoped-automation"
+     ],
+     "tests": [
+      "tests/scoped-automation-diagnostics.test.ts:97 GET nie udaje działającego workera",
+      "tests/scoped-automation-diagnostics.test.ts:85 pauza konfiguracji to nie ACK drenażu",
+      "tests/automation-local-effects.test.ts:124 lease odrzuca fałszywe i odwołane uprawnienia"
+     ],
+     "missing": "W zwykłym runtime nie da się uruchomić procesora z UI (503). Dwa sprzeczne kontrakty: globalny reaper z replay i scoped bez replay. Odzysk attempted/unknown tylko do odczytu, bez decyzji operatora.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "L"
+    },
+    {
+     "id": "AUTO-09",
+     "domain_id": "DOM-AUTO-005",
+     "requirement": "Restart nie dubluje tego samego terminu harmonogramu",
+     "state": "partial",
+     "evidence": [
+      "server/026_automation_schedules.sql:22 unikalne zadanie queued per harmonogram",
+      "server/155_product_rule_schedules.sql:5 UNIQUE(tenant_id,schedule_id,schedule_version,due_at)",
+      "server/automation-schedules.ts:134 FOR UPDATE SKIP LOCKED"
+     ],
+     "tests": [
+      "tests/automation-schedules.test.ts:461 dwa schedulery, zaległe terminy",
+      "tests/automation-schedules.test.ts:591 awaria przed checkpointem bez duplikatu notatki"
+     ],
+     "missing": "Brak testu dla product rule schedules i supplier remote feeds (restart, dwa schedulery, ten sam termin).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/worker-metrics*.ts (nowe)",
+     "web/worker-monitor.tsx (nowy)",
+     "web/schedules-overview.tsx (nowy)",
+     "server/operation-schema.ts",
+     "server/automations.ts",
+     "server/operation-routes.ts",
+     "web/operations.tsx",
+     "server/product-rule-schedules.ts",
+     "server/local-automation-worker-control.ts",
+     "tests/worker-loop.test.ts (nowy)",
+     "tests/product-rule-schedules.test.ts (nowy)"
+    ],
+    "shared_touch": [
+     "server/worker.ts:569-600 (pętla startWorker)",
+     "server/app.ts (rejestracja tras)",
+     "web/main.tsx (nawigacja)",
+     "server/db.ts (tylko AUTO-07)"
+    ]
+   }
+  },
+  {
+   "key": "resilience",
+   "no": 3,
+   "name": "Odporność: restart, duplikat, timeout, utrata ACK",
+   "summary": "Większość przepływów z efektem zewnętrznym zapisuje trwałą fazę lub attempted_at przed wywołaniem, a reapery w worker.ts zamieniają wygasłe dzierżawy na failed lub uncertain. Testy utraty ACK, timeoutu, starej dzierżawy i replay są dla importu, faktur, InPost, DPD, statusów, ofert, fulfillmentu, SMS, email, B2B, płatności, Odoo i paragonów. Luki: KSeF bez znacznika przed wysyłką i bez obsługi 440 'Duplikat', DHL i Poczta Polska tylko z magazynem w pamięci, brak testu restartu procesu.",
+   "counts": {
+    "requirements": 21,
+    "done": 17,
+    "partial": 3,
+    "missing": 1,
+    "migration_needed": 2
+   },
+   "items": [
+    {
+     "id": "RES-01",
+     "domain_id": null,
+     "requirement": "Import zamówień bez duplikatów (restart, ponowienie, webhook)",
+     "state": "done",
+     "evidence": [
+      "server/002_imports.sql:13 inbound_orders UNIQUE(tenant_id,channel_id,external_id)",
+      "server/imports.ts:425 ON CONFLICT DO UPDATE",
+      "server/schema.sql:26 jobs UNIQUE(tenant_id,dedup_key)"
+     ],
+     "tests": [
+      "tests/imports.test.ts:182 konkurencyjne ponowienia rezerwują raz",
+      "tests/sync.test.ts:285 porzucona dzierżawa, stary worker nie zapisuje",
+      "tests/sync.test.ts:391 deduplikacja dostaw webhook"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-02",
+     "domain_id": null,
+     "requirement": "Numeracja faktur lokalnych bez luk i duplikatów",
+     "state": "done",
+     "evidence": [
+      "server/invoice230.ts:235 licznik FOR UPDATE w tej samej transakcji",
+      "server/230_invoices.sql:93 UNIQUE(tenant_id,number)"
+     ],
+     "tests": [
+      "tests/invoice230.database.test.ts:112 replay client_key zwraca ten sam dokument",
+      "tests/invoices.test.ts:351 dwa zatwierdzenia, jeden dokument"
+     ],
+     "missing": "Brak testu równoległego wystawienia dwóch zamówień w tej samej serii 230 (atomowe w bazie, ryzyko niskie).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-03",
+     "domain_id": null,
+     "requirement": "Zapis faktury do zewnętrznego systemu (invoice.write)",
+     "state": "done",
+     "evidence": [
+      "server/invoices.ts:543 faza przed POST",
+      "server/worker.ts:179 reaper invoice_plans → 'uzgodnij dokument'"
+     ],
+     "tests": [
+      "tests/invoices.test.ts:273 niepewny POST blokuje drugi POST, uzgodnienie tylko czyta",
+      "tests/invoices.test.ts:515 nieaktualna dzierżawa zatrzymuje API"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-04",
+     "domain_id": null,
+     "requirement": "Wysyłka KSeF bez podwójnej wysyłki i z poprawnym stanem po utracie odpowiedzi",
+     "state": "partial",
+     "evidence": [
+      "server/229_ksef.sql:114 jedna żywa wysyłka na dokument",
+      "server/ksef229.ts:236 sendInvoice bez trwałego znacznika przed wywołaniem",
+      "server/ksef229.ts:302 storeAttempt dopiero po odpowiedzi",
+      "server/ksef229-fake.ts:176 fake zwraca 440 Duplikat; ksef229.ts go nie obsługuje"
+     ],
+     "tests": [
+      "tests/ksef229.database.test.ts:127 drugi send nie wysyła ponownie po akceptacji",
+      "tests/ksef229.database.test.ts:157 5xx → offline → późniejsza wysyłka",
+      "tests/ksef229-client.test.ts:116 440 na poziomie klienta"
+     ],
+     "missing": "Trwały znacznik przed sendInvoice; przy retry odczyt statusu przed ponowną wysyłką; 440 z numerem KSeF = uzgodnienie, nie odrzucenie. Brak testów: timeout po przyjęciu, awaria między sendInvoice a storeAttempt. Właściciel plików: tor L1 integracji.",
+     "migration": true,
+     "migration_why": "Nowy stan sending/uncertain w CHECK stanu wysyłki (229_ksef.sql:83) i kolumna znacznika próby.",
+     "effort": "M"
+    },
+    {
+     "id": "RES-05",
+     "domain_id": null,
+     "requirement": "Etykiety InPost: utracona odpowiedź create/buy bez drugiego POST i drugiej płatności",
+     "state": "done",
+     "evidence": [
+      "server/shipping.ts:390 savePhase create_started/buy_started przed wywołaniem",
+      "server/shipping.ts:533 uzgodnienie przez listę przesyłek po reference",
+      "server/worker.ts:170 reaper shipping_plans"
+     ],
+     "tests": [
+      "tests/shipping.test.ts:340 utracona odpowiedź create, bez drugiego POST",
+      "tests/shipping.test.ts:364 utracona odpowiedź buy bez ponownej płatności",
+      "tests/shipping.test.ts:591 fencing dzierżawy przed mutacją"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-06",
+     "domain_id": null,
+     "requirement": "Etykiety DPD bez ponownej generacji",
+     "state": "done",
+     "evidence": [
+      "server/dpd-shipping.ts:367 faza create_started przed POST"
+     ],
+     "tests": [
+      "tests/dpd.test.ts:383 utracona odpowiedź create, odzysk po reference",
+      "tests/dpd.test.ts:468 utracona odpowiedź etykiety",
+      "tests/dpd.test.ts:704 wygasła dzierżawa po odpowiedzi"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-07",
+     "domain_id": null,
+     "requirement": "Przesyłki DHL i Poczta Polska bez duplikatów po restarcie",
+     "state": "missing",
+     "evidence": [
+      "server/carrier-dhl.ts:57 komentarz: wiring ma zastąpić magazyn w pamięci",
+      "server/carrier-pocztapolska-shipments.ts:26 memoryPocztaPolskaJournal (Map)"
+     ],
+     "tests": [
+      "tests/carrier-dhl.test.ts:167 utrata ACK create bez ponownej wysyłki (klient i fake)",
+      "tests/carrier-pocztapolska.test.ts:228 lost/timeout/5xx jako uncertain bez retry"
+     ],
+     "missing": "Brak trwałego magazynu w bazie, więc restart gubi stan started/uncertain; moduły nie są podpięte do tras ani workera. Właściciel: tor L3 integracji (krok 0).",
+     "migration": true,
+     "migration_why": "Trwałe claimy/dziennik albo rozszerzenie shipping_plans.",
+     "effort": "M"
+    },
+    {
+     "id": "RES-08",
+     "domain_id": null,
+     "requirement": "Zapis statusów zamówień do kanałów",
+     "state": "done",
+     "evidence": [
+      "server/order-status.ts:461 blokada nowego planu w fazie write_started/verify",
+      "server/worker.ts:164 reaper order_status_plans"
+     ],
+     "tests": [
+      "tests/order-status.test.ts:339 niepewny zapis blokuje nowy plan, uzgodnienie tylko odczytem",
+      "tests/order-status.test.ts:609 nieaktualna dzierżawa bez PUT"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-09",
+     "domain_id": null,
+     "requirement": "Zapis stanów i cen ofert do kanałów",
+     "state": "done",
+     "evidence": [
+      "server/offers.ts:1182 blokada w fazie write_started/verify",
+      "server/worker.ts:167 reaper offer_plans",
+      "server/automation-local-effects.ts:69 zadanie stanu z dedup_key ON CONFLICT DO NOTHING"
+     ],
+     "tests": [
+      "tests/offers.test.ts:635 utracony POST odzyskuje zapisany wynik",
+      "tests/offer-sync.test.ts:384 utracona odpowiedź po PUT, tylko GET",
+      "tests/automation-local-effects.test.ts:104 unknown nigdy nie ponawia"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-10",
+     "domain_id": null,
+     "requirement": "Fulfillment marketplace (Shopify, Amazon, eBay) bez drugiego POST",
+     "state": "done",
+     "evidence": [
+      "server/shopify-fulfillment.ts:1127 blokada w write_started/verify",
+      "server/amazon-fulfillment.ts:486 blokada w write_started/verify",
+      "server/ebay-fulfillment.ts:472 blokada w write_started/verify"
+     ],
+     "tests": [
+      "tests/shopify-fulfillment.test.ts:249 utracona odpowiedź, tylko GET",
+      "tests/amazon-fulfillment.test.ts:297 utracony POST tylko do odczytu",
+      "tests/ebay-fulfillment.test.ts:429 utracona odpowiedź, GET bez drugiego POST"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-11",
+     "domain_id": null,
+     "requirement": "Wysyłka SMS bez podwójnej wysyłki",
+     "state": "done",
+     "evidence": [
+      "server/sms.ts:386 attempted_at przed wywołaniem",
+      "server/worker.ts:209 wygasła dzierżawa po próbie → uncertain"
+     ],
+     "tests": [
+      "tests/sms.test.ts:447 timeout i niejednoznaczny JSON jako uncertain bez POST",
+      "tests/sms.test.ts:483 wygasła dzierżawa po próbie nie powtarza"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-12",
+     "domain_id": null,
+     "requirement": "Wysyłka email (także z automatyzacji) bez ponownej wysyłki",
+     "state": "done",
+     "evidence": [
+      "server/email.ts:434 attempted_at przed SMTP",
+      "server/worker.ts:216 uncertain po wygasłej dzierżawie"
+     ],
+     "tests": [
+      "tests/email.test.ts:456 utrata potwierdzenia DATA → uncertain",
+      "tests/email.test.ts:470 awaria po attempted_at bez wysyłki",
+      "tests/email-actions.test.ts:653 niepewna próba SMTP akcji nie jest ponawiana"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-13",
+     "domain_id": null,
+     "requirement": "Webhooki wychodzące bez podwójnego skutku u odbiorcy",
+     "state": "partial",
+     "evidence": [
+      "server/outbound-webhooks.ts:269 X-Dyna-Delivery-ID stały per dostawa (at-least-once)",
+      "server/outbound-webhooks.ts:208 lokalny inbox ON CONFLICT DO NOTHING",
+      "server/worker.ts:188 reaper outbound_deliveries"
+     ],
+     "tests": [
+      "tests/developer.test.ts:532 lokalny odbiorca deduplikuje tę samą dostawę",
+      "tests/developer.test.ts:675 odbiór po utracie ACK deduplikowany przy retry"
+     ],
+     "missing": "Brak testu: timeout zewnętrznego odbiorcy po przyjęciu → retry z tym samym Delivery-ID i nowym podpisem. UI i OpenAPI nie mówią, że odbiorca musi deduplikować.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-14",
+     "domain_id": null,
+     "requirement": "Przekazanie zamówienia B2B jednokrotnie",
+     "state": "done",
+     "evidence": [
+      "server/040_b2b_network_orders.sql:16 UNIQUE(tenant_id,quote_id)",
+      "server/040_b2b_network_orders.sql:5 UNIQUE(tenant_id,link_id,client_key)",
+      "server/b2b-network-orders.ts:293 replay po client_key"
+     ],
+     "tests": [
+      "tests/b2b-network-orders.test.ts:353 replay checkoutu",
+      "tests/b2b-external-order-intent.test.ts:1009 awaria cofa obie firmy"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-15",
+     "domain_id": null,
+     "requirement": "Zastosowanie płatności i rozliczeń jednokrotnie",
+     "state": "done",
+     "evidence": [
+      "server/source-payments.ts:209 FOR UPDATE, applied bez zmiany",
+      "server/024_source_payments.sql:22 jeden aktywny odczyt na zamówienie",
+      "server/077_payment_imports.sql:61 PK(tenant_id,namespace_id,economic_key)"
+     ],
+     "tests": [
+      "tests/source-payments.test.ts:217 replay bez drugiej wpłaty",
+      "tests/payment-imports.test.ts:286 ten sam identyfikator ekonomiczny to duplikat",
+      "tests/payment-imports.test.ts:430 retry zakresu stosuje raz"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-16",
+     "domain_id": null,
+     "requirement": "Eksport faktur do Odoo bez duplikatu",
+     "state": "done",
+     "evidence": [
+      "server/odoo-exports.ts:440 zapis fazy i remote_id",
+      "server/worker.ts:135 reaper → 'uzgodnij wynik w ERP'"
+     ],
+     "tests": [
+      "tests/odoo-exports.test.ts:196 utracona odpowiedź create, uzgodnienie po reference",
+      "tests/odoo-exports.test.ts:386 utrata dzierżawy po create"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-17",
+     "domain_id": null,
+     "requirement": "Zamówienie podjazdu DPD jednokrotnie",
+     "state": "done",
+     "evidence": [
+      "server/worker.ts:173 create_started/cancel_started → uncertain",
+      "server/dpd-collections.ts:433 blokada w fazie started"
+     ],
+     "tests": [
+      "tests/dpd-collections.test.ts:314 utracona odpowiedź uncertain bez drugiego create",
+      "tests/dpd-collections.test.ts:884 pauza w trakcie POST bez drugiego podjazdu"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-18",
+     "domain_id": null,
+     "requirement": "Paragon fiskalny bez podwójnego druku",
+     "state": "done",
+     "evidence": [
+      "server/receipt233.ts:190 stan sent, przy retry QUERY drukarki przed drukiem",
+      "server/receipt233-printer.ts:20 QUERY <job id> czyni retry idempotentnym",
+      "server/233_fiscal_receipts.sql:71 UNIQUE(tenant_id,order_id)"
+     ],
+     "tests": [
+      "tests/receipt233-printer.test.ts:25 idempotentne zadanie (fake)"
+     ],
+     "missing": "Brak testu z bazą: utracona odpowiedź drukarki w stanie sent, QUERY=PRINTED → printed bez ponownego otwarcia paragonu. Test z bazą tests/receipts233.database.test.ts jest w drzewie roboczym agenta 233, jeszcze nie w commicie.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-19",
+     "domain_id": null,
+     "requirement": "Skutki reguł automatyzacji jednokrotnie",
+     "state": "done",
+     "evidence": [
+      "server/010_operations.sql:37 UNIQUE(tenant_id,event_id,rule_id,rule_version)",
+      "server/automations.ts:129 dedup_key automation:event:rule:version",
+      "server/worker.ts:182 reaper automation_runs"
+     ],
+     "tests": [
+      "tests/operations.test.ts:346 błąd akcji cofa całość",
+      "tests/operations.test.ts:731 wyczerpana dzierżawa, końcowy błąd",
+      "tests/email-actions.test.ts:458 bez replay duplikatów"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-20",
+     "domain_id": null,
+     "requirement": "Zapisy Shopify (subskrypcje, tłumaczenia) bez ponowienia niepewnego zapisu",
+     "state": "done",
+     "evidence": [
+      "server/worker.ts:141 fresh → failed, inaczej uncertain"
+     ],
+     "tests": [
+      "tests/shopify-subscriptions.test.ts:330 utracona odpowiedź create bez ponownego zapisu",
+      "tests/shopify-translations.test.ts:328 niejednoznaczne zapisy nie są ponawiane"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "RES-21",
+     "domain_id": null,
+     "requirement": "Restart procesu i pętla workera: dzierżawy, drenaż, brak replay efektów",
+     "state": "partial",
+     "evidence": [
+      "server/worker.ts:124 running starsze niż 2 min → pending (procesor musi sprawdzić fazę)",
+      "server/index.ts:21 stop() czeka na bieżący cykl przy SIGTERM",
+      "server/worker.ts:591 jeden catch na cały cykl"
+     ],
+     "tests": [
+      "tests/sync.test.ts:285 odzysk porzuconej dzierżawy",
+      "tests/automation-schedules.test.ts:520 odzysk z checkpointu"
+     ],
+     "missing": "Brak testu end-to-end restartu (SIGTERM w trakcie HTTP, ponowny start, brak drugiego efektu). Brak statycznego testu, że każdy kind z efektem zewnętrznym ma reaper i fazę przed wywołaniem.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "tests/worker-restart.test.ts (nowy)",
+     "tests/worker-kind-reaper-coverage.test.mjs (nowy, statyczny)",
+     "tests/outbound-webhook-retry.test.ts (nowy)",
+     "tests/receipts233-lost-answer.database.test.ts (nowy)"
+    ],
+    "shared_touch": [
+     "RES-04 → tor L1 integracji (server/ksef229*.ts)",
+     "RES-07 → tor L3 integracji (server/carrier-*.ts)",
+     "server/outbound-webhooks.ts (tylko komentarz kontraktu at-least-once)"
+    ]
+   }
+  },
+  {
+   "key": "reporting",
+   "no": 4,
+   "name": "Raportowanie",
+   "summary": "Raport sprzedaży (/api/reports/sales: podsumowanie, zamówienia, zwroty, CSV) i raport rozliczeń są w UI. Okres liczony w Europe/Warsaw, podsumowanie tylko per waluta. Brak grupowania po źródle, statusie, dostawie i płatności, porównania okresów, analizy klientów, statystyk SKU, raportu pracowników i wykresów. Kwoty raportu sprzedaży pochodzą z rekordów operacyjnych (order_items.line_total), nie z faktur; zgodność z dokumentami źródłowymi do grosza sprawdza tylko raport rozliczeń.",
+   "counts": {
+    "requirements": 6,
+    "done": 0,
+    "partial": 4,
+    "missing": 2,
+    "migration_needed": 1
+   },
+   "items": [
+    {
+     "id": "DOM-ANALYTICS-001",
+     "domain_id": "DOM-ANALYTICS-001",
+     "requirement": "Ilość i wartość sprzedaży według okresu, źródła i statusów",
+     "state": "partial",
+     "evidence": [
+      "server/sales-reports.ts:150 okres from/to AT TIME ZONE 'Europe/Warsaw'",
+      "server/sales-reports.ts:211 wyklucza tylko status cancelled; brak filtra statusu i źródła",
+      "server/sales-reports.ts:586 podsumowanie GROUP BY currency",
+      "server/app.ts:1160 /api/dashboard GROUP BY status bez zakresu dat"
+     ],
+     "tests": [
+      "tests/sales-reports.test.ts:259 granice doby w Warszawie obejmują oba przejścia DST",
+      "tests/sales-reports.test.ts:448 stronicowanie i pełny CSV zachowują kwoty"
+     ],
+     "missing": "Filtr i agregacja po source i status, podział dzień/tydzień/miesiąc, UI, test granic przy filtrze statusu.",
+     "migration": false,
+     "migration_why": "orders.source i orders.status istnieją.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-ANALYTICS-002",
+     "domain_id": "DOM-ANALYTICS-002",
+     "requirement": "Grupowanie po źródłach, formach dostawy i płatności oraz porównanie",
+     "state": "partial",
+     "evidence": [
+      "server/app.ts:1166 dashboard GROUP BY source bez okresu",
+      "server/023_payments.sql:1 orders.payment_mode tylko prepaid/cod",
+      "server/sales-reports.ts:586 podsumowanie bez wymiarów"
+     ],
+     "tests": [],
+     "missing": "group_by (source, delivery, payment), porównanie dwóch okresów, sumy per waluta, UI, testy.",
+     "migration": true,
+     "migration_why": "orders nie mają znormalizowanej formy dostawy; potrzebna kolumna delivery_method i zapis w importerach.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-ANALYTICS-003",
+     "domain_id": "DOM-ANALYTICS-003",
+     "requirement": "Analiza klientów: powracający, kraje",
+     "state": "missing",
+     "evidence": [
+      "server/schema.sql:12 orders.email i address jsonb istnieją, brak agregacji"
+     ],
+     "tests": [],
+     "missing": "Endpoint klientów (nowi i powracający po e-mailu, kraje, wartość per klient), maskowanie danych osobowych według roli, UI, testy z obcą firmą.",
+     "migration": false,
+     "migration_why": "Ewentualnie tylko indeks.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-ANALYTICS-004",
+     "domain_id": "DOM-ANALYTICS-004",
+     "requirement": "Statystyka produktów: sprzedaż i przedziały cen per SKU",
+     "state": "partial",
+     "evidence": [
+      "server/sales-reports.ts:542 item_facts per SKU tylko w szczegółach jednego zamówienia",
+      "server/sales-reports.ts:227 netto z order_items.line_total"
+     ],
+     "tests": [
+      "tests/sales-reports.test.ts:337 ten sam SKU, historyczne ceny, dwie warstwy FIFO i dwa RMA rozdzielone",
+      "tests/sales-reports.test.ts:394 nieznany koszt otwarcia różni się od jawnego zera"
+     ],
+     "missing": "Agregat per SKU za okres (ilość, wartość, zwroty ujemne, min/max/średnia cena, przedziały), endpoint, UI, CSV.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-ANALYTICS-005",
+     "domain_id": "DOM-ANALYTICS-005",
+     "requirement": "Raport pracowników wiąże zdarzenia z użytkownikiem",
+     "state": "missing",
+     "evidence": [
+      "server/domain.ts:955 audyt order.status z from/to",
+      "server/domain.ts:177 audit() zapisuje user_id"
+     ],
+     "tests": [],
+     "missing": "Endpoint liczników zmian statusów, pakowań i płatności per użytkownik w okresie, uprawnienie admina, UI, testy odmowy.",
+     "migration": false,
+     "migration_why": "Zalecany indeks (tenant_id,action,created_at).",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-ANALYTICS-006",
+     "domain_id": "DOM-ANALYTICS-006",
+     "requirement": "CSV, wykres i rejestr uzgadniają się z danymi",
+     "state": "partial",
+     "evidence": [
+      "server/sales-report-routes.ts:48 GET /api/reports/sales/file (CSV)",
+      "server/settlement-report-routes.ts:39 CSV rozliczeń",
+      "web/sales-reports.tsx:434 pobieranie CSV; brak wykresu"
+     ],
+     "tests": [
+      "tests/sales-reports.test.ts:448 pełny CSV zachowuje kwoty",
+      "tests/settlement-report.database.test.ts:143 CSV niesie te same grosze co JSON",
+      "tests/settlement-report.test.ts:181 CSV: BOM, nagłówek, grosze, wiersz sum"
+     ],
+     "missing": "Wykres i CSV wykresu; test 'suma serii = podsumowanie = CSV'; uzgodnienie raportu sprzedaży z fakturami i korektami.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/sales-reports.ts",
+     "server/sales-report-routes.ts",
+     "web/sales-reports.tsx",
+     "tests/sales-reports*.test.ts",
+     "server/analytics-*.ts (nowe)",
+     "tests/analytics-*.test.ts (nowe)"
+    ],
+    "shared_touch": [
+     "server/app.ts (rejestracja tras, /api/dashboard)",
+     "web/main.tsx (nawigacja)",
+     "importery kanałów (delivery_method, tylko ANALYTICS-002, po torach integracji)",
+     "server/db.ts (tylko ANALYTICS-002)"
+    ]
+   }
+  },
+  {
+   "key": "ai",
+   "no": 4,
+   "name": "Funkcje AI",
+   "summary": "AI katalogu (lokalny model, kolejka catalog.ai, worker startowany w index.ts) generuje nazwę i opis albo tłumaczenie dla jednego produktu z podglądem, edycją, jawną akceptacją i audytem. Brak stylu, generowania parametrów, masowej generacji, usuwania tła i dopasowania kategorii przez AI. DeepL zachowuje oryginał i rozdziela języki.",
+   "counts": {
+    "requirements": 6,
+    "done": 1,
+    "partial": 3,
+    "missing": 2,
+    "migration_needed": 5
+   },
+   "items": [
+    {
+     "id": "DOM-AI-001",
+     "domain_id": "DOM-AI-001",
+     "requirement": "Generowanie nazwy i opisu ze stylem, podglądem i akceptacją",
+     "state": "partial",
+     "evidence": [
+      "server/catalog-ai.ts:12 aiRequest: model, destination, locale; brak stylu",
+      "server/catalog-ai.ts:268 stały prompt",
+      "server/catalog-ai.ts:360 zastosowanie wymaga approve:true i wersji",
+      "web/catalog-ai.tsx:242 UI zastosowania po zgodzie"
+     ],
+     "tests": [
+      "tests/catalog-ai.test.ts:193 zastosowanie raz; SKU, kwoty, atrybuty i stan bez zmian",
+      "tests/catalog-ai.test.ts:264 zmiana produktu w trakcie daje konflikt bez zastosowania",
+      "tests/catalog-ai.test.ts:224 wymagana zgoda i schemat tekstu"
+     ],
+     "missing": "Parametr stylu (np. rzeczowy, marketingowy, krótki, długość) w żądaniu, prompcie, szkicu i UI; test.",
+     "migration": true,
+     "migration_why": "ai_catalog_drafts (070_catalog_ai.sql:1) nie ma kolumny stylu (niepotwierdzone, czy wejście jest w jsonb).",
+     "effort": "S"
+    },
+    {
+     "id": "DOM-AI-002",
+     "domain_id": "DOM-AI-002",
+     "requirement": "Generowanie parametrów respektuje typy i język",
+     "state": "missing",
+     "evidence": [
+      "server/catalog-ai.ts:31 aiOutput tylko {name, description}",
+      "server/070_catalog_ai.sql:4 destination CHECK tylko catalog/translation",
+      "server/170_pim_dictionaries.sql:20 typowane definicje parametrów istnieją, bez AI"
+     ],
+     "tests": [],
+     "missing": "Tryb 'attributes' ze schematem z definicji PIM, walidacja wartości słownika, akceptacja per parametr, zapis z CAS, testy negatywne.",
+     "migration": true,
+     "migration_why": "Rozszerzenie CHECK destination i struktury wyniku.",
+     "effort": "L"
+    },
+    {
+     "id": "DOM-AI-003",
+     "domain_id": "DOM-AI-003",
+     "requirement": "Masowa generacja z wynikiem każdej pozycji",
+     "state": "partial",
+     "evidence": [
+      "server/catalog-ai-routes.ts:72 POST /api/products/:id/ai tylko dla jednego produktu",
+      "server/deepl-batch-routes.ts:90 partie istnieją tylko dla DeepL",
+      "server/deepl-batches.ts:290 applyBatchProduct"
+     ],
+     "tests": [
+      "tests/deepl-batches.test.ts:444 jeden błędny wynik nie blokuje pozostałych",
+      "tests/deepl-batches.test.ts:818 częściowa porażka języka, przegląd reszty"
+     ],
+     "missing": "Partia AI na wzór deepl-batches (stan i błąd per pozycja, akceptacja per pozycja i zbiorcza), UI, testy.",
+     "migration": true,
+     "migration_why": "Tabele partii AI i pozycji.",
+     "effort": "L"
+    },
+    {
+     "id": "DOM-AI-004",
+     "domain_id": "DOM-AI-004",
+     "requirement": "Usuwanie tła tworzy nową wersję zdjęcia",
+     "state": "missing",
+     "evidence": [
+      "server/004_catalog.sql:32 product_images bez wersji i rodzica",
+      "server/catalog-routes.ts:102 jedyny upload obrazu, bez przetwarzania"
+     ],
+     "tests": [],
+     "missing": "Lokalny procesor tła, zadanie, nowy obraz z parent_image_id bez kasowania oryginału, porównanie i akceptacja w UI, testy błędu.",
+     "migration": true,
+     "migration_why": "parent_image_id, rodzaj pochodzenia i stan zadania.",
+     "effort": "L"
+    },
+    {
+     "id": "DOM-AI-005",
+     "domain_id": "DOM-AI-005",
+     "requirement": "Dopasowanie kategorii i parametrów wspiera ofertę",
+     "state": "partial",
+     "evidence": [
+      "server/offer-routes.ts:43 GET /api/integrations/:id/ebay/categories?phrase",
+      "server/ebay-seller-settings.ts:283 get_item_aspects_for_category",
+      "server/ebay-seller-settings.ts:361 brak wymaganego aspektu → 422"
+     ],
+     "tests": [
+      "tests/ebay-offers.test.ts:1393 opcje sprzedawcy i Taxonomy bez zapisów biznesowych"
+     ],
+     "missing": "Propozycja kategorii i parametrów z danych produktu dla kanałów innych niż eBay, z podglądem i zgodą; frazę wpisuje dziś operator.",
+     "migration": true,
+     "migration_why": "Trwałe propozycje dopasowania ze stanem zgody.",
+     "effort": "L"
+    },
+    {
+     "id": "DOM-AI-006",
+     "domain_id": "DOM-AI-006",
+     "requirement": "DeepL zachowuje oryginał i rozdziela języki",
+     "state": "done",
+     "evidence": [
+      "server/deepl-catalog.ts:537 upsert product_translations per (produkt, locale)",
+      "server/deepl-batches.ts:361 to samo dla partii",
+      "server/deepl-catalog-routes.ts:87 podgląd; :97 zastosowanie z akceptacją"
+     ],
+     "tests": [
+      "tests/deepl.test.ts:271 podgląd, kolejka i zastosowanie zachowują źródło; en-US osobno",
+      "tests/deepl.test.ts:417 zmiana produktu w trakcie daje konflikt",
+      "tests/deepl-batches.test.ts:306 masowe mapowanie, wszystkie języki atomowo"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/catalog-ai.ts",
+     "server/catalog-ai-routes.ts",
+     "web/catalog-ai.tsx",
+     "tests/catalog-ai.test.ts",
+     "server/catalog-ai-batches.ts (nowy)",
+     "server/image-background.ts (nowy)"
+    ],
+    "shared_touch": [
+     "server/worker.ts:225 (wykluczenia kind)",
+     "server/app.ts (rejestracja)",
+     "web/catalog.tsx (montaż UI)",
+     "server/catalog-routes.ts:102 (obrazy)",
+     "server/db.ts + pakowanie migracji"
+    ]
+   }
+  },
+  {
+   "key": "repricing",
+   "no": 4,
+   "name": "Repricing (cel 4: pozostałe moduły)",
+   "summary": "Repricing per cennik ma trzy strategie, granice min/max, ochronę marży i końcówkę ,99. Podgląd jest atomowy z CAS, harmonogram to zadanie pricing.reprice z checkpointami. Do kanału cena idzie pośrednio przez offer-sync, a wynik kanału nie wraca do przebiegu. Brak ręcznego nadpisania per oferta i przeliczenia walut (choć tabela kursów NBP istnieje), historia sortowana po losowym UUID.",
+   "counts": {
+    "requirements": 6,
+    "done": 1,
+    "partial": 4,
+    "missing": 1,
+    "migration_needed": 2
+   },
+   "items": [
+    {
+     "id": "DOM-REPRICE-001",
+     "domain_id": "DOM-REPRICE-001",
+     "requirement": "Monitor konkurencji zapisuje źródło i czas obserwacji",
+     "state": "partial",
+     "evidence": [
+      "server/033_repricing.sql:10 repricing_inputs.source",
+      "server/163_competitor_observations.sql:25 competitor_observations.observed_at",
+      "server/competitor-observations-routes.ts:25 POST partii obserwacji",
+      "server/competitor-ranking.ts:88 stare i przyszłe obserwacje wykluczane"
+     ],
+     "tests": [
+      "tests/repricing.test.ts:157 brak kosztu lub obserwacji i stary odczyt blokują partię",
+      "tests/repricing.test.ts:176 ważność obserwacji sprawdzana ponownie przy zapisie",
+      "tests/competitor-ranking.test.ts:24 własny sprzedawca, inny produkt i stare obserwacje nie są celem"
+     ],
+     "missing": "Połączenie z rynkiem tylko dla publicznego sklepu Shopify. Brak testu z bazą trwałości importu obserwacji po restarcie.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-REPRICE-002",
+     "domain_id": "DOM-REPRICE-002",
+     "requirement": "Reguła ceny ma minimum i maksimum",
+     "state": "done",
+     "evidence": [
+      "server/repricing.ts:15 min_price",
+      "server/repricing.ts:126 kandydat ograniczony do [floor, max_price]",
+      "server/repricing-routes.ts:170 POST podglądu",
+      "web/pricing.tsx:587 RepricingPanel w UI cenników"
+     ],
+     "tests": [
+      "tests/repricing.test.ts:140 tańsza konkurencja nie omija minimum; ,99 respektuje maksimum",
+      "tests/repricing.test.ts:228 granice, duplikaty SKU i równoległe edycje"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "DOM-REPRICE-003",
+     "domain_id": "DOM-REPRICE-003",
+     "requirement": "Cena docelowa uwzględnia walutę, grupę i zaokrąglenie",
+     "state": "partial",
+     "evidence": [
+      "server/repricing.ts:94 brak kosztu w walucie cennika → blocked",
+      "server/repricing.ts:205 fallback cennika tylko przy walucie firmy",
+      "server/repricing.ts:127 jedyne zaokrąglenie: końcówka ,99",
+      "server/227_nbp_rates.sql:21 tabela kursów NBP istnieje, repricing jej nie używa"
+     ],
+     "tests": [
+      "tests/repricing.test.ts:269 osobna waluta wymaga jawnego kosztu",
+      "tests/repricing.test.ts:89 marża po prowizji, VAT i kosztach w groszach"
+     ],
+     "missing": "Przeliczenie kosztu kursem NBP z datą (brak lub stary kurs blokuje wynik), wybór bazy cennika, konfigurowalne zaokrąglenie, wykrycie cyklu cenników, testy.",
+     "migration": false,
+     "migration_why": "Kursy są w nbp227_rates; konfiguracja zaokrąglenia mieści się w config jsonb. Korekta względem raportu podagenta, który nie znalazł tabeli kursów.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-REPRICE-004",
+     "domain_id": "DOM-REPRICE-004",
+     "requirement": "Ręczne nadpisanie automatycznej ceny dla wybranej oferty",
+     "state": "missing",
+     "evidence": [
+      "server/repricing.ts:7 repricingConfig bez wykluczeń i nadpisań",
+      "server/repricing.ts:218 applyRepricingPrices nadpisuje wszystkie pozycje 'change'"
+     ],
+     "tests": [
+      "tests/repricing-schedules.test.ts:259 ręczna edycja między partiami nie jest nadpisana (tylko CAS)"
+     ],
+     "missing": "Trwałe nadpisanie lub wykluczenie per produkt i oferta z autorem i datą, respektowane w podglądzie i harmonogramie, widoczne w UI.",
+     "migration": true,
+     "migration_why": "Nowa tabela repricing_overrides.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-REPRICE-005",
+     "domain_id": "DOM-REPRICE-005",
+     "requirement": "Harmonogram wysyła cenę i uzgadnia wynik kanału",
+     "state": "partial",
+     "evidence": [
+      "server/repricing-schedules.ts:120 zadanie pricing.reprice",
+      "server/worker.ts:587 scheduleRepricingDue w pętli workera",
+      "server/offer-sync.ts:209 offer-sync używa price_list_id",
+      "server/034_repricing_schedules.sql:12 repricing_runs bez wyniku kanału"
+     ],
+     "tests": [
+      "tests/repricing.test.ts:446 repricing trafia przez offer-sync do symulowanej oferty Woo",
+      "tests/repricing-schedules.test.ts:359 stary lease nie zapisuje ceny ani checkpointu",
+      "tests/repricing-schedules.test.ts:380 retry zachowuje checkpoint"
+     ],
+     "missing": "Powiązanie przebiegu z offer_plans (wysłano, ACK, odczyt ceny, rozbieżność) w historii; test utraty ACK w łańcuchu repricing → kanał.",
+     "migration": true,
+     "migration_why": "Kolumny lub tabela łącząca przebieg z offer_plans.",
+     "effort": "M"
+    },
+    {
+     "id": "DOM-REPRICE-006",
+     "domain_id": "DOM-REPRICE-006",
+     "requirement": "Lista repricingu pokazuje regułę, źródło i rezultat",
+     "state": "partial",
+     "evidence": [
+      "server/repricing-routes.ts:232 historia ORDER BY id (losowy UUID), bez filtrów",
+      "web/repricing.tsx:398 kolumna 'Wynik'",
+      "web/repricing.tsx:453 RepricingSchedulePanel"
+     ],
+     "tests": [
+      "tests/repricing.test.ts:393 partia 500 SKU atomowa, pełna paginacja historii"
+     ],
+     "missing": "Sortowanie po created_at, filtry stanu, SKU i strategii, kolumna wyniku kanału (po REPRICE-005).",
+     "migration": false,
+     "migration_why": "Wystarczy indeks.",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/repricing*.ts",
+     "server/competitor-*.ts",
+     "web/repricing*.tsx",
+     "web/competitor-*.tsx",
+     "tests/repricing*.test.ts",
+     "tests/competitor-*.test.ts"
+    ],
+    "shared_touch": [
+     "server/offer-sync.ts i server/offers.ts (jeden właściciel naraz z torem L5 integracji)",
+     "server/worker.ts:587",
+     "server/app.ts",
+     "server/db.ts + pakowanie migracji"
+    ]
+   }
+  },
+  {
+   "key": "administration_security",
+   "no": 5,
+   "name": "Administracja i bezpieczeństwo",
+   "summary": "Rdzeń jest mocny i ma testy: trzy stałe role sprawdzane na serwerze przy każdym żądaniu, TOTP z kodami odzyskiwania i trwałą blokadą, firmowa polityka MFA, lista i odwołanie sesji, rotacja sesji po zmianie hasła, odzyskiwanie hasła, sekrety integracji AES-256-GCM, klucze API z hashem, zakresami, wygaśnięciem i odwołaniem. Brakuje profili uprawnień, historii logowań z nieudanymi próbami, trwałej blokady po błędnym haśle, rotacji kluczy API, stanu zawieszenia firmy i domyślnej drukarki pracownika. Dziennik audytu w UI jest surowy (bez autora i filtrów). Z przeglądu etapu 3 otwarte zostaje M2 (zalew rejestru RODO).",
+   "counts": {
+    "requirements": 18,
+    "done": 6,
+    "partial": 9,
+    "missing": 3,
+    "migration_needed": 10
+   },
+   "items": [
+    {
+     "id": "ADMIN-001",
+     "domain_id": "DOM-SEC-003",
+     "requirement": "Role admin/operator/viewer sprawdzane na serwerze; utrata roli działa od następnego żądania",
+     "state": "done",
+     "evidence": [
+      "server/app.ts:364 canWrite(actor, admin)",
+      "server/app.ts:930 sesja JOIN memberships przy każdym żądaniu",
+      "server/workspace-routes.ts:107 lockAdmin w transakcji",
+      "server/schema.sql:5 memberships.role CHECK admin/operator/viewer"
+     ],
+     "tests": [
+      "tests/domain.test.ts:138 viewer nie zapisuje, operator nie zmienia katalogu ani integracji",
+      "tests/workspaces.test.ts:312 operator i viewer nie zarządzają firmą",
+      "tests/workspaces.test.ts:337 role są aktualne w istniejącej sesji"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "ADMIN-002",
+     "domain_id": null,
+     "requirement": "Użytkownicy firmy: zaproszenia, zmiana roli, usunięcie, ochrona ostatniego admina",
+     "state": "done",
+     "evidence": [
+      "server/workspace-routes.ts:422 POST zaproszenia (hash tokenu, limit miejsc)",
+      "server/workspace-routes.ts:494 zmiana roli i usunięcie",
+      "server/workspace-routes.ts:514 co najmniej jeden administrator"
+     ],
+     "tests": [
+      "tests/workspaces.test.ts:188 zaproszenie przechowuje tylko hash",
+      "tests/workspaces.test.ts:370 ostatniego admina nie można usunąć ani zdegradować",
+      "tests/workspaces.test.ts:404 odebranie dostępu unieważnia sesje w firmie"
+     ],
+     "missing": "Czasowa dezaktywacja członka bez usuwania; edycja własnego imienia i e-maila.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "SEC-004",
+     "domain_id": "DOM-SEC-004",
+     "requirement": "Profile ograniczają statusy, statystyki i funkcje",
+     "state": "missing",
+     "evidence": [
+      "server/schema.sql:5 tylko trzy role w CHECK",
+      "server/workspace-routes.ts:19 z.enum admin/operator/viewer",
+      "server/app.ts:1590 capabilities.roles: stała lista trzech ról"
+     ],
+     "tests": [],
+     "missing": "Profile per firma (dozwolone statusy, widoczność statystyk i kwot, flagi funkcji), przypisanie do członkostwa, wymuszenie na serwerze w listach, przejściach i raportach, UI, testy odmowy.",
+     "migration": true,
+     "migration_why": "Tabela permission_profiles i profile_id w memberships z RLS.",
+     "effort": "L"
+    },
+    {
+     "id": "SEC-005",
+     "domain_id": "DOM-SEC-005",
+     "requirement": "Historia logowania uwzględnia próby nieudane",
+     "state": "missing",
+     "evidence": [
+      "server/app.ts:1098 błędne hasło zwraca 401 bez żadnego zapisu",
+      "server/account-security.ts:119 audyt tylko account.mfa_login",
+      "server/051_account_security.sql:19 sessions dostaje tylko id; brak IP i UA"
+     ],
+     "tests": [],
+     "missing": "Tabela zdarzeń logowania (sukces, złe hasło, złe MFA, blokada, reset; IP, UA, czas), zapis także dla nieznanego e-maila (hash), widok dla użytkownika i admina, retencja, testy.",
+     "migration": true,
+     "migration_why": "Nowa tabela account_login_events i kolumny ip/user_agent/last_seen_at w sessions.",
+     "effort": "M"
+    },
+    {
+     "id": "SEC-006",
+     "domain_id": "DOM-SEC-006",
+     "requirement": "Pracownik ma własną tożsamość, domyślne urządzenie i audyt akcji",
+     "state": "partial",
+     "evidence": [
+      "server/workspace-routes.ts:422 zaproszenie tworzy osobne konto i członkostwo",
+      "server/domain.ts:177 audit_events zapisuje user_id",
+      "server/129_print_jobs.sql:3 drukarki przypięte do stacji, nie do użytkownika"
+     ],
+     "tests": [
+      "tests/workspaces.test.ts:203 rejestracja przez zaproszenie zajmuje miejsce"
+     ],
+     "missing": "Domyślna stacja lub drukarka per członkostwo używana przy druku, UI wyboru, test.",
+     "migration": true,
+     "migration_why": "Kolumny default_station_id/default_printer_id w memberships.",
+     "effort": "M"
+    },
+    {
+     "id": "SEC-007",
+     "domain_id": null,
+     "requirement": "2FA TOTP, kody odzyskiwania, firmowa polityka MFA",
+     "state": "done",
+     "evidence": [
+      "server/account-security.ts:233 włączenie, potwierdzenie, wyłączenie, kody",
+      "server/account-security.ts:35 trwała blokada po 5 błędach na 5 min",
+      "server/workspace-security-routes.ts:48 PATCH polityki require_mfa",
+      "server/mfa-policy.ts:17 requireWorkspaceMfa"
+     ],
+     "tests": [
+      "tests/account-security.test.ts:171 potwierdzenie wymaga hasła i kodu, rotuje sesje",
+      "tests/account-security.test.ts:250 pięć błędów blokuje konto między instancjami",
+      "tests/workspace-mfa.test.ts:140 polityka wymaga MFA administratora",
+      "tests/workspace-mfa.test.ts:348 klucze API wymagają MFA właściciela"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "SEC-008",
+     "domain_id": null,
+     "requirement": "Polityka sesji: wygaśnięcie, lista, odwołanie, unieważnienie po zmianie hasła",
+     "state": "partial",
+     "evidence": [
+      "server/workspace-routes.ts:85 sesja now()+8 hours (stała)",
+      "server/account-security.ts:157 GET /api/auth/security z listą sesji",
+      "server/account-security.ts:208 DELETE pojedynczej sesji",
+      "server/account-security.ts:151 rotate: usunięcie wszystkich sesji"
+     ],
+     "tests": [
+      "tests/account-security.test.ts:293 przełączenie rotuje sesję, odwołanie nie rusza obcego konta",
+      "tests/account-security.test.ts:334 zmiana hasła odwołuje sesje",
+      "tests/workspaces.test.ts:404 odebranie dostępu unieważnia sesje"
+     ],
+     "missing": "Konfigurowalny czas życia i bezczynność per firma, 'wyloguj wszędzie' bez zmiany hasła, IP, UA i ostatnia aktywność na liście sesji.",
+     "migration": true,
+     "migration_why": "Kolumny w sessions i workspace_security_policies.",
+     "effort": "M"
+    },
+    {
+     "id": "SEC-009",
+     "domain_id": null,
+     "requirement": "Dziennik audytu (kto, co, kiedy) czytelny w UI",
+     "state": "partial",
+     "evidence": [
+      "server/domain.ts:169 audit(): user_id, action, entity_id, detail",
+      "server/app.ts:1575 SELECT audit_events LIMIT 100 bez filtrów i stronicowania",
+      "web/main.tsx:3283 UI pokazuje surowy JSON bez autora"
+     ],
+     "tests": [
+      "tests/domain.test.ts:138 viewer dostaje 403 na /api/audit (asercja w :142)",
+      "tests/developer.test.ts:212 listy i audyt nie ujawniają tokenu"
+     ],
+     "missing": "Autor (osoba lub klucz API) w odpowiedzi i UI, polskie etykiety akcji, różnice przed/po, filtry, kursor, zapis api_key_id, eksport CSV, test komponentu.",
+     "migration": true,
+     "migration_why": "Kolumna api_key_id w audit_events i indeks do stronicowania.",
+     "effort": "M"
+    },
+    {
+     "id": "SEC-010",
+     "domain_id": null,
+     "requirement": "Szyfrowanie sekretów integracji",
+     "state": "done",
+     "evidence": [
+      "server/security.ts:23 AES-256-GCM z kluczem lokalnej konfiguracji",
+      "server/app.ts:1958 encrypt(credentials) przy zapisie kanału"
+     ],
+     "tests": [
+      "tests/domain.test.ts:334 sekrety zaszyfrowane i nieobecne w odpowiedzi"
+     ],
+     "missing": "Brak wersjonowania i rotacji klucza szyfrującego (follow-up).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "SEC-011",
+     "domain_id": null,
+     "requirement": "Odzyskiwanie hasła",
+     "state": "done",
+     "evidence": [
+      "server/password-recovery.ts:41 POST /api/auth/password/request (5/min)",
+      "server/password-recovery.ts:182 reset usuwa wszystkie sesje",
+      "web/password-recovery.tsx:50 UI prośby o reset"
+     ],
+     "tests": [
+      "tests/password-recovery.test.ts:91 znany i nieznany e-mail dają tę samą odpowiedź 202",
+      "tests/password-recovery.test.ts:126 reset odwołuje sesje we wszystkich firmach",
+      "tests/password-recovery.test.ts:450 limiter IP odrzuca szóste żądanie"
+     ],
+     "missing": "—",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "SEC-012",
+     "domain_id": null,
+     "requirement": "Ochrona logowania przed zgadywaniem hasła",
+     "state": "partial",
+     "evidence": [
+      "server/app.ts:1077 /api/auth/login rateLimit 10/min per IP",
+      "server/app.ts:744 globalny limit w pamięci",
+      "server/account-security.ts:35 trwała blokada tylko dla MFA"
+     ],
+     "tests": [],
+     "missing": "Trwały licznik błędnych haseł per konto (odporny na restart i wiele instancji, bez enumeracji kont), test 429 dla logowania.",
+     "migration": true,
+     "migration_why": "Licznik per konto lub per hash e-maila.",
+     "effort": "S"
+    },
+    {
+     "id": "SEC-013",
+     "domain_id": null,
+     "requirement": "Otwarte M2 z przeglądu etapu 3: zalew rejestru RODO z listy klientów CRM i plik connector.php bez limitu firmy",
+     "state": "partial",
+     "evidence": [
+      "server/crm-routes.ts:53 jeden wiersz rejestru na każdego klienta strony",
+      "server/base-wire-crm-routes.ts:32 trasa pliku connector.php bez admitTenant"
+     ],
+     "tests": [],
+     "missing": "Jeden wiersz rejestru na żądanie (identyfikatory w detail), admitTenant na trasie pliku, test z bazą małego przyrostu rejestru.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "ACCOUNT-001",
+     "domain_id": "DOM-ACCOUNT-001",
+     "requirement": "Dane firmy, konta i dokumentów są konfigurowalne",
+     "state": "partial",
+     "evidence": [
+      "server/workspace-routes.ts:381 PATCH /api/workspaces/settings: tylko nazwa i locale",
+      "server/schema.sql:3 tenants bez NIP, adresu i rachunku",
+      "server/127_proformas.sql:100 dane sprzedawcy tylko w serii proform"
+     ],
+     "tests": [
+      "tests/workspaces.test.ts:613 admin zapisuje nazwę i region tylko własnej firmy"
+     ],
+     "missing": "Centralny profil firmy (nazwa prawna, NIP, adres, rachunek, logo) jako domyślny sprzedawca dokumentów, UI z podglądem, audyt.",
+     "migration": true,
+     "migration_why": "Tabela profilu firmy z RLS.",
+     "effort": "M"
+    },
+    {
+     "id": "ACCOUNT-002",
+     "domain_id": "DOM-ACCOUNT-002",
+     "requirement": "Ustawienia regionalne definiują walutę i język",
+     "state": "partial",
+     "evidence": [
+      "server/workspace-routes.ts:30 waluta tylko przy tworzeniu firmy",
+      "server/workspace-routes.ts:385 UPDATE tenants SET name, locale",
+      "web/api.ts:60 Intl.NumberFormat('pl-PL') na sztywno"
+     ],
+     "tests": [
+      "tests/workspaces.test.ts:613 region zapisany, waluta stała"
+     ],
+     "missing": "Formatowanie kwot i dat według locale firmy, locale w /api/auth/me, test komponentu.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "ACCOUNT-003",
+     "domain_id": "DOM-ACCOUNT-003",
+     "requirement": "Panel planu pokazuje użycie produktów i zamówień",
+     "state": "done",
+     "evidence": [
+      "server/workspace-routes.ts:117 workspaceUsage: limity i użycie",
+      "web/workspaces.tsx:222 UI limitów i użycia"
+     ],
+     "tests": [
+      "tests/workspaces.test.ts:441 plan uwzględnia zaproszenia i bieżący miesiąc",
+      "tests/workspaces.test.ts:418 limit magazynów działa w API"
+     ],
+     "missing": "Historia użycia z poprzednich okresów (dane są).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "ACCOUNT-004",
+     "domain_id": "DOM-ACCOUNT-004",
+     "requirement": "Historia konta ma fakturę i stan płatności",
+     "state": "partial",
+     "evidence": [
+      "server/068_workspace_billing.sql:1 'Local estimates only; no provider, tax invoice or payment'",
+      "server/068_workspace_billing.sql:21 niezmienny rejestr szacunków",
+      "server/workspace-billing-routes.ts:11 GET /api/workspaces/billing ze stronicowaniem"
+     ],
+     "tests": [
+      "tests/workspace-billing.test.ts:319 stronicowanie historii po dacie i ID",
+      "tests/workspace-billing.test.ts:229 operator czyta plan, nie historię"
+     ],
+     "missing": "Lokalny dokument rozliczeniowy z numerem i PDF, stan płatności z ręcznym potwierdzeniem, widok, testy.",
+     "migration": true,
+     "migration_why": "Tabela dokumentów i płatności powiązana z wpisami rozliczeń.",
+     "effort": "M"
+    },
+    {
+     "id": "ACCOUNT-005",
+     "domain_id": "DOM-ACCOUNT-005",
+     "requirement": "Rezygnacja i zawieszenie mają jawny stan",
+     "state": "missing",
+     "evidence": [
+      "server/schema.sql:3 tenants bez kolumny stanu",
+      "server/workspace-billing-routes.ts:34 cancel_scheduled odwołuje tylko zaplanowany downgrade"
+     ],
+     "tests": [],
+     "missing": "Stan firmy (aktywna, wniosek o rezygnację, zawieszona, zamknięta) z wnioskiem i potwierdzeniem, wymuszenie w onRequest (zawieszona = odczyt i eksport), UI, audyt, testy odmowy.",
+     "migration": true,
+     "migration_why": "Kolumna lub tabela stanu firmy z historią.",
+     "effort": "M"
+    },
+    {
+     "id": "API-001",
+     "domain_id": "DOM-API-001",
+     "requirement": "Token API uwierzytelnia i można go odwołać; zakresy i rotacja",
+     "state": "partial",
+     "evidence": [
+      "server/developer-api.ts:3920 POST /api/developer/keys: hash, prefix, zakresy, wygaśnięcie do 90 dni",
+      "server/developer-api.ts:3968 DELETE: odwołanie",
+      "server/developer-api.ts:1498 uwierzytelnienie: revoked_at IS NULL i expires_at>now()",
+      "server/013_developer_api.sql:50 trigger odwołuje klucze po degradacji właściciela"
+     ],
+     "tests": [
+      "tests/developer.test.ts:212 klucz przechowuje hash i prefix",
+      "tests/developer.test.ts:226 zakresy odczytu nie zapisują",
+      "tests/developer.test.ts:278 wygasły i cofnięty klucz przestaje działać",
+      "tests/developer.test.ts:298 role tracą stare klucze trwale"
+     ],
+     "missing": "Rotacja (nowy sekret z tymi samymi zakresami, opcjonalny okres nakładania, link do poprzednika), last_used_at i ostatnie IP, przycisk 'Rotuj', testy.",
+     "migration": true,
+     "migration_why": "Kolumny last_used_at i rotated_from_id w api_keys.",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/account-security.ts",
+     "server/workspace-security-routes.ts",
+     "server/workspace-routes.ts",
+     "server/mfa-policy.ts",
+     "server/password-recovery.ts",
+     "server/workspace-billing*.ts",
+     "server/login-history.ts (nowy)",
+     "server/permission-profiles.ts (nowy)",
+     "web/account-security.tsx",
+     "web/workspace-security.tsx",
+     "web/workspaces.tsx",
+     "web/workspace-billing.tsx",
+     "web/developer.tsx",
+     "web/audit-log.tsx (nowy)",
+     "tests/account-security.test.ts",
+     "tests/workspaces.test.ts",
+     "tests/workspace-mfa.test.ts",
+     "tests/workspace-billing.test.ts"
+    ],
+    "shared_touch": [
+     "server/app.ts (logowanie ok. 1075-1104, onRequest 851-960, /api/audit 1572-1577)",
+     "server/domain.ts:169 (audit z api_key_id)",
+     "server/developer-api.ts (tylko trasy kluczy 3908-3980 i loadDeveloperApiCredential)",
+     "server/crm-routes.ts:53, server/base-wire-crm-routes.ts:32 (M2)",
+     "web/main.tsx (Audit, nawigacja)",
+     "web/api.ts:59-61",
+     "server/db.ts + pakowanie migracji"
+    ]
+   }
+  },
+  {
+   "key": "release_migrations",
+   "no": 6,
+   "name": "Migracje między wydaniami",
+   "summary": "Migracje idą w jednej transakcji pod advisory lockiem w kolejności z tablicy w server/db.ts; rejestr trzyma tylko nazwę i datę, bez sumy kontrolnej. Nic nie wykrywa bazy nowszej niż kod (downgrade). Pakowanie wydania pilnuje bajtów i SHA dla 209–233. Kopia i odtworzenie istnieją, ale nic ich nie wywołuje przed migrate() przy starcie, a odtworzenie trafia tylko do podglądu tylko do odczytu: brak procedury i testu cofnięcia. Testy N→N+1 na danych są tylko dla pojedynczych migracji 142–149. Test planu migracji ma nieaktualną liczbę wpisów i pada.",
+   "counts": {
+    "requirements": 8,
+    "done": 1,
+    "partial": 4,
+    "missing": 3,
+    "migration_needed": 1
+   },
+   "items": [
+    {
+     "id": "MIG-1",
+     "domain_id": null,
+     "requirement": "Runner migracji: kolejność, blokada przed równoległymi instancjami, transakcja, tabela wersji",
+     "state": "partial",
+     "evidence": [
+      "server/db.ts:474 BEGIN jednej transakcji dla wszystkich oczekujących migracji",
+      "server/db.ts:475 pg_advisory_xact_lock(982376)",
+      "server/db.ts:708 SELECT 1 FROM migrations WHERE name=$1",
+      "server/db.ts:672 198_original_keeper_resource_context zarejestrowana przed 189"
+     ],
+     "tests": [
+      "tests/migration-bootstrap.test.ts:32 bootstrap w oryginalnym ogrodzeniu migracji (bez DB, nieuruchomiony)",
+      "tests/source-ddl-migration-plan.test.mjs:23 PADA: oczekuje 207 wpisów, jest 223 (uruchomione 25.10)"
+     ],
+     "missing": "Jedna transakcja na całą serię. Brak testu na bazie, że błąd migracji K cofa całą serię bez wpisu. Test planu do poprawy (liczba i ogon wpisów).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "MIG-2",
+     "domain_id": null,
+     "requirement": "Niezmienność zastosowanych migracji (suma kontrolna)",
+     "state": "partial",
+     "evidence": [
+      "server/migration-bootstrap.ts:19 migrations(name, applied_at) bez sumy kontrolnej",
+      "tools/build/package-builder.mjs:150 pin bajtów i SHA dla 233"
+     ],
+     "tests": [
+      "tests/fiscal-receipts233-resource-packaging.test.mjs:18 czytnik wymusza bajty 233"
+     ],
+     "missing": "Baza nie zapisuje SHA zastosowanego pliku; edycja starej migracji (001–208 bez pinu) przechodzi bez wykrycia.",
+     "migration": true,
+     "migration_why": "Osobna tabela name→sha256 (kształt migrations pilnują testy zgodności).",
+     "effort": "M"
+    },
+    {
+     "id": "MIG-3",
+     "domain_id": null,
+     "requirement": "Automatyczna kopia przed migracją",
+     "state": "missing",
+     "evidence": [
+      "server/index.ts:12 await migrate() przy starcie, bez kopii",
+      "server/ordinary-local-runtime.ts:143 await db.migrate() bez kopii",
+      "server/recovery.ts:294 createBackup wywoływany tylko przez skrypty",
+      "scripts/backup.ts:17 ręczne npm run backup"
+     ],
+     "tests": [
+      "tests/backup.test.ts:202 pg_dump/pg_restore zachowuje wiersze, szyfrowanie, role, granty i RLS (DB, nieuruchomiony)"
+     ],
+     "missing": "Krok: są oczekujące migracje → createBackup → zapis id kopii → migrate(); porażka kopii blokuje migrację; test kolejności.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "MIG-4",
+     "domain_id": null,
+     "requirement": "Sprawdzona ścieżka cofnięcia",
+     "state": "partial",
+     "evidence": [
+      "server/recovery.ts:425 restoreBackup do osobnej bazy",
+      "server/recovery.ts:906 preview_only: true",
+      "scripts/restore-preview.ts:35 buildApp readOnly: true"
+     ],
+     "tests": [
+      "tests/backup.test.ts:354 uszkodzony backup nie tworzy bazy",
+      "tests/backup.test.ts:451 podgląd odtworzenia blokuje zapisy",
+      "tests/recovery-restore-toc.test.ts:5 kolejność dumpa z event triggerami"
+     ],
+     "missing": "Procedura i skrypt cofnięcia: zatrzymać N+1, przełączyć bazę na kopię sprzed migracji (bez preview_only), uruchomić N, sprawdzić health i zapisy; test end-to-end. Down-migracji nie ma (świadomie cofnięcie przez kopię).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "L"
+    },
+    {
+     "id": "MIG-5",
+     "domain_id": null,
+     "requirement": "Dane z wydania N działają w N+1 (test na danych)",
+     "state": "partial",
+     "evidence": [
+      "tests/b2b-catalog-scope-migration.test.ts:99 ręcznie odtworzony runner do 143",
+      "tests/return-destinations-migration.test.ts:145 parsuje db.ts i stosuje 001–147, potem 148"
+     ],
+     "tests": [
+      "tests/product-catalogs-migration.test.ts:32 142 uzupełnia grafy 141",
+      "tests/catalog-export-catalogs-migration.test.ts:57 143 zachowuje wiersze 142",
+      "tests/stocktake-adjustments-migration.test.ts:86 historyczne 148 przeżywają 149"
+     ],
+     "missing": "Brak ogólnej uprzęży: fikstura wydania N → migrate() do HEAD → porównanie liczności i SHA tabel → odczyty i zapisy biznesowe. Dla 210–233 tylko testy pakowania. Każdy test kopiuje pętlę runnera zamiast wspólnej migrateUpTo(n).",
+     "migration": false,
+     "migration_why": "",
+     "effort": "L"
+    },
+    {
+     "id": "MIG-6",
+     "domain_id": null,
+     "requirement": "Kopia z N odtworzona w N+1 i ochrona przed downgrade",
+     "state": "missing",
+     "evidence": [
+      "server/recovery.ts:362 manifest zapisuje tylko rewizję",
+      "server/recovery.ts:407 schema: liczba wierszy migrations, bez nazw",
+      "server/db.ts:708 runner ignoruje wpisy nieznane kodowi"
+     ],
+     "tests": [],
+     "missing": "restoreBackup nie uruchamia migrate() na kopii; brak odmowy startu, gdy baza ma migracje nowsze niż kod; manifest bez listy migracji.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "MIG-7",
+     "domain_id": null,
+     "requirement": "Pakowanie migracji do wydania",
+     "state": "done",
+     "evidence": [
+      "tools/build/package-builder.mjs:101 deployment233-exact-migration-pair z planu db.ts",
+      "tools/build/package-builder.mjs:131 parzystość rejestracji, zasobu i krawędzi Native",
+      "tools/build/resource-format209.mjs:175 RESOURCE233_ALIAS z SHA"
+     ],
+     "tests": [
+      "tests/fiscal-receipts233-resource-packaging.test.mjs:16 builder wybiera jeden pełny zasób 233",
+      "tests/fiscal-receipts233-resource-packaging.test.mjs:17 builder odrzuca częściową rejestrację"
+     ],
+     "missing": "Działa, ale każda migracja to ręczne edycje ok. 28 plików (commit 3ad5a7d), co blokuje równoległe tory; warto przejść na listę danych.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "MIG-8",
+     "domain_id": null,
+     "requirement": "Runbook wydania: kopia → migracja → weryfikacja → cofnięcie",
+     "state": "missing",
+     "evidence": [
+      "docs/FULL-BASE-GOAL.md:78 warunek 9 Wersje i dane",
+      "docs/parity/N23-BACKUP-RESTORE-LOCAL-20261019.md:64 jednorazowa baza z kopii 217, ręcznie",
+      "docs/local-postgres-runtime.md:117 tylko cykl klastra"
+     ],
+     "tests": [],
+     "missing": "Runbook z komendami i kryteriami: kopia, migrate, health i SHA tabel, a przy porażce odtworzenie i powrót do N.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "server/release-upgrade.ts (nowy)",
+     "scripts/release-upgrade.ts, scripts/release-rollback.ts (nowe)",
+     "server/recovery.ts",
+     "server/migration-bootstrap.ts",
+     "tests/release-upgrade-n-to-n1.test.ts (nowy)",
+     "tests/source-ddl-migration-plan.test.mjs",
+     "docs/release-upgrade-rollback.md (nowy)"
+    ],
+    "shared_touch": [
+     "server/db.ts (runner ok. 470-730; serializować z każdym torem dodającym migrację)",
+     "server/index.ts:12, server/ordinary-local-runtime.ts:143",
+     "tools/build/package-builder.mjs, tools/build/resource-format209.mjs i kopia w shared/large-import-dependencies/, runtime-resources.mjs",
+     "tests/*-resource-packaging.test.mjs"
+    ]
+   }
+  },
+  {
+   "key": "developer_test_stability",
+   "no": 7,
+   "name": "Stabilność tests/developer.test.ts (webhooki 9–22, 57014)",
+   "summary": "Przyczyna z lektury kodu: każde połączenie ma statement_timeout i lock_timeout po 8 s, a w ścieżce testów są trzy rodzaje pojedynczych instrukcji, których czas nie zależy od pracy danego testu: (A) czekanie na klucz idempotencji trwa całą cudzą transakcję tworzenia zamówienia, (B) cała odroczona walidacja transakcji wykonuje się w jednym SET CONSTRAINTS ... IMMEDIATE, (C) beforeEach i tick() przepisują i skanują całe tabele bazy zestawu, wspólnej dla kilku plików testów. Pod obciążeniem PG04 te instrukcje przekraczają 8 s. Nie da się odróżnić czekania na blokadę od wolnego SQL, bo oba limity są równe i licznik instrukcji startuje pierwszy (zawsze 57014, nie 55P03). Która instrukcja przekroczyła limit w zapisanych przebiegach: niepotwierdzone (TASKS.md:150 zapisał tylko numery testów).",
+   "counts": {
+    "requirements": 4,
+    "done": 0,
+    "partial": 3,
+    "missing": 1,
+    "migration_needed": 0
+   },
+   "items": [
+    {
+     "id": "DEV-A",
+     "domain_id": null,
+     "requirement": "Test 9: równoległy replay z tym samym Idempotency-Key nie przekracza limitu instrukcji",
+     "state": "partial",
+     "evidence": [
+      "tests/developer.test.ts:359 sześć równoległych POST /api/v1/orders z tym samym kluczem",
+      "server/app.ts:1471 INSERT INTO idempotency_keys ... ON CONFLICT DO NOTHING czeka na zatwierdzenie pierwszej transakcji",
+      "server/app.ts:1475 SELECT ... FOR UPDATE klucza idempotencji",
+      "server/db.ts:322 fn(c), a po niej ok. 20 kroków finalizacji (322-346) w tej samej transakcji"
+     ],
+     "tests": [
+      "tests/developer.test.ts:349 publiczne zamówienie wymaga idempotencji; replay współbieżny rezerwuje raz"
+     ],
+     "missing": "Pięć z sześciu żądań wisi w jednej instrukcji przez cały czas transakcji pierwszego (createOrder i finalizacja). Gdy ta transakcja trwa dłużej niż 8 s, oczekujący dostają 57014 i 500. Poprawka: przed INSERT pg_try_advisory_xact_lock(hashtextextended(tenant||':'||key,0)); bez blokady ROLLBACK, krótka pauza z backoffem poza transakcją i ponowienie (np. do 30 s), potem 409 z Retry-After. Kontrakt testu (wszystkie 200/201, jedno id) zostaje.",
+     "migration": false,
+     "migration_why": "Blokada doradcza, bez zmiany schematu.",
+     "effort": "S"
+    },
+    {
+     "id": "DEV-B",
+     "domain_id": null,
+     "requirement": "Odroczona walidacja transakcji nie jest jedną instrukcją z limitem 8 s",
+     "state": "partial",
+     "evidence": [
+      "server/public-constraint-drain.ts:21 SET CONSTRAINTS <wszystkie odroczone> IMMEDIATE w jednej instrukcji",
+      "server/db.ts:326 drain wywoływany w każdej tenantTx z PIM",
+      "server/db.ts:300 SET LOCAL statement_timeout='8s' w tenantTx",
+      "server/025_stock_locations.sql:81 przykład odroczonego triggera na stock (154 odroczone triggery w migracjach)"
+     ],
+     "tests": [],
+     "missing": "Wszystkie odroczone triggery transakcji (zamówienie, rezerwacja, zmiany statusów w teście 10) odpalają się w jednym SET CONSTRAINTS i liczą się do jednego limitu 8 s. Ten sam wzorzec dał 57014/8 s w pomiarach ordinary187 (docs/CURRENT-PRODUCT-STATUS.md:393). Do decyzji: osobny, jawny limit dla tej jednej instrukcji (SET LOCAL statement_timeout przed drain i przywrócenie po nim) albo pomiar kosztu triggerów na ścieżce zamówienia i jego obniżenie.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "M"
+    },
+    {
+     "id": "DEV-C",
+     "domain_id": null,
+     "requirement": "Przygotowanie testów i tick() pracują tylko na danych testu",
+     "state": "partial",
+     "evidence": [
+      "tests/developer.test.ts:32 beforeEach: UPDATE jobs SET state='done',lease_token=NULL bez WHERE",
+      "tests/developer.test.ts:33 beforeEach: UPDATE outbound_subscriptions SET enabled=false bez WHERE",
+      "scripts/test.ts:1807 pliki zestawu dzielą jedną bazę, gdy zestaw nie jest izolowany",
+      "server/010_operations.sql:30 indeks częściowy jobs_claim WHERE state='pending' (state w predykatach indeksów blokuje HOT)"
+     ],
+     "tests": [
+      "tests/developer.test.ts:459 test 10 pętli tick() do pustej kolejki"
+     ],
+     "missing": "beforeEach przed każdym z 22 testów przepisuje każdy wiersz jobs w całej bazie zestawu (także zadania wcześniejszych plików, np. sms, operations, warehouse) i wszystkie ok. 15 indeksów jobs, bo zmiana state wyklucza HOT; martwe krotki rosną z każdym testem. tick() (server/worker.ts:122-236) robi ok. 28 globalnych UPDATE ... FROM jobs w jednej transakcji na każdy obrót pętli. Poprawka: WHERE state IN ('pending','running') i WHERE enabled w beforeEach; w teście 10 nie zmieniać tick(), tylko ograniczyć kolejkę.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    },
+    {
+     "id": "DEV-D",
+     "domain_id": null,
+     "requirement": "Diagnostyka: wiadomo, która instrukcja przekroczyła limit",
+     "state": "missing",
+     "evidence": [
+      "server/db.ts:63 statement_timeout=8000 i lock_timeout=8000 dla każdego połączenia puli (także zapytań testu)"
+     ],
+     "tests": [],
+     "missing": "Przy równych limitach czekanie na blokadę też kończy się 57014, więc kod błędu nie odróżnia blokady od wolnego SQL. Pomiar przed poprawką: ALTER DATABASE <baza testowa> SET log_min_duration_statement=1000 i log_lock_waits=on (albo lock_timeout=6000 w opcjach puli testu), dwa przebiegi pod obciążeniem, porównanie logów z numerami testów.",
+     "migration": false,
+     "migration_why": "",
+     "effort": "S"
+    }
+   ],
+   "lane": {
+    "owns": [
+     "tests/developer.test.ts"
+    ],
+    "shared_touch": [
+     "server/app.ts:1456-1494 (blok POST /api/orders, tylko ścieżka idempotencji)",
+     "server/public-constraint-drain.ts i server/db.ts:326 (tylko DEV-B, po decyzji)"
+    ]
+   }
+  }
+ ],
+ "top10": [
+  {
+   "rank": 1,
+   "ids": [
+    "MIG-3",
+    "MIG-4",
+    "MIG-6"
+   ],
+   "why": "Warunek 9 Goala: start wydania migruje bazę bez kopii (server/index.ts:12), odtworzenie jest tylko podglądem tylko do odczytu (server/recovery.ts:906), a binarka N na bazie N+1 startuje bez sprzeciwu (server/db.ts:708). Nie ma sprawdzonej ścieżki cofnięcia.",
+   "lane": "S1"
+  },
+  {
+   "rank": 2,
+   "ids": [
+    "RES-04"
+   ],
+   "why": "Wymóg prawny i zero podwójnych skutków: KSeF nie zapisuje znacznika przed sendInvoice (server/ksef229.ts:236), a odpowiedź 440 'Duplikat' po utraconym ACK kończy się odrzuceniem zamiast uzgodnienia.",
+   "lane": "L1 integracji"
+  },
+  {
+   "rank": 3,
+   "ids": [
+    "AUTO-01",
+    "AUTO-05"
+   ],
+   "why": "Warunek 8: wyjątek jednego z 15 schedulerów pomija pozostałe i tick w danym cyklu (server/worker.ts:591), a UI nie pokazuje opóźnienia kolejki, błędów, ponowień ani heartbeat.",
+   "lane": "S3"
+  },
+  {
+   "rank": 4,
+   "ids": [
+    "SEC-005",
+    "SEC-012"
+   ],
+   "why": "Warunek 7: nieudane logowanie nie zostawia śladu (server/app.ts:1098), a ochrona przed zgadywaniem hasła to tylko limit per IP w pamięci.",
+   "lane": "S2"
+  },
+  {
+   "rank": 5,
+   "ids": [
+    "API-001"
+   ],
+   "why": "Warunek 7 wprost wymaga tokenów API z rotacją; jest tworzenie, zakresy, wygaśnięcie i odwołanie, nie ma rotacji ani last_used_at.",
+   "lane": "S2"
+  },
+  {
+   "rank": 6,
+   "ids": [
+    "SEC-009"
+   ],
+   "why": "Dziennik audytu: 100 ostatnich wierszy bez filtrów (server/app.ts:1575), surowy JSON bez autora w UI (web/main.tsx:3283), działania kluczem API tracą api_key_id.",
+   "lane": "S2"
+  },
+  {
+   "rank": 7,
+   "ids": [
+    "DEV-A",
+    "DEV-C",
+    "DEV-D"
+   ],
+   "why": "Niestabilne testy webhooków zasłaniają regresje. Test 9 z założenia trzyma pięć żądań w jednej instrukcji przez całą cudzą transakcję, a beforeEach przepisuje całą tabelę jobs bazy zestawu przed każdym testem.",
+   "lane": "S0"
+  },
+  {
+   "rank": 8,
+   "ids": [
+    "MIG-5"
+   ],
+   "why": "Dane N działają w N+1 sprawdzono tylko dla migracji 142–149; dla 210–233 są wyłącznie testy pakowania, brak wspólnej uprzęży z fiksturą wydania.",
+   "lane": "S1"
+  },
+  {
+   "rank": 9,
+   "ids": [
+    "AUTO-08"
+   ],
+   "why": "W zwykłym runtime operator nie uruchomi procesora scoped z UI (503, server/local-automation-worker-control.ts:139), a dwa kontrakty (globalny replay i scoped bez replay) współistnieją.",
+   "lane": "S3"
+  },
+  {
+   "rank": 10,
+   "ids": [
+    "B2B-007",
+    "B2B-008"
+   ],
+   "why": "Dwie funkcje B2B bez żadnego kodu: kredyt kupiecki (payment_mode tylko prepaid/cod, server/038_b2b.sql:9) i publiczny katalog dostawców.",
+   "lane": "S6"
+  }
+ ],
+ "work_breakdown": [
+  {
+   "lane": "S0",
+   "priority": "P1",
+   "name": "Stabilność testów webhooków i testu planu migracji",
+   "items": [
+    "DEV-A",
+    "DEV-C",
+    "DEV-D",
+    "MIG-1 (tylko poprawka tests/source-ddl-migration-plan.test.mjs:23)"
+   ],
+   "owns": [
+    "tests/developer.test.ts",
+    "tests/source-ddl-migration-plan.test.mjs"
+   ],
+   "shared_touch": [
+    "server/app.ts:1456-1494 (tylko ścieżka idempotencji POST /api/orders)"
+   ],
+   "migration": false,
+   "effort": "S",
+   "start": "od razu"
+  },
+  {
+   "lane": "S1",
+   "priority": "P1",
+   "name": "Ścieżka wydania: kopia, migracja, cofnięcie, N→N+1",
+   "items": [
+    "MIG-7 najpierw (lista danych zamiast ręcznych edycji ok. 28 plików)",
+    "MIG-6",
+    "MIG-3",
+    "MIG-2",
+    "MIG-4",
+    "MIG-5",
+    "MIG-8",
+    "MIG-1 (transakcja per migracja, test błędu na bazie)"
+   ],
+   "owns": [
+    "server/release-upgrade.ts (nowy)",
+    "scripts/release-upgrade.ts, scripts/release-rollback.ts (nowe)",
+    "server/recovery.ts",
+    "server/migration-bootstrap.ts",
+    "tests/release-upgrade-n-to-n1.test.ts (nowy)",
+    "docs/release-upgrade-rollback.md (nowy)",
+    "tools/build/package-builder.mjs, tools/build/resource-format209.mjs (+ kopia w shared/), runtime-resources.mjs"
+   ],
+   "shared_touch": [
+    "server/db.ts: część runnera (ok. 470-730) — wyłącznie ten tor",
+    "server/index.ts:12, server/ordinary-local-runtime.ts:143 (hook kopii)"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "od razu (MIG-7, MIG-6, MIG-3 bez DDL); 234_migration_checksums dopiero po rezerwacji numeru"
+  },
+  {
+   "lane": "S2",
+   "priority": "P1",
+   "name": "Administracja i bezpieczeństwo",
+   "items": [
+    "SEC-013 i ACCOUNT-002 (bez migracji, od razu)",
+    "API-001",
+    "SEC-005 + SEC-012",
+    "SEC-009",
+    "ACCOUNT-005",
+    "SEC-008",
+    "ACCOUNT-001, ACCOUNT-004",
+    "SEC-006",
+    "SEC-004 (osobna faza, L)"
+   ],
+   "owns": [
+    "server/account-security.ts",
+    "server/workspace-routes.ts",
+    "server/workspace-security-routes.ts",
+    "server/mfa-policy.ts",
+    "server/password-recovery.ts",
+    "server/workspace-billing*.ts",
+    "server/login-history.ts, server/permission-profiles.ts (nowe)",
+    "web/account-security.tsx",
+    "web/workspace-security.tsx",
+    "web/workspaces.tsx",
+    "web/workspace-billing.tsx",
+    "web/developer.tsx",
+    "web/audit-log.tsx (nowy)",
+    "tests/account-security.test.ts",
+    "tests/workspaces.test.ts",
+    "tests/workspace-mfa.test.ts",
+    "tests/workspace-billing.test.ts"
+   ],
+   "shared_touch": [
+    "server/app.ts: logowanie 1075-1104, onRequest 851-960, /api/audit 1572-1577",
+    "server/domain.ts:169 audit()",
+    "server/developer-api.ts: tylko trasy kluczy 3908-3980",
+    "server/crm-routes.ts:53, server/base-wire-crm-routes.ts:32",
+    "web/main.tsx: Audit ok. 3256-3290",
+    "web/api.ts:59-61"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "od razu bez migracji; migracje po kolei"
+  },
+  {
+   "lane": "S3",
+   "priority": "P2",
+   "name": "Nadzór workerów i automatyzacje",
+   "items": [
+    "AUTO-01",
+    "AUTO-02",
+    "AUTO-09 (testy)",
+    "AUTO-05",
+    "AUTO-03",
+    "AUTO-04",
+    "AUTO-06",
+    "AUTO-08",
+    "AUTO-07 (jedyna z migracją)"
+   ],
+   "owns": [
+    "server/worker-metrics.ts, server/worker-metrics-routes.ts (nowe; metryki w nowej trasie, nie w /api/dashboard)",
+    "web/worker-monitor.tsx, web/schedules-overview.tsx (nowe)",
+    "server/operation-schema.ts",
+    "server/automations.ts",
+    "server/operation-routes.ts",
+    "web/operations.tsx",
+    "server/product-rule-schedules.ts",
+    "server/local-automation-worker-control.ts",
+    "tests/worker-loop.test.ts, tests/product-rule-schedules.test.ts (nowe)"
+   ],
+   "shared_touch": [
+    "server/worker.ts:569-600 (pętla startWorker) — właściciel tego bloku",
+    "server/app.ts (rejestracja nowych tras)",
+    "web/main.tsx (nawigacja)"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "od razu (bez AUTO-07)"
+  },
+  {
+   "lane": "S4",
+   "priority": "P2",
+   "name": "Testy awarii: restart procesu, pokrycie reaperów, retry webhooków, paragon",
+   "items": [
+    "RES-21",
+    "RES-13",
+    "RES-18",
+    "RES-02 (test równoległej serii)"
+   ],
+   "owns": [
+    "tests/worker-restart.test.ts (nowy)",
+    "tests/worker-kind-reaper-coverage.test.mjs (nowy, statyczny)",
+    "tests/outbound-webhook-retry.test.ts (nowy)",
+    "tests/receipts233-lost-answer.database.test.ts (nowy)"
+   ],
+   "shared_touch": [
+    "brak plików produkcyjnych; RES-04 przejmuje tor L1 integracji, RES-07 tor L3 integracji"
+   ],
+   "migration": false,
+   "effort": "M",
+   "start": "od razu"
+  },
+  {
+   "lane": "S5",
+   "priority": "P2",
+   "name": "Komunikacja i portal klienta",
+   "items": [
+    "COM-002 + COM-007 (tagi, {{portal_link}}, powiadomienie)",
+    "COM-001",
+    "COM-006 (test provider_live)",
+    "COM-PORTAL-5",
+    "COM-PORTAL-4 (migracja)",
+    "COM-005 (migracja)",
+    "COM-008 (migracja)",
+    "COM-003 razem z torem L7 integracji"
+   ],
+   "owns": [
+    "server/customer-messages.ts",
+    "server/customer-message-routes.ts",
+    "server/customer-message-workflows.ts",
+    "server/customer-message-workflow-routes.ts",
+    "server/email.ts",
+    "server/email-routes.ts",
+    "server/email-inbound*.ts",
+    "server/sms.ts",
+    "server/sms-routes.ts",
+    "server/portal-routes.ts",
+    "server/portal-view.ts",
+    "web/customer-messages.tsx",
+    "web/email.tsx",
+    "web/email-inbound.tsx",
+    "web/sms.tsx",
+    "tests/customer-messages*.test.ts",
+    "tests/email.test.ts",
+    "tests/email-inbound*.test.ts",
+    "tests/sms.test.ts",
+    "tests/portal.test.ts"
+   ],
+   "shared_touch": [
+    "server/domain.ts:661 (ważność portal_token)",
+    "server/worker.ts (nowa gałąź kind dla IMAP; rebase na S3)",
+    "web/main.tsx (karta zamówienia ok. 3009)",
+    "web/operations.tsx (właściciel S3: zmiany ActionEditor przez S3 albo po nim)",
+    "server/email-attachments.ts i 063 (właściciel L7 integracji)"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "od razu bez migracji"
+  },
+  {
+   "lane": "S6",
+   "priority": "P3",
+   "name": "B2B i dropshipping",
+   "items": [
+    "B2B-002",
+    "B2B-003",
+    "B2B-005",
+    "B2B-004-X",
+    "B2B-007",
+    "B2B-008"
+   ],
+   "owns": [
+    "server/b2b*.ts",
+    "server/b2b-merchant-credit*.ts, server/b2b-supplier-directory*.ts (nowe)",
+    "web/b2b*.tsx",
+    "tests/b2b*.test.ts"
+   ],
+   "shared_touch": [
+    "server/app.ts (rejestracja)",
+    "server/worker.ts (opcjonalny reconcile trackingu)"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "po S1 MIG-7 (wszystkie pozycje mają migracje)"
+  },
+  {
+   "lane": "S7",
+   "priority": "P3",
+   "name": "Raportowanie",
+   "items": [
+    "DOM-ANALYTICS-001",
+    "DOM-ANALYTICS-004",
+    "DOM-ANALYTICS-003",
+    "DOM-ANALYTICS-005",
+    "DOM-ANALYTICS-006",
+    "DOM-ANALYTICS-002 (migracja delivery_method, po torach integracji)"
+   ],
+   "owns": [
+    "server/sales-reports.ts",
+    "server/sales-report-routes.ts",
+    "web/sales-reports.tsx",
+    "tests/sales-reports*.test.ts",
+    "server/analytics-*.ts (nowe)",
+    "tests/analytics-*.test.ts (nowe)"
+   ],
+   "shared_touch": [
+    "server/app.ts: blok /api/dashboard ok. 1154-1175 — właściciel tego bloku",
+    "web/main.tsx (nawigacja)",
+    "importery kanałów (tylko ANALYTICS-002)"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "od razu bez ANALYTICS-002"
+  },
+  {
+   "lane": "S8",
+   "priority": "P3",
+   "name": "AI katalogu",
+   "items": [
+    "DOM-AI-001",
+    "DOM-AI-003",
+    "DOM-AI-002",
+    "DOM-AI-004",
+    "DOM-AI-005"
+   ],
+   "owns": [
+    "server/catalog-ai.ts",
+    "server/catalog-ai-routes.ts",
+    "web/catalog-ai.tsx",
+    "tests/catalog-ai.test.ts",
+    "server/catalog-ai-batches.ts, server/image-background.ts (nowe)"
+   ],
+   "shared_touch": [
+    "server/worker.ts:225 (wykluczenia kind)",
+    "web/catalog.tsx (montaż UI)",
+    "server/catalog-routes.ts:102"
+   ],
+   "migration": true,
+   "effort": "L",
+   "start": "po S1 MIG-7"
+  },
+  {
+   "lane": "S9",
+   "priority": "P3",
+   "name": "Repricing",
+   "items": [
+    "DOM-REPRICE-006",
+    "DOM-REPRICE-003 (kursy z nbp227_rates)",
+    "DOM-REPRICE-001 (test trwałości)",
+    "DOM-REPRICE-004 (migracja)",
+    "DOM-REPRICE-005 (migracja)"
+   ],
+   "owns": [
+    "server/repricing*.ts",
+    "server/competitor-*.ts",
+    "web/repricing*.tsx",
+    "web/competitor-*.tsx",
+    "tests/repricing*.test.ts",
+    "tests/competitor-*.test.ts"
+   ],
+   "shared_touch": [
+    "server/offer-sync.ts, server/offers.ts (jeden właściciel naraz z L5 integracji; tylko REPRICE-005)",
+    "server/pricing.ts"
+   ],
+   "migration": true,
+   "effort": "M",
+   "start": "od razu bez migracji"
+  }
+ ],
+ "parallel_now": "Od razu i równolegle, bez migracji i bez wspólnych plików głównych: S0, S3 (bez AUTO-07), S4, S5 (część bez migracji), S7 (bez ANALYTICS-002), S9 (część bez migracji), S2 (SEC-013, ACCOUNT-002) i S1 (MIG-7, MIG-6, MIG-3, MIG-8). Tory z samymi migracjami (S6, S8) i migracyjne części pozostałych idą po MIG-7, po jednym numerze naraz.",
+ "serialization": [
+  "Numery migracji od 234 są wspólne z torami integracji L1, L3–L7. Rezerwować kolejno w porządku scalania. Dziś rejestracja jednej migracji to edycja server/db.ts, dwóch kopii resource-format209.mjs, package-builder.mjs, runtime-resources.mjs i ok. 20 testów *-resource-packaging (wzór: commit 3ad5a7d). Dopóki S1 nie zamieni tego na listę danych (MIG-7), migracje wchodzą pojedynczo.",
+  "server/db.ts: runner (ok. 470-730) zmienia tylko S1; pozostałe tory wyłącznie dopisują wpis na końcu listy migracji, po rebase.",
+  "server/worker.ts: blok startWorker (569-600) należy do S3; S5 (IMAP), S8 (partie AI) i tory integracji dopisują własne gałęzie kind, scalane kolejno z rebase.",
+  "server/app.ts: trasy tylko dopisywane. Bloki z właścicielem: S0 1456-1494, S2 1075-1104, 851-960 i 1572-1577, S7 ok. 1154-1175.",
+  "web/main.tsx: S2 (Audit), S5 (karta zamówienia), S3 i S7 (nawigacja) — rozłączne bloki, scalanie z rebase. web/operations.tsx należy do S3.",
+  "server/offers.ts i server/offer-sync.ts: jeden właściciel naraz (S9 albo L5 integracji). server/email-attachments.ts i 063: L7 integracji (COM-003 idzie z L7). server/ksef229*.ts: L1 integracji (RES-04). server/carrier-*.ts: L3 integracji (RES-07)."
+ ],
+ "decisions_for_artur": [
+  {
+   "id": "COM-PORTAL-6",
+   "question": "Płatność z portalu wymaga bramki płatniczej, której nie ma w fali 1 integracji. Czy dopisać dostawcę (np. PayU/Przelewy24) do zakresu, czy zostawić jako lukę poza Goalem?"
+  },
+  {
+   "id": "DEV-B",
+   "question": "Odroczona walidacja transakcji liczy się do jednego limitu 8 s. Czy dać tej jednej instrukcji osobny, jawny limit, czy najpierw zmierzyć i obniżyć koszt triggerów na ścieżce zamówienia? Cel skali: p95 zapisu ≤4 s."
+  },
+  {
+   "id": "COM-PORTAL-3",
+   "question": "Kupujący nie zmieni kraju ani punktu odbioru (świadome ograniczenie, tests/buyer-address.test.ts:340). Czy to luka wobec Base?"
+  }
+ ],
+ "info": [
+  "docs/parity/domains.json wskazuje kod w /Users/arturtwardowski/DYNA Ecomerce/local-app/, a nie w development/full-base; dowody code tego pliku są nieaktualne.",
+  "Repricing: raport podagenta podał brak tabeli kursów; to nieprawda — server/227_nbp_rates.sql:21 tworzy nbp227_rates. REPRICE-003 nie wymaga migracji."
+ ]
+}

@@ -1,0 +1,12 @@
+import * as implementation from './compiler.mjs';
+import * as startup from './startup.mjs';
+export type Ref={path:string;sha256:string};
+export type SourceSelection={source_graph:{id:string;ref:Ref}[];source_manifests:Ref[];quota_peer:Ref;terminal_peer:Ref;publisher_peer:Ref};
+export type CompositeCompileInput={authorization:'ROOT_AUTHORIZED_PURE_173_COMPOSITE_COMPILATION_NO_PG';selection:SourceSelection;selection_ref:Ref;expectation:Ref;authority_peer:Ref;authority_manifest:Ref;native_proof:Ref;native_peer:Ref};
+export type OwnerReader={query(sql:string):Promise<{rows:Record<string,unknown>[]}>};
+declare const reviewedStartup:unique symbol;
+export type ReviewedStartup={readonly schema:'large-import173-reviewed-startup/v1';readonly [reviewedStartup]:true};
+export const prepareCompositeCapture=implementation.prepareCompositeCapture as (input:SourceSelection)=>unknown;
+export const compileReviewedComposite=implementation.compileReviewedComposite as (input:CompositeCompileInput)=>Promise<unknown>;
+export const createReviewedStartup=startup.createReviewedStartup as (input:CompositeCompileInput)=>Promise<ReviewedStartup>;
+export const inspectCompositeStartup=startup.inspectCompositeStartup as (owner:OwnerReader,handle:ReviewedStartup)=>Promise<unknown>;

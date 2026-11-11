@@ -1,0 +1,594 @@
+{
+  "schema": "dynaminds-base-api-crm-source-coverage/v1",
+  "as_of": "2026-10-19",
+  "family": "Clients (CRM)",
+  "coverage_complete": false,
+  "family_acceptance_granted": false,
+  "full_goal_complete": false,
+  "scope_v4_modified": false,
+  "boundary": "File/source audit and closed-port controlled tests only. Native REST functionality, a successful build or these tests do not establish a deployed Base-compatible family, current Source218 database acceptance or vendor protocol parity.",
+  "contract": {
+    "path": "docs/parity/base-api-client-contracts.v1.json",
+    "bytes": 52288,
+    "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330"
+  },
+  "scope_reference": {
+    "path": "docs/parity/scope-inputs/v4/domains.json",
+    "requirements": [
+      "DOM-CRM-001",
+      "DOM-CRM-002",
+      "DOM-CRM-003",
+      "DOM-CRM-004"
+    ],
+    "acceptance_modified": false
+  },
+  "counts": {
+    "retained_official_methods": 11,
+    "source_implemented": 5,
+    "source_missing": 6,
+    "ordinary_release_runtime_accepted": 0,
+    "vendor_protocol_verified": 0
+  },
+  "source_implemented_methods": [
+    "addCrmClient",
+    "getCrmClientData",
+    "getCrmClients",
+    "deleteCrmClient",
+    "getCrmClientExtraFields"
+  ],
+  "source_missing_methods": [
+    "addCrmClientStatus",
+    "addCrmClientStatusGroup",
+    "deleteCrmClientStatus",
+    "deleteCrmClientStatusGroup",
+    "getCrmClientStatusGroups",
+    "getCrmClientStatuses"
+  ],
+  "source_pins": [
+    {
+      "path": "server/base-wire-crm.ts",
+      "bytes": 9688,
+      "sha256": "1b5324e1082f4e039377c568e83b62fb05ae15caef9e7066773f9d625a402eeb"
+    },
+    {
+      "path": "server/base-wire-crm-routes.ts",
+      "bytes": 7545,
+      "sha256": "a83a10877740615c657ad8c08fde02cd649430c43a129b16921b4d649e0a0515"
+    },
+    {
+      "path": "server/base-wire-crm-authority.ts",
+      "bytes": 1584,
+      "sha256": "bfdd194b38dfc21c953c590ca1704f2e34a32d3d7d273ce10467a19c40a5530a"
+    },
+    {
+      "path": "server/base-wire-crm-runtime.ts",
+      "bytes": 503,
+      "sha256": "d24f5a5d3a442dd72fad33b5be6d6141ea540870797476b87ee3a08ad18df16d"
+    },
+    {
+      "path": "server/base-wire-codec.ts",
+      "bytes": 9078,
+      "sha256": "c0f97e07e912eac31e23061094a3b0d84c0f8864db480f32b106603346cdd924"
+    },
+    {
+      "path": "server/crm.ts",
+      "bytes": 39552,
+      "sha256": "bf85c27edec4757cc252df69fe4f76ee1a1dcfe8b37bac7873300092a3128494"
+    },
+    {
+      "path": "server/crm-schema.ts",
+      "bytes": 4121,
+      "sha256": "2f60abed3606ed35311375c2bf009738e398171930fdc198d3fd6e5060258a9a"
+    },
+    {
+      "path": "server/crm-field-definitions.ts",
+      "bytes": 7941,
+      "sha256": "0a4039d69de0b45b65a8c471046c66d73a4fe901e73a74c954fb60ce26cf828b"
+    }
+  ],
+  "controlled_verification": {
+    "status": "PASS",
+    "evidence_level": "SOURCE_CONTROLLED_ONLY",
+    "reported_by": "Root actual focused run; matching author controlled run",
+    "command": "node --import tsx --test tests/base-wire-crm.test.ts tests/base-wire-crm-rate.test.ts tests/base-wire-crm-lifecycle.test.ts",
+    "pass": 34,
+    "fail": 0,
+    "skip": 0,
+    "test_pins": [
+      {
+        "path": "tests/base-wire-crm.test.ts",
+        "bytes": 49111,
+        "sha256": "957c9fe3dee48e2112171d2349b397020bf2e735fc217fc32e7af2f14252d2fc"
+      },
+      {
+        "path": "tests/base-wire-crm-rate.test.ts",
+        "bytes": 5412,
+        "sha256": "2c7346193f9c9e90d7d3e31b8e4c9802245bdbfc5fb3d696c0078da03d99bc56"
+      },
+      {
+        "path": "tests/base-wire-crm-lifecycle.test.ts",
+        "bytes": 8094,
+        "sha256": "3baa32da22a3d03b4b95a7e2dd60647f2af172cf21c2f7eb42a3b44ac1fb9b56"
+      }
+    ],
+    "typecheck": {
+      "status": "PASS",
+      "reported_by": "goal_status_review actual tsc --noEmit run",
+      "retained_result_file": null
+    },
+    "limits": [
+      "Transaction/query/encryption ports are controlled. Fastify injection is not an ordinary released application or a real credential/PG integration run.",
+      "No new database, HTTP/provider, build or application operation was executed for this matrix."
+    ]
+  },
+  "current_candidate_database": {
+    "status": "NOT_RUN",
+    "prepared_suite": {
+      "path": "tests/base-wire-crm.database.test.ts",
+      "bytes": 44574,
+      "sha256": "b505573818d050dfeb57a6cadbf5788f4072647e8d43d50e16720fd048753217"
+    },
+    "native_guard_acceptance": "OPEN",
+    "note": "Historical earlier three-method experiments do not grant acceptance to the current five-method candidate."
+  },
+  "native_authority": {
+    "historical_native_contract_modified_by_this_matrix": false,
+    "source_only_tests_grant_native_certification": false,
+    "source218_accepted_by_this_matrix": false
+  },
+  "shared_local_policies": [
+    "Rate limit100/minute per authenticated tenant across its keys on one app process; quota key/LRU behavior are local policy, not an undocumented Base quota guarantee.",
+    "API-key scope/MFA/tenant role checks and safe ERROR/HTTP codes are local product policy; official error-code catalogue and HTTP/retry mapping are not inferred."
+  ],
+  "methods": [
+    {
+      "method": "addCrmClient",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/0",
+        "id": "BASE-API-addCrmClient",
+        "official_document_url": "https://api.baselinker.com/index.php?method=addCrmClient",
+        "retained_document_sha256": "e37e513c047be1e563cdc84f0a5a7a71034c5dc78c406da329c2d0fdfa72da4c"
+      },
+      "source_status": "IMPLEMENTED",
+      "source_implemented": true,
+      "implementation": {
+        "service": "server/base-wire-crm.ts",
+        "native_domain": "server/crm.ts",
+        "route": "server/base-wire-crm-routes.ts"
+      },
+      "focused_tests": {
+        "status": "SOURCE_CONTROLLED_PASS",
+        "path": "tests/base-wire-crm.test.ts",
+        "cases": [
+          "actual CRM domain is shared: native UI create→wire update→native detail retains omitted fields and numeric identity",
+          "wire create is visible to native UI domain; only explicit keyed creates reconcile, identical unkeyed requests are distinct",
+          "keyed update reconciles historical original after its own CAS increment and later native UI edits",
+          "retained24-field add contract goes through the actual form codec and domain; omitted fields survive explicit empty text",
+          "all seven local editor representations translate numeric field IDs, preserve options and return private title/url without base64",
+          "local editor option/date/type and documented title40 refusals roll back whole profile/value/journal effects"
+        ],
+        "shared_route_test_paths": [
+          "tests/base-wire-crm-rate.test.ts",
+          "tests/base-wire-crm-lifecycle.test.ts"
+        ]
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": "tests/base-wire-crm.database.test.ts"
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": [
+        "Optional UUID Idempotency-Key is a local extension; identical unkeyed creates intentionally create separate profiles.",
+        "Local validation, scalar editor representations and file byte ceiling do not resolve undocumented Base serialization/2MB semantics."
+      ]
+    },
+    {
+      "method": "deleteCrmClient",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/1",
+        "id": "BASE-API-deleteCrmClient",
+        "official_document_url": "https://api.baselinker.com/index.php?method=deleteCrmClient",
+        "retained_document_sha256": "ae87db44bc80a5d904e642a9bec8056816e4f5c935097941744817a129d6b3c0"
+      },
+      "source_status": "IMPLEMENTED",
+      "source_implemented": true,
+      "implementation": {
+        "service": "server/base-wire-crm.ts",
+        "native_domain": "server/crm.ts",
+        "route": "server/base-wire-crm-routes.ts"
+      },
+      "focused_tests": {
+        "status": "SOURCE_CONTROLLED_PASS",
+        "path": "tests/base-wire-crm.test.ts",
+        "cases": [
+          "deleteCrmClient uses the same native soft-delete/journal, preserves whole historical order/link/file rows and never reuses its numeric ID",
+          "delete rejects foreign/missing/invalid IDs without effects; repeat-delete refusal is local policy, not an invented Base guarantee",
+          "delete requires crm:write and fresh write authority; stale principal/revoked key cannot delete or replay a retained ACK",
+          "lost delete COMMIT ACK reconciles only the original actor/key/body without deleting again or changing historical orders",
+          "delete uses the current locked native version and rolls back the soft-delete if its journal insertion fails"
+        ],
+        "shared_route_test_paths": [
+          "tests/base-wire-crm-rate.test.ts",
+          "tests/base-wire-crm-lifecycle.test.ts"
+        ]
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": "tests/base-wire-crm.database.test.ts"
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": [
+        "Reuse native soft archive; retain the public numeric identity, files/values and historical order links. Existing orders are not rewritten.",
+        "A fresh unkeyed repeat against an archived or missing profile returns the local404 ERROR envelope. Vendor repeat-delete semantics are undocumented.",
+        "Optional UUID Idempotency-Key is a local extension bound to the exact original method/body, actor and API key; it is not an official Base idempotency guarantee.",
+        "Exact retained keyed acknowledgement can be read after the original delete without another mutation; fresh authorization is still required."
+      ]
+    },
+    {
+      "method": "getCrmClientData",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/2",
+        "id": "BASE-API-getCrmClientData",
+        "official_document_url": "https://api.baselinker.com/index.php?method=getCrmClientData",
+        "retained_document_sha256": "8f656c57f196e75252b10403072f553509157d760d425a0f271b312896994ac5"
+      },
+      "source_status": "IMPLEMENTED",
+      "source_implemented": true,
+      "implementation": {
+        "service": "server/base-wire-crm.ts",
+        "native_domain": "server/crm.ts",
+        "route": "server/base-wire-crm-routes.ts"
+      },
+      "focused_tests": {
+        "status": "SOURCE_CONTROLLED_PASS",
+        "path": "tests/base-wire-crm.test.ts",
+        "cases": [
+          "actual registered Fastify form route dispatches through adapter and real CRM core, then native UI domain reads same profile",
+          "all seven local editor representations translate numeric field IDs, preserve options and return private title/url without base64",
+          "actual codec preserves the largest safe mapped ID and refuses rounded/unsafe/null/malformed target IDs before domain access"
+        ],
+        "shared_route_test_paths": [
+          "tests/base-wire-crm-rate.test.ts",
+          "tests/base-wire-crm-lifecycle.test.ts"
+        ]
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": "tests/base-wire-crm.database.test.ts"
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": [
+        "Files use an authenticated local attachment URL and title; no vendor attachment-authentication behavior is inferred."
+      ]
+    },
+    {
+      "method": "getCrmClientExtraFields",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/3",
+        "id": "BASE-API-getCrmClientExtraFields",
+        "official_document_url": "https://api.baselinker.com/index.php?method=getCrmClientExtraFields",
+        "retained_document_sha256": "05738237a944676666eadd158573ac663651c81d599b5a226ed281ea66894528"
+      },
+      "source_status": "IMPLEMENTED",
+      "source_implemented": true,
+      "implementation": {
+        "service": "server/base-wire-crm.ts",
+        "native_domain": "server/crm.ts",
+        "route": "server/base-wire-crm-routes.ts"
+      },
+      "focused_tests": {
+        "status": "SOURCE_CONTROLLED_PASS",
+        "path": "tests/base-wire-crm.test.ts",
+        "cases": [
+          "getCrmClientExtraFields uses retained table/example ARRAY as local choice and discovers the same seven native editors/options without allocation",
+          "active-only field discovery is LOCAL policy; archived values and numeric identities stay readable and foreign definitions stay isolated",
+          "field discovery keeps fresh read authority in readonly preview and fails closed for missing/unsafe numeric mappings without allocations"
+        ],
+        "shared_route_test_paths": [
+          "tests/base-wire-crm-rate.test.ts",
+          "tests/base-wire-crm-lifecycle.test.ts"
+        ]
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": "tests/base-wire-crm.database.test.ts"
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": [
+        "Array output follows the retained table/example; keyed-collection prose conflict remains open for vendor wire verification.",
+        "Only active definitions are discoverable. This is local policy; archived values and numeric mappings remain readable through getCrmClientData.",
+        "options is emitted only for select, checkbox and radio. Scalar/container encodings and exact interpretation of 2MB are not declared vendor-verified."
+      ]
+    },
+    {
+      "method": "getCrmClients",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/4",
+        "id": "BASE-API-getCrmClients",
+        "official_document_url": "https://api.baselinker.com/index.php?method=getCrmClients",
+        "retained_document_sha256": "a3b49b2b13c6a6b7937543fd3403565fdcbb600bbcf93f4d07fb4c1a9f2b0ffa"
+      },
+      "source_status": "IMPLEMENTED",
+      "source_implemented": true,
+      "implementation": {
+        "service": "server/base-wire-crm.ts",
+        "native_domain": "server/crm.ts",
+        "route": "server/base-wire-crm-routes.ts"
+      },
+      "focused_tests": {
+        "status": "SOURCE_CONTROLLED_PASS",
+        "path": "tests/base-wire-crm.test.ts",
+        "cases": [
+          "pagination100/page2, literal substring filters and detail extras opt-in execute real domain read path with zero allocations",
+          "all six partial filters and exact status/client IDs combine as AND without allocating identities or exposing a foreign tenant"
+        ],
+        "shared_route_test_paths": [
+          "tests/base-wire-crm-rate.test.ts",
+          "tests/base-wire-crm-lifecycle.test.ts"
+        ]
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": "tests/base-wire-crm.database.test.ts"
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": [
+        "Default page1, case-insensitive literal substring matching and missing/foreign filter IDs returning an empty list are explicit local choices where retained documentation is incomplete."
+      ]
+    },
+    {
+      "method": "addCrmClientStatus",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/5",
+        "id": "BASE-API-addCrmClientStatus",
+        "official_document_url": "https://api.baselinker.com/index.php?method=addCrmClientStatus",
+        "retained_document_sha256": "23bc7e6c2c2c4350eedb475f56300d9738c73fe5440825f55db7ed950fad2114"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    },
+    {
+      "method": "addCrmClientStatusGroup",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/6",
+        "id": "BASE-API-addCrmClientStatusGroup",
+        "official_document_url": "https://api.baselinker.com/index.php?method=addCrmClientStatusGroup",
+        "retained_document_sha256": "9fb7fc7d7734f25efddaec8f9e8df32880f0f56ab6e41578e3bc49195b288135"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    },
+    {
+      "method": "deleteCrmClientStatus",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/7",
+        "id": "BASE-API-deleteCrmClientStatus",
+        "official_document_url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatus",
+        "retained_document_sha256": "83c21c4f15d13eadf9c3b0ac1efe52b1bb8f7c13b25f3555b9935a3de7dbe11a"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    },
+    {
+      "method": "deleteCrmClientStatusGroup",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/8",
+        "id": "BASE-API-deleteCrmClientStatusGroup",
+        "official_document_url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatusGroup",
+        "retained_document_sha256": "18871fd25230698019db0f07fbb01348424ed841f101c0361b449b12180fa6f9"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    },
+    {
+      "method": "getCrmClientStatusGroups",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/9",
+        "id": "BASE-API-getCrmClientStatusGroups",
+        "official_document_url": "https://api.baselinker.com/index.php?method=getCrmClientStatusGroups",
+        "retained_document_sha256": "c3e9a06d37f5ccd204bb9bf76249d324417ea61be0d4d29f07cd3408227665a6"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    },
+    {
+      "method": "getCrmClientStatuses",
+      "contract": {
+        "path": "docs/parity/base-api-client-contracts.v1.json",
+        "json_pointer": "/methods/10",
+        "id": "BASE-API-getCrmClientStatuses",
+        "official_document_url": "https://api.baselinker.com/index.php?method=getCrmClientStatuses",
+        "retained_document_sha256": "a1e7c34e0f5aa25aa5546c7b0391322769849f7b1d524be5370fc43c81fd8d57"
+      },
+      "source_status": "MISSING",
+      "source_implemented": false,
+      "implementation": null,
+      "focused_tests": {
+        "status": "NOT_IMPLEMENTED",
+        "path": null,
+        "cases": [],
+        "shared_route_test_paths": []
+      },
+      "actual_database": {
+        "status": "NOT_RUN",
+        "candidate_scope": "current five-method Source218 candidate",
+        "prepared_test": null
+      },
+      "ordinary_release_runtime": {
+        "status": "NOT_RUN",
+        "activation_proven": false
+      },
+      "vendor_protocol": {
+        "status": "UNVERIFIED",
+        "official_account_requests_performed": false
+      },
+      "acceptance_granted": false,
+      "known_local_choices": []
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+ok 1 - every .query() SQL text in server/ and shared/ is a literal, built from constants, or reviewed
+ok 2 - the allow-list is current: every entry matches a dynamic site and carries a reason
+ok 3 - the scan sees the whole corpus (a lexer regression would silently find nothing)
+ok 4 - injection is caught: template with a request value
+ok 5 - injection is caught: concatenation
+ok 6 - injection is caught: WHERE builder fed by push
+ok 7 - injection is caught: object property appended
+ok 8 - injection is caught: helper returning SQL from its parameter
+ok 9 - injection is caught: map over request data
+ok 10 - injection is caught: imported builder
+ok 11 - injection is caught: array filled through an alias
+ok 12 - injection is caught: .length of a parsed JSON body ({"length":"1;…"})
+ok 13 - injection is caught: destructured request field
+ok 14 - injection is caught: default parameter overridden by the caller
+ok 15 - injection is caught: one unsafe ternary branch
+ok 16 - injection is caught: String() / toString() of request data
+ok 17 - injection is caught: column names from Object.keys(body)
+ok 18 - injection is caught: for…of over request data
+ok 19 - injection is caught: let reassigned
+ok 20 - injection is caught: object form text
+ok 21 - injection is caught: function passed as a value (callers unknown)
+ok 22 - injection is caught: exported helper without a caller here (called by a script)
+ok 23 - injection is caught: object built from a spread of the body
+ok 24 - injection is caught: new Array of request values
+ok 25 - injection is caught: generic call (its <> are not a comparison)
+ok 26 - injection is caught: default import of a helper
+ok 27 - injection is caught: barrel re-export `export { run } from`
+ok 28 - injection is caught: barrel `export * from`
+ok 29 - injection is caught: method taken as a value
+ok 30 - injection is caught: method destructured
+ok 31 - injection is caught: method called by a string key
+ok 32 - injection is caught: method passed as a callback
+ok 33 - injection is caught: ternary-of-arrays filled by a helper
+ok 34 - injection is caught: split() array filled by a helper
+ok 35 - injection is caught: helper named like a built-in (add)
+ok 36 - injection is caught: array kept in another array and filled through it
+ok 37 - injection is caught: reduce accumulator filled in the callback
+ok 38 - injection is caught: parameter filled in a callee
+ok 39 - injection is caught: exported object changed by an importer
+ok 40 - injection is caught: exported array pushed by an importer
+ok 41 - injection is caught: valueOf() of request data
+ok 42 - injection is caught: .length of a property a spread can override
+ok 43 - injection is caught: query through .call
+ok 44 - injection is caught: query by a string key
+ok 45 - injection is caught: return where (same file)
+ok 46 - injection is caught: identity fn returns param
+ok 47 - injection is caught: fallback || param
+ok 48 - injection is caught: ternary alias in same fn
+ok 49 - injection is caught: non-null push
+ok 50 - injection is caught: as-paren push
+ok 51 - injection is caught: paren push
+ok 52 - injection is caught: member call named update
+ok 53 - injection is caught: member call named get
+ok 54 - injection is caught: computed dispatch
+ok 55 - injection is caught: ns computed
+ok 56 - injection is caught: ns string key
+ok 57 - injection is caught: dyn import string key
+ok 58 - injection is caught: dyn import computed
+ok 59 - injection is caught: non-null method call
+ok 60 - injection is caught: reassigned primitive to array
+ok 61 - injection is caught: exported obj returned and mutated elsewhere
+ok 62 - injection is caught: imported obj returned by importer
+ok 63 - injection is caught: imported obj stored by ||
+ok 64 - injection is caught: param pushed via ternary alias
+ok 65 - injection is caught: param pushed via return in callee
+ok 66 - injection is caught: spread into push of holder
+ok 67 - injection is caught: Object.entries mutate
+ok 68 - injection is caught: Object.defineProperty/ Reflect.set
+ok 69 - injection is caught: setter fn on obj
+ok 70 - injection is caught: template concat with array toString
+ok 71 - injection is caught: unshift via apply
+ok 72 - injection is caught: index assign nested
+ok 73 - injection is caught: Object.assign into nested
+ok 74 - injection is caught: alias nested
+ok 75 - injection is caught: alias via destructure
+ok 76 - injection is caught: alias via for-of
+ok 77 - injection is caught: alias via array index
+ok 78 - injection is caught: alias via function return nested
+ok 79 - injection is caught: alias via method on obj
+ok 80 - constant SQL stays green: bound parameters
+ok 81 - constant SQL stays green: WHERE builder with placeholders only
+ok 82 - constant SQL stays green: whitelisted identifier via a constant map
+ok 83 - constant SQL stays green: numbers only
+ok 84 - constant SQL stays green: constant table list
+ok 85 - constant SQL stays green: ternary of literals on a request flag
+ok 86 - review 3 injection is caught: query optional call
+ok 87 - review 3 injection is caught: query non-null call
+ok 88 - review 3 injection is caught: query alias var call
+ok 89 - review 3 injection is caught: query alias var direct
+ok 90 - review 3 injection is caught: query destructured
+ok 91 - review 3 injection is caught: query destructured rename
+ok 92 - review 3 injection is caught: query paren
+ok 93 - review 3 injection is caught: query paren-as
+ok 94 - review 3 injection is caught: query generic
+ok 95 - review 3 injection is caught: query reflect
+ok 96 - review 3 injection is caught: query computed tpl
+ok 97 - review 3 injection is caught: query computed var
+ok 98 - review 3 injection is caught: query as arg
+ok 99 - review 3 injection is caught: query in obj
+ok 100 - review 3 injection is caught: query apply
+ok 101 - review 3 injection is caught: query spread args
+ok 102 - review 3 injection is caught: proto alias join
+ok 103 - review 3 injection is caught: push alias call
+ok 104 - review 3 injection is caught: push alias apply
+ok 105 - review 3 injection is caught: push alias bind
+ok 106 - review 3 injection is caught: as-prop truncates
+ok 107 - review 3 injection is caught: as-var truncates
+ok 108 - review 3 injection is caught: satisfies-prop
+ok 109 - review 3 injection is caught: in-prop boolean
+ok 110 - review 3 injection is caught: instanceof-prop
+ok 111 - review 3 injection is caught: as in template
+ok 112 - review 3 injection is caught: generic2 site arg
+ok 113 - review 3 injection is caught: generic2 init
+ok 114 - review 3 injection is caught: generic2 site arg w values
+ok 115 - review 3 injection is caught: generic2 param arg
+ok 116 - review 3 injection is caught: generic2 inside template
+ok 117 - review 3 injection is caught: inner block shadow
+ok 118 - review 3 injection is caught: for-of shadow
+ok 119 - review 3 injection is caught: catch shadow
+ok 120 - review 3 injection is caught: await alias
+ok 121 - review 3 injection is caught: await paren push
+ok 122 - review 3 injection is caught: obj destr assign
+ok 123 - review 3 injection is caught: arr destr assign
+ok 124 - review 3 injection is caught: obj destr rename assign
+ok 125 - review 3 injection is caught: for-of existing var
+ok 126 - review 3 injection is caught: for-in existing var
+ok 127 - review 3 injection is caught: arr index destr assign
+ok 128 - review 3 injection is caught: member destr assign
+ok 129 - review 3 injection is caught: getter text
+ok 130 - review 3 injection is caught: getter prop
+ok 131 - review 3 injection is caught: custom set 1 arg
+ok 132 - review 3 injection is caught: custom add this parts
+ok 133 - review 3 injection is caught: custom clear this
+ok 134 - review 3 injection is caught: custom replace this
+ok 135 - review 3 injection is caught: Map.set key
+ok 136 - review 3 injection is caught: Map.set key for-of
+ok 137 - review 3 injection is caught: class static configure
+ok 138 - review 3 injection is caught: class static setter prop
+ok 139 - review 3 injection is caught: dispatch var method
+ok 140 - review 3 injection is caught: dispatch var ns
+ok 141 - review 3 injection is caught: dispatch Object.values
+ok 142 - review 3 injection is caught: dispatch destructure computed
+ok 143 - review 3 injection is caught: dispatch dyn import var
+ok 144 - review 3 injection is caught: callee param shadows fn
+ok 145 - review 3 injection is caught: callee local shadows fn
+ok 146 - review 3 injection is caught: mutual recursion memo
+ok 147 - review 3 injection is caught: forEach arr param
+ok 148 - review 3 injection is caught: map arr param
+ok 149 - review 3 injection is caught: reduce arr param
+ok 150 - review 3 injection is caught: adapter as callback
+ok 151 - review 3 injection is caught: adapter alias
+ok 152 - review 3 injection is caught: adapter optional call
+ok 153 - review 3 injection is caught: dyn import mutate
+ok 154 - review 3 injection is caught: dyn import destr mutate
+ok 155 - review 3 injection is caught: predeclared loop var
+ok 156 - review 3 injection is caught: constructor.prototype
+ok 157 - review 3 injection is caught: angle assertion push
+ok 158 - review 3 injection is caught: comma op push
+ok 159 - review 3 injection is caught: spread copy shares elements
+ok 160 - review 3 injection is caught: obj spread copy shares nested
+ok 161 - review 3 injection is caught: generic arrow shadow param
+ok 162 - review 3 injection is caught: method-computed shadow
+ok 163 - review 3 control stays green: pattern default shadow
+ok 164 - review 3 injection is caught: uses before this: query w/ ternary ?.
+ok 165 - review 3 control stays green: optional chain string
+ok 166 - review 3 injection is caught: non-null in chain
+ok 167 - review 3 injection is caught: type assertion angle
+ok 168 - review 3 injection is caught: regex swallow property of
+ok 169 - review 3 injection is caught: label
+ok 170 - review 3 injection is caught: generator
+ok 171 - review 3 injection is caught: async iter
+ok 172 - review 3 injection is caught: arguments
+ok 173 - review 3 injection is caught: eval
+ok 174 - review 3 injection is caught: this in object literal
+ok 175 - review 3 injection is caught: getter+setter class
+ok 176 - review 3 injection is caught: async arrow IIFE
+ok 177 - review 3 injection is caught: IIFE param
+ok 178 - review 3 injection is caught: function expression named
+ok 179 - review 3 injection is caught: object method call via named fn
+ok 180 - review 3 injection is caught: bracket method call
+ok 181 - review 3 injection is caught: optional method call
+ok 182 - review 3 injection is caught: template tag call
+ok 183 - review 3 injection is caught: Function ctor
+ok 184 - review 3 injection is caught: super/inherit
+ok 185 - review 3 injection is caught: Array.from callback
+ok 186 - review 3 injection is caught: Object.values map
+ok 187 - review 3 injection is caught: str.concat
+ok 188 - review 3 injection is caught: str.padEnd arg
+ok 189 - review 3 injection is caught: str.replace arg
+ok 190 - review 3 injection is caught: str.at / charAt
+ok 191 - review 3 injection is caught: str.normalize
+ok 192 - review 3 injection is caught: str.match
+ok 193 - review 3 injection is caught: str.split / join
+ok 194 - review 3 injection is caught: digest
+ok 195 - review 3 injection is caught: toLocaleString
+ok 196 - review 3 injection is caught: codePointAt
+ok 197 - review 3 injection is caught: VALUE_READS on req
+ok 198 - review 3 injection is caught: trim
+ok 199 - review 3 injection is caught: startsWith
+ok 200 - review 3 injection is caught: repeat
+ok 201 - review 3 injection is caught: toUpperCase
+ok 202 - review 3 control stays green: toISOString
+ok 203 - review 3 injection is caught: Date chain
+ok 204 - review 3 injection is caught: Math chain
+ok 205 - review 3 injection is caught: Number chain
+ok 206 - review 3 injection is caught: Object.freeze
+ok 207 - review 3 injection is caught: as tail +
+ok 208 - review 3 injection is caught: as tail ||
+ok 209 - review 3 injection is caught: as tail ??
+ok 210 - review 3 injection is caught: angle expr
+ok 211 - review 3 injection is caught: two-generic init only
+ok 212 - review 3 injection is caught: two-generic init assigned
+ok 213 - review 3 injection is caught: Map.set key via Array.from
+ok 214 - review 3 injection is caught: Set.add (control)
+ok 215 - review 3 injection is caught: Map.set val (control)
+ok 216 - review 3 injection is caught: let reassigned in nested fn inner shadow only
+ok 217 - review 3 control stays green: shadow module level in function
+ok 218 - review 3 injection is caught: shadow outer unsafe via closure param
+ok 219 - review 3 injection is caught: shadow only block let w/ outer param
+ok 220 - review 3 injection is caught: dyn import controls: static import mutate
+ok 221 - mutation of a real file: a request value spliced into crm.ts listCrmClients is caught
+# pass 221
+# fail 0

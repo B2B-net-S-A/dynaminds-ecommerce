@@ -1,0 +1,145 @@
+.customer-message-assignment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.customer-message-assignment label {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.customer-message-assignment select {
+  width: 100%;
+}
+.customer-message-assignment p {
+  flex: 1 0 100%;
+  margin: 0;
+  line-height: 1.5;
+}
+.customer-message-assignment-name {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.customer-message-workflows {
+  min-width: 0;
+  margin-bottom: 20px;
+}
+.customer-message-workflows .panel-heading {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+.customer-message-workflows-body {
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.customer-message-workflows-body > p {
+  line-height: 1.6;
+  margin: 0;
+}
+.customer-message-workflows .cmw-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.customer-message-workflows .cmw-rule {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 0;
+}
+.customer-message-workflows .cmw-rule h3 {
+  margin: 0 0 8px;
+}
+.customer-message-workflows .cmw-rule p,
+.customer-message-workflows .cmw-rule li {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.customer-message-workflows .cmw-editor {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 0;
+}
+.customer-message-workflows .cmw-editor fieldset {
+  min-width: 0;
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+}
+.customer-message-workflows .cmw-editor input:not([type='checkbox']),
+.customer-message-workflows .cmw-editor select,
+.customer-message-workflows .cmw-editor textarea {
+  width: 100%;
+  min-width: 0;
+}
+.customer-message-workflows .cmw-action-row {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+}
+.customer-message-workflows .cmw-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.customer-message-workflows .cmw-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-direction: row;
+  line-height: 1.5;
+}
+.customer-message-workflows .cmw-checkbox input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+.customer-message-workflows .cmw-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.customer-message-workflows .cmw-preview {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.customer-message-workflows .cmw-runs table {
+  min-width: 650px;
+}
+.customer-message-workflows td {
+  overflow-wrap: anywhere;
+}
+.customer-message-workflows .button {
+  white-space: normal;
+}
+@media (max-width: 700px) {
+  .customer-message-workflows-body {
+    padding: 0 14px 18px;
+  }
+  .customer-message-workflows .cmw-grid {
+    grid-template-columns: 1fr;
+  }
+  .customer-message-workflows .cmw-editor {
+    padding: 12px;
+  }
+}

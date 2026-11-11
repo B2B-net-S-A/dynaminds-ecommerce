@@ -1,0 +1,136 @@
+.modal.external-order-intent-modal {
+  width: min(1000px, 94vw);
+  min-width: 0;
+  box-sizing: border-box;
+}
+.external-order-intents {
+  color: var(--text, #172033);
+  padding: 20px;
+  min-width: 0;
+}
+.external-order-intents h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+.external-order-intents h3 {
+  margin: 16px 0 10px;
+  font-size: 16px;
+}
+.external-order-intents p {
+  line-height: 1.55;
+}
+.external-order-intents fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.external-order-intents label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  margin: 10px 0;
+}
+.external-order-intents input:not([type='checkbox']),
+.external-order-intents select,
+.external-order-intents textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.external-order-intents .intent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.external-order-intents .intent-allocation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 12px;
+}
+.external-order-intents .intent-allocation label:last-of-type,
+.external-order-intents .intent-allocation p {
+  grid-column: 1 / -1;
+}
+.external-order-intents .intent-line,
+.external-order-intents .intent-review {
+  border: 1px solid #dce2ec;
+  padding: 16px;
+  border-radius: 10px;
+  margin: 14px 0;
+  background: #fff;
+}
+.external-order-intents .intent-check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 9px;
+  line-height: 1.5;
+}
+.external-order-intents .intent-check input {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin: 2px 0 0;
+}
+.external-order-intents .intent-notice,
+.external-order-intents .intent-error {
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  background: #eef5ff;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.external-order-intents .intent-error {
+  background: #fff0ed;
+  color: #8a2919;
+}
+.external-order-intents .intent-muted {
+  font-size: 12px;
+  color: #65718a;
+}
+.external-order-intents .intent-scroll {
+  overflow-x: auto;
+}
+.external-order-intents table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+.external-order-intents th,
+.external-order-intents td {
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #e5e9f1;
+}
+.external-order-intents small {
+  display: block;
+  margin-top: 6px;
+}
+.external-order-intents .intent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.external-order-intents .intent-lifecycle {
+  margin: 20px 0 0;
+  border-top: 1px solid #e5e9f1;
+  padding-top: 14px;
+}
+.external-order-intents summary {
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .external-order-intents {
+    padding: 12px;
+  }
+  .external-order-intents .intent-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .external-order-intents .intent-line {
+    padding: 12px;
+  }
+}

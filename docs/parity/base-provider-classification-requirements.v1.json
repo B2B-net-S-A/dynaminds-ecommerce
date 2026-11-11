@@ -1,0 +1,1110 @@
+{
+  "schema": "dynaminds-base-provider-classification-requirements/v1",
+  "as_of": "2026-10-18",
+  "status": "PARTIAL_SOURCE_CLASSIFICATION_AND_EXISTING_PLAN_BINDINGS_ONLY",
+  "source_refs": {
+    "roster": {
+      "path": "docs/parity/base-provider-roster.json",
+      "bytes": 3675917,
+      "sha256": "94abe5aa81772434f34809edf6ffaa2ea511a0e08f95dacd90a8bc72c1985853"
+    },
+    "dimensions": {
+      "path": "docs/parity/base-provider-catalog-dimensions.v1.json",
+      "bytes": 6022208,
+      "sha256": "ac79273c343bab1cdcc36f0be86f2c25d1810320d50118a7a2b716c065ae36bc"
+    },
+    "integrations": {
+      "path": "docs/parity/integrations.json",
+      "bytes": 1252573,
+      "sha256": "e4e9af5ce54685c122d335116184e36eda146aebb04d22488e34d99195133df0"
+    },
+    "scope": {
+      "path": "docs/parity/scope.v2.json",
+      "bytes": 1925550,
+      "sha256": "49d078d47a53438818bc375ea4489c0334eaafa3b57ba8d0ae7a0015969fecea"
+    },
+    "index": {
+      "path": "docs/parity/base-api-methods.v1.json",
+      "bytes": 85076,
+      "sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992"
+    },
+    "trace": {
+      "path": "docs/parity/base-api-contract-traceability-20261018.json",
+      "bytes": 721919,
+      "sha256": "7dea2ac8274f87888a70cdf8c77f03cf0ac97759f8eb0d177b88704371bd0cb9"
+    },
+    "archive": {
+      "path": "docs/parity/base-api-other-connect-external-sources-20261018.json.gz",
+      "bytes": 204296,
+      "sha256": "2f5eda1e2b538cfbea97f87c5a230aba8f89352b4fabdc092a25b51fa2e4f943"
+    },
+    "contracts": {
+      "path": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+      "bytes": 33623,
+      "sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8"
+    }
+  },
+  "entry_basis": {
+    "document": "docs/parity/base-provider-catalog-dimensions.v1.json",
+    "sha256": "ac79273c343bab1cdcc36f0be86f2c25d1810320d50118a7a2b716c065ae36bc",
+    "pointer": "/entries",
+    "entries": 2060,
+    "occurrences_pointer": "/occurrences",
+    "occurrences": 2056,
+    "default_status": "UNKNOWN_SEMANTICS_FROM_EXISTING_DIMENSIONS",
+    "rule": "All existing entry IDs, unknown semantic fields, raw occurrence filters, duplicate identities and conflicts remain referenced unchanged. Only explicit facts below are added; no alias/name/URL/family propagation."
+  },
+  "registry_identity_matches": [
+    {
+      "entry_id": "base.provider.allegro",
+      "entry_pointer": "/entries/0",
+      "classification": "registry_identity_match",
+      "registry_id": "allegro",
+      "registry_name": "Allegro",
+      "evidence": {
+        "roster_pointer": "/entries/0/registry_relationship",
+        "registry_pointer": "/providers/10",
+        "base_detail_url": "https://base.com/pl-PL/integracje/allegro/",
+        "source_capture_id": "roster_detail_batch1"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.amazon",
+      "entry_pointer": "/entries/1",
+      "classification": "registry_identity_match",
+      "registry_id": "amazon",
+      "registry_name": "Amazon",
+      "evidence": {
+        "roster_pointer": "/entries/1/registry_relationship",
+        "registry_pointer": "/providers/2",
+        "base_detail_url": "https://base.com/pl-PL/integracje/amazon/",
+        "source_capture_id": "roster_detail_batch1"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.ebay",
+      "entry_pointer": "/entries/2",
+      "classification": "registry_identity_match",
+      "registry_id": "ebay",
+      "registry_name": "eBay",
+      "evidence": {
+        "roster_pointer": "/entries/2/registry_relationship",
+        "registry_pointer": "/providers/3",
+        "base_detail_url": "https://base.com/pl-PL/integracje/ebay/",
+        "source_capture_id": "roster_detail_batch1"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.woocommerce",
+      "entry_pointer": "/entries/8",
+      "classification": "registry_identity_match",
+      "registry_id": "woocommerce",
+      "registry_name": "WooCommerce",
+      "evidence": {
+        "roster_pointer": "/entries/8/registry_relationship",
+        "registry_pointer": "/providers/11",
+        "base_detail_url": "https://base.com/pl-PL/integracje/woocommerce/",
+        "source_capture_id": "roster_stores"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.shopify",
+      "entry_pointer": "/entries/9",
+      "classification": "registry_identity_match",
+      "registry_id": "shopify",
+      "registry_name": "Shopify",
+      "evidence": {
+        "roster_pointer": "/entries/9/registry_relationship",
+        "registry_pointer": "/providers/7",
+        "base_detail_url": "https://base.com/pl-PL/integracje/shopify/",
+        "source_capture_id": "roster_stores"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.prestashop",
+      "entry_pointer": "/entries/10",
+      "classification": "registry_identity_match",
+      "registry_id": "prestashop",
+      "registry_name": "PrestaShop",
+      "evidence": {
+        "roster_pointer": "/entries/10/registry_relationship",
+        "registry_pointer": "/providers/9",
+        "base_detail_url": "https://base.com/pl-PL/integracje/prestashop/",
+        "source_capture_id": "roster_stores"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.inpost",
+      "entry_pointer": "/entries/16",
+      "classification": "registry_identity_match",
+      "registry_id": "inpost",
+      "registry_name": "InPost ShipX",
+      "evidence": {
+        "roster_pointer": "/entries/16/registry_relationship",
+        "registry_pointer": "/providers/12",
+        "base_detail_url": "https://base.com/pl-PL/integracje/inpost/",
+        "source_capture_id": "roster_carriers"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.dpd",
+      "entry_pointer": "/entries/19",
+      "classification": "registry_identity_match",
+      "registry_id": "dpd",
+      "registry_name": "DPD Polska",
+      "evidence": {
+        "roster_pointer": "/entries/19/registry_relationship",
+        "registry_pointer": "/providers/5",
+        "base_detail_url": "https://base.com/pl-PL/integracje/dpd/",
+        "source_capture_id": "roster_carriers"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.fakturownia",
+      "entry_pointer": "/entries/36",
+      "classification": "registry_identity_match",
+      "registry_id": "fakturownia",
+      "registry_name": "Fakturownia",
+      "evidence": {
+        "roster_pointer": "/entries/36/registry_relationship",
+        "registry_pointer": "/providers/13",
+        "base_detail_url": "https://base.com/pl-PL/integracje/fakturownia/",
+        "source_capture_id": "roster_accounting"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.smsapi",
+      "entry_pointer": "/entries/38",
+      "classification": "registry_identity_match",
+      "registry_id": "smsapi",
+      "registry_name": "SMSAPI",
+      "evidence": {
+        "roster_pointer": "/entries/38/registry_relationship",
+        "registry_pointer": "/providers/8",
+        "base_detail_url": "https://base.com/pl-PL/integracje/smsapi/",
+        "source_capture_id": "roster_sms"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.odoo",
+      "entry_pointer": "/entries/54",
+      "classification": "registry_identity_match",
+      "registry_id": "odoo",
+      "registry_name": "Odoo",
+      "evidence": {
+        "roster_pointer": "/entries/54/registry_relationship",
+        "registry_pointer": "/providers/4",
+        "base_detail_url": "https://base.com/pl-PL/integracje/odoo/",
+        "source_capture_id": "roster_extra_existing"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.provider.bigbuy",
+      "entry_pointer": "/entries/55",
+      "classification": "registry_identity_match",
+      "registry_id": "bigbuy",
+      "registry_name": "BigBuy",
+      "evidence": {
+        "roster_pointer": "/entries/55/registry_relationship",
+        "registry_pointer": "/providers/6",
+        "base_detail_url": "https://base.com/pl-PL/integracje/bigbuy/",
+        "source_capture_id": "roster_extra_existing"
+      },
+      "legal_operator": "unknown",
+      "product_edition": "unknown",
+      "api_regions": "unknown",
+      "api_version": "unknown",
+      "base_operation_support": "unknown",
+      "operation_inheritance": false,
+      "acceptance_granted": false
+    }
+  ],
+  "documented_products": [
+    {
+      "entry_id": "base.platform.base-connect",
+      "entry_pointer": "/entries/46",
+      "entity_kind": "documented_Base_platform_product",
+      "product": "Base Connect",
+      "evidence": {
+        "roster_title": "Base Connect - Base.com",
+        "index_family": "Base Connect",
+        "method_ids": [
+          "BASE-API-getConnectIntegrationContractors",
+          "BASE-API-getConnectIntegrations",
+          "BASE-API-addConnectContractorCreditSettlement",
+          "BASE-API-getConnectContractorCreditHistory",
+          "BASE-API-setConnectContractorCreditLimit"
+        ]
+      },
+      "legal_operator": "unknown",
+      "edition": "unknown",
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "entitlement": "unknown",
+      "acceptance_granted": false
+    }
+  ],
+  "operation_bindings": [
+    {
+      "entry_id": "base.platform.base-connect",
+      "product": "Base Connect",
+      "method_id": "BASE-API-getConnectIntegrationContractors",
+      "method": "getConnectIntegrationContractors",
+      "group": "Integrations",
+      "binding_kind": "documented_platform_method_to_existing_execution_plans",
+      "evidence": {
+        "index_pointer": "/methods/192",
+        "trace_pointer": "/methods/192",
+        "source_pointer": "/documents/8",
+        "source_html_sha256": "5c934e5aebd1bd0d3ea0b50721b29ef33c645c256006e36e5194fecc0ccf05b9",
+        "source_html_bytes": 49726,
+        "source_url": "https://api.baselinker.com/index.php?method=getConnectIntegrationContractors",
+        "retrieved_at": "2026-10-18T01:11:29.239449Z",
+        "contract": {
+          "document": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+          "document_sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8",
+          "format": "markdown_tables_and_prose",
+          "heading": "getConnectIntegrationContractors",
+          "anchor": "#getconnectintegrationcontractors",
+          "line": 224,
+          "section_sha256": "7a242c7790c036cda518db23d70866e5590f89583e2b846a2e9ab2b39e052f28"
+        }
+      },
+      "documented_intro": "The method allows you to retrieve a list of contractors connected to the selected Base Connect integration",
+      "input_table": [
+        {
+          "row": 1,
+          "name": "connect_integration_id",
+          "documented_type": "int",
+          "description": "Connect integration ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "output_table": [
+        {
+          "row": 1,
+          "name": "status",
+          "documented_type": "varchar(30)",
+          "description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "contractors",
+          "documented_type": "array",
+          "description": "List of Base Connect contractors for selected Base Connect integration.Each contractor has fields listed below.",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "| - connect_contractor_id",
+          "documented_type": "int",
+          "description": "Contractor ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 4,
+          "name": "| - name",
+          "documented_type": "text",
+          "description": "Contractor name",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 5,
+          "name": "| - credit_data",
+          "documented_type": "array",
+          "description": "Contractor credit summary data",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 6,
+          "name": "| - settings",
+          "documented_type": "array",
+          "description": "Contractor options",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "existing_acceptance_bindings": [
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrationContractors-CONTRACT",
+          "existing_plan_pointer": "/methods/192/acceptance_requirements/plans/0",
+          "status": "NOT_RUN",
+          "binding": {
+            "source_input_rows": [
+              1
+            ],
+            "source_output_rows": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "whole_prose_contract_section_sha256": "7a242c7790c036cda518db23d70866e5590f89583e2b846a2e9ab2b39e052f28",
+            "requirement": "Verify exact documented fields AND whole pinned prose, including unresolved/example differences. No inferred requiredness or account-wide authorization."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrationContractors-SAFETY",
+          "existing_plan_pointer": "/methods/192/acceptance_requirements/plans/1",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Exercise the existing tenant/account/actor safety and before/after or lost-response plan in an owned local fixture; no automatic mutation retry."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrationContractors-WIRE-ACCOUNT",
+          "existing_plan_pointer": "/methods/192/acceptance_requirements/plans/2",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Execute existing wire plan separately from authorized official-account verification. Local simulation does not grant an account result."
+          }
+        }
+      ],
+      "implementation_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "wire_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "account_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "local_route_mapping": null,
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "legal_operator": "unknown",
+      "operational_contract_fully_resolved": "UNKNOWN",
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.platform.base-connect",
+      "product": "Base Connect",
+      "method_id": "BASE-API-getConnectIntegrations",
+      "method": "getConnectIntegrations",
+      "group": "Integrations",
+      "binding_kind": "documented_platform_method_to_existing_execution_plans",
+      "evidence": {
+        "index_pointer": "/methods/193",
+        "trace_pointer": "/methods/193",
+        "source_pointer": "/documents/9",
+        "source_html_sha256": "cded1c22b3fea50d89fa747a3d46bf248d9ba8fa253992d4b20c18614e70d8e4",
+        "source_html_bytes": 49714,
+        "source_url": "https://api.baselinker.com/index.php?method=getConnectIntegrations",
+        "retrieved_at": "2026-10-18T01:11:29.053129Z",
+        "contract": {
+          "document": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+          "document_sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8",
+          "format": "markdown_tables_and_prose",
+          "heading": "getConnectIntegrations",
+          "anchor": "#getconnectintegrations",
+          "line": 240,
+          "section_sha256": "06c999326a9fda8c8ebedf3966e6cf3b2d5738c8bcb7cccc7507585448539408"
+        }
+      },
+      "documented_intro": "The method allows you to retrieve a list of all Base Connect integrations on this account",
+      "input_table": [],
+      "output_table": [
+        {
+          "row": 1,
+          "name": "status",
+          "documented_type": "varchar(30)",
+          "description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "integrations",
+          "documented_type": "array",
+          "description": "List of Base Connect integrations divided into:-own_integrations: integrations created on this account,- connected_integrations: integrations to which this account has connectedEach integration has fields listed below.",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "| - connect_integration_id",
+          "documented_type": "int",
+          "description": "Connect integration ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 4,
+          "name": "| - name",
+          "documented_type": "varchar(100)",
+          "description": "Integration name",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 5,
+          "name": "| - settings",
+          "documented_type": "array",
+          "description": "Integration options",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "existing_acceptance_bindings": [
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrations-CONTRACT",
+          "existing_plan_pointer": "/methods/193/acceptance_requirements/plans/0",
+          "status": "NOT_RUN",
+          "binding": {
+            "source_input_rows": [],
+            "source_output_rows": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "whole_prose_contract_section_sha256": "06c999326a9fda8c8ebedf3966e6cf3b2d5738c8bcb7cccc7507585448539408",
+            "requirement": "Verify exact documented fields AND whole pinned prose, including unresolved/example differences. No inferred requiredness or account-wide authorization."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrations-SAFETY",
+          "existing_plan_pointer": "/methods/193/acceptance_requirements/plans/1",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Exercise the existing tenant/account/actor safety and before/after or lost-response plan in an owned local fixture; no automatic mutation retry."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectIntegrations-WIRE-ACCOUNT",
+          "existing_plan_pointer": "/methods/193/acceptance_requirements/plans/2",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Execute existing wire plan separately from authorized official-account verification. Local simulation does not grant an account result."
+          }
+        }
+      ],
+      "implementation_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "wire_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "account_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "local_route_mapping": null,
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "legal_operator": "unknown",
+      "operational_contract_fully_resolved": "UNKNOWN",
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.platform.base-connect",
+      "product": "Base Connect",
+      "method_id": "BASE-API-addConnectContractorCreditSettlement",
+      "method": "addConnectContractorCreditSettlement",
+      "group": "Contractor credit",
+      "binding_kind": "documented_platform_method_to_existing_execution_plans",
+      "evidence": {
+        "index_pointer": "/methods/194",
+        "trace_pointer": "/methods/194",
+        "source_pointer": "/documents/10",
+        "source_html_sha256": "6a0e2662e6b7549012f7316e82bea71b815a0e3a0ab9a856ead0a57990eeae31",
+        "source_html_bytes": 50552,
+        "source_url": "https://api.baselinker.com/index.php?method=addConnectContractorCreditSettlement",
+        "retrieved_at": "2026-10-18T01:11:29.147841Z",
+        "contract": {
+          "document": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+          "document_sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8",
+          "format": "markdown_tables_and_prose",
+          "heading": "addConnectContractorCreditSettlement",
+          "anchor": "#addconnectcontractorcreditsettlement",
+          "line": 261,
+          "section_sha256": "a33dd204c5023aeaf80b53b89460467c5e5ef89e3b3f0b63067f8a6ca46f40dc"
+        }
+      },
+      "documented_intro": "The method allows you to add a manual credit settlement (repayment) for a chosen contractor in Base Connect. A settlement reduces the blocked credit amount for the contractor, effectively recording a payment received for previously charged orders. The settlement amount cannot exceed the contractor's currently blocked credit amount (credit_to_pay).",
+      "input_table": [
+        {
+          "row": 1,
+          "name": "connect_contractor_id",
+          "documented_type": "int",
+          "description": "Contractor ID. The list of contractor identifiers can be retrieved using the getConnectIntegrationContractors method",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "amount",
+          "documented_type": "float",
+          "description": "Settlement amount. Must be a positive value and cannot exceed the contractor's currently blocked credit amount (credit_to_pay). Can be passed as string or number in JSON",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "message",
+          "documented_type": "varchar(255)",
+          "description": "Settlement note/comment describing the repayment, e.g., payment reference, bank transfer ID, etc. Maximum 255 characters",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 4,
+          "name": "order_id",
+          "documented_type": "int",
+          "description": "Related order ID if the settlement is connected to a specific order. Use 0 or omit if not related to any specific order",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "output_table": [
+        {
+          "row": 1,
+          "name": "status",
+          "documented_type": "varchar(30)",
+          "description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "credit_entry_id",
+          "documented_type": "int",
+          "description": "The ID of the created credit settlement entry in the trade credit history",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "new_blocked_credit",
+          "documented_type": "float",
+          "description": "The contractor's new blocked credit amount (credit_to_pay) after the settlement",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 4,
+          "name": "new_available_credit",
+          "documented_type": "float",
+          "description": "The contractor's new available credit amount after the settlement",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "existing_acceptance_bindings": [
+        {
+          "existing_plan_id": "BASE-API-addConnectContractorCreditSettlement-CONTRACT",
+          "existing_plan_pointer": "/methods/194/acceptance_requirements/plans/0",
+          "status": "NOT_RUN",
+          "binding": {
+            "source_input_rows": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "source_output_rows": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "whole_prose_contract_section_sha256": "a33dd204c5023aeaf80b53b89460467c5e5ef89e3b3f0b63067f8a6ca46f40dc",
+            "requirement": "Verify exact documented fields AND whole pinned prose, including unresolved/example differences. No inferred requiredness or account-wide authorization."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-addConnectContractorCreditSettlement-SAFETY",
+          "existing_plan_pointer": "/methods/194/acceptance_requirements/plans/1",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Exercise the existing tenant/account/actor safety and before/after or lost-response plan in an owned local fixture; no automatic mutation retry."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-addConnectContractorCreditSettlement-WIRE-ACCOUNT",
+          "existing_plan_pointer": "/methods/194/acceptance_requirements/plans/2",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Execute existing wire plan separately from authorized official-account verification. Local simulation does not grant an account result."
+          }
+        }
+      ],
+      "implementation_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "wire_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "account_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "local_route_mapping": null,
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "legal_operator": "unknown",
+      "operational_contract_fully_resolved": "UNKNOWN",
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.platform.base-connect",
+      "product": "Base Connect",
+      "method_id": "BASE-API-getConnectContractorCreditHistory",
+      "method": "getConnectContractorCreditHistory",
+      "group": "Contractor credit",
+      "binding_kind": "documented_platform_method_to_existing_execution_plans",
+      "evidence": {
+        "index_pointer": "/methods/195",
+        "trace_pointer": "/methods/195",
+        "source_pointer": "/documents/11",
+        "source_html_sha256": "fe163860e648403c1321e7800ef0f296d973b319446619e251398546e7bde43d",
+        "source_html_bytes": 50289,
+        "source_url": "https://api.baselinker.com/index.php?method=getConnectContractorCreditHistory",
+        "retrieved_at": "2026-10-18T01:11:29.199190Z",
+        "contract": {
+          "document": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+          "document_sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8",
+          "format": "markdown_tables_and_prose",
+          "heading": "getConnectContractorCreditHistory",
+          "anchor": "#getconnectcontractorcredithistory",
+          "line": 278,
+          "section_sha256": "2b3209aded5131645c06505b071e09dcb293fd13a7d5e80dc4f25ddd4d4753cd"
+        }
+      },
+      "documented_intro": "The method allows you to retrieve an information about chosen contractor trade credit history",
+      "input_table": [
+        {
+          "row": 1,
+          "name": "connect_contractor_id",
+          "documented_type": "int",
+          "description": "Contractor ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "output_table": [
+        {
+          "row": 1,
+          "name": "status",
+          "documented_type": "varchar(30)",
+          "description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "credit_data",
+          "documented_type": "array",
+          "description": "List of Base Connect contractor trade credit data.Each credit entry has fields listed below.",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "| - credit_entry_id",
+          "documented_type": "int",
+          "description": "Entry ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 4,
+          "name": "| - date_add",
+          "documented_type": "int",
+          "description": "Entry add date in unix timestamp format",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 5,
+          "name": "| - description",
+          "documented_type": "text",
+          "description": "Entry description",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 6,
+          "name": "| - currency",
+          "documented_type": "char(3)",
+          "description": "Entry currency",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 7,
+          "name": "| - type",
+          "documented_type": "text",
+          "description": "Entry type:- charge- payment",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 8,
+          "name": "| - amount",
+          "documented_type": "float",
+          "description": "Entry amount",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 9,
+          "name": "| - is_accepted",
+          "documented_type": "int",
+          "description": "Entry status:- 0 - waiting- 1 - active",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "existing_acceptance_bindings": [
+        {
+          "existing_plan_id": "BASE-API-getConnectContractorCreditHistory-CONTRACT",
+          "existing_plan_pointer": "/methods/195/acceptance_requirements/plans/0",
+          "status": "NOT_RUN",
+          "binding": {
+            "source_input_rows": [
+              1
+            ],
+            "source_output_rows": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "whole_prose_contract_section_sha256": "2b3209aded5131645c06505b071e09dcb293fd13a7d5e80dc4f25ddd4d4753cd",
+            "requirement": "Verify exact documented fields AND whole pinned prose, including unresolved/example differences. No inferred requiredness or account-wide authorization."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectContractorCreditHistory-SAFETY",
+          "existing_plan_pointer": "/methods/195/acceptance_requirements/plans/1",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Exercise the existing tenant/account/actor safety and before/after or lost-response plan in an owned local fixture; no automatic mutation retry."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-getConnectContractorCreditHistory-WIRE-ACCOUNT",
+          "existing_plan_pointer": "/methods/195/acceptance_requirements/plans/2",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Execute existing wire plan separately from authorized official-account verification. Local simulation does not grant an account result."
+          }
+        }
+      ],
+      "implementation_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "wire_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "account_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "local_route_mapping": null,
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "legal_operator": "unknown",
+      "operational_contract_fully_resolved": "UNKNOWN",
+      "acceptance_granted": false
+    },
+    {
+      "entry_id": "base.platform.base-connect",
+      "product": "Base Connect",
+      "method_id": "BASE-API-setConnectContractorCreditLimit",
+      "method": "setConnectContractorCreditLimit",
+      "group": "Contractor credit",
+      "binding_kind": "documented_platform_method_to_existing_execution_plans",
+      "evidence": {
+        "index_pointer": "/methods/196",
+        "trace_pointer": "/methods/196",
+        "source_pointer": "/documents/12",
+        "source_html_sha256": "ae8cbd5a8445ad2160bf7ad3ca5538e78ac62a2ad063a27fbb20b70b3573f2a4",
+        "source_html_bytes": 49185,
+        "source_url": "https://api.baselinker.com/index.php?method=setConnectContractorCreditLimit",
+        "retrieved_at": "2026-10-18T01:11:29.549690Z",
+        "contract": {
+          "document": "docs/parity/base-api-other-connect-external-contracts-20261018.md",
+          "document_sha256": "7df3cc95fa54ffecaf5c63e7ad7a9cf33fdf3e055ead0a40ec6d6e830fe0d7b8",
+          "format": "markdown_tables_and_prose",
+          "heading": "setConnectContractorCreditLimit",
+          "anchor": "#setconnectcontractorcreditlimit",
+          "line": 297,
+          "section_sha256": "1c98017c98a6ccc862aebb3a893faa04877287fa11a265a6ab48790ab68e632b"
+        }
+      },
+      "documented_intro": "The method allows you to set new trade credit limit for chosen contractor",
+      "input_table": [
+        {
+          "row": 1,
+          "name": "connect_contractor_id",
+          "documented_type": "int",
+          "description": "Contractor ID",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "new_limit",
+          "documented_type": "float",
+          "description": "New limit value",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 3,
+          "name": "message",
+          "documented_type": "text",
+          "description": "Message shown in trade credit history",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "output_table": [
+        {
+          "row": 1,
+          "name": "status",
+          "documented_type": "varchar(30)",
+          "description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        },
+        {
+          "row": 2,
+          "name": "new_limit_set",
+          "documented_type": "text",
+          "description": "New trade credit limit value (formatted with currency)",
+          "required": null,
+          "requiredness": "NOT_NORMALIZED_HERE; consult the pinned contract section and source prose"
+        }
+      ],
+      "existing_acceptance_bindings": [
+        {
+          "existing_plan_id": "BASE-API-setConnectContractorCreditLimit-CONTRACT",
+          "existing_plan_pointer": "/methods/196/acceptance_requirements/plans/0",
+          "status": "NOT_RUN",
+          "binding": {
+            "source_input_rows": [
+              1,
+              2,
+              3
+            ],
+            "source_output_rows": [
+              1,
+              2
+            ],
+            "whole_prose_contract_section_sha256": "1c98017c98a6ccc862aebb3a893faa04877287fa11a265a6ab48790ab68e632b",
+            "requirement": "Verify exact documented fields AND whole pinned prose, including unresolved/example differences. No inferred requiredness or account-wide authorization."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-setConnectContractorCreditLimit-SAFETY",
+          "existing_plan_pointer": "/methods/196/acceptance_requirements/plans/1",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Exercise the existing tenant/account/actor safety and before/after or lost-response plan in an owned local fixture; no automatic mutation retry."
+          }
+        },
+        {
+          "existing_plan_id": "BASE-API-setConnectContractorCreditLimit-WIRE-ACCOUNT",
+          "existing_plan_pointer": "/methods/196/acceptance_requirements/plans/2",
+          "status": "NOT_RUN",
+          "binding": {
+            "entry_id": "base.platform.base-connect",
+            "requirement": "Execute existing wire plan separately from authorized official-account verification. Local simulation does not grant an account result."
+          }
+        }
+      ],
+      "implementation_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "wire_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "account_status": {
+        "status": "UNKNOWN",
+        "verified": false,
+        "evidence": []
+      },
+      "local_route_mapping": null,
+      "api_version": "unknown",
+      "api_regions": "unknown",
+      "legal_operator": "unknown",
+      "operational_contract_fully_resolved": "UNKNOWN",
+      "acceptance_granted": false
+    }
+  ],
+  "existing_backlog": {
+    "document": "docs/parity/base-api-contract-traceability-20261018.json",
+    "sha256": "7dea2ac8274f87888a70cdf8c77f03cf0ac97759f8eb0d177b88704371bd0cb9",
+    "existing_plans": 612,
+    "whole_existing_plans_canonical_sha256": "0d792580c02bc96bf179e47e7d3e32262a3a6e010deb45b3231b6456bb663bd9",
+    "statuses_modified": false,
+    "new_requirement_ids_created": 0
+  },
+  "preserved_scope": {
+    "document": "docs/parity/scope.v2.json",
+    "sha256": "49d078d47a53438818bc375ea4489c0334eaafa3b57ba8d0ae7a0015969fecea",
+    "scope_complete": false,
+    "acceptance_granted": false
+  },
+  "preserved_integrations": {
+    "document": "docs/parity/integrations.json",
+    "sha256": "e4e9af5ce54685c122d335116184e36eda146aebb04d22488e34d99195133df0",
+    "rows": 324,
+    "whole_rows_canonical_sha256": "f2fb8bcdb832a4666e228d3bbdf25785a79237cf5359980eaa33609ffab23683",
+    "statuses_modified": false
+  },
+  "summary": {
+    "referenced_entries": 2060,
+    "referenced_occurrences": 2056,
+    "registry_identity_matches": 12,
+    "documented_platform_products": 1,
+    "existing_operation_bindings": 5,
+    "existing_acceptance_bindings": 15,
+    "new_requirement_ids_created": 0,
+    "fully_resolved_provider_classifications": 0,
+    "semantic_provider_count": null,
+    "acceptance_granted": false
+  },
+  "open_boundaries": [
+    "This bounded slice adds five existing Base Connect method/product/plan bindings, not five newly discovered API methods or fifteen new requirements.",
+    "Local registry identity is not a legal provider/operator classification. Other documented provider operation bodies were not persisted in old marketing reader captures; do not reconstruct them from a title.",
+    "Base Connect methods belong to the Base platform. No other catalogue entry, shared URL, category, country filter or Mirakl search tag inherits them.",
+    "Regions, editions, actual upstream versions, legal operators and account eligibility remain unknown unless a future exact source establishes them.",
+    "All existing612 plans stay NOT_RUN; local, official-account, business/UI and recovery execution remain separate future gates."
+  ],
+  "inventory_complete": false,
+  "classification_complete": false,
+  "implementation_acceptance": false,
+  "wire_acceptance": false,
+  "external_acceptance": false,
+  "business_acceptance": false
+}

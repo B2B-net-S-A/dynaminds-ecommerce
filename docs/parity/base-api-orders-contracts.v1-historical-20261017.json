@@ -1,0 +1,3163 @@
+{
+  "schema": "dynaminds-base-api-orders-contracts/v1",
+  "as_of": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Orders",
+      "group": "Orders"
+    }
+  ],
+  "method_count": 7,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "contract_review_complete_for_all_Orders_family": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-orders-sources-20261017.json.gz",
+    "sha256": "d220a459e9d6050328552d988fbc81a8c73fdfb1b362837e3e441fd5567627c6",
+    "bytes": 76890,
+    "individual_documents": 7,
+    "format": "gzip UTF-8JSON;html_utf8 reencodesexactsourcebytes"
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented;localidempotency/replaydoesnotgrantBaseprotocolguarantee"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "field_inventory": {
+    "input_table_rows": 103,
+    "output_table_rows": 73,
+    "embedded_input_prose_fields": 14,
+    "embedded_output_prose_fields": 41,
+    "inline_file_formats": 3
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T20:58:24.040Z",
+    "scope": "Readonly code/route search and sourcehashes only;no runtime410x/PG/accountcalls",
+    "searched_terms": [
+      "connector.php",
+      "X-BLToken",
+      "addOrder",
+      "addOrderBySplit",
+      "addOrderDuplicate",
+      "deleteOrders",
+      "getOrders",
+      "setOrderFields",
+      "setOrdersMerge"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_server_web_TS_TSX",
+    "anchors": [
+      {
+        "path": "server/app.ts",
+        "sha256": "5e8c69022baf302b4a68d28091f9d2729c722425b1828e8babf5d061e44607b7",
+        "symbol_or_anchor": "GET/POST /api/orders;GET /api/orders/:id",
+        "boundary": "own UUID/cursorlimit200/manualcreate optional idempotencyheader;not Base wire"
+      },
+      {
+        "path": "server/domain.ts",
+        "sha256": "fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476",
+        "symbol_or_anchor": "orderSchema/createOrder/getOrder",
+        "boundary": "own minorunits/state/stock/manual lines and payment admission;not full Basefield schema"
+      },
+      {
+        "path": "server/manual-order-lines-values.ts",
+        "sha256": "3ecd0a27804af5f4f49a5732672ebe49daf2a94ac37ad74f04374fb618cf26f3",
+        "symbol_or_anchor": "manualOrderLines/prepareManualOrderLines",
+        "boundary": "typed local manual lines;not Base storage/product/variant warehouse identity envelope"
+      },
+      {
+        "path": "server/order-merge-routes.ts",
+        "sha256": "1ecc43e5920217f619d3c1d91d864ebed406c1e9c22d31858fd6f99366093eed",
+        "symbol_or_anchor": "registerOrderMergeRoutes",
+        "boundary": "own options/preview/execute/originalcommands/lineage"
+      },
+      {
+        "path": "server/order-merges-schema.ts",
+        "sha256": "0f618671284924694a9b9aa2354117b73834f155fffaa78f7cc1e11407d60218",
+        "symbol_or_anchor": "orderMergePreviewInput/orderMergeExecuteInput",
+        "boundary": "same namedmodes but UUID,versions/scopehash andmax100localorders;not Basecontract cap"
+      },
+      {
+        "path": "server/order-merges.ts",
+        "sha256": "e8fad56ebf9bdd4799f9717897ac33902faddea6e6fe222d6881fefd1ccd326b",
+        "symbol_or_anchor": "createOrderMergePreview/executeOrderMerge",
+        "boundary": "local guarded merge business behavior requires independent exact Basewire/readback mapping"
+      },
+      {
+        "path": "server/order-merge-payments.ts",
+        "sha256": "4edc2092affbaf177b43c65fe2bab69782586210a076b798f5e5535e357649a4",
+        "symbol_or_anchor": "merge payment admission",
+        "boundary": "local finance controls do not establish Base undocumented financeeffects"
+      },
+      {
+        "path": "server/buyer-address-routes.ts",
+        "sha256": "fae004d1c09705985f866a06bb47ba7b5263baa497627386cab7c2c7be7b2fa9",
+        "symbol_or_anchor": "registerBuyerAddressRoutes",
+        "boundary": "access+portal preview/apply address flow;not arbitrary setOrderFields"
+      },
+      {
+        "path": "server/order-fields.ts",
+        "sha256": "3e36749363091f4ad6cba8311c4d6851cb61e481b71eed41852f1605f9da880d",
+        "symbol_or_anchor": "getOrderFields/patchOrderFields/uploadOrderFieldFile",
+        "boundary": "own typed extra-field/attachment/revision API;not arbitrary Base IDvalues"
+      },
+      {
+        "path": "server/payment-routes.ts",
+        "sha256": "b9e6e2b87ec3d6252fe362dc16618e6702ae5f6dd759ef34c93dd925abcd9c37",
+        "symbol_or_anchor": "registerPaymentRoutes",
+        "boundary": "own append/reverse payment journal;paid=true Basecreate equivalence unproven"
+      },
+      {
+        "path": "server/imports.ts",
+        "sha256": "08f02bb1f0efcfb08ba1502efa9747d8de8bc3201a55843a5c862e5cc49f08c7",
+        "symbol_or_anchor": "stageOrders/import order flow",
+        "boundary": "provider staging/map/hash/commit differs direct addOrder and Base sourceIDs"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "create": {
+      "state": "adjacent_local_create_not_Base_wire",
+      "anchors": [
+        "server/app.ts",
+        "server/domain.ts",
+        "server/manual-order-lines-values.ts",
+        "server/payment-routes.ts",
+        "server/imports.ts"
+      ],
+      "route_candidates": [
+        "POST /api/orders",
+        "POST /api/orders/:id/payments"
+      ],
+      "open": [
+        "Own UUID/minorunits/status/manual-line schema and optional idempotency-header do not implement Base integerID/float/source/storage/fullfield payload.",
+        "No proof paid=true creates exactly matching Basefullpayment and source/warehouse identity semantics."
+      ]
+    },
+    "read": {
+      "state": "adjacent_local_read_not_Base_wire",
+      "anchors": [
+        "server/app.ts",
+        "server/domain.ts",
+        "server/order-fields.ts"
+      ],
+      "route_candidates": [
+        "GET /api/orders",
+        "GET /api/orders/:id"
+      ],
+      "open": [
+        "Own cursor/limit200 filters differ Basecap100/dateconfirmed algorithm and conditional commissions/connect/discounts.",
+        "Full Base source/shipping/invoice/transaction identifiers and declared stringbooleans/lengths not established."
+      ]
+    },
+    "patch": {
+      "state": "adjacent_local_fields_address_flows_not_Base_wire",
+      "anchors": [
+        "server/buyer-address-routes.ts",
+        "server/order-fields.ts",
+        "server/app.ts"
+      ],
+      "route_candidates": [
+        "PATCH /api/orders/:id/buyer-address-access",
+        "PATCH /api/orders/:id/status"
+      ],
+      "open": [
+        "No direct full Base setOrderFields handler located; sidecar access/status/typedfield operations have narrower separate payloads.",
+        "Omission/pickpackflags/fileformat/emptyfield semantics need exact mapping."
+      ]
+    },
+    "merge": {
+      "state": "matching_mode_names_adjacent_local_workflow_not_Base_wire",
+      "anchors": [
+        "server/order-merge-routes.ts",
+        "server/order-merges-schema.ts",
+        "server/order-merges.ts",
+        "server/order-merge-payments.ts"
+      ],
+      "route_candidates": [
+        "POST /api/order-merges/previews",
+        "POST /api/order-merges/execute",
+        "GET /api/order-merges/orders/:id/lineage"
+      ],
+      "open": [
+        "Same namedmodes and sumdelivery option do not prove exact Base source deletion/data/financial/stock behavior.",
+        "Own UUID/preview/hash/consent/clientkey/max100 constraints are additional localcontract, not sourced Basebatch limit."
+      ]
+    },
+    "split": {
+      "state": "Base_split_writer_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/app.ts",
+        "server/domain.ts",
+        "server/order-merges.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Merge workflow is not split; selected originalorder_productIDs/quantities/delivery cost one-child contract remains separate.",
+        "No proof physical/financial/immutable history semantics for 1→N via repeated splitcalls."
+      ]
+    },
+    "duplicate": {
+      "state": "Base_duplicate_writer_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/app.ts",
+        "server/domain.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Manualcreate is not proof inheriting all sourceorderdata with new ID and correct financial/shipping identities."
+      ]
+    },
+    "delete": {
+      "state": "Base_bulk_order_delete_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/app.ts",
+        "server/domain.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Statuscancel/merge controls do not establish deleteOrders batch1000 and confirmeddeletedIDs or cascades."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "ORDERS-001",
+      "methods": [
+        "getOrders"
+      ],
+      "issue": "Documented lastconfirmation+1second continuation has no explicit tie-breaker for100+orders in one second; id_from inclusivity/sort are not formalized.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-002",
+      "methods": [
+        "addOrder",
+        "setOrderFields",
+        "getOrders"
+      ],
+      "issue": "Read/write bool versus varchar1, variant int versus varchar30 and differing name/address/comment lengths require per-methodschemas.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-003",
+      "methods": [
+        "addOrder",
+        "getOrders"
+      ],
+      "issue": "storage_id db0 write wording versus inventory/shop/warehouse ID read; warehouse_id refers internal_warehouse_id, not catalogueprefixedexternalID.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-004",
+      "methods": [
+        "addOrderBySplit",
+        "addOrderDuplicate"
+      ],
+      "issue": "Inheritance ofallfields does not define copying payments/documents/reservations/lineIDs or safe idempotentneworder creation.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-005",
+      "methods": [
+        "addOrderBySplit"
+      ],
+      "issue": "delivery split net/gross dependsorder while ordinary delivery_price describedgross; default/proportion/rounding/positivequantities notspecified.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-006",
+      "methods": [
+        "setOrdersMerge"
+      ],
+      "issue": "into_main deletes otherorders; technicalmode preserves originals; finance/stock/currency/partialfailure/version boundaries notdocumented.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-007",
+      "methods": [
+        "deleteOrders"
+      ],
+      "issue": "deleted_order_ids confirms subset, not all-or-nothing or wholebatchsuccess; missing/foreign/repeatedIDs/restore unspecified.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-008",
+      "methods": [
+        "getOrders"
+      ],
+      "issue": "order_source_info declared butcurrentlyunavailable; optional flags control extra/commission/connect/discount fields.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-009",
+      "methods": [
+        "getOrders"
+      ],
+      "issue": "connect_data declaredarray buttypedfieldcontainer shape notexplicitlydescribed; discountbreakdown reusesparentfields exceptitself and isfinite.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    },
+    {
+      "id": "ORDERS-010",
+      "methods": [
+        "addOrder",
+        "setOrderFields",
+        "getOrders"
+      ],
+      "issue": "Attachmenttitle/file(data:base64) write versus title/url read; empty clears only describedextra field; no globalempty/null patch rule.",
+      "decision": "preserve_method_specific_contract_and_unknowns;no_fabricated_fullparity_or_account_acceptance"
+    }
+  ],
+  "dependencies_outside_selected_group": [
+    "getJournalList",
+    "getOrderStatusList",
+    "getOrderSources",
+    "getOrderExtraFields",
+    "getInventoryWarehouses",
+    "payment_document_shipping_stock_WMS_business_effects"
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-addOrder",
+      "method": "addOrder",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrder",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrder",
+        "retrieved_at": "2026-10-17T20:56:17.746659+00:00",
+        "http_status": 200,
+        "bytes": 59672,
+        "sha256": "3719b83cf7cbef19af7a1578a5dc7f308d703404c4ae6a6c758a8dc18d9e7170",
+        "snapshot_document_method": "addOrder"
+      },
+      "documented_intro": "The method allows adding a new order to the Base order manager.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Tworzy nowe zamówienie; custom_source_id pominięte wybiera domyślne źródło. paid=1 automatycznie dodaje pełną płatność — nie jest wyłącznie flagą widoku.",
+        "Produkty mają osobny storage/storage_id/product_id/variant_id. Dla db opis zapisu mówi storage_id=0; warehouse_id to internal_warehouse_id, a pominięcie/0 wybiera magazyn według źródła zamówienia. Nie utożsamiamy go z prefiksowanym warehouseID katalogu.",
+        "custom_extra_fields to mapa ID→wartość; pusty tekst usuwa pole. Plik title varchar40 + file data:base64 do2MB; odczyt zwraca title/url. Nie podano reguł częściowego sukcesu, kosztów, rezerwacji i nieznanego tworzenia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_status_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_status_id",
+            "documented_type": "int",
+            "documented_description": "Order status (the list available to retrieve with getOrderStatusList)",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "custom_source_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "custom_source_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Identifier of custom order source defined in Base panel. If not provided, default order source is assigned.",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "default": "default_order_source",
+            "omission": "default_order_source"
+          },
+          {
+            "name": "date_add",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "date_add",
+            "documented_type": "int",
+            "documented_description": "Date of order creation (in unix time format)",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "currency",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "currency",
+            "documented_type": "char(3)",
+            "documented_description": "3-letter currency symbol (e.g. EUR, PLN)",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "payment_method",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "payment_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payment method",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "payment_method_cod",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "payment_method_cod",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating whether the type of payment is COD (cash on delivery)",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "paid",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "paid",
+            "documented_type": "bool",
+            "documented_description": "Information whether the order is already paid. The value \"1\" automatically adds a full payment to the order.",
+            "source_table_row": 7,
+            "source_kind": "table_row",
+            "true_effect": "automatically_add_full_payment"
+          },
+          {
+            "name": "user_comments",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "user_comments",
+            "documented_type": "varchar(510)",
+            "documented_description": "Buyer comments",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "admin_comments",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "admin_comments",
+            "documented_type": "varchar(200)",
+            "documented_description": "Seller comments",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "email",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "email",
+            "documented_type": "varchar(150)",
+            "documented_description": "Buyer e-mail address",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "phone",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "phone",
+            "documented_type": "varchar(100)",
+            "documented_description": "Buyer phone number",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "user_login",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "user_login",
+            "documented_type": "varchar(30)",
+            "documented_description": "Allegro or eBay user login",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_method",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Delivery method name",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_price",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_price",
+            "documented_type": "float",
+            "documented_description": "Gross delivery price",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_fullname",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_fullname",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - name and surname",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_company",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_company",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - company",
+            "source_table_row": 16,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_address",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_address",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - street and number",
+            "source_table_row": 17,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_postcode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - postcode",
+            "source_table_row": 18,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_city",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - city",
+            "source_table_row": 19,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_state",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Delivery address - state/province",
+            "source_table_row": 20,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_country_code",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Delivery address - country code (two-letter, e.g. EN)",
+            "source_table_row": 21,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_point_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_id",
+            "documented_type": "varchar(40)",
+            "documented_description": "Pick-up point delivery - pick-up point identifier",
+            "source_table_row": 22,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_point_name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point name",
+            "source_table_row": 23,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_point_address",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_address",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point address",
+            "source_table_row": 24,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_point_postcode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point postcode",
+            "source_table_row": 25,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "delivery_point_city",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point city",
+            "source_table_row": 26,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_fullname",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_fullname",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - name and surname",
+            "source_table_row": 27,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_company",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_company",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - company",
+            "source_table_row": 28,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_nip",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_nip",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - Vat Reg. no./tax number",
+            "source_table_row": 29,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_address",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_address",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - street and house number",
+            "source_table_row": 30,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_postcode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Billing details - postcode",
+            "source_table_row": 31,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_city",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - city",
+            "source_table_row": 32,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_state",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Billing details - state/province",
+            "source_table_row": 33,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_country_code",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "invoice_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Billing details - country code (two-letter, e.g. EN)",
+            "source_table_row": 34,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "want_invoice",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "want_invoice",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating whether the customer wants an invoice (1 - yes, 0 - no)",
+            "source_table_row": 35,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "extra_field_1",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "extra_field_1",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"additional field 1\". - the seller can store any information there",
+            "source_table_row": 36,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "extra_field_2",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "extra_field_2",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"additional field 2\". - the seller can store any information there",
+            "source_table_row": 37,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "custom_extra_fields",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "custom_extra_fields",
+            "documented_type": "array",
+            "documented_description": "A list containing order custom extra fields, where the key is the extra field ID and value is an extra field content for given extra field. The list of extra fields can be retrieved with getOrderExtraFields method.In case of removing a field the empty string is expected.In case of file the following format is expected:{ \"title\": \"file.pdf\" (varchar(40) - the file name) \"file\": \"data:4AAQSkZJRgABA[...]\" (base64 - the file body limited to 2MB)}",
+            "source_table_row": 38,
+            "source_kind": "table_row",
+            "shape": "object_keyed_by_extra_field_id",
+            "empty_string": "remove_specific_field_value"
+          },
+          {
+            "name": "products",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "Order product array. Each element of the array is also an array containing fields:storage (varchar) - type of warehouse from which the product comes (available values: \"db\" - Base internal inventory, \"shop\" - the online store warehouse, \"warehouse\" - a connected wholesaler).storage_id (int) - the identifier of the warehouse from which the product comes (one of the shops connected to the account). Value \"0\" for a product from the Base internal inventory.product_id (varchar) - Product identifier in Base or store warehouse. Blank if the product number is unknownvariant_id (int) - Product variant ID. Blank if the variant number is unknownname (varchar) - Product namesku (varchar) - Product skuean (varchar) - Product eanlocation (varchar) - Product location. To assign multiple locations, separate them with a semicolon.warehouse_id (int) - Internal warehouse ID from getInventoryWarehouses (internal_warehouse_id). Only applies to products from Base inventory. Omit it or pass 0 to use the default warehouse based on the order source.attributes (varchar) - Specific product attributes (e.g. \"Color: blue\")price_brutto (float) - Single item gross pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - Quantity of piecesweight (float) - Single item weight",
+            "source_table_row": 39,
+            "source_kind": "table_row",
+            "shape": "array_of_order_line_objects"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "name": "products[].storage",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "type of warehouse from which the product comes (available values: \"db\" - Base internal inventory, \"shop\" - the online store warehouse, \"warehouse\" - a connected wholesaler).",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].storage_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "int",
+            "documented_description": "the identifier of the warehouse from which the product comes (one of the shops connected to the account). Value \"0\" for a product from the Base internal inventory.",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Product identifier in Base or store warehouse. Blank if the product number is unknown",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].variant_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "int",
+            "documented_description": "Product variant ID. Blank if the variant number is unknown",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].name",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Product name",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].sku",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Product sku",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].ean",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Product ean",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].location",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Product location. To assign multiple locations, separate them with a semicolon.",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].warehouse_id",
+            "required": false,
+            "requiredness_source": "explicit_omission_behavior",
+            "documented_type": "int",
+            "documented_description": "Internal warehouse ID from getInventoryWarehouses (internal_warehouse_id). Only applies to products from Base inventory. Omit it or pass 0 to use the default warehouse based on the order source.",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description",
+            "omission_or_zero": "default_warehouse_based_on_order_source",
+            "ID_domain": "getInventoryWarehouses.internal_warehouse_id"
+          },
+          {
+            "name": "products[].attributes",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "varchar",
+            "documented_description": "Specific product attributes (e.g. \"Color: blue\")",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].price_brutto",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "float",
+            "documented_description": "Single item gross price",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].tax_rate",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description",
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "name": "products[].quantity",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "int",
+            "documented_description": "Quantity of pieces",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          },
+          {
+            "name": "products[].weight",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "float",
+            "documented_description": "Single item weight",
+            "source_table_row": 39,
+            "source_kind": "input_table_row_description"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "inline_documented_file_format": {
+          "parent": "custom_extra_fields",
+          "source_table_row": 38,
+          "source_kind": "input_table_row_description",
+          "fields": [
+            {
+              "name": "title",
+              "documented_type": "varchar(40)"
+            },
+            {
+              "name": "file",
+              "documented_type": "base64_with_data:_prefix;body_limited2MB"
+            }
+          ],
+          "MIME_exact_byte_limits_download_auth": "not_documented"
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "ID of added order.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "create",
+      "proposed_acceptance": [
+        "Exact main/variant/manual lines and source/warehouse identity readback, all supplied address/extra/file fields and customsource omission.",
+        "paid false/true and full payment amount must be verified separately from status; unknown create must not duplicate orders/payments.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ]
+    },
+    {
+      "id": "BASE-API-addOrderBySplit",
+      "method": "addOrderBySplit",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderBySplit",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderBySplit",
+        "retrieved_at": "2026-10-17T20:56:19.933479+00:00",
+        "http_status": 200,
+        "bytes": 50278,
+        "sha256": "9686d4f42a2d53476505475f208d74b6455abaaabb8a2dc0e58546784c69b258",
+        "snapshot_document_method": "addOrderBySplit"
+      },
+      "documented_intro": "Creates a new order by splitting selected products from an existing order. The new order inherits all fields and information from the original one.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Jedno wywołanie tworzy jedno nowe zamówienie, przenosząc wybrane ilości pozycji; dziedziczy wszystkie pola/informacje według opisu.",
+        "Każdy item musi zawierać order_product_id oryginalnej pozycji i quantity int nie większe niż ilość oryginału. Brak jawnego minimum dodatniości/rozmiaru listy, nowych ID pozycji i zasad pustego źródła.",
+        "delivery_cost_to_split opcjonalne, netto lub brutto zależnie od zamówienia; nie więcej niż bieżąca dostawa; odjęte od źródła i przypisane dziecku. Brak defaultu/proporcjonalności/rounding.",
+        "Dziedziczenie pól nie definiuje kopiowania płatności/refundów/dokumentów/stock/WMS/triggerów. Sekwencja1→N nie ma udokumentowanej atomowości jednego wywołania."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "ID of the order to split",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items_to_split",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "items_to_split",
+            "documented_type": "array",
+            "documented_description": "A list of products to move to the new order. Each item must contain fields listed below",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items_to_split[].order_product_id",
+            "required": true,
+            "requiredness_source": "explicit_each_item_must_contain_listed_fields",
+            "default_status": "not_documented",
+            "documented_name": "| - order_product_id",
+            "documented_type": "int",
+            "documented_description": "ID of the product in the original order (from getOrders method)",
+            "source_table_row": 3,
+            "source_kind": "table_row",
+            "required_when": "item_in_items_to_split"
+          },
+          {
+            "name": "items_to_split[].quantity",
+            "required": true,
+            "requiredness_source": "explicit_each_item_must_contain_listed_fields",
+            "default_status": "not_documented",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity to be moved (must be less than or equal to the original quantity)",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "required_when": "item_in_items_to_split",
+            "max": "original_quantity"
+          },
+          {
+            "name": "delivery_cost_to_split",
+            "required": false,
+            "requiredness_source": "explicit_Optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_cost_to_split",
+            "documented_type": "float",
+            "documented_description": "Optional. Delivery cost (net or gross, depending on order) to transfer to the new order. This amount will be deducted from the original order and assigned to the new one. Must not exceed the current delivery price.",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "price_basis": "net_or_gross_depending_on_order",
+            "max": "current_delivery_price",
+            "effect": "deduct_from_original_and_assign_to_one_new_order"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "new_order_id",
+            "documented_name": "new_order_id",
+            "documented_type": "int",
+            "documented_description": "ID of the newly created order",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "split",
+      "proposed_acceptance": [
+        "Move selected partial/full item quantities by original line IDs, retain source remainder and prove one child ID/lineage per call.",
+        "Delivery net/gross boundary and source+child totals reconciled; payment/refund/document/reservations/stock/WMS/trigger effects explicitly verified, not inferred from inheritedfields.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ],
+      "documented_effect": {
+        "new_orders_per_call": 1,
+        "selected_lines_addressed_by": "original_order_product_id",
+        "inherits": "all_fields_and_information",
+        "source_quantity_effect": "move_selected_quantity",
+        "atomic_multi_child_split": "not_documented",
+        "payment_document_stock_WMS_line_ID_effects": "not_documented"
+      }
+    },
+    {
+      "id": "BASE-API-addOrderDuplicate",
+      "method": "addOrderDuplicate",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderDuplicate",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderDuplicate",
+        "retrieved_at": "2026-10-17T20:56:17.784829+00:00",
+        "http_status": 200,
+        "bytes": 48811,
+        "sha256": "207bc903ee4163651e11409662fcc4acd412d01ca0687285ab6bcaee3accf2ff",
+        "snapshot_document_method": "addOrderDuplicate"
+      },
+      "documented_intro": "The method allows you to add a new order to the Base order manager by duplicating an existing order. The new order will have the same data as the original order, but with a different ID.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Tworzy nowe zamówienie z tymi samymi danymi i innym ID. Output order_id, inaczej niż new_order_id przy split.",
+        "Nie definiuje zachowania płatności, historycznych dokumentów, shipmentIDs, externalIDs, rezerwacji/WMS, triggerów i nowych lineIDs. Brak idempotencji tworzenia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "ID of the order to duplicate",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "ID of added order.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "duplicate",
+      "proposed_acceptance": [
+        "Own source and distinct orderID, exact intended duplicated data and explicitly defined new financial/shipping/line/stock effects; no repeated unknown duplicate.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteOrders",
+      "method": "deleteOrders",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteOrders",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteOrders",
+        "retrieved_at": "2026-10-17T20:56:18.008374+00:00",
+        "http_status": 200,
+        "bytes": 48936,
+        "sha256": "de4492b3e6b1f1cd2465a1467866302133ed3e7e39027b03f8499461f0515d03",
+        "snapshot_document_method": "deleteOrders"
+      },
+      "documented_intro": "The method allows you to delete multiple orders from the Base order manager.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Usuwa wiele zamówień, najwyżej1000identyfikatorów na raz. deleted_order_ids potwierdza jedynie faktycznie usunięte ID.",
+        "Brak opisu reszty pominiętych/błędnych ID, atomowości, powtórzenia i odzyskania; kaskady płatności/dokumentów/WMS/ofert nie są zadeklarowane."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_ids",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_ids",
+            "documented_type": "array",
+            "documented_description": "Array of order identifiers from Base order manager (max 1000 at a time)",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "max_items": 1000,
+            "item_type": "not_explicitly_declared"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "deleted_order_ids",
+            "documented_name": "deleted_order_ids",
+            "documented_type": "array",
+            "documented_description": "Array of confirmed IDs of successfully deleted orders",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "delete",
+      "proposed_acceptance": [
+        "Boundary1000/1001, mixed existing/missing/foreign IDs and exact confirmed deletedlist; verify incomplete subset and all consequential cascade/restore boundaries.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ],
+      "documented_destructive_effect": {
+        "deletes_multiple_orders": true,
+        "confirmed_deleted_ids": "deleted_order_ids",
+        "partial_failure_atomicity": "not_documented",
+        "cascades": "not_documented",
+        "execution_performed": false
+      }
+    },
+    {
+      "id": "BASE-API-getOrders",
+      "method": "getOrders",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrders",
+        "final_url": "https://api.baselinker.com/index.php?method=getOrders",
+        "retrieved_at": "2026-10-17T20:56:18.258017+00:00",
+        "http_status": 200,
+        "bytes": 73802,
+        "sha256": "4f02f4aa4d9311750978349a7936c2cb27a7da04487a2176418d2ae91c591954",
+        "snapshot_document_method": "getOrders"
+      },
+      "documented_intro": "The method allows you to download orders from a specific date from the Base order manager. The order list can be limited using the filters described in the method parameters. A maximum of 100 orders are returned at a time. It is recommended to download only confirmed orders (get_unconfirmed_orders = false). Unconfirmed orders may be incomplete. The user may be, for example, in the process of creating an order - it already exists in the database, but not all information is completed. Unconfirmed orders may contain only a partial list of products and may be changed soon. Confirmed orders usually do not change anymore and can be safely downloaded to an external system. The best way to download the ongoing orders is: Collecting new order identifiers using getJournalList. Or, using this method: 1. Setting the starting date and specifying it in the date_confirmed_from field 2. Processing of all received orders. If 100 orders are received, there may be even more to download. 3. Downloading the next package of orders by entering the value of the date_confirmed field from last downloaded order in the date_confirmed_from field. In order to avoid downloading the same orders value of date_confirmed should be increased by 1 second. This operation is repeated until you receive a package with less than 100 orders (this means that there are no more orders left to download). 4. Saving the date_confirmed last processed order. You can download orders from this date onwards so that you do not download the same order twice. It is not possible for an order to 'jump' into the database with an earlier confirmation date. This way you can be sure that all confirmed orders have been downloaded.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Najwyżej100zamówień. Domyślnie tylko confirmed; unconfirmed mogą być niekompletne i zmieniać się, łącznie z listą pozycji/dostawą.",
+        "Dokument zaleca getJournalList lub date_confirmed_from od ostatniego wyniku plus1sekunda, aż partia<100. Nie podano osobnego stabilnego tie-breakera dla>=100potwierdzeń w tej samej sekundzie; nie zmieniamy zalecenia w bezwarunkową gwarancję bezstratności.",
+        "filter_order_source_id wymaga filter_order_source. filter_external_order_id nie powinno być łączone z filter_shop_order_id. IDźródła unikalne tylko wraz z order_source.",
+        "include_custom_extra_fields/commissions/connect_data/discounts_data i get_unconfirmed_orders domyślniefalse. order_source_info jest aktualnie niedostępne według opisu.",
+        "discounts mają order_lines_details zawierające te same pola poza order_lines_details, bez nieskończonego rozwijania schematu. profile_id=-1 oznacza API; order_product_id=0 dlaorder/shipmentdiscount.",
+        "getOrders ma inne długości i typy części pól niż zapis; payment_method_cod/want_invoice są varchar1, variant_id varchar30, a nie bool/int zapisu. Odczyt nie definiuje jednostki weight."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Order identifier. Completing this field will download information about only one specific order.",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_confirmed_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "date_confirmed_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Date of order confirmation from which orders are to be collected. Format unix time stamp.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) The order date from which orders are to be collected. Format unix time stamp.",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "id_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "id_from",
+            "documented_type": "int",
+            "documented_description": "(optional) The order ID number from which subsequent orders are to be collected.",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "get_unconfirmed_orders",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "get_unconfirmed_orders",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Download unconfirmed orders as well (this is e.g. an order from Allegro to which the customer has not yet completed the delivery form). Default is false. Unconfirmed orders may not be complete yet, the shipping method and price is also unknown.",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "default": false
+          },
+          {
+            "name": "status_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "status_id",
+            "documented_type": "int",
+            "documented_description": "(optional) The status identifier from which orders are to be collected. Leave blank to download orders from all statuses.",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_email",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_email",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Filtering of order lists by e-mail address (displays only orders with the given e-mail address).",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_order_source",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_order_source",
+            "documented_type": "varchar(20)",
+            "documented_description": "(optional) Filtering of order lists by order source, for instance \"ebay\", \"amazon\" (displays only orders come from given source). The list of order sources can be retrieved with getOrderSources method.",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_order_source_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_order_source_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filtering of order lists by order source identifier, for instance \"2523\" (displays only orders come from order source defined in \"filter_order_source\" identified by given order source identifier). Filtering by order source indentifier requires \"filter_order_source\" to be set prior. The list of order source identifiers can be retrieved with getOrderSources method.",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_shop_order_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_shop_order_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Shop Order identifier. Completing this field will download information about specific orders.",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_external_order_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_external_order_id",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) External order identifier. Allows filtering orders by the original order ID assigned by the marketplace or online store (e.g. Allegro transaction number, Amazon order number). This is the same value as the \"external_order_id\" field in the response. This filter should not be used together with filter_shop_order_id.",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "include_custom_extra_fields",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "include_custom_extra_fields",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Download values of custom additional fields.",
+            "source_table_row": 12,
+            "source_kind": "table_row",
+            "default": false
+          },
+          {
+            "name": "include_commissions",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "include_commissions",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Download orders with commissions information. If set to true, the response will contain additional \"commissions\" field.",
+            "source_table_row": 13,
+            "source_kind": "table_row",
+            "default": false
+          },
+          {
+            "name": "include_connect_data",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "include_connect_data",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Base Connect and contractor data.",
+            "source_table_row": 14,
+            "source_kind": "table_row",
+            "default": false
+          },
+          {
+            "name": "include_discounts_data",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_name": "include_discounts_data",
+            "documented_type": "bool",
+            "documented_description": "(optional, false by default) Download orders with discount log data. If set to true, the response will contain additional \"discounts\" field with a list of applied discounts.",
+            "source_table_row": 15,
+            "source_kind": "table_row",
+            "default": false
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "when": "filter_order_source_id supplied",
+            "requires": "filter_order_source"
+          },
+          {
+            "parameters": [
+              "filter_external_order_id",
+              "filter_shop_order_id"
+            ],
+            "combination": "should_not_be_used_together"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders",
+            "documented_name": "orders",
+            "documented_type": "array",
+            "documented_description": "An array of information about the orders found. Each order is described by the fields listed below.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].order_id",
+            "documented_name": "| - order_id",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from Base order manager",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].shop_order_id",
+            "documented_name": "| - shop_order_id",
+            "documented_type": "int",
+            "documented_description": "Order ID given by the store",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].external_order_id",
+            "documented_name": "| - external_order_id",
+            "documented_type": "varchar(50)",
+            "documented_description": "An order identifier taken from an external source. e.g. the order number in the store, or the eBay transaction number.",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].order_source",
+            "documented_name": "| - order_source",
+            "documented_type": "varchar(20)",
+            "documented_description": "Order source - available values: \"shop\", \"personal\", \"order_return\" or \"marketplace_code\" e.g. \"ebay\", \"amazon\", \"ceneo\", \"emag\", \"allegro\", etc.",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].order_source_id",
+            "documented_name": "| - order_source_id",
+            "documented_type": "int",
+            "documented_description": "Source ID (e.g. internal allegro account ID, internal shop ID, etc.). Unique only in combination with the \"order_source\" field (e.g. an ebay account and an allegro account may have the same ID, but two ebay accounts always have different IDs)",
+            "source_table_row": 7,
+            "source_kind": "table_row",
+            "unique_with": "order_source"
+          },
+          {
+            "path": "orders[].order_source_info",
+            "documented_name": "| - order_source_info",
+            "documented_type": "varchar(200)",
+            "documented_description": "Description of the order source - e.g. shop address or eBay seller nickname (field currently unavailable!)",
+            "source_table_row": 8,
+            "source_kind": "table_row",
+            "availability": "currently_unavailable_in_documentation"
+          },
+          {
+            "path": "orders[].order_status_id",
+            "documented_name": "| - order_status_id",
+            "documented_type": "int",
+            "documented_description": "Order status (the list available to retrieve with getOrderStatusList)",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].date_add",
+            "documented_name": "| - date_add",
+            "documented_type": "int",
+            "documented_description": "Date of order creation (in unix time format)",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].date_confirmed",
+            "documented_name": "| - date_confirmed",
+            "documented_type": "int",
+            "documented_description": "Order confirmation date if confirmed (unix time format)",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].date_in_status",
+            "documented_name": "| - date_in_status",
+            "documented_type": "int",
+            "documented_description": "Date from which the order is in current status (unix time format)",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].confirmed",
+            "documented_name": "| - confirmed",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating if the order is confirmed.",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].user_login",
+            "documented_name": "| - user_login",
+            "documented_type": "varchar(100)",
+            "documented_description": "Allegro or eBay user login",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].currency",
+            "documented_name": "| - currency",
+            "documented_type": "char(3)",
+            "documented_description": "3-letter currency symbol (e.g. EUR, PLN)",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].payment_method",
+            "documented_name": "| - payment_method",
+            "documented_type": "varchar(100)",
+            "documented_description": "Payment method",
+            "source_table_row": 16,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].payment_method_cod",
+            "documented_name": "| - payment_method_cod",
+            "documented_type": "varchar(1)",
+            "documented_description": "Flag indicating whether the type of payment is COD (cash on delivery): \"1\" - yes, \"0\" - no",
+            "source_table_row": 17,
+            "source_kind": "table_row",
+            "documented_values": [
+              "0",
+              "1"
+            ]
+          },
+          {
+            "path": "orders[].payment_done",
+            "documented_name": "| - payment_done",
+            "documented_type": "float",
+            "documented_description": "Amount paid",
+            "source_table_row": 18,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].user_comments",
+            "documented_name": "| - user_comments",
+            "documented_type": "varchar(1000)",
+            "documented_description": "Buyer comments",
+            "source_table_row": 19,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].admin_comments",
+            "documented_name": "| - admin_comments",
+            "documented_type": "varchar(200)",
+            "documented_description": "Seller comments",
+            "source_table_row": 20,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].email",
+            "documented_name": "| - email",
+            "documented_type": "varchar(150)",
+            "documented_description": "Buyer e-mail address",
+            "source_table_row": 21,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].phone",
+            "documented_name": "| - phone",
+            "documented_type": "varchar(100)",
+            "documented_description": "Buyer phone number",
+            "source_table_row": 22,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_method_id",
+            "documented_name": "| - delivery_method_id",
+            "documented_type": "int",
+            "documented_description": "Delivery method ID",
+            "source_table_row": 23,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_method",
+            "documented_name": "| - delivery_method",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery method name",
+            "source_table_row": 24,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_price",
+            "documented_name": "| - delivery_price",
+            "documented_type": "float",
+            "documented_description": "Gross delivery price",
+            "source_table_row": 25,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_package_module",
+            "documented_name": "| - delivery_package_module",
+            "documented_type": "varchar(20)",
+            "documented_description": "Courier name (if the shipment was created)",
+            "source_table_row": 26,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_package_nr",
+            "documented_name": "| - delivery_package_nr",
+            "documented_type": "varchar(40)",
+            "documented_description": "Shipping number (if the shipment was created)",
+            "source_table_row": 27,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_fullname",
+            "documented_name": "| - delivery_fullname",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - name and surname",
+            "source_table_row": 28,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_company",
+            "documented_name": "| - delivery_company",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - company",
+            "source_table_row": 29,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_address",
+            "documented_name": "| - delivery_address",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - street and number",
+            "source_table_row": 30,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_postcode",
+            "documented_name": "| - delivery_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - postcode",
+            "source_table_row": 31,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_city",
+            "documented_name": "| - delivery_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - city",
+            "source_table_row": 32,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_state",
+            "documented_name": "| - delivery_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Delivery address - state/province",
+            "source_table_row": 33,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_country",
+            "documented_name": "| - delivery_country",
+            "documented_type": "varchar(50)",
+            "documented_description": "Delivery address - country",
+            "source_table_row": 34,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_country_code",
+            "documented_name": "| - delivery_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Delivery address - country code (two-letter, e.g. EN)",
+            "source_table_row": 35,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_point_id",
+            "documented_name": "| - delivery_point_id",
+            "documented_type": "varchar(40)",
+            "documented_description": "Pick-up point delivery - pick-up point identifier",
+            "source_table_row": 36,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_point_name",
+            "documented_name": "| - delivery_point_name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point name",
+            "source_table_row": 37,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_point_address",
+            "documented_name": "| - delivery_point_address",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point address",
+            "source_table_row": 38,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_point_postcode",
+            "documented_name": "| - delivery_point_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point postcode",
+            "source_table_row": 39,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].delivery_point_city",
+            "documented_name": "| - delivery_point_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point city",
+            "source_table_row": 40,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_fullname",
+            "documented_name": "| - invoice_fullname",
+            "documented_type": "varchar(200)",
+            "documented_description": "Billing details - name and surname",
+            "source_table_row": 41,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_company",
+            "documented_name": "| - invoice_company",
+            "documented_type": "varchar(200)",
+            "documented_description": "Billing details - company",
+            "source_table_row": 42,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_nip",
+            "documented_name": "| - invoice_nip",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - Vat Reg. no./tax number",
+            "source_table_row": 43,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_address",
+            "documented_name": "| - invoice_address",
+            "documented_type": "varchar(250)",
+            "documented_description": "Billing details - street and house number",
+            "source_table_row": 44,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_postcode",
+            "documented_name": "| - invoice_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Billing details - postcode",
+            "source_table_row": 45,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_city",
+            "documented_name": "| - invoice_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - city",
+            "source_table_row": 46,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_state",
+            "documented_name": "| - invoice_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Billing details - state/province",
+            "source_table_row": 47,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_country",
+            "documented_name": "| - invoice_country",
+            "documented_type": "varchar(50)",
+            "documented_description": "Billing details - country",
+            "source_table_row": 48,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].invoice_country_code",
+            "documented_name": "| - invoice_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Billing details - country code (two-letter, e.g. EN)",
+            "source_table_row": 49,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].want_invoice",
+            "documented_name": "| - want_invoice",
+            "documented_type": "varchar(1)",
+            "documented_description": "Flag indicating whether the customer wants an invoice: \"1\" - yes, \"0\" - no",
+            "source_table_row": 50,
+            "source_kind": "table_row",
+            "documented_values": [
+              "0",
+              "1"
+            ]
+          },
+          {
+            "path": "orders[].extra_field_1",
+            "documented_name": "| - extra_field_1",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"extra field 1\" - the seller can store any information there",
+            "source_table_row": 51,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].extra_field_2",
+            "documented_name": "| - extra_field_2",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"extra field 2\" - the seller can store any information there",
+            "source_table_row": 52,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].order_page",
+            "documented_name": "| - order_page",
+            "documented_type": "varchar(150)",
+            "documented_description": "Order information page address",
+            "source_table_row": 53,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].pick_state",
+            "documented_name": "| - pick_state",
+            "documented_type": "int",
+            "documented_description": "Flag indicating the status of the order products collection (1 - all products have been collected, 0 - not all products have been collected)",
+            "source_table_row": 54,
+            "source_kind": "table_row",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "path": "orders[].pack_state",
+            "documented_name": "| - pack_state",
+            "documented_type": "int",
+            "documented_description": "Flag indicating the status of the order products packing (1 - all products have been packed, 0 - not all products have been packed)",
+            "source_table_row": 55,
+            "source_kind": "table_row",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "path": "orders[].star",
+            "documented_name": "| - star",
+            "documented_type": "int",
+            "documented_description": "Order star type. Values from 0 to 5. 0 means no star.",
+            "source_table_row": 56,
+            "source_kind": "table_row",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "zero": "no_star"
+          },
+          {
+            "path": "orders[].crm_client_id",
+            "documented_name": "| - crm_client_id",
+            "documented_type": "int",
+            "documented_description": "CRM client ID associated with the order (0 if none).",
+            "source_table_row": 57,
+            "source_kind": "table_row",
+            "when_none": 0
+          },
+          {
+            "path": "orders[].custom_extra_fields",
+            "documented_name": "| - custom_extra_fields",
+            "documented_type": "array",
+            "documented_description": "A list containing order custom extra fields returned only if the input parameters include_custom_extra_fields is set to true, where the key is the extra field ID and value is an extra field content for given extra field. The list of extra fields can be retrieved with getOrderExtraFields method.In case of file the following format is returned as value:{ \"title\": \"file.pdf\" (varchar(40) - the file name) \"url\": \"https://upload.cdn.baselinker.com/order_extra_files/23/...\" (url - the file url)}",
+            "source_table_row": 58,
+            "source_kind": "table_row",
+            "conditional_presence": "include_custom_extra_fields=true",
+            "shape": "object_keyed_by_extra_field_id"
+          },
+          {
+            "path": "orders[].commissions",
+            "documented_name": "| - commissions",
+            "documented_type": "array",
+            "documented_description": "The commissions that the marketplace charges for an order. Each element of the array is also an array containing fields described below.commission_name (varchar(100)) - commission namecommission_type (varchar(50)) - commission typecost_netto (float) - net commission amountcost_brutto (float) - gross commission amountcost_currency (varchar(3)) - currency code of the commission",
+            "source_table_row": 59,
+            "source_kind": "table_row",
+            "conditional_presence": "include_commissions=true"
+          },
+          {
+            "path": "orders[].connect_data",
+            "documented_name": "| - connect_data",
+            "documented_type": "array",
+            "documented_description": "Data from Base Connect linked to the order. Contains fields described below.connect_integration_id (int) - Base Connect integration IDconnect_contractor_id (int) - Base Connect contractor IDconnect_sale_id (int) - Order ID on the Base Connect contractor side",
+            "source_table_row": 60,
+            "source_kind": "table_row",
+            "conditional_presence": "include_connect_data=true",
+            "shape": "typed_fields_container;declared_array_without_explicit_collection_shape"
+          },
+          {
+            "path": "orders[].products",
+            "documented_name": "| - products",
+            "documented_type": "array",
+            "documented_description": "An array of order products. Each element of the array is also an array containing fields described below.storage (varchar(9)) - type of product source storage (available values: \"db\" - Base internal inventory, \"shop\" - online shop storage, \"warehouse\" - the connected wholesaler)storage_id (int) - the identifier of the storage (inventory/shop/warehouse) from which the product comes.order_product_id (int) - ID of order item from Base order managerproduct_id (varchar(50)) - product identifier in Base or shop storage. Blank if the product number is unknownvariant_id (varchar(30)) - Product variant ID. Blank if the variant number is unknownname (varchar(130)) - Product namesku (varchar(50)) - Product skuean (varchar(32)) - Product eanlocation (varchar(50)) - Product locationwarehouse_id (int) - Product source warehouse identifier. Only applies to products from Base inventory. Matches internal_warehouse_id from getInventoryWarehouses.warehouse_type (varchar(30)) - Warehouse typewarehouse_source_id (int) - Source warehouse identifierauction_id (varchar(50)) - Listing ID number (if the order comes from ebay/allegro)attributes (varchar(350)) - The detailed product attributes, e.g. \"Colour: blue\" (Variant name)price_brutto (float) - Single item gross pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - Quantity of piecesweight (float) - Single item weightbundle_id (int) - ID of the bundle that was split to aquire this order item. Only applies to bundles from Base inventory. Returns 0 if the product was not aquired from splitting a bundle.transaction_id (varchar(60)) - Marketplace-specific identifier for the order product. Returns an empty string if the order product has no marketplace-specific identifier.transaction2_id (varchar(40)) - Additional marketplace-specific identifier for the order product. Returns an empty string if the order product has no additional marketplace-specific identifier.",
+            "source_table_row": 61,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].discounts",
+            "documented_name": "| - discounts",
+            "documented_type": "array",
+            "documented_description": "A list of discounts applied to the order, returned only if the input parameter include_discounts_data is set to true. Contains fields described below.discount_id (int) - Discount log entry identifiertype (text) - Discount type: \"order\" (whole order), \"item\" (single product), \"shipment\" (delivery cost)order_product_id (int) - Order product ID affected by the discount (0 for order/shipment type)discount_amount (float) - Discount amount in order currencydiscount_percent (float) - Discount percentage (0 if fixed amount)discount_currency (text) - Currency codevalue_before (float) - Value before discountvalue_after (float) - Value after discountdetails (text) - Discount description (e.g. coupon code)date_add (int) - Date of discount creation (unix timestamp)profile_id (int) - Profile ID of the user who applied the discount (-1 for API)order_lines_details (array) - Per-item and shipment breakdown of the discount (empty array if single-target discount). Each element contains the same fields as the parent entry (except order_lines_details)",
+            "source_table_row": 62,
+            "source_kind": "table_row",
+            "conditional_presence": "include_discounts_data=true"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "orders[].commissions[].commission_name",
+            "documented_type": "varchar(100)",
+            "documented_description": "commission name",
+            "source_table_row": 59,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].commissions[].commission_type",
+            "documented_type": "varchar(50)",
+            "documented_description": "commission type",
+            "source_table_row": 59,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].commissions[].cost_netto",
+            "documented_type": "float",
+            "documented_description": "net commission amount",
+            "source_table_row": 59,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].commissions[].cost_brutto",
+            "documented_type": "float",
+            "documented_description": "gross commission amount",
+            "source_table_row": 59,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].commissions[].cost_currency",
+            "documented_type": "varchar(3)",
+            "documented_description": "currency code of the commission",
+            "source_table_row": 59,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].connect_data.connect_integration_id",
+            "documented_type": "int",
+            "documented_description": "Base Connect integration ID",
+            "source_table_row": 60,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].connect_data.connect_contractor_id",
+            "documented_type": "int",
+            "documented_description": "Base Connect contractor ID",
+            "source_table_row": 60,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].connect_data.connect_sale_id",
+            "documented_type": "int",
+            "documented_description": "Order ID on the Base Connect contractor side",
+            "source_table_row": 60,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].storage",
+            "documented_type": "varchar(9)",
+            "documented_description": "type of product source storage (available values: \"db\" - Base internal inventory, \"shop\" - online shop storage, \"warehouse\" - the connected wholesaler)",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].storage_id",
+            "documented_type": "int",
+            "documented_description": "the identifier of the storage (inventory/shop/warehouse) from which the product comes.",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].order_product_id",
+            "documented_type": "int",
+            "documented_description": "ID of order item from Base order manager",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].product_id",
+            "documented_type": "varchar(50)",
+            "documented_description": "product identifier in Base or shop storage. Blank if the product number is unknown",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].variant_id",
+            "documented_type": "varchar(30)",
+            "documented_description": "Product variant ID. Blank if the variant number is unknown",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].name",
+            "documented_type": "varchar(130)",
+            "documented_description": "Product name",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product sku",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product ean",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].location",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product location",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Product source warehouse identifier. Only applies to products from Base inventory. Matches internal_warehouse_id from getInventoryWarehouses.",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].warehouse_type",
+            "documented_type": "varchar(30)",
+            "documented_description": "Warehouse type",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].warehouse_source_id",
+            "documented_type": "int",
+            "documented_description": "Source warehouse identifier",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].auction_id",
+            "documented_type": "varchar(50)",
+            "documented_description": "Listing ID number (if the order comes from ebay/allegro)",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].attributes",
+            "documented_type": "varchar(350)",
+            "documented_description": "The detailed product attributes, e.g. \"Colour: blue\" (Variant name)",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].price_brutto",
+            "documented_type": "float",
+            "documented_description": "Single item gross price",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description",
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "orders[].products[].quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity of pieces",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].weight",
+            "documented_type": "float",
+            "documented_description": "Single item weight",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].bundle_id",
+            "documented_type": "int",
+            "documented_description": "ID of the bundle that was split to aquire this order item. Only applies to bundles from Base inventory. Returns 0 if the product was not aquired from splitting a bundle.",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].transaction_id",
+            "documented_type": "varchar(60)",
+            "documented_description": "Marketplace-specific identifier for the order product. Returns an empty string if the order product has no marketplace-specific identifier.",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].products[].transaction2_id",
+            "documented_type": "varchar(40)",
+            "documented_description": "Additional marketplace-specific identifier for the order product. Returns an empty string if the order product has no additional marketplace-specific identifier.",
+            "source_table_row": 61,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].discount_id",
+            "documented_type": "int",
+            "documented_description": "Discount log entry identifier",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].type",
+            "documented_type": "text",
+            "documented_description": "Discount type: \"order\" (whole order), \"item\" (single product), \"shipment\" (delivery cost)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description",
+            "documented_values": [
+              "order",
+              "item",
+              "shipment"
+            ]
+          },
+          {
+            "path": "orders[].discounts[].order_product_id",
+            "documented_type": "int",
+            "documented_description": "Order product ID affected by the discount (0 for order/shipment type)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description",
+            "when_order_or_shipment": 0
+          },
+          {
+            "path": "orders[].discounts[].discount_amount",
+            "documented_type": "float",
+            "documented_description": "Discount amount in order currency",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].discount_percent",
+            "documented_type": "float",
+            "documented_description": "Discount percentage (0 if fixed amount)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description",
+            "when_fixed_amount": 0
+          },
+          {
+            "path": "orders[].discounts[].discount_currency",
+            "documented_type": "text",
+            "documented_description": "Currency code",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].value_before",
+            "documented_type": "float",
+            "documented_description": "Value before discount",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].value_after",
+            "documented_type": "float",
+            "documented_description": "Value after discount",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].details",
+            "documented_type": "text",
+            "documented_description": "Discount description (e.g. coupon code)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].date_add",
+            "documented_type": "int",
+            "documented_description": "Date of discount creation (unix timestamp)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          },
+          {
+            "path": "orders[].discounts[].profile_id",
+            "documented_type": "int",
+            "documented_description": "Profile ID of the user who applied the discount (-1 for API)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description",
+            "when_API": -1
+          },
+          {
+            "path": "orders[].discounts[].order_lines_details",
+            "documented_type": "array",
+            "documented_description": "Per-item and shipment breakdown of the discount (empty array if single-target discount). Each element contains the same fields as the parent entry (except order_lines_details)",
+            "source_table_row": 62,
+            "source_kind": "output_table_row_description"
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "discount_line_breakdown": {
+          "path": "orders[].discounts[].order_lines_details[]",
+          "schema_ref": "orders[].discounts[] excluding order_lines_details",
+          "source_table_row": 62,
+          "source_kind": "output_table_row_description",
+          "empty_array": "single_target_discount",
+          "finite_not_recursive_schema": true
+        },
+        "inline_documented_file_format": {
+          "parent": "orders[].custom_extra_fields",
+          "source_table_row": 58,
+          "source_kind": "output_table_row_description",
+          "fields": [
+            {
+              "name": "title",
+              "documented_type": "varchar(40)"
+            },
+            {
+              "name": "url",
+              "documented_type": "URL"
+            }
+          ],
+          "MIME_exact_byte_limits_download_auth": "not_documented"
+        }
+      },
+      "pagination": {
+        "kind": "documented_confirmation_date_continuation_or_journal",
+        "result_cap": 100,
+        "recommended_source": "getJournalList_or_date_confirmed_from",
+        "documented_algorithm": [
+          "start_with_date_confirmed_from",
+          "process_received_orders",
+          "if100results_continue_last_date_confirmed_plus1second",
+          "stop_when_less_than100",
+          "persist_last_processed_confirmation_date"
+        ],
+        "confirmed_backdating": "documentation_states_orders_cannot_jump_to_earlier_confirmation_date",
+        "same_second_100plus_tie_breaker": "not_documented",
+        "ordering": "no_separate_formal_sort_clause;algorithm_refers_to_last_order",
+        "id_from_inclusivity": "not_explicitly_documented",
+        "filter_combination": "not_documented_except_two_explicit_constraints",
+        "recommendation_not_unconditional_lossless_tie_guarantee": true
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "read_only_method",
+      "current_code_mapping_ref": "read",
+      "proposed_acceptance": [
+        "More than100 confirmed orders, including100+same-second timestamps, journal/date/ID paths, restart/dedup and all filter combinations.",
+        "Optional flags, unavailable sourceinfo, stringbooleans, transactions, commissions/connect/discountbreakdown/files preserve exact fields and IDs.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrderFields",
+      "method": "setOrderFields",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderFields",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrderFields",
+        "retrieved_at": "2026-10-17T20:56:18.258787+00:00",
+        "http_status": 200,
+        "bytes": 54976,
+        "sha256": "6728386c86f33a0808500a11064ab703845ce3cc1013695746e840cc84ad659d",
+        "snapshot_document_method": "setOrderFields"
+      },
+      "documented_intro": "The method allows you to edit selected fields (e.g. address data, notes, etc.) of a specific order. Only the fields that you want to edit should be given, other fields can be omitted in the request.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "order_id jawnie wymagane, wszystkie inne pola jawnie opcjonalne; przekazywać tylko zmieniane pola. Pominięte pozostają bez zmiany.",
+        "custom_extra_fields: pusty tekst usuwa konkretną wartość, plik title/file data:base64; nie zakładamy tej samej reguły dla wszystkich innych tekstów.",
+        "Brak wersji/CAS, etag, idempotencykey, aktualizacji pozycji/statusu/płatności na tej stronie. pick_state/pack_state ustawiane przez API nie dowodzą rzeczywistego skanu lub pakowania."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": true,
+            "requiredness_source": "explicit_field_required",
+            "default_status": "not_documented",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order identifier from the Base order manager. Field required. Other fields are optional.",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "currency",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "currency",
+            "documented_type": "char(3)",
+            "documented_description": "Order currency code",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "admin_comments",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "admin_comments",
+            "documented_type": "varchar(200)",
+            "documented_description": "Seller comments",
+            "source_table_row": 3,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "user_comments",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "user_comments",
+            "documented_type": "varchar(510)",
+            "documented_description": "Buyer comments",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "payment_method",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "payment_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payment method",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "payment_method_cod",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "payment_method_cod",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating whether the type of payment is COD (cash on delivery)",
+            "source_table_row": 6,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "email",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "email",
+            "documented_type": "varchar(150)",
+            "documented_description": "Buyer e-mail address",
+            "source_table_row": 7,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "phone",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "phone",
+            "documented_type": "varchar(100)",
+            "documented_description": "Buyer phone number",
+            "source_table_row": 8,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "user_login",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "user_login",
+            "documented_type": "varchar(30)",
+            "documented_description": "Buyer login",
+            "source_table_row": 9,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_method",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Delivery method name",
+            "source_table_row": 10,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_price",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_price",
+            "documented_type": "float",
+            "documented_description": "Gross delivery price",
+            "source_table_row": 11,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_fullname",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_fullname",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - name and surname",
+            "source_table_row": 12,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_company",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_company",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - company",
+            "source_table_row": 13,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_address",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_address",
+            "documented_type": "varchar(156)",
+            "documented_description": "Delivery address - street and number",
+            "source_table_row": 14,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_postcode",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - postcode",
+            "source_table_row": 15,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_city",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Delivery address - city",
+            "source_table_row": 16,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_state",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Delivery address - state/province",
+            "source_table_row": 17,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_country_code",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Delivery address - country code (two-letter, e.g. EN)",
+            "source_table_row": 18,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_point_id",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_id",
+            "documented_type": "varchar(40)",
+            "documented_description": "Pick-up point delivery - pick-up point identifier",
+            "source_table_row": 19,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_point_name",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_name",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point name",
+            "source_table_row": 20,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_point_address",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_address",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point address",
+            "source_table_row": 21,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_point_postcode",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point postcode",
+            "source_table_row": 22,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "delivery_point_city",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "delivery_point_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Pick-up point delivery - pick-up point city",
+            "source_table_row": 23,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_fullname",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_fullname",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - name and surname",
+            "source_table_row": 24,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_company",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_company",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - company",
+            "source_table_row": 25,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_nip",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_nip",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - Vat Reg. no./tax number",
+            "source_table_row": 26,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_address",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_address",
+            "documented_type": "varchar(500)",
+            "documented_description": "Billing details - street and house number",
+            "source_table_row": 27,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_postcode",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_postcode",
+            "documented_type": "varchar(20)",
+            "documented_description": "Billing details - postcode",
+            "source_table_row": 28,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_city",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - city",
+            "source_table_row": 29,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_state",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_state",
+            "documented_type": "varchar(35)",
+            "documented_description": "Billing details - state/province",
+            "source_table_row": 30,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "invoice_country_code",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "invoice_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Billing details - country code (two-letter, e.g. EN)",
+            "source_table_row": 31,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "want_invoice",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "want_invoice",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating whether the customer wants an invoice (1 - yes, 0 - no)",
+            "source_table_row": 32,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "extra_field_1",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "extra_field_1",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"extra field 1\" - the seller can store any information there",
+            "source_table_row": 33,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "extra_field_2",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "extra_field_2",
+            "documented_type": "varchar(50)",
+            "documented_description": "Value of the \"extra field 2\" - the seller can store any information there",
+            "source_table_row": 34,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field"
+          },
+          {
+            "name": "custom_extra_fields",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "custom_extra_fields",
+            "documented_type": "array",
+            "documented_description": "A list containing order custom extra fields, where the key is the extra field ID and value is an extra field content for given extra field. The list of extra fields can be retrieved with getOrderExtraFields method.In case of removing a field the empty string is expected.In case of file the following format is expected:{ \"title\": \"file.pdf\" (varchar(40) - the file name) \"file\": \"data:4AAQSkZJRgABA[...]\" (base64 - the file body limited to 2MB)}",
+            "source_table_row": 35,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field",
+            "shape": "object_keyed_by_extra_field_id",
+            "empty_string": "remove_specific_field_value"
+          },
+          {
+            "name": "pick_state",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "pick_state",
+            "documented_type": "int",
+            "documented_description": "Flag indicating the status of the order products collection (1 - all products have been collected, 0 - not all products have been collected)",
+            "source_table_row": 36,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "name": "pack_state",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "pack_state",
+            "documented_type": "int",
+            "documented_description": "Flag indicating the status of the order products packing (1 - all products have been packed, 0 - not all products have been packed)",
+            "source_table_row": 37,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "name": "star",
+            "required": false,
+            "requiredness_source": "explicit_all_other_fields_optional",
+            "default_status": "not_documented",
+            "documented_name": "star",
+            "documented_type": "int",
+            "documented_description": "Order star type. Values from 0 to 5. 0 means no star.",
+            "source_table_row": 38,
+            "source_kind": "table_row",
+            "omission": "preserve_existing_field",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "zero": "no_star"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "inline_documented_file_format": {
+          "parent": "custom_extra_fields",
+          "source_table_row": 35,
+          "source_kind": "input_table_row_description",
+          "fields": [
+            {
+              "name": "title",
+              "documented_type": "varchar(40)"
+            },
+            {
+              "name": "file",
+              "documented_type": "base64_with_data:_prefix;body_limited2MB"
+            }
+          ],
+          "MIME_exact_byte_limits_download_auth": "not_documented"
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "patch",
+      "proposed_acceptance": [
+        "Only order_id required; omitted field preserved and targeted empty extra-field clear/file roundtrip.",
+        "Current role/foreignorder/invalid types and concurrent modifications have explicit outcomes; packing flags do not certify physicalexecution.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrdersMerge",
+      "method": "setOrdersMerge",
+      "family": "Orders",
+      "group": "Orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrdersMerge",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrdersMerge",
+        "retrieved_at": "2026-10-17T20:56:18.646621+00:00",
+        "http_status": 200,
+        "bytes": 49747,
+        "sha256": "2663d7fa9a8f5bb006c93ed5971443f47bab731857fe28eea6e6364ea0ac3b1b",
+        "snapshot_document_method": "setOrdersMerge"
+      },
+      "documented_intro": "Merges multiple orders into one, based on the selected merge mode.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "main_order_id zachowuje dane wysyłki i faktury; order_ids_to_merge nie może zawierać main_order_id.",
+        "technical_merge tworzy nowe techniczne zamówienie bez zmiany oryginałów; into_main_order przenosi pozycje do głównego i usuwa pozostałe.",
+        "sum_delivery_costs true sumuje dostawy, false zachowuje wyłącznie dostawę głównego. Brak wartości domyślnej i pełnych reguł rounding/currency.",
+        "Nie podano limitu liczby zamówień, polityki duplikatów, statusów, różnic kupującego/walut/finansów/dokumentów/stock/WMS, wersji, readback per źródło, atomowości lub recovery."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "main_order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "main_order_id",
+            "documented_type": "int",
+            "documented_description": "ID of the main order (its shipping and invoice data will be retained).",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "order_ids_to_merge",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "order_ids_to_merge",
+            "documented_type": "array",
+            "documented_description": "List of other order IDs to merge. Must not include main_order_id.",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "must_not_include": "main_order_id"
+          },
+          {
+            "name": "merge_mode",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "merge_mode",
+            "documented_type": "text",
+            "documented_description": "Merge mode: technical_merge (creates a new technical order without changing the originals) or into_main_order (moves items into the main order and deletes the others).",
+            "source_table_row": 3,
+            "source_kind": "table_row",
+            "documented_values": [
+              "technical_merge",
+              "into_main_order"
+            ]
+          },
+          {
+            "name": "sum_delivery_costs",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "sum_delivery_costs",
+            "documented_type": "bool",
+            "documented_description": "Whether to sum delivery costs: true (add up all shipping costs from merged orders) or false (keep only the main order's shipping cost).",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "delivery_costs": {
+          "when_true": "sum_all_merged_shipping_costs",
+          "when_false": "keep_main_shipping_cost",
+          "default": "not_documented"
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "merged_order_id",
+            "documented_name": "merged_order_id",
+            "documented_type": "int",
+            "documented_description": "ID of the merged order",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_key_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "merge",
+      "proposed_acceptance": [
+        "Both modes, retained shipping/invoice data and explicit sumdelivery outcomes; mainID excluded, foreign/duplicate/currency/status/financial blockers tested.",
+        "technical originals unchanged versus into_main documented source deletion: verify source orders/items/financial/stock/document lineage and rollback/recovery exactly.",
+        "Exact Base wire, local ordinary UI/API/worker and external account/sandbox are separate evidence levels. Check current IAM,429/retry,timeout/ACKloss,originalkeys/readback and no duplicated effects."
+      ],
+      "documented_destructive_effect": {
+        "technical_merge": "new_technical_order_originals_unchanged",
+        "into_main_order": "move_items_to_main_and_delete_others",
+        "retained_main_fields": [
+          "shipping",
+          "invoice"
+        ],
+        "execution_performed": false
+      }
+    }
+  ]
+}

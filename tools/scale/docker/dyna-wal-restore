@@ -1,0 +1,14 @@
+#!/bin/sh
+# restore_command of a restored cluster: dyna-wal-restore <archive dir> %f %p
+# Reads <name>.zst (dyna-wal-archive) or a plain <name> (archive_command before 27.10.2026).
+# Exit 1 = not in the archive, which ends archive recovery normally.
+set -eu
+dir="$1"; name="$2"; dst="$3"
+if [ -f "$dir/$name.zst" ]; then
+  zstd -q -d -f -o "$dst.part" "$dir/$name.zst"
+elif [ -f "$dir/$name" ]; then
+  cp "$dir/$name" "$dst.part"
+else
+  exit 1
+fi
+mv "$dst.part" "$dst"

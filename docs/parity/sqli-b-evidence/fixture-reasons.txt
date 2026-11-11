@@ -1,0 +1,217 @@
+dynamic  template with a request value                              | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  concatenation                                              | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  WHERE builder fed by push                                  | `.text` of `where` ← parameter `req` is changed or handed on inside its function
+dynamic  object property appended                                   | `.text` of `f.sql` ← parameter `req` is changed or handed on inside its function
+dynamic  helper returning SQL from its parameter                    | `.text` of return of eq: `.s` of parameter `q` of list ← server/__sqli/a.ts:4: parameter `req` is changed or handed on inside its function
+dynamic  map over request data                                      | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  imported builder                                           | return of build: `.text` of parameter `req` is changed or handed on inside its function
+dynamic  array filled through an alias                              | `.text` of `where` ← escape: alias `alias` written at line 5 at line 4
+dynamic  .length of a parsed JSON body ({"length":"1;…"})           | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  destructured request field                                 | `.text` of `col` ← parameter `req` is changed or handed on inside its function
+dynamic  default parameter overridden by the caller                 | `.text` of parameter `col` of pick ← server/__sqli/a.ts:3: parameter `req` is changed or handed on inside its function
+dynamic  one unsafe ternary branch                                  | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  String() / toString() of request data                      | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  column names from Object.keys(body)                        | `.text` of return of function: `keys` ← keys of parameter `req` is changed or handed on inside its function
+dynamic  for…of over request data                                   | `.text` of `parts` ← `p` ← element of parameter `req` is changed or handed on inside its function
+dynamic  let reassigned                                             | `sql.text` ← `.text` of parameter `req` is changed or handed on inside its function
+dynamic  object form text                                           | parameter `req` is changed or handed on inside its function
+dynamic  function passed as a value (callers unknown)               | `.text` of parameter `sql` of run: referenced without a call at server/__sqli/a.ts:2
+dynamic  exported helper without a caller here (called by a script) | `.text` of parameter `sql` of exec: exported `exec` has no caller in the linted files
+dynamic  object built from a spread of the body                     | `.text` of `o.col` ← parameter `req` is changed or handed on inside its function
+dynamic  new Array of request values                                | `.text` of element of new Array: parameter `req` is changed or handed on inside its function
+dynamic  generic call (its <> are not a comparison)                 | `.text` of return of raw: parameter `req` is changed or handed on inside its function
+dynamic  default import of a helper                                 | `.text` of parameter `sql` of run ← server/__sqli/b.ts:3: parameter `req` is changed or handed on inside its function
+dynamic  barrel re-export `export { run } from`                     | `.text` of parameter `sql` of run ← server/__sqli/b.ts:3: parameter `req` is changed or handed on inside its function
+dynamic  barrel `export * from`                                     | `.text` of parameter `sql` of run ← server/__sqli/b.ts:3: parameter `req` is changed or handed on inside its function
+dynamic  method taken as a value                                    | `.text` of parameter `sql` of run: method `run` referenced as a value at server/__sqli/a.ts:3
+dynamic  method destructured                                        | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:3
+dynamic  method called by a string key                              | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:4
+dynamic  method passed as a callback                                | `.text` of parameter `sql` of run: method `run` referenced as a value at server/__sqli/a.ts:5
+dynamic  ternary-of-arrays filled by a helper                       | `.text` of `where` ← escape: passed to fill() at line 5
+dynamic  split() array filled by a helper                           | `.text` of `where` ← escape: passed to fill() at line 5
+dynamic  helper named like a built-in (add)                         | `.text` of `where` ← escape: passed to add() at line 5
+dynamic  array kept in another array and filled through it          | `.text` of `where` ← escape: passed to push() at line 5
+dynamic  reduce accumulator filled in the callback                  | `.text` of `parts` ← return of function: reduce accumulator filled in the callback
+dynamic  parameter filled in a callee                               | `.text` of return of build: parameter `parts` is changed or handed on inside build
+dynamic  exported object changed by an importer                     | `.text` of `.order` of `CFG` ← changed in server/__sqli/b.ts:3
+dynamic  exported array pushed by an importer                       | `.text` of `W` ← changed in server/__sqli/b.ts:3
+dynamic  valueOf() of request data                                  | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  .length of a property a spread can override                | `.text` of `.length` of `o.list` ← parameter `req` is changed or handed on inside its function
+dynamic  query through .call                                        | .query used through .call
+dynamic  query by a string key                                      | query called through a computed key
+dynamic  return where (same file)                                   | `.text` of `where` ← escape: returned at line 5
+dynamic  identity fn returns param                                  | `.text` of `where` ← escape: passed to id() at line 5
+dynamic  fallback || param                                          | `.text` of `where` ← escape: passed to id2() at line 5
+dynamic  ternary alias in same fn                                   | `.text` of `where` ← escape: aliased at line 5
+dynamic  non-null push                                              | `.text` of `where` ← parameter `req` is changed or handed on inside its function
+dynamic  as-paren push                                              | `.text` of `where` ← parameter `req` is changed or handed on inside its function
+dynamic  paren push                                                 | `.text` of `where` ← parameter `req` is changed or handed on inside its function
+dynamic  member call named update                                   | `.text` of `where` ← escape: passed to update() at line 5
+dynamic  member call named get                                      | `.text` of `where` ← escape: passed to get() at line 5
+dynamic  computed dispatch                                          | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:4
+dynamic  ns computed                                                | `.text` of parameter `sql` of run: namespace `B` used as a value at server/__sqli/a.ts:3
+dynamic  ns string key                                              | `.text` of parameter `sql` of run: namespace `B` used as a value at server/__sqli/a.ts:3
+dynamic  dyn import string key                                      | `.text` of parameter `sql` of run: dynamic import binding `m` used as a value at server/__sqli/a.ts:2
+dynamic  dyn import computed                                        | `.text` of parameter `sql` of run: dynamic import binding `m` used as a value at server/__sqli/a.ts:2
+dynamic  non-null method call                                       | `.text` of parameter `sql` of run ← server/__sqli/a.ts:4: parameter `req` is changed or handed on inside its function
+dynamic  reassigned primitive to array                              | `.text` of `where` ← escape: passed to fill() at line 6
+dynamic  exported obj returned and mutated elsewhere                | `.text` of `W` ← escape: returned at line 2
+dynamic  imported obj returned by importer                          | `.text` of `W` ← changed in server/__sqli/a.ts:3
+dynamic  imported obj stored by ||                                  | `.text` of `W` ← changed in server/__sqli/a.ts:3
+dynamic  param pushed via ternary alias                             | `.text` of `where` ← escape: passed to build() at line 5
+dynamic  param pushed via return in callee                          | `.text` of `where` ← escape: passed to id() at line 5
+dynamic  spread into push of holder                                 | `.text` of `where` ← escape: stored in a literal at line 5
+dynamic  Object.entries mutate                                      | `.text` of `o` ← escape: passed to entries() at line 5
+dynamic  Object.defineProperty/ Reflect.set                         | `.text` of `o` ← escape: passed to set() at line 5
+dynamic  setter fn on obj                                           | `.text` of `.text` of `o` ← escape: passed to defineProperty() at line 5
+dynamic  template concat with array toString                        | `.text` of `where` ← parameter `req` is changed or handed on inside its function
+dynamic  unshift via apply                                          | `.text` of `where` ← escape: calls .apply() at line 5
+dynamic  index assign nested                                        | `.text` of `.text` of `o.a` ← parameter `req` is changed or handed on inside its function
+dynamic  Object.assign into nested                                  | `.text` of `.text` of `.a` of `o` ← escape: passed to assign() at line 5
+dynamic  alias nested                                               | `.text` of `.text` of `.a` of `o` ← escape: alias `inner` written at line 6 at line 5
+dynamic  alias via destructure                                      | `.text` of `.text` of `.a` of `o` ← escape: aliased at line 5
+dynamic  alias via for-of                                           | `.text` of `.text` of `.a` of `o` ← escape: passed to values() at line 5
+dynamic  alias via array index                                      | `.text` of `parts` ← escape: stored in a literal at line 6
+dynamic  alias via function return nested                           | `.text` of `.text` of `.a` of `o` ← escape: aliased at line 5
+dynamic  alias via method on obj                                    | `.text` of `.text` of `.a` of `o` ← escape: calls a method of an object with its own methods at line 5
+literal  bound parameters                                           | 
+constant WHERE builder with placeholders only                       | 
+constant whitelisted identifier via a constant map                  | 
+constant numbers only                                               | 
+constant constant table list                                        | 
+constant ternary of literals on a request flag                      | 
+dynamic  query optional call                                        | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  query non-null call                                        | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  query alias var call                                       | a query method used as a value (callers of the SQL text unknown)
+dynamic  query alias var direct                                     | .query used through .bind
+dynamic  query destructured                                         | a query property destructured (it may be a client method)
+dynamic  query destructured rename                                  | a query property destructured (it may be a client method)
+dynamic  query paren                                                | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  query paren-as                                             | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  query generic                                              | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  query reflect                                              | a query method used as a value (callers of the SQL text unknown)
+dynamic  query computed tpl                                         | query called through a computed key
+dynamic  query computed var                                         | a computed call on a client (it may reach query)
+dynamic  query as arg                                               | a query method used as a value (callers of the SQL text unknown)
+dynamic  query in obj                                               | a query method used as a value (callers of the SQL text unknown)
+dynamic  query apply                                                | .query used through .apply
+dynamic  query spread args                                          | `.text` of unparsed expression `...a`
+dynamic  proto alias join                                           | `.text` of `where` ← escape: alias `P` written at line 6 at line 5
+dynamic  push alias call                                            | `.text` of `where` ← escape: alias `p`: calls .call() at line 5
+dynamic  push alias apply                                           | `.text` of `where` ← escape: alias `p`: calls .apply() at line 5
+dynamic  push alias bind                                            | `.text` of `where` ← escape: calls .bind() at line 5
+dynamic  as-prop truncates                                          | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  as-var truncates                                           | `.text` of expression continues after a type assertion
+dynamic  satisfies-prop                                             | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  in-prop boolean                                            | `.text` of unparsed expression `opt.in + req.body.x`
+dynamic  instanceof-prop                                            | `.text` of unparsed expression `opt.instanceof + req.body.x`
+dynamic  as in template                                             | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  generic2 site arg                                          | `.text` of return of build: parameter `req` is changed or handed on inside its function
+dynamic  generic2 init                                              | `sql.text` ← `.text` of return of pick: parameter `req` is changed or handed on inside its function
+dynamic  generic2 site arg w values                                 | `.text` of return of build: parameter `req` is changed or handed on inside its function
+dynamic  generic2 param arg                                         | `.text` of parameter `sql` of run ← server/__sqli/a.ts:6: return of pick: parameter `req` is changed or handed on inside its function
+dynamic  generic2 inside template                                   | `.text` of return of pick: parameter `req` is changed or handed on inside its function
+dynamic  inner block shadow                                         | `.text` of `col` ← parameter `req` is changed or handed on inside its function
+dynamic  for-of shadow                                              | `.text` of `col` ← parameter `req` is changed or handed on inside its function
+dynamic  catch shadow                                               | `.text` of `col` ← catch binding
+dynamic  await alias                                                | `.text` of `where` ← escape: awaited (the result is the same value) at line 5
+dynamic  await paren push                                           | `.text` of `where` ← escape: awaited (the result is the same value) at line 5
+dynamic  obj destr assign                                           | `.text` of `sql` ← assigned by destructuring at line 5
+dynamic  arr destr assign                                           | `.text` of `sql` ← assigned by destructuring at line 5
+dynamic  obj destr rename assign                                    | `.text` of `sql` ← assigned by destructuring at line 5
+dynamic  for-of existing var                                        | `.text` of `col` ← assigned by a for…of header at line 5
+dynamic  for-in existing var                                        | `.text` of `col` ← assigned by a for…in header at line 5
+dynamic  arr index destr assign                                     | `.text` of `where` ← assigned by destructuring at line 5
+dynamic  member destr assign                                        | `.text` of `.sql` of `o` ← assigned by destructuring at line 5
+dynamic  getter text                                                | accessor `text`
+dynamic  getter prop                                                | `.text` of `o.sql` ← accessor `sql`
+dynamic  custom set 1 arg                                           | `.text` of `.sql` of `o` ← escape: calls a method of an object with its own methods at line 5
+dynamic  custom add this parts                                      | `.text` of `.parts` of `qb` ← escape: calls a method of an object with its own methods at line 5
+dynamic  custom clear this                                          | `.text` of `.sql` of `o` ← escape: calls a method of an object with its own methods at line 5
+dynamic  custom replace this                                        | `.text` of `.sql` of `o` ← escape: calls a method of an object with its own methods at line 5
+dynamic  Map.set key                                                | `.text` of `m` ← escape: spread with shared elements at line 6
+dynamic  Map.set key for-of                                         | `s.text` ← `k.text` ← element of `m` ← parameter `req` is changed or handed on inside its function
+dynamic  class static configure                                     | `.text` of `.order` of `Cfg` ← class (its methods can write its static fields)
+dynamic  class static setter prop                                   | `.text` of `.order` of `Cfg` ← class (its methods can write its static fields)
+dynamic  dispatch var method                                        | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:4
+dynamic  dispatch var ns                                            | `.text` of parameter `sql` of run: namespace `B` used as a value at server/__sqli/a.ts:3
+dynamic  dispatch Object.values                                     | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:4
+dynamic  dispatch destructure computed                              | `.text` of parameter `sql` of run: the object holding method `run` is used as a value at server/__sqli/a.ts:4
+dynamic  dispatch dyn import var                                    | `.text` of parameter `sql` of run: dynamic import binding `m` used as a value at server/__sqli/a.ts:2
+dynamic  callee param shadows fn                                    | `.text` of call of `build()` (not resolved)
+dynamic  callee local shadows fn                                    | `.text` of call of `build()` (not resolved)
+dynamic  mutual recursion memo                                      | `.text` of `w1` ← escape: passed to f() at line 4
+dynamic  forEach arr param                                          | `.text` of `where` ← escape: the array is changed in the .forEach() callback at line 5
+dynamic  map arr param                                              | `.text` of `where` ← escape: the array is changed in the .map() callback at line 5
+dynamic  reduce arr param                                           | `.text` of `where` ← escape: the array is changed in the .reduce() callback at line 5
+dynamic  adapter as callback                                        | a query method used as a value (callers of the SQL text unknown)
+dynamic  adapter alias                                              | a query method used as a value (callers of the SQL text unknown)
+dynamic  adapter optional call                                      | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  dyn import mutate                                          | `.text` of `W` ← changed in server/__sqli/b.ts:2
+dynamic  dyn import destr mutate                                    | `.text` of `W` ← changed in server/__sqli/b.ts:2
+dynamic  predeclared loop var                                       | `.text` of `lists` ← escape: iterated into an outer binding at line 6
+dynamic  constructor.prototype                                      | `.text` of `where` ← escape: alias `P` written at line 6 at line 5
+dynamic  angle assertion push                                       | `.text` of `where` ← escape: type assertion or comparison at line 5
+dynamic  comma op push                                              | `.text` of `where` ← escape: comma operator at line 5
+dynamic  spread copy shares elements                                | `.text` of `lists` ← escape: spread with shared elements at line 5
+dynamic  obj spread copy shares nested                              | `.text` of `.parts` of `o` ← escape: spread into an object (shared members) at line 5
+dynamic  generic arrow shadow param                                 | `.text` of parameter `col` of f ← server/__sqli/a.ts:6: parameter `req` is changed or handed on inside its function
+dynamic  method-computed shadow                                     | `.text` of parameter `col` of anonymous function: callers unknown
+constant pattern default shadow                                     | 
+dynamic  uses before this: query w/ ternary ?.                      | `.text` of parameter `req` is changed or handed on inside its function
+constant optional chain string                                      | 
+dynamic  non-null in chain                                          | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  type assertion angle                                       | `.text` of angle-bracket type assertion
+dynamic  regex swallow property of                                  | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  label                                                      | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  generator                                                  | `.text` of `.value` of call of `.next()`
+dynamic  async iter                                                 | `.text` of `sql` ← `s` ← element of call of computed function
+dynamic  arguments                                                  | `.text` of `arguments` (unresolved global)
+dynamic  eval                                                       | `.text` of call of `eval()` (not resolved)
+dynamic  this in object literal                                     | `.text` of call of `.f()`
+dynamic  getter+setter class                                        | `.text` of `a.s` ← `.s` of `new A` value
+dynamic  async arrow IIFE                                           | `sql.text` ← `.text` of call of computed function
+dynamic  IIFE param                                                 | `.text` of call of computed function
+dynamic  function expression named                                  | return of g: `.text` of parameter `req` is changed or handed on inside its function
+dynamic  object method call via named fn                            | `.text` of call of `.build()`
+dynamic  bracket method call                                        | `.text` of call of computed function
+dynamic  optional method call                                       | `.text` of call of `.build()`
+dynamic  template tag call                                          | `.text` of tagged template
+dynamic  Function ctor                                              | `.text` of `new Function` value
+dynamic  super/inherit                                              | `.text` of `new B` value
+dynamic  Array.from callback                                        | `.text` of return of function: element of parameter `req` is changed or handed on inside its function
+dynamic  Object.values map                                          | `.text` of return of function: parameter `req` is changed or handed on inside its function
+dynamic  str.concat                                                 | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.padEnd arg                                             | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.replace arg                                            | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.at / charAt                                            | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.normalize                                              | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.match                                                  | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  str.split / join                                           | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  digest                                                     | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  toLocaleString                                             | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  codePointAt                                                | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  VALUE_READS on req                                         | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  trim                                                       | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  startsWith                                                 | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  repeat                                                     | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  toUpperCase                                                | `.text` of parameter `req` is changed or handed on inside its function
+constant toISOString                                                | 
+dynamic  Date chain                                                 | `.text` of `new Date` expression
+dynamic  Math chain                                                 | `.text` of call of `.constructor()`
+dynamic  Number chain                                               | `.text` of call of `.constructor()`
+dynamic  Object.freeze                                              | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  as tail +                                                  | `.text` of expression continues after a type assertion
+dynamic  as tail ||                                                 | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  as tail ??                                                 | `.text` of parameter `req` is changed or handed on inside its function
+dynamic  angle expr                                                 | `.text` of angle-bracket type assertion
+dynamic  two-generic init only                                      | `.text` of `col` ← return of pick: parameter `req` is changed or handed on inside its function
+dynamic  two-generic init assigned                                  | `.text` of `col` ← return of pick: parameter `req` is changed or handed on inside its function
+dynamic  Map.set key via Array.from                                 | `.text` of `m` ← escape: passed to from() at line 6
+dynamic  Set.add (control)                                          | `.text` of `s` ← escape: spread with shared elements at line 6
+dynamic  Map.set val (control)                                      | `.text` of `m` ← escape: spread with shared elements at line 6
+dynamic  let reassigned in nested fn inner shadow only              | `.text` of return of h: `col` ← escape: returned at line 5
+constant shadow module level in function                            | 
+dynamic  shadow outer unsafe via closure param                      | `.text` of `col` ← parameter `req` is changed or handed on inside its function
+dynamic  shadow only block let w/ outer param                       | `.text` of parameter `col` of f ← server/__sqli/a.ts:3: parameter `req` is changed or handed on inside its function
+dynamic  dyn import controls: static import mutate                  | `.text` of `W` ← changed in server/__sqli/b.ts:3

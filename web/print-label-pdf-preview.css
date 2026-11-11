@@ -1,0 +1,39 @@
+.print-label-pdf-preview {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.print-label-pdf-preview .plp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.print-label-pdf-preview .plp-page {
+  min-width: 0;
+  min-height: 80px;
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #e2e8f0;
+}
+.print-label-pdf-preview canvas {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 2px 9px #0f172a30;
+  background: #fff;
+}
+.print-label-pdf-preview canvas[hidden] {
+  display: none;
+}
+.print-label-pdf-preview .plp-controls .button {
+  justify-self: auto;
+}
+@media (max-width: 600px) {
+  .print-label-pdf-preview .plp-controls {
+    justify-content: flex-start;
+  }
+}

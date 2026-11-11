@@ -1,0 +1,180 @@
+{
+  "description": "Oficjalne schematy XSD Ministerstwa Finansów (tylko hosty *.gov.pl), pobrane 30.10.2026 za zgodą właściciela. Bajty bez zmian; importy schemaLocation http://… są mapowane na pliki z tego samego katalogu dopiero w pamięci walidatora (server/mf-xsd.ts).",
+  "retrieved": "2026-10-30",
+  "schemas": {
+    "FA(3)": {
+      "dir": "FA/3",
+      "root": "schemat.xsd",
+      "targetNamespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
+      "kodSystemowy": "FA (3)",
+      "wersjaSchemy": "1-0E",
+      "source": "Centralne Repozytorium Wzorów Dokumentów Elektronicznych, wzór 2025/06/25/13775",
+      "why": "Struktura logiczna e-faktury FA(3) obowiązuje w KSeF od 1.02.2026 (zastąpiła FA(2)) wg wyników wyszukiwania; brak nowszego wzoru niepotwierdzony w CRWDE."
+    },
+    "JPK_V7M(3)": {
+      "dir": "JPK_V7M/3",
+      "root": "schemat.xsd",
+      "targetNamespace": "http://crd.gov.pl/wzor/2025/12/19/14090/",
+      "kodSystemowy": "JPK_V7M (3)",
+      "wersjaSchemy": "1-0E",
+      "source": "CRWDE, wzór 2025/12/19/14090",
+      "why": "JPK_V7M(3) obowiązuje za okresy od lutego 2026 (JPK_V7M(2) do stycznia 2026), broszura MF „JPK_VAT z deklaracją od 1 lutego 2026 r.” wg wyników wyszukiwania (samej broszury nie pobierano)."
+    },
+    "JPK_V7K(3)": {
+      "dir": "JPK_V7K/3",
+      "root": "schemat.xsd",
+      "targetNamespace": "http://crd.gov.pl/wzor/2025/12/19/14089/",
+      "kodSystemowy": "JPK_V7K (3)",
+      "wersjaSchemy": "1-0E",
+      "source": "CRWDE, wzór 2025/12/19/14089",
+      "why": "Wariant kwartalny JPK_V7K(3), ten sam termin co JPK_V7M(3)."
+    },
+    "JPK_FA(4)": {
+      "dir": "JPK_FA/4",
+      "root": "Schemat_JPK_FA(4)_v1-0.xsd",
+      "targetNamespace": "http://jpk.mf.gov.pl/wzor/2022/02/17/02171/",
+      "kodSystemowy": "JPK_FA (4)",
+      "wersjaSchemy": "1-0",
+      "source": "gov.pl/web/kas/struktury-jpk, załącznik „Faktura VAT - JPK_FA(4) Schemat_JPK_FA(4)_v1-0.xsd”",
+      "why": "Najnowsza struktura JPK_FA na stronie KAS „Struktury JPK” (JPK_FA(4) od 1.04.2022); nowszej nie opublikowano."
+    }
+  },
+  "files": [
+    {
+      "path": "FA/3/schemat.xsd",
+      "url": "http://crd.gov.pl/wzor/2025/06/25/13775/schemat.xsd",
+      "fetchedFrom": "https://crd.gov.pl/wzor/2025/06/25/13775/schemat.xsd",
+      "bytes": 183798,
+      "sha256": "b646b6b525f51adf1bb2545f111fc8ca6e7aa6dd2f98948f1667d3695c06d958",
+      "retrieved": "2026-10-30T05:31:39+00:00"
+    },
+    {
+      "path": "FA/3/StrukturyDanych_v10-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/StrukturyDanych_v10-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/StrukturyDanych_v10-0E.xsd",
+      "bytes": 31547,
+      "sha256": "1137ce6e3c11c2b9ef3f05e4e72d6dcd6b4fa94908ea558f2ba15de0259bb2aa",
+      "retrieved": "2026-10-30T05:31:39+00:00"
+    },
+    {
+      "path": "FA/3/ElementarneTypyDanych_v10-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/ElementarneTypyDanych_v10-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/ElementarneTypyDanych_v10-0E.xsd",
+      "bytes": 12228,
+      "sha256": "8a531cb181d3e298d11b28766655ae91fee2d7851440095932ffc82137ed2be1",
+      "retrieved": "2026-10-30T05:31:39+00:00"
+    },
+    {
+      "path": "FA/3/KodyKrajow_v10-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/KodyKrajow_v10-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/KodyKrajow_v10-0E.xsd",
+      "bytes": 40729,
+      "sha256": "1d41a1b3184188f2d20a51d3afde26204dda182ec5dacf018204dcc9870dc644",
+      "retrieved": "2026-10-30T05:31:39+00:00"
+    },
+    {
+      "path": "JPK_V7M/3/schemat.xsd",
+      "url": "http://crd.gov.pl/wzor/2025/12/19/14090/schemat.xsd",
+      "fetchedFrom": "https://crd.gov.pl/wzor/2025/12/19/14090/schemat.xsd",
+      "bytes": 69394,
+      "sha256": "1870324001ba1318f0535841b963571e970b45ef32ba5ca3d433f0dc5da412df",
+      "retrieved": "2026-10-30T05:31:39+00:00"
+    },
+    {
+      "path": "JPK_V7M/3/KodyKrajow_v13-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2023/09/06/eD/KodyKrajow/KodyKrajow_v13-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_3001",
+      "bytes": 40927,
+      "sha256": "447efc6e1a84de71d433666c60635856b8e01f090e5eedb3410b1afe545f8117",
+      "retrieved": "2026-10-30T05:31:40+00:00"
+    },
+    {
+      "path": "JPK_V7M/3/KodyUrzedowSkarbowych_v8-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/KodyUrzedowSkarbowych/KodyUrzedowSkarbowych_v8-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_2570",
+      "bytes": 70526,
+      "sha256": "af27f583ea1ceb44ed37e0ec0d9bfdf2bfda74aadd5841ccbf0fc241175c2e91",
+      "retrieved": "2026-10-30T05:31:40+00:00"
+    },
+    {
+      "path": "JPK_V7M/3/StrukturyDanych_v12-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/09/13/eD/DefinicjeTypy/StrukturyDanych_v12-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_3417",
+      "bytes": 23755,
+      "sha256": "01c45f7515f46cfa9bec843feef1409c126af3bee4d4e25f0325ae6323a9d512",
+      "retrieved": "2026-10-30T05:31:40+00:00"
+    },
+    {
+      "path": "JPK_V7K/3/schemat.xsd",
+      "url": "http://crd.gov.pl/wzor/2025/12/19/14089/schemat.xsd",
+      "fetchedFrom": "https://crd.gov.pl/wzor/2025/12/19/14089/schemat.xsd",
+      "bytes": 69459,
+      "sha256": "3e7b70f30debf7ffe35127ac694b465004a45c0786b3267a92d91c7c29595d34",
+      "retrieved": "2026-10-30T05:31:40+00:00"
+    },
+    {
+      "path": "JPK_V7K/3/KodyKrajow_v13-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2023/09/06/eD/KodyKrajow/KodyKrajow_v13-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_3001",
+      "bytes": 40927,
+      "sha256": "447efc6e1a84de71d433666c60635856b8e01f090e5eedb3410b1afe545f8117",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_V7K/3/KodyUrzedowSkarbowych_v8-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/KodyUrzedowSkarbowych/KodyUrzedowSkarbowych_v8-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_2570",
+      "bytes": 70526,
+      "sha256": "af27f583ea1ceb44ed37e0ec0d9bfdf2bfda74aadd5841ccbf0fc241175c2e91",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_V7K/3/StrukturyDanych_v12-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/09/13/eD/DefinicjeTypy/StrukturyDanych_v12-0E.xsd",
+      "fetchedFrom": "http://crd.gov.pl/wps/PA_E2_PI/zalacznik_oi/zalacznik_oi_3417",
+      "bytes": 23755,
+      "sha256": "01c45f7515f46cfa9bec843feef1409c126af3bee4d4e25f0325ae6323a9d512",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_FA/4/Schemat_JPK_FA(4)_v1-0.xsd",
+      "url": "https://www.gov.pl/attachment/aaa27be2-3663-46cd-bf53-f8925f0170b3",
+      "fetchedFrom": "https://www.gov.pl/attachment/aaa27be2-3663-46cd-bf53-f8925f0170b3",
+      "bytes": 89303,
+      "sha256": "7ad0a6fb0476345b5af604c9a7ce4c967f97852592e7bd01e668ba2ab668dc51",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_FA/4/StrukturyDanych_v5-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/StrukturyDanych_v5-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/StrukturyDanych_v5-0E.xsd",
+      "bytes": 31546,
+      "sha256": "11c0a7d3d18fd07f87e3fb51eecfa31b87915bc708bca6b8868f465ae5791365",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_FA/4/ElementarneTypyDanych_v5-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/ElementarneTypyDanych_v5-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/ElementarneTypyDanych_v5-0E.xsd",
+      "bytes": 12366,
+      "sha256": "6d83d644472a03f95fdc63f7022be923f2884db4d78651ab6381f85313d0c4df",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_FA/4/KodyUrzedowSkarbowych_v5-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/KodyUrzedowSkarbowych_v5-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/KodyUrzedowSkarbowych_v5-0E.xsd",
+      "bytes": 70510,
+      "sha256": "61bb3f3c25012167ce8ea2adc31423fbd70db0d8f984238f600bbcf92bf40e59",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    },
+    {
+      "path": "JPK_FA/4/KodyKrajow_v5-0E.xsd",
+      "url": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/KodyKrajow_v5-0E.xsd",
+      "fetchedFrom": "https://crd.gov.pl/xml/schematy/dziedzinowe/mf/2018/08/24/eD/DefinicjeTypy/KodyKrajow_v5-0E.xsd",
+      "bytes": 39848,
+      "sha256": "e6983b43f92901d1357daba5b0921c007f556bab45a9d0aa847378aec0436bab",
+      "retrieved": "2026-10-30T05:31:41+00:00"
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+name: CI Gate
+
+# Szybka bramka (cel ≤ ~5 min) — to, co MUSI być zielone, zanim kod wejdzie na maina
+# i zanim demo się wdroży (deploy pilnuje osobny workflow, nie ten plik).
+# Wzór: ci-gate.yml w NEXUSIE. Opis i wymagane konteksty rulesetu: docs/ci/README.md.
+#
+# Co jest TUTAJ:
+#   * Gitleaks secret scan — repo jest publiczne, sekret w historii jest nieodwracalny
+#   * Typecheck            — `tsc --noEmit` (to samo, co `npm run typecheck`)
+#   * Lint + static tests  — lint źródeł (tests/failure-job-kinds, tests/sql-text-lint) i wszystkie
+#                            testy z klasy `static` (scripts/ci/classify-tests.mjs), bez bazy
+#   * Web tests            — web/*.test.mjs (jsdom, bez serwera i bez bazy)
+# Testy z bazą (klasa `db`) są w ci.yml („DB tests”).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Kolejka merge'ów: wymagane konteksty muszą się zgłaszać także na gh-readonly-queue/main/*,
+  # inaczej grupa czeka w nieskończoność.
+  merge_group:
+    types: [checks_requested]
+
+# Nowa rewizja PR-a anuluje starszy bieg tego PR-a; main i kolejka mają unikalny klucz.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  # Testy bez bazy: adres celowo na zamkniętym porcie — test, który jednak sięgnie do bazy,
+  # padnie od razu (ECONNREFUSED) zamiast trafić w cokolwiek innego.
+  DYNA_TEST: "true"
+  DATABASE_URL: postgres://postgres:unused@127.0.0.1:57369/ci_no_database
+  DYNA_TEST_PG_PORT: "57369"
+
+jobs:
+  secret-scan:
+    name: Gitleaks secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      # Bezpośrednia instalacja CLI z sumą kontrolną (jak w NEXUSIE) zamiast gitleaks-action:
+      # deterministyczny wynik i logi do pobrania. Przy podbiciu wersji podmień OBIE wartości.
+      - name: Install gitleaks
+        run: |
+          curl -fsSL --retry 6 --retry-delay 15 --retry-all-errors --connect-timeout 20 --max-time 120 \
+            "https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz" \
+            -o /tmp/gitleaks.tar.gz
+          echo "5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba  /tmp/gitleaks.tar.gz" \
+            | sha256sum -c -
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: Scan working tree
+        run: gitleaks detect --no-git --config .gitleaks.toml --redact --verbose --exit-code 1
+      # Sekret wypchnięty w pośrednim commicie PR-a i usunięty w następnym zostaje na GitHubie
+      # (refs/pull/*) mimo squasha — dlatego na PR-ze i w kolejce skanujemy KAŻDY commit zakresu.
+      - name: Scan commits of this PR / merge group
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+        run: |
+          set -eu
+          case "$BASE_SHA$HEAD_SHA" in
+            *[!0-9a-f]*|"") echo "::error::Brak SHA zakresu commitów (base=$BASE_SHA head=$HEAD_SHA)."; exit 1 ;;
+          esac
+          if ! git cat-file -e "${HEAD_SHA}^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$HEAD_SHA"
+          fi
+          echo "Zakres: ${BASE_SHA:0:7}..${HEAD_SHA:0:7} ($(git rev-list --count "${BASE_SHA}..${HEAD_SHA}") commitów)"
+          gitleaks detect --log-opts="${BASE_SHA}..${HEAD_SHA}" --config .gitleaks.toml --redact --verbose --exit-code 1
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      # W repo jest śledzony symlink `node_modules` do ścieżki lokalnej — na runnerze wisi w próżni.
+      - name: Install dependencies
+        run: |
+          rm -f node_modules
+          npm ci --no-audit --no-fund
+      - name: tsc --noEmit
+        run: npx tsc --noEmit
+
+  # Testy static w 3 częściach (podział LPT po czasach z scripts/ci/test-durations.json): jeden job
+  # z ~490 plikami trwałby ~8–10 min, a bramka ma się mieścić w ~5 min. Lint biegnie w części 1.
+  # Ruleset wymaga kontekstu „Lint + static tests” — dostarcza go job zbiorczy niżej, nie części.
+  static-tests:
+    name: Static tests (part ${{ matrix.part }}/3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: |
+          rm -f node_modules
+          npm ci --no-audit --no-fund
+      # Konfiguracja lokalna jak na laptopie (server/db.ts czyta ją przy imporcie); losowa, tylko na runnerze.
+      - name: Local config (random, runner only)
+        run: |
+          node -e 'const c=require("crypto");require("fs").writeFileSync(process.argv[1],JSON.stringify({dbPassword:c.randomBytes(24).toString("hex"),encryptionKey:c.randomBytes(32).toString("hex")}),{mode:0o600})' "$RUNNER_TEMP/dyna-local.json"
+          echo "DYNA_LOCAL_CONFIG_PATH=$RUNNER_TEMP/dyna-local.json" >> "$GITHUB_ENV"
+      - name: Lint (job kinds, SQL text)
+        if: ${{ strategy.job-index == 0 }}
+        run: node node_modules/tsx/dist/cli.mjs --test tests/failure-job-kinds.test.ts tests/sql-text-lint.test.ts
+      - name: Classify and split
+        env:
+          PART: ${{ strategy.job-index }}
+          PARTS: ${{ strategy.job-total }}
+        run: |
+          set -euo pipefail
+          if [ "$PART" = "0" ]; then node scripts/ci/classify-tests.mjs | tee -a "$GITHUB_STEP_SUMMARY"; fi
+          node scripts/ci/classify-tests.mjs --list static \
+            | grep -v -x -e tests/failure-job-kinds.test.ts -e tests/sql-text-lint.test.ts > "$RUNNER_TEMP/static.txt"
+          node scripts/ci/shard.mjs --count "$PARTS" --index "$PART" --default-sec 10 \
+            --files-from "$RUNNER_TEMP/static.txt" > "$RUNNER_TEMP/part.txt"
+          echo "Część $((PART + 1))/$PARTS: $(wc -l < "$RUNNER_TEMP/part.txt") z $(wc -l < "$RUNNER_TEMP/static.txt") plików static"
+      - name: Static tests (no database)
+        run: node scripts/ci/run-tests.mjs --kind static --concurrency 4 --out ci-out/static --files-from "$RUNNER_TEMP/part.txt"
+      - name: Summary
+        if: ${{ always() }}
+        run: |
+          if [ -s ci-out/static/failed.txt ]; then
+            { echo "### Padnięte testy static"; sed 's/^/- /' ci-out/static/failed.txt; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: static-tests-logs-part-${{ matrix.part }}
+          path: ci-out/static/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  static-tests-gate:
+    # `if: always()` jest load-bearing: anulowana część zostawiłaby kontekst wiecznie oczekujący.
+    name: Lint + static tests
+    needs: static-tests
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Collect parts
+        env:
+          RESULT: ${{ needs.static-tests.result }}
+        run: |
+          echo "Części testów static (z lintem): $RESULT"
+          if [ "$RESULT" != "success" ]; then
+            echo "::error::Lint albo co najmniej jedna część testów static nie przeszła (result=$RESULT)."; exit 1
+          fi
+
+  web-tests:
+    name: Web tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: |
+          rm -f node_modules
+          npm ci --no-audit --no-fund
+      - name: web/*.test.mjs
+        run: node node_modules/tsx/dist/cli.mjs --test --test-concurrency=4 web/*.test.mjs

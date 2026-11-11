@@ -1,0 +1,17 @@
+# Zakres v7: PayU dla płatności z portalu klienta, nadal częściowy
+
+[scope.v7.json](../../scope.v7.json) ma **2621 wymagań**: wszystkie 2612 rekordów v6 bez zmian plus 9 nowych kluczy (8 operacji i 1 dostawca rejestru). Rodzicem jest przypięty `scope.v6.json` (2 351 722 B, SHA256 `910ca6af…`). Plik wygenerował istniejący `createScopeSnapshot` z [requestu](../../scope.v7.request.json), z jawnym `--root=/Users/arturtwardowski/DYNA Ecomerce`. Domyślny root CLI to `development/` i nie obejmuje wejść w `local-app`.
+
+Wejścia `domains`, `providerRoster` i archiwum dowodów (`mirakl-v5-20261019`) są identyczne jak w v6. Zmienia się tylko [integrations.json](integrations.json). Jego pierwsze 344 wiersze, 18 dostawców, `coverage_gaps` i `cross_cutting_gaps` są wartościowo identyczne z wejściem v6. W `summary` zmieniono `rows` (352) i dopisano `scope_v7_added_providers`, `scope_v7_added_rows`. Na końcu doszedł dostawca z decyzji Artura z 25.10.2026 (COM-PORTAL-6 w [audycie etapu 4](../../STAGE4-NONINTEGRATION-GAP-20261025.md), płatności z portalu klienta idą przez PayU):
+
+- **PayU** (`payu`, REST API 2.1, kategoria „Płatności”) ma 8 operacji: `connection` (OAuth client_credentials), `order.create` (płatność z przekierowaniem, PLN/EUR, kupujący, produkty, notifyUrl, continueUrl, extOrderId jako klucz idempotencji), `order.status`, `notification.receive` (podpis `OpenPayu-Signature` drugim kluczem, MD5/SHA-256), `refund.create` (pełny i częściowy), `refund.status`, `payout.reconcile` (dopasowanie do importu płatności i raportu rozliczeń), `order.cancel`.
+
+Wiersze mają tę samą strukturę co wiersze v6 z tej samej rodziny operacji (`operation_contract.family`: `connection`, `money`, `webhook`): cztery scenariusze odbioru z niezmiennikami rodziny i opisem specyficznym dla operacji. Mutacje (`order.create`, `refund.create`, `order.cancel`) mają scenariusz ACK-loss z uzgodnieniem przez odczyt, pozostałe operacje ponowny odczyt bez mutacji. Każdy wiersz ma status `planned_acceptance_unverified`, puste dowody na wszystkich poziomach i `required_evidence_level:account`. Dostawca ma `registry_line:null`, bo `server/integrations.ts` go nie deklaruje. Adresy dokumentacji podano bez pobierania w tym audycie.
+
+Sandbox PayU (`secure.snd.payu.com`) jest publiczny. Do odbioru na poziomie sandbox wystarczy, że właściciel zarejestruje konto testowe; umowa nie jest potrzebna. Konto produkcyjne i wypłaty pozostają osobnym poziomem `account`.
+
+Zakres nadal jest częściowy: `scope_complete:false`, `acceptance_granted:false` i 33 otwarte luki. Kontrakt klienta i lista podłączenia: [PAYMENT-PAYU-20261025.md](../../PAYMENT-PAYU-20261025.md).
+
+Weryfikacja plikowa: `node --test tools/parity/scope-v7-payu.test.mjs`. Test sprawdza pin rodzica, zachowanie wszystkich rekordów v6 i dokładną listę 9 dodanych kluczy. Sprawdza też, że generator odtwarza v7, że checker przyjmuje inwentarze (89 plików dowodów) oraz że odmawia `complete`, zmiany definicji, usunięcia wiersza (także wierszy dodanych w v6) i obniżenia poziomu dowodu.
+
+Gdy przypięty plik dowodu się zmieni (obecnie `server/integrations.ts` po `b82c2d0` i `3b3abab`), `scope.v7.json` zostaje bez zmian. Dokłada się archiwum następcze i wskaźnik [`evidence-archives/revalidation.json`](../../evidence-archives/revalidation.json), a test odtwarza v7 z tym archiwum jako magazynem plików. Procedura: [README v6, „Gdy przypięty plik dowodu się zmieni”](../v6/README.md#gdy-przypięty-plik-dowodu-się-zmieni).

@@ -1,0 +1,102 @@
+.inventory-bulk-edit {
+  min-width: 0;
+  margin: 20px 0;
+}
+.inventory-bulk-edit .panel-heading {
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.inventory-bulk-edit .ibe-body {
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.inventory-bulk-edit p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.inventory-bulk-edit label {
+  display: grid;
+  gap: 8px;
+}
+.inventory-bulk-edit input:not([type='checkbox']),
+.inventory-bulk-edit select,
+.inventory-bulk-edit textarea {
+  width: 100%;
+  min-width: 120px;
+}
+.inventory-bulk-edit .ibe-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.inventory-bulk-edit .ibe-scroll,
+.inventory-bulk-edit .ibe-difference {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.inventory-bulk-edit .ibe-sheet {
+  min-width: 1000px;
+}
+.inventory-bulk-edit .ibe-result-table {
+  min-width: 780px;
+}
+.inventory-bulk-edit td {
+  vertical-align: top;
+  white-space: normal;
+}
+.inventory-bulk-edit small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.inventory-bulk-edit .ibe-sheet td {
+  min-width: 150px;
+  max-width: 330px;
+}
+.inventory-bulk-edit .ibe-difference table {
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+.inventory-bulk-edit .ibe-difference th,
+.inventory-bulk-edit .ibe-difference td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 10px 8px;
+}
+.inventory-bulk-edit .ibe-result {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.inventory-bulk-edit .ibe-check {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.inventory-bulk-edit .ibe-check input {
+  flex: none;
+  margin-top: 5px;
+}
+.inventory-bulk-edit .ibe-technical {
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .inventory-bulk-edit .ibe-body {
+    padding: 0 12px 16px;
+  }
+  .inventory-bulk-edit .ibe-result {
+    padding: 12px;
+  }
+}

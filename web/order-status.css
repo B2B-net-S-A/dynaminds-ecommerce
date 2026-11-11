@@ -1,0 +1,107 @@
+/* Semantic order colours (Uwagi v3): each class only sets --order-status-color; the hex values mirror
+ * fulfilmentColors / paymentColors in web/order-stage.ts (order-status-badges.test.mjs keeps them equal).
+ * The .status-* classes in styles.css stay untouched, they also colour channel and job states. */
+.order-stage-new { --order-status-color: #8A94A6; }
+.order-stage-paid { --order-status-color: #2F6FDE; }
+.order-stage-picking { --order-status-color: #D98C00; }
+.order-stage-packed { --order-status-color: #E0661B; }
+.order-stage-ready_to_ship { --order-status-color: #0F8B8D; }
+.order-stage-shipped { --order-status-color: #0F8B8D; }
+.order-stage-delivered { --order-status-color: #2E9D4F; }
+.order-stage-completed { --order-status-color: #1F6B3A; }
+.order-stage-return_initiated { --order-status-color: #8A4FC7; }
+.order-stage-return_received { --order-status-color: #8A4FC7; }
+.order-stage-return_completed { --order-status-color: #8A4FC7; }
+.order-stage-cancelled { --order-status-color: #D23B3B; }
+
+.order-pay-unpaid { --order-status-color: #D23B3B; }
+.order-pay-paid { --order-status-color: #2E9D4F; }
+.order-pay-partial { --order-status-color: #8A94A6; }
+.order-pay-overpaid { --order-status-color: #8A94A6; }
+.order-pay-cod { --order-status-color: #8A94A6; }
+
+/* Never colour-only: the label is always text; the colour is a dot plus a tinted border and background. */
+.order-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #172238;
+  border: 1px solid #c9ced8;
+  border-color: color-mix(in srgb, var(--order-status-color, #8a94a6) 55%, #fff);
+  background: #f4f6f9;
+  background: color-mix(in srgb, var(--order-status-color, #8a94a6) 10%, #fff);
+}
+.order-badge::before,
+.order-status-dot {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--order-status-color, #8a94a6);
+}
+
+/* Order card stepper: reached steps take the stage colour (ol. outranks the blue default in order-detail.css). */
+ol.order-flow li.done .order-flow-bar,
+ol.order-flow li.now .order-flow-bar {
+  background: var(--order-status-color, var(--blue));
+}
+
+/* Dashboard: payment is listed apart from the fulfilment steps. */
+.order-pipeline-heading {
+  display: block;
+  padding: 12px 2px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3a4963;
+}
+
+/* Colour of a custom status (Własne statusy): semantic swatches, each with its name, so colour is never the only signal. */
+.status-palette {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.status-palette legend {
+  width: 100%;
+  padding: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-palette .status-swatch {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid #d6dbe4;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.status-palette .status-swatch input {
+  width: auto;
+  margin: 0;
+}
+.status-palette .status-swatch.selected {
+  border-color: #172238;
+  font-weight: 600;
+}
+.status-swatch-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

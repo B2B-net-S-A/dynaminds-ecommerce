@@ -1,0 +1,42 @@
+version: 2
+updates:
+  # Zależności npm (jeden package.json w korzeniu). Minor/patch w jednym zgrupowanym PR-ze;
+  # major osobno — to decyzja człowieka (auto-enqueue.yml nie wrzuca PR-ów Dependabota do kolejki).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Warsaw"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      npm-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Akcje GitHuba są przypięte do SHA — Dependabot podbija SHA razem z komentarzem wersji.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Warsaw"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"

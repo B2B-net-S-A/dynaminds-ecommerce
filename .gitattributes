@@ -1,0 +1,4 @@
+# Exact reviewed resource definition bytes are pinned by the source contract.
+tools/build/resource-definitions.mjs whitespace=-blank-at-eol
+# Official MF XSD schemas: bytes pinned by schemas/mf/manifest.json (sha256), no EOL conversion.
+schemas/mf/** -text whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,-indent-with-non-tab,-tab-in-indent,-trailing-space

@@ -1,0 +1,585 @@
+{
+ "generated": "2026-10-29",
+ "head": "9ca8829+round4",
+ "method": "tests/sql-text-lint.ts over server/**/*.ts and shared/**/*.ts (every `.query(` call)",
+ "files": 1105,
+ "files_with_query": 459,
+ "sites": 8296,
+ "verdicts": {
+  "literal": 7550,
+  "constant": 684,
+  "dynamic": 62
+ },
+ "by_area": {
+  "server": {
+   "literal": 7351,
+   "constant": 609,
+   "dynamic": 45
+  },
+  "shared/large-import-dependencies": {
+   "literal": 199,
+   "constant": 75,
+   "dynamic": 17
+  }
+ },
+ "dynamic": [
+  {
+   "file": "server/app.ts",
+   "line": 1463,
+   "fn": "buildApp",
+   "key": "dffb43c8110856f5",
+   "class": "constant",
+   "text": "\"SELECT o.*,to_char(o.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\\\"T\\\"HH24:MI:SS.US\\\"Z\\\"') AS cursor_time,(SELECT row_to_json(w) FROM workflow_statuses w WHERE w.",
+   "lint_reason": "`.text` of `.sql` of `fieldScope` ← escape: spread with shared elements at line 1477"
+  },
+  {
+   "file": "server/b2b-credits.ts",
+   "line": 125,
+   "fn": "listInTx",
+   "key": "71d769c02367ffa4",
+   "class": "request number",
+   "text": "SELECT to_jsonb(d) r,to_jsonb(receipt) receipt FROM b2b_credit_receipts receipt JOIN documents d ON(d.tenant_id,d.id)=(receipt.tenant_id,receipt.document_id) WH",
+   "lint_reason": "`.text` of `.limit` of `q` ← escape: passed to slice() at line 126"
+  },
+  {
+   "file": "server/b2b-invoices.ts",
+   "line": 101,
+   "fn": "listInTx",
+   "key": "683ccfaf03a3a5c6",
+   "class": "request number",
+   "text": "SELECT to_jsonb(d) r,to_jsonb(receipt) receipt FROM b2b_invoice_receipts receipt JOIN documents d ON(d.tenant_id,d.id)=(receipt.tenant_id,receipt.document_id) W",
+   "lint_reason": "`.text` of `.limit` of `q` ← escape: passed to slice() at line 102"
+  },
+  {
+   "file": "server/carrier-returns.ts",
+   "line": 330,
+   "fn": "step",
+   "key": "7df624a113057562",
+   "class": "constant",
+   "text": "UPDATE carrier261_returns SET ${keys.map((k, i) => `${k}=$${i + 2}`).join(',')},updated_at=now() WHERE id=$1`",
+   "lint_reason": "`.text` of return of function: `keys` ← keys of parameter `values`: referenced without a call at server/carrier-returns.ts:357"
+  },
+  {
+   "file": "server/catalog-export.ts",
+   "line": 378,
+   "fn": "matchedCount",
+   "key": "17699005c30fce15",
+   "class": "constant",
+   "text": "SELECT count(*)::text AS count FROM (SELECT p.id FROM products p WHERE ${f.sql} LIMIT ${CATALOG_EXPORT_LIMITS.products + 1}) scope`",
+   "lint_reason": "`.text` of `f.sql` ← return of filter: `.sql` of `result` ← escape: returned at line 329"
+  },
+  {
+   "file": "server/catalog-export.ts",
+   "line": 469,
+   "fn": "catalogExportPreview",
+   "key": "b744f9634fb2a60a",
+   "class": "constant",
+   "text": "SELECT p.id AS product_id,p.sku,p.name FROM products p WHERE ${f.sql} ORDER BY p.id LIMIT 3`",
+   "lint_reason": "`.text` of `f.sql` ← return of filter: `.sql` of `result` ← escape: returned at line 329"
+  },
+  {
+   "file": "server/catalog-export.ts",
+   "line": 797,
+   "fn": "readBatch",
+   "key": "df0b363cf8f5ab5d",
+   "class": "request whitelist",
+   "text": "SELECT ${projection} FROM products p ${join} WHERE ${f.sql} AND ($${f.params.length + 1}::uuid IS NULL OR p.id>$${f.params.length + 1}::uuid) ORDER BY p.id LIMI",
+   "lint_reason": "`.text` of `projection` ← return of function: `chosen` ← escape: spread with shared elements at line 787"
+  },
+  {
+   "file": "server/catalog-file-import.ts",
+   "line": 361,
+   "fn": "identityMatches",
+   "key": "78d5d34014b868e2",
+   "class": "stored, validated",
+   "text": "SELECT id,${kind} AS value FROM products WHERE ${kind}=ANY($1::${kind === 'id' ? 'uuid' : 'text'}[]) ${config.catalog_id && kind !== 'id' ? 'AND catalog_id=$2' ",
+   "lint_reason": "`.text` of `kind` ← escape: aliased at line 362"
+  },
+  {
+   "file": "server/catalog-file-import.ts",
+   "line": 679,
+   "fn": "quota",
+   "key": "0aa90f0c55a12325",
+   "class": "constant",
+   "text": "SELECT count(*)::integer n FROM ${table(kind)}`",
+   "lint_reason": "`.text` of return of table: parameter `kind` of quota: referenced without a call at server/catalog-file-import.ts:1289"
+  },
+  {
+   "file": "server/db.ts",
+   "line": 729,
+   "fn": "migrate",
+   "key": "660fd1fbb8c99e67",
+   "class": "code resource",
+   "text": "(await readRuntimeResource('sql:server/' + file.slice(2), import.meta.url)).toString('utf8')",
+   "lint_reason": "`.text` of return of readRuntimeResource: return of readInstalledRuntimeResource: `bytes` ← escape: passed to decodeResource209() at line 39"
+  },
+  {
+   "file": "server/db.ts",
+   "line": 731,
+   "fn": "migrate",
+   "key": "b87f7955e25a2d31",
+   "class": "code resource",
+   "text": "(await readRuntimeResource('sql:server/199_keeper_private_cold.sql', import.meta.url)).toString('utf8')",
+   "lint_reason": "`.text` of return of readRuntimeResource: return of readInstalledRuntimeResource: `bytes` ← escape: passed to decodeResource209() at line 39"
+  },
+  {
+   "file": "server/db.ts",
+   "line": 733,
+   "fn": "migrate",
+   "key": "6a918db24d7cefb5",
+   "class": "code resource",
+   "text": "(await readRuntimeResource('sql:server/188_consumer_credit_structure.sql', import.meta.url)).toString('utf8')",
+   "lint_reason": "`.text` of return of readRuntimeResource: return of readInstalledRuntimeResource: `bytes` ← escape: passed to decodeResource209() at line 39"
+  },
+  {
+   "file": "server/db.ts",
+   "line": 735,
+   "fn": "migrate",
+   "key": "89f4dc1e3eb0227f",
+   "class": "code resource",
+   "text": "(await readRuntimeResource('sql:server/wms-stocktake-invariants.sql', import.meta.url)).toString('utf8')",
+   "lint_reason": "`.text` of return of readRuntimeResource: return of readInstalledRuntimeResource: `bytes` ← escape: passed to decodeResource209() at line 39"
+  },
+  {
+   "file": "server/db.ts",
+   "line": 739,
+   "fn": "migrate",
+   "key": "5d6731d8c523af3b",
+   "class": "code resource",
+   "text": "(await readRuntimeResource('sql:server/108_b2b_dropship_dispatch.sql', import.meta.url)).toString('utf8')",
+   "lint_reason": "`.text` of return of readRuntimeResource: return of readInstalledRuntimeResource: `bytes` ← escape: passed to decodeResource209() at line 39"
+  },
+  {
+   "file": "server/fa3-drafts.ts",
+   "line": 126,
+   "fn": "listInTx",
+   "key": "70b90c93c4d8829c",
+   "class": "request number",
+   "text": "SELECT to_jsonb(d) r FROM fa3_draft_projects d WHERE tenant_id=$1${anchor?' AND(created_at,id)<($2::timestamptz,$3::uuid)':''} ORDER BY created_at DESC,id DESC ",
+   "lint_reason": "`.text` of `.limit` of `q` ← escape: passed to slice() at line 127"
+  },
+  {
+   "file": "server/ksef243.ts",
+   "line": 286,
+   "fn": "listInvoicesInTx",
+   "key": "a7084e1a6062e0fb",
+   "class": "constant",
+   "text": "SELECT ${LIST_COLUMNS},EXISTS(SELECT FROM ksef243_purchase_corrections k WHERE k.resolved_invoice_id=i.id) AS corrected FROM ksef243_purchase_invoices i ${w.sql",
+   "lint_reason": "`.text` of `.sql` of `w` ← escape: spread with shared elements at line 287"
+  },
+  {
+   "file": "server/migration-bootstrap.ts",
+   "line": 115,
+   "fn": "acquireMigrationLock",
+   "key": "1d84d478be9b406c",
+   "class": "validated number",
+   "text": "SET LOCAL lock_timeout=${waitMs}`",
+   "lint_reason": "`.text` of parameter `waitMs` of acquireMigrationLock ← server/db.ts:508: parameter `options` is changed or handed on inside migrate"
+  },
+  {
+   "file": "server/migration-bootstrap.ts",
+   "line": 116,
+   "fn": "acquireMigrationLock",
+   "key": "842fc90d15e3ef68",
+   "class": "validated number",
+   "text": "SET LOCAL statement_timeout=${waitMs+30_000}`",
+   "lint_reason": "`.text` of parameter `waitMs` of acquireMigrationLock ← server/db.ts:508: parameter `options` is changed or handed on inside migrate"
+  },
+  {
+   "file": "server/order-communication.ts",
+   "line": 84,
+   "fn": "orderCommunication",
+   "key": "74347f25acef02d6",
+   "class": "constant",
+   "text": "SELECT x.*,to_char(x.at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') cursor_time FROM (${chosen.map((s) => s.sql).join(' UNION ALL ')}) x WHERE ($2::text",
+   "lint_reason": "`.text` of return of function: `.sql` of `chosen` ← escape: an element is changed in the .map() callback at line 85"
+  },
+  {
+   "file": "server/order-detail-rows.ts",
+   "line": 11,
+   "fn": "orderDetailRows",
+   "key": "d06530d2bbf5bd49",
+   "class": "quoted literal",
+   "text": " SELECT * FROM orders WHERE id=${key}; SELECT * FROM order_items WHERE order_id=${key} ORDER BY sku; SELECT * FROM order_pick_items WHERE order_id=${key} ORDER ",
+   "lint_reason": "`.text` of `key` ← call of `escapeLiteral()` (not resolved)"
+  },
+  {
+   "file": "server/order-merges.ts",
+   "line": 967,
+   "fn": "executeOrderMerge",
+   "key": "ad956a30d4f64f4b",
+   "class": "catalog identifier",
+   "text": "INSERT INTO orders(${identifiers}) SELECT ${identifiers} FROM jsonb_populate_record(NULL::orders,$1::jsonb)`",
+   "lint_reason": "`.text` of `identifiers` ← return of function: `columns` ← return of function: `.attname` of `.rows` of parameter `c` is changed or handed on inside its function"
+  },
+  {
+   "file": "server/order-split-source.ts",
+   "line": 21,
+   "fn": "one",
+   "key": "4ec7c53222c8a758",
+   "class": "constant",
+   "text": "sql",
+   "lint_reason": "`.text` of parameter `sql` of one ← server/order-split-source.ts:45: `physicalBoundsSql` ← return of function: destructured `physicalTables` ← escape: an element is changed in the .map() callback at line 32"
+  },
+  {
+   "file": "server/order-split-transport.ts",
+   "line": 76,
+   "fn": "related",
+   "key": "4cac417711ca2cc5",
+   "class": "constant",
+   "text": "/* split210:rows */ SELECT * FROM public.order_split210_${table} WHERE tenant_id=$1 AND ${field}=$2 ORDER BY ${order} LIMIT ${max+1}`",
+   "lint_reason": "`.text` of parameter `max` of related ← server/order-split-transport.ts:82: `.source_lines` of `ORDER_SPLIT_LIMITS` ← escape: passed to max() at line 20"
+  },
+  {
+   "file": "server/order-split222.ts",
+   "line": 178,
+   "fn": "blockers",
+   "key": "933d06e9274a170f",
+   "class": "constant",
+   "text": "'SELECT ARRAY[' + present.map((p) => `EXISTS(SELECT 1 FROM public.\"${p.t}\" WHERE \"${p.col}\"=$1)`).join(',') + '] AS hits'",
+   "lint_reason": "`.text` of return of function: `.t` of `present` ← `.rows` of parameter `c` is changed or handed on inside blockers"
+  },
+  {
+   "file": "server/order-split222.ts",
+   "line": 403,
+   "fn": "executeOrderSplit222",
+   "key": "ad956a30d4f64f4b",
+   "class": "catalog identifier",
+   "text": "INSERT INTO orders(${identifiers}) SELECT ${identifiers} FROM jsonb_populate_record(NULL::orders,$1::jsonb)`",
+   "lint_reason": "`.text` of `identifiers` ← return of function: `columns` ← return of function: `.attname` of `.rows` of parameter `c` is changed or handed on inside its function"
+  },
+  {
+   "file": "server/ordinary-legacy-schema.mjs",
+   "line": 58,
+   "fn": "normalizeOrdinaryLegacyOwnerAcls",
+   "key": "a077e36e3b04989e",
+   "class": "catalog identifier",
+   "text": "GRANT ALL PRIVILEGES ON TABLE \"ordinary187_private\".\"${t.privateTable}\" TO postgres`",
+   "lint_reason": "`.text` of `t.privateTable` ← element of `targets` ← `r.key` ← element of `.records` of `first` ← escape: loop element `r` alias `privateSchema`: stored in a literal at line 37"
+  },
+  {
+   "file": "server/ordinary-legacy-schema.mjs",
+   "line": 59,
+   "fn": "normalizeOrdinaryLegacyOwnerAcls",
+   "key": "f05c2d8cde706a66",
+   "class": "catalog identifier",
+   "text": "GRANT ALL PRIVILEGES ON ${t.sequence?'SEQUENCE':'TABLE'} public.\"${t.name}\" TO postgres`",
+   "lint_reason": "`.text` of `t.name` ← element of `targets` ← `r.key` ← element of `.records` of `first` ← escape: loop element `r` alias `privateSchema`: stored in a literal at line 37"
+  },
+  {
+   "file": "server/public-constraint-drain.ts",
+   "line": 21,
+   "fn": "drainPublicConstraintsInTx",
+   "key": "731adcf2777328a1",
+   "class": "catalog identifier",
+   "text": "'SET CONSTRAINTS '+constraints.join(',')+' IMMEDIATE'",
+   "lint_reason": "`.text` of `constraints` ← `names` ← escape: spread with shared elements at line 20"
+  },
+  {
+   "file": "server/reconciliation-queue.ts",
+   "line": 46,
+   "fn": "registerReconciliationQueueRoutes",
+   "key": "c9326244d9f5c192",
+   "class": "constant",
+   "text": "SELECT count(*)::int n FROM (${s.sql}) x`",
+   "lint_reason": "`.text` of `s.sql` ← element of `sources` ← escape: loop element `s` stored in an object or chosen by ?: at line 44"
+  },
+  {
+   "file": "server/reconciliation-queue.ts",
+   "line": 47,
+   "fn": "registerReconciliationQueueRoutes",
+   "key": "718333093117b1b8",
+   "class": "constant",
+   "text": "${s.sql} ORDER BY 5 DESC,1 LIMIT ${LIMIT}`",
+   "lint_reason": "`.text` of `s.sql` ← element of `sources` ← escape: loop element `s` stored in an object or chosen by ?: at line 44"
+  },
+  {
+   "file": "server/recovery-private-acl.ts",
+   "line": 37,
+   "fn": "restorePrivateAclSnapshot",
+   "key": "0c81ecd77da768ec",
+   "class": "operator snapshot, quoted",
+   "text": "GRANT ALL ON SCHEMA ${quoted(r.schema)} TO postgres`",
+   "lint_reason": "`.text` of return of quoted: `r.schema` ← element of `materialize` ← escape: loop element `r` passed to quoted() at line 37"
+  },
+  {
+   "file": "server/recovery-private-acl.ts",
+   "line": 37,
+   "fn": "restorePrivateAclSnapshot",
+   "key": "81b26d76c43faf78",
+   "class": "operator snapshot, quoted",
+   "text": "GRANT ALL PRIVILEGES ON ${r.relation_kind==='S'?'SEQUENCE':'TABLE'} ${quoted(r.schema)}.${quoted(r.name!)} TO postgres`",
+   "lint_reason": "`.text` of return of quoted: `r.schema` ← element of `materialize` ← escape: loop element `r` passed to quoted() at line 37"
+  },
+  {
+   "file": "server/recovery-private-tables.ts",
+   "line": 32,
+   "fn": "privateTableFingerprints",
+   "key": "22176ade51aee0b9",
+   "class": "catalog identifier",
+   "text": "SELECT count(*)::text AS count,coalesce(sum(('x'||substr(md5(to_jsonb(t)::text),1,16))::bit(64)::bigint),0)::text AS high,coalesce(sum(('x'||substr(md5(to_jsonb",
+   "lint_reason": "`.text` of `r.schema` ← element of `definitions` ← escape: an element is changed in the .map() callback at line 27"
+  },
+  {
+   "file": "server/recovery-relation-acl.ts",
+   "line": 69,
+   "fn": "restoreRelationAclSnapshot",
+   "key": "1c3f6ef040dc8c6c",
+   "class": "operator snapshot, quoted",
+   "text": "GRANT ALL PRIVILEGES ON ${target} public.${identifier(row.name)} TO ${identifier(row.owner)}`",
+   "lint_reason": "`.text` of return of identifier: `row.name` ← element of `materialize` ← `row` ← element of `expected` ← escape: loop element `row` passed to get() at line 56"
+  },
+  {
+   "file": "server/recovery.ts",
+   "line": 247,
+   "fn": "tableFingerprints",
+   "key": "4a7472f49b288b36",
+   "class": "catalog identifier",
+   "text": "SELECT count(*)::text AS count,coalesce(sum(('x'||substr(md5(to_jsonb(t)::text),1,16))::bit(64)::bigint),0)::text AS high,coalesce(sum(('x'||substr(md5(to_jsonb",
+   "lint_reason": "`.text` of `name` ← element of `names` ← return of function: `.tablename` of `.rows` of parameter `c` is changed or handed on inside tableFingerprints"
+  },
+  {
+   "file": "server/recovery.ts",
+   "line": 558,
+   "fn": "restoreBackup",
+   "key": "9ffc931bfd7d84f8",
+   "class": "generated identifier",
+   "text": "CREATE DATABASE ${database}`",
+   "lint_reason": "`.text` of `database` ← escape: stored in a literal at line 481"
+  },
+  {
+   "file": "server/recovery.ts",
+   "line": 963,
+   "fn": "restoreBackup",
+   "key": "3975a8169a5bcd7b",
+   "class": "generated identifier",
+   "text": "DROP DATABASE ${database} WITH (FORCE)`",
+   "lint_reason": "`.text` of `database` ← escape: stored in a literal at line 481"
+  },
+  {
+   "file": "server/release-rollback.ts",
+   "line": 124,
+   "fn": "drop",
+   "key": "3975a8169a5bcd7b",
+   "class": "validated identifier",
+   "text": "DROP DATABASE ${database} WITH (FORCE)`",
+   "lint_reason": "`.text` of parameter `database` of drop: computed call at server/scoped-automation-worker.ts:15 (callers unknown)"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 250,
+   "fn": "guarded",
+   "key": "4ec7c53222c8a758",
+   "class": "constant",
+   "text": "sql",
+   "lint_reason": "`.text` of parameter `sql` of guarded ← server/rodo228.ts:318: `t.table` ← element of `json` ← escape: loop element `t` loop element `col` passed to push() at line 311"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 276,
+   "fn": "anonymiseInTx",
+   "key": "c37b6da160dd7b55",
+   "class": "constant",
+   "text": "SELECT to_regclass('public.${KSEF_FILES.table}') IS NOT NULL AS p`",
+   "lint_reason": "`.text` of `.table` of `KSEF_FILES` ← escape: stored in an object or chosen by ?: at line 337"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 313,
+   "fn": "anonymiseInTx",
+   "key": "ae1acc1cf8934a5c",
+   "class": "constant",
+   "text": "SELECT id,${t.cols.join(',')}${t.table === 'return_cases' ? ',reason,decision_note' : ''} FROM ${t.table} WHERE order_id=$1 ORDER BY id`",
+   "lint_reason": "`.text` of `t.cols` ← element of `json` ← escape: loop element `t` loop element `col` passed to push() at line 311"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 326,
+   "fn": "anonymiseInTx",
+   "key": "40b6fa2b3b4690fa",
+   "class": "constant",
+   "text": "SELECT ${t.ref ?? 'id'}::text AS ref FROM ${t.table} WHERE order_id=$1 ORDER BY 1`",
+   "lint_reason": "`.text` of `t.ref` ← element of `TAX` ← escape: an element is changed in the .map() callback at line 275"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 335,
+   "fn": "anonymiseInTx",
+   "key": "6644e20b5b1ef543",
+   "class": "constant",
+   "text": "SELECT id::text AS ref,document_id::text AS doc FROM ${KSEF_FILES.table} WHERE document_id=ANY($1::uuid[]) ORDER BY 1`",
+   "lint_reason": "`.text` of `.table` of `KSEF_FILES` ← escape: stored in an object or chosen by ?: at line 337"
+  },
+  {
+   "file": "server/rodo228.ts",
+   "line": 347,
+   "fn": "anonymiseInTx",
+   "key": "23e6808d6e9ede8d",
+   "class": "constant",
+   "text": "SELECT ${keyCol}::text AS ref${cols} FROM ${t.table} WHERE order_id=$1${extra} ORDER BY 1`",
+   "lint_reason": "`.text` of `t.table` ← element of `EVIDENCE` ← escape: an element is changed in the .map() callback at line 275"
+  },
+  {
+   "file": "server/wms-lots-limits.ts",
+   "line": 138,
+   "fn": "wmsEvidenceUsageInTx",
+   "key": "fe0950034b15385f",
+   "class": "constant",
+   "text": "SELECT sum(n)::text bytes FROM (${q}) b`",
+   "lint_reason": "`.text` of `q` ← return of function: `names` ← `evidenceTables` ← escape: stored in an object or chosen by ?: at line 134"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-cold-inspection.mjs",
+   "line": 189,
+   "fn": "inspectPackingColdCompartment",
+   "key": "a49156a188757e4a",
+   "class": "constant",
+   "text": "\"SELECT EXISTS(SELECT FROM public.migrations WHERE name='189_packing_required_order_fields') AS migration_present,EXISTS(SELECT FROM public.migrations WHERE nam",
+   "lint_reason": "`.text` of `RELEASE_COLD_MARKER_SQL` ← return of function: `.name` of `RELEASE_COLD` ← escape: spread with shared elements at line 37"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 99,
+   "fn": "inspectComparedProfile",
+   "key": "85276be21d04cfeb",
+   "class": "reviewed package SQL",
+   "text": "WITH external173 AS MATERIALIZED (${select}) SELECT profile,profile::text AS native_text,encode(sha256(convert_to(profile::text,'UTF8')),'hex') AS native_sha256",
+   "lint_reason": "`.text` of `select` ← `.catalog_sql` of `input` ← escape: passed to assertOrdinary177Contract() at line 107"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 230,
+   "fn": "inspectKeeperSchemaExtension",
+   "key": "ed13583b78289db9",
+   "class": "reviewed package SQL",
+   "text": "state.input.compatibility.durable_writer_epoch_extension.keeper_anchor_sql",
+   "lint_reason": "`.text` of parameter `state` is changed or handed on inside inspectKeeperSchemaExtension"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 236,
+   "fn": "inspectCoreReviewAliasExtension",
+   "key": "056970a71a97c5df",
+   "class": "reviewed package SQL",
+   "text": "state.input.compatibility.durable_writer_epoch_extension.alias_anchor_sql",
+   "lint_reason": "`.text` of parameter `state` is changed or handed on inside inspectCoreReviewAliasExtension"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 247,
+   "fn": "inspectDurableWriterEpochDescriptors",
+   "key": "e4e629576c0c5cd6",
+   "class": "reviewed package SQL",
+   "text": "descriptorSql",
+   "lint_reason": "`descriptorSql.text` ← return of prepareDurable187Descriptor204Sql: return of projectDurable187Descriptor204Sql: `.text` of `sql` ← escape: returned at line 50"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 264,
+   "fn": "inspectConsumerCreditExtension",
+   "key": "0debd553e8b0ecfd",
+   "class": "reviewed package SQL",
+   "text": "e.independent_anchor_sql",
+   "lint_reason": "`.text` of `.independent_anchor_sql` of `e` ← escape: aliased at line 260"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 270,
+   "fn": "inspectConsumerCreditExtension",
+   "key": "944382b8b15d6210",
+   "class": "reviewed package SQL",
+   "text": "e.structure_check_sql",
+   "lint_reason": "`.text` of `.structure_check_sql` of `e` ← escape: aliased at line 260"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 287,
+   "fn": "inspectKeeperResourceDescriptors198",
+   "key": "c613c080407e7238",
+   "class": "reviewed package SQL",
+   "text": "e.independent_counts_sql",
+   "lint_reason": "`.text` of `.independent_counts_sql` of `e` ← escape: aliased at line 284"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 288,
+   "fn": "inspectKeeperResourceDescriptors198",
+   "key": "c39a0c66b36c1ac2",
+   "class": "reviewed package SQL",
+   "text": "e.independent_lengths_sql",
+   "lint_reason": "`.text` of `.independent_lengths_sql` of `e` ← escape: aliased at line 284"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 291,
+   "fn": "inspectKeeperResourceDescriptors198",
+   "key": "0debd553e8b0ecfd",
+   "class": "reviewed package SQL",
+   "text": "e.independent_anchor_sql",
+   "lint_reason": "`.text` of `.independent_anchor_sql` of `e` ← escape: aliased at line 284"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 303,
+   "fn": "inspectKeeperResourceExtension198",
+   "key": "944382b8b15d6210",
+   "class": "reviewed package SQL",
+   "text": "e.structure_check_sql",
+   "lint_reason": "`.text` of `.structure_check_sql` of `e` ← escape: passed to sha() at line 301"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 343,
+   "fn": "readInstallationCut",
+   "key": "ce33333236dd21fb",
+   "class": "constant",
+   "text": "installationSealSql(lock,seals)",
+   "lint_reason": "return of installationSealSql: `.text` of `ctes` ← parameter `seals` is changed or handed on inside installationSealSql"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 367,
+   "fn": "readInstallationIdentity",
+   "key": "0771e7847159e4b1",
+   "class": "constant",
+   "text": "installationIdentitySql(lock,seals)",
+   "lint_reason": "return of installationIdentitySql: `.text` of `ctes` ← parameter `seals` is changed or handed on inside installationIdentitySql"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 379,
+   "fn": "readCurrentInstallationCut",
+   "key": "4f6b1e96720fe0e3",
+   "class": "constant",
+   "text": "installationMarkerSql(lock,seals)",
+   "lint_reason": "return of installationMarkerSql: `.text` of return of installationMarkersFor: `INSTALLATION_MARKERS` ← escape: spread with shared elements at line 319"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-business-traversal-ui/profile-startup.mjs",
+   "line": 471,
+   "fn": "inspectOrdinarySchemaExtension",
+   "key": "cef346b3ef53b7c2",
+   "class": "reviewed package SQL",
+   "text": "extension.independent_anchor_sql",
+   "lint_reason": "`.text` of `.independent_anchor_sql` of `extension` ← escape: aliased at line 470"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-composite-compiler-backend/startup.mjs",
+   "line": 9,
+   "fn": "inspectCompositeStartup",
+   "key": "7d43e2f918f0f560",
+   "class": "reviewed package SQL",
+   "text": "SELECT profile,profile::text AS native_text,encode(sha256(convert_to(profile::text,'UTF8')),'hex') AS native_sha256 FROM (${select}) external173`",
+   "lint_reason": "`.text` of `select` ← `.catalog_sql` of `input` ← escape: passed to sha() at line 6"
+  },
+  {
+   "file": "shared/large-import-dependencies/pim-large-import173-terminal-composite-compiler-ui/startup.mjs",
+   "line": 15,
+   "fn": "inspectComparedProfile",
+   "key": "7d43e2f918f0f560",
+   "class": "reviewed package SQL",
+   "text": "SELECT profile,profile::text AS native_text,encode(sha256(convert_to(profile::text,'UTF8')),'hex') AS native_sha256 FROM (${select}) external173`",
+   "lint_reason": "`.text` of `select` ← `.catalog_sql` of `input` ← escape: passed to sha() at line 12"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+.product-catalogs > header { padding: 20px 24px 0; }
+.product-catalogs .pc-body { display: grid; gap: 16px; padding: 20px 24px 24px; min-width: 0; }
+.product-catalogs label { display: flex; flex-direction: column; gap: 6px; }
+.product-catalogs label.pc-check { flex-direction: row; align-items: flex-start; gap: 8px; }
+.product-catalogs .pc-check input { flex: 0 0 auto; width: auto; margin-top: 3px; }
+.product-catalogs fieldset { display: grid; gap: 16px; border: 1px solid var(--border, #ddd); border-radius: 8px; padding: 16px; min-width: 0; }
+.product-catalogs .pc-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.product-catalogs .pc-groups > div { display: grid; align-content: start; gap: 10px; min-width: 0; }
+.product-catalogs .pc-review { padding: 16px; border: 1px solid var(--border, #ddd); border-radius: 8px; display: grid; gap: 12px; min-width: 0; }
+.product-catalogs .pc-summary { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.product-catalogs .pc-summary dd { margin: 0; overflow-wrap: anywhere; }
+.product-catalogs .pc-history { list-style: none; padding: 0; display: grid; gap: 8px; }
+.product-catalogs details { display: grid; gap: 12px; }
+.product-catalogs button { white-space: normal; overflow-wrap: anywhere; }
+.product-catalogs input, .product-catalogs select { max-width: 100%; min-width: 0; }
+@media (max-width: 700px) { .product-catalogs .pc-groups { grid-template-columns: 1fr; } .product-catalogs > header, .product-catalogs .pc-body { padding-left: 14px; padding-right: 14px; } }

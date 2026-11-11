@@ -1,0 +1,337 @@
+/* Order list filter panel and bulk action bar (Uwagi v3 §3). */
+.of-panel {
+  border-bottom: 1px solid var(--border);
+  padding: 0 0 14px;
+  margin-bottom: 12px;
+}
+.of-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 28px;
+}
+.of-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.of-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+.of-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+.of-row {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.of-row legend {
+  padding: 0;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.of-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  align-items: end;
+}
+/* Column count follows the panel's own width (the module rail and options panel take part of the
+   window), so the client's "7 per row" holds whenever the list area has room for it. */
+.of-panel {
+  container-type: inline-size;
+}
+@container (min-width: 560px) {
+  .of-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container (min-width: 980px) {
+  .of-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+@media (max-width: 420px) {
+  .of-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.of-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #556078;
+}
+label.of-field + label.of-field {
+  margin-top: 0;
+}
+.of-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.of-field input,
+.of-field select,
+.of-multi {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 400;
+}
+.of-range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+}
+.of-range input {
+  padding: 8px 6px;
+}
+.of-multi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border: 1px solid #dce2ed;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--muted);
+  text-align: left;
+}
+.of-multi.has-value {
+  color: var(--ink);
+}
+.of-multi > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.of-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 100%;
+  max-height: 320px;
+  overflow: auto;
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #dce2ed;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px #17223820;
+}
+.of-menu-right {
+  left: auto;
+  right: 0;
+  min-width: 260px;
+}
+.of-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.of-check + .of-check {
+  margin-top: 0;
+}
+.of-field .of-check input {
+  width: auto;
+  flex: none;
+  margin: 0;
+  padding: 0;
+}
+.of-menu .text-button {
+  justify-self: start;
+  margin: 4px;
+}
+.of-empty {
+  margin: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.of-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+.of-dirty {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+.of-problems {
+  border-left: 3px solid #d23b3b;
+  padding: 6px 10px;
+  background: #fdf1f1;
+  color: #8f2424;
+  font-size: 12px;
+}
+.of-problems p {
+  margin: 2px 0;
+}
+.of-templates {
+  position: relative;
+}
+.of-template-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+}
+.of-template-list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.of-template-pick {
+  flex: 1;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 7px 6px;
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 13px;
+}
+.of-template-pick:hover {
+  background: #f2f5fc;
+}
+.of-template-save {
+  display: flex;
+  gap: 6px;
+}
+.of-template-save input {
+  flex: 1;
+  padding: 7px 9px;
+  font-size: 13px;
+}
+
+/* Bulk action bar: shown only with a selection (or while a kept attempt waits for a decision). */
+.ob-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid #c9d4fb;
+  border-radius: 8px;
+  background: #eef2ff;
+}
+.ob-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-right: 6px;
+}
+.ob-spacer {
+  flex: 1;
+}
+.ob-menu-wrap {
+  position: relative;
+}
+.ob-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  max-height: 360px;
+  overflow: auto;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #dce2ed;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px #17223820;
+}
+.ob-menu h4 {
+  margin: 6px 6px 2px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.ob-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 7px 8px;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--ink);
+}
+.ob-menu button:hover:not(:disabled) {
+  background: #f2f5fc;
+}
+.ob-menu small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.ob-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+.ob-panel {
+  margin-bottom: 12px;
+}
+.ob-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ob-invoices {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ink);
+}

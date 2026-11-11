@@ -1,0 +1,17 @@
+/* S5: template tags, live preview, order communication timeline, reply notification. */
+.message-variables { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0; }
+.message-variables code { background: #f3f5fa; border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; font-size: 12px; }
+.message-variables small { flex-basis: 100%; }
+.template-live-preview { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 10px 0; background: #fbfcfe; }
+.template-live-preview h3 { margin: 0 0 4px; font-size: 15px; }
+.communication-timeline { list-style: none; margin: 12px 0; padding: 0; display: grid; gap: 8px; }
+.communication-entry { border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: 8px; padding: 10px 12px; background: white; }
+.communication-entry > div { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.communication-entry time { color: var(--muted); font-size: 13px; }
+.communication-entry small { display: block; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.communication-entry p { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.communication-in { border-left-color: #2f9e6e; }
+.communication-out { border-left-color: var(--blue); }
+.communication-internal { border-left-color: #c48a12; background: #fffaf0; }
+.portal-reply-notify { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
+.portal-reply-notify h3 { margin: 0 0 4px; font-size: 15px; }

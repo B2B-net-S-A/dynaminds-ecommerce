@@ -1,0 +1,5 @@
+{
+  "_synthetic": "SYNTETYCZNE: kształt według publicznej dokumentacji PayU REST API 2.1, nie nagranie z PayU",
+  "error": "invalid_client",
+  "error_description": "SYNTHETIC Bad client credentials"
+}

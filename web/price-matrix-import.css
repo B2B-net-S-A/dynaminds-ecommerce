@@ -1,0 +1,188 @@
+.price-matrix-import {
+  margin-block: 20px;
+  padding: 20px;
+  min-width: 0;
+  max-width: 100%;
+}
+.price-matrix-import h2,
+.price-matrix-import h3,
+.price-matrix-import h4 {
+  margin-top: 0;
+}
+.price-matrix-import p,
+.price-matrix-import li,
+.price-matrix-import summary {
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+.price-matrix-import .pmi-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-block: 12px;
+}
+.price-matrix-import .pmi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-block: 12px;
+}
+.price-matrix-import label:not(.pmi-check) {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+.price-matrix-import input:not([type='checkbox']),
+.price-matrix-import select,
+.price-matrix-import textarea {
+  width: 100%;
+  min-width: 0;
+}
+.price-matrix-import textarea {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  resize: vertical;
+}
+.price-matrix-import fieldset {
+  min-width: 0;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  margin-block: 16px;
+  padding: 16px;
+}
+.price-matrix-import legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.price-matrix-import .pmi-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-block: 12px;
+  line-height: 1.55;
+}
+.price-matrix-import .pmi-check input[type='checkbox'] {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 4px;
+}
+.price-matrix-import .pmi-hint,
+.price-matrix-import .pmi-error,
+.price-matrix-import .pmi-status,
+.price-matrix-import .pmi-pending {
+  padding: 12px;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.price-matrix-import .pmi-hint {
+  color: #475569;
+  background: #f8fafc;
+}
+.price-matrix-import .pmi-error {
+  color: #991b1b;
+  background: #fef2f2;
+}
+.price-matrix-import .pmi-status {
+  color: #166534;
+  background: #f0fdf4;
+}
+.price-matrix-import .pmi-pending {
+  color: #854d0e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+.price-matrix-import .pmi-list-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 20px;
+}
+.price-matrix-import .pmi-product {
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  padding: 14px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.price-matrix-import .pmi-invalid {
+  border-color: #fca5a5;
+}
+.price-matrix-import .pmi-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.price-matrix-import table {
+  width: 100%;
+  min-width: 850px;
+  table-layout: fixed;
+}
+.price-matrix-import th,
+.price-matrix-import td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 10px 8px;
+  vertical-align: top;
+}
+.price-matrix-import small {
+  display: block;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.price-matrix-import .pmi-price,
+.price-matrix-import .pmi-definition {
+  display: grid;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.price-matrix-import .pmi-target-summaries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.price-matrix-import .pmi-history {
+  display: grid;
+  gap: 8px;
+  margin-block: 12px;
+}
+.price-matrix-import .pmi-history button {
+  text-align: left;
+  white-space: normal;
+}
+.price-matrix-import .pmi-raw {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.price-matrix-import .pmi-raw dt {
+  font-weight: 600;
+}
+.price-matrix-import .pmi-raw dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.price-matrix-import .pmi-profile-target {
+  padding-block: 10px;
+  border-bottom: 1px solid var(--border, #dbe3ed);
+}
+@media (max-width: 800px) {
+  .price-matrix-import .pmi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .price-matrix-import {
+    padding: 14px;
+  }
+  .price-matrix-import .pmi-grid,
+  .price-matrix-import .pmi-target-summaries,
+  .price-matrix-import .pmi-list-options,
+  .price-matrix-import .pmi-raw {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .price-matrix-import fieldset {
+    padding: 12px;
+  }
+}

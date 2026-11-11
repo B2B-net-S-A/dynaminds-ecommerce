@@ -1,0 +1,1960 @@
+{
+  "schema": "dynaminds-base-api-purchase-order-contracts/v1",
+  "as_of": "2026-10-18",
+  "selected_index_groups": [
+    {
+      "family": "Product catalog",
+      "group": "Purchase orders"
+    }
+  ],
+  "method_count": 9,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "operational_contract_fully_resolved": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-purchase-transfer-sources-20261018.json.gz",
+    "sha256": "401288efad4ec411e73545b123ea041fcb19ac7a0dcc422d891c25b0920a77bc",
+    "bytes": 153541,
+    "individual_documents": 15,
+    "selected_documents": 9,
+    "format": "gzip UTF-8 JSON; original documents[].html_utf8 retained in existing archive"
+  },
+  "normalization_basis": {
+    "model": "base-api-inventory-configuration-contracts.v1.json",
+    "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+    "note": "Reuses existing v1 input.parameters/output.fields, documented_type/description, row provenance and tri-state requiredness; no new runtime dispatcher or generic parser."
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "shared_transport_ref": {
+    "path": "base-api-inventory-configuration-contracts.v1.json",
+    "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+    "pointer": "/shared_transport"
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "field_inventory": {
+    "input_table_rows": 53,
+    "output_table_rows": 71,
+    "embedded_input_prose_fields": 0,
+    "embedded_output_prose_fields": 13
+  },
+  "methods": [
+    {
+      "id": "BASE-API-addInventoryPurchaseOrder",
+      "method": "addInventoryPurchaseOrder",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrder",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrder",
+        "retrieved_at": "2026-10-18T01:06:00.835250+00:00",
+        "http_status": 200,
+        "bytes": 52772,
+        "sha256": "16afc486811850b1f373732e0b78b680e6141d07943b3e51601b964a942756e6",
+        "snapshot_document_method": "addInventoryPurchaseOrder"
+      },
+      "documented_intro": "The method allows you to create a new purchase order in Base storage. Orders are created as drafts by default.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "supplier_id",
+            "documented_name": "supplier_id",
+            "documented_type": "int",
+            "documented_description": "Supplier identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "payer_id",
+            "documented_name": "payer_id",
+            "documented_type": "int",
+            "documented_description": "Payer identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "currency",
+            "documented_name": "currency",
+            "documented_type": "varchar(3)",
+            "documented_description": "Order currency (e.g. EUR, USD)",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "name",
+            "documented_name": "name",
+            "documented_type": "varchar(80)",
+            "documented_description": "(optional) Order name",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "notes",
+            "documented_name": "notes",
+            "documented_type": "text",
+            "documented_description": "(optional) Order description/notes",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "invoice_no",
+            "documented_name": "invoice_no",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Related invoice number",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_cost_invoice_issue",
+            "documented_name": "date_cost_invoice_issue",
+            "documented_type": "int",
+            "documented_description": "(optional) Cost invoice issue date as unix timestamp",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_delivery_expected",
+            "documented_name": "date_delivery_expected",
+            "documented_type": "int",
+            "documented_description": "(optional) Expected delivery date as unix timestamp",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "additional_costs",
+            "documented_name": "additional_costs",
+            "documented_type": "array",
+            "documented_description": "(optional) List of additional costs assigned to the purchase order. Each element should contain fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "additional_costs[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(30)",
+            "documented_description": "Additional cost name",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "additional_costs[].cost",
+            "documented_name": "| - cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Additional cost value (must be >= 0.01)",
+            "source_kind": "table_row",
+            "source_table_row": 12,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "minimum": "0.01",
+            "minimum_source": "Additional cost value (must be >= 0.01)"
+          },
+          {
+            "name": "packages",
+            "documented_name": "packages",
+            "documented_type": "array",
+            "documented_description": "(optional) List of packages with tracking information assigned to the purchase order. Each element should contain fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 13,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "packages[].courier_code",
+            "documented_name": "| - courier_code",
+            "documented_type": "varchar(20)",
+            "documented_description": "Courier code (e.g. \"dpd\", \"dhl\", \"inpost\", \"other\"). The list of available courier codes can be retrieved using the getCouriersList method.",
+            "source_kind": "table_row",
+            "source_table_row": 14,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "packages[].courier_other_name",
+            "documented_name": "| - courier_other_name",
+            "documented_type": "varchar(20)",
+            "documented_description": "(optional) Custom courier name. Required when courier_code is \"other\".",
+            "source_kind": "table_row",
+            "source_table_row": 15,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "required_when": {
+              "parameter": "packages[].courier_code",
+              "equals": "other",
+              "source_text": "Required when courier_code is \"other\"."
+            }
+          },
+          {
+            "name": "packages[].package_number",
+            "documented_name": "| - package_number",
+            "documented_type": "varchar(40)",
+            "documented_description": "Tracking number / shipment number for the package",
+            "source_kind": "table_row",
+            "source_table_row": 16,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Created purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "document_number",
+            "documented_name": "document_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "Generated document number",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table.",
+        "Creation replay, partial success and stock/accounting effects are not documented."
+      ],
+      "documented_effects": [
+        "New purchase orders are created with draft status."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryPurchaseOrderFile",
+      "method": "addInventoryPurchaseOrderFile",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrderFile",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrderFile",
+        "retrieved_at": "2026-10-18T01:06:00.697224+00:00",
+        "http_status": 200,
+        "bytes": 49258,
+        "sha256": "42ad0da6712df81ccff0255155acc1f012494f78b82fee2c4520058daa1d2ba1",
+        "snapshot_document_method": "addInventoryPurchaseOrderFile"
+      },
+      "documented_intro": "The method allows you to add a cost invoice PDF file to a purchase order. It enables attaching an invoice issued by the supplier to the corresponding purchase order in Base.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "purchase_order_id",
+            "documented_name": "purchase_order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier from BaseLinker",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "file",
+            "documented_name": "file",
+            "documented_type": "text",
+            "documented_description": "Invoice PDF file in binary format encoded in base64. Provide a prefix \"data:\" at the beginning e.g. \"data:4AAQSkSzkJRgABA[...]\"",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_encoding": "base64",
+            "documented_prefix": "data:",
+            "documented_media_type": "PDF"
+          },
+          {
+            "name": "cost_invoice_no",
+            "documented_name": "cost_invoice_no",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Cost invoice number",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryPurchaseOrderItems",
+      "method": "addInventoryPurchaseOrderItems",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrderItems",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryPurchaseOrderItems",
+        "retrieved_at": "2026-10-18T01:06:00.804532+00:00",
+        "http_status": 200,
+        "bytes": 51690,
+        "sha256": "880dcb9c88723e3bd23512915ba396608b9f4fd6506f72742389ee9c41e7d555",
+        "snapshot_document_method": "addInventoryPurchaseOrderItems"
+      },
+      "documented_intro": "The method allows you to add items to an existing purchase order. Entering the product with the ID and price updates the previously saved position only if all other parameters match. If any parameter differs (e.g. location), a new item will be added.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of items to add. Each item should contain fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Item quantity",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].item_cost",
+            "documented_name": "| - item_cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "(optional) Item unit cost",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].supplier_code",
+            "documented_name": "| - supplier_code",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Product code from supplier",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].location",
+            "documented_name": "| - location",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Storage location",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].batch",
+            "documented_name": "| - batch",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) Batch number",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].expiry_date",
+            "documented_name": "| - expiry_date",
+            "documented_type": "text",
+            "documented_description": "(optional) Expiry date",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].serial_no",
+            "documented_name": "| - serial_no",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) Serial number",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].comments",
+            "documented_name": "| - comments",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Item comments or notes",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of created order items. Each element contains fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Item position in order",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table.",
+        "The page does not specify whether quantity is replaced or incremented when updating an existing position, nor item-list atomicity."
+      ],
+      "documented_effects": [
+        "Matching product ID, price and all other item parameters updates the existing position; differing parameters create a new position."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryPurchaseOrderFile",
+      "method": "getInventoryPurchaseOrderFile",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderFile",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderFile",
+        "retrieved_at": "2026-10-18T01:06:00.793349+00:00",
+        "http_status": 200,
+        "bytes": 49201,
+        "sha256": "766995bb55825fa3a25020320ab716c894896d25c816473f64fdb50a6e1218a8",
+        "snapshot_document_method": "getInventoryPurchaseOrderFile"
+      },
+      "documented_intro": "The method allows you to download a cost invoice PDF file attached to a purchase order.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "purchase_order_id",
+            "documented_name": "purchase_order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier from BaseLinker",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "file",
+            "documented_name": "file",
+            "documented_type": "text",
+            "documented_description": "Invoice PDF file in binary format encoded in base64, with prefix \"data:\"",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "documented_encoding": "base64",
+            "documented_prefix": "data:",
+            "documented_media_type": "PDF"
+          },
+          {
+            "path": "cost_invoice_no",
+            "documented_name": "cost_invoice_no",
+            "documented_type": "varchar(100)",
+            "documented_description": "Cost invoice number",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "file_name",
+            "documented_name": "file_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Invoice file name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryPurchaseOrderItems",
+      "method": "getInventoryPurchaseOrderItems",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderItems",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderItems",
+        "retrieved_at": "2026-10-18T01:06:01.132865+00:00",
+        "http_status": 200,
+        "bytes": 51688,
+        "sha256": "184c538be80ac25dbf1a8d3cfd7e8c7b17094acac9d423789ab11213d629d16f",
+        "snapshot_document_method": "getInventoryPurchaseOrderItems"
+      },
+      "documented_intro": "The method allows you to retrieve items from a specific purchase order.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page number (100 items per page, numbered from 1)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of purchase order items",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].order_id",
+            "documented_name": "| - order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "items[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Line item number",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "items[].product_name",
+            "documented_name": "| - product_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Product name",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "items[].product_ean",
+            "documented_name": "| - product_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "items[].product_sku",
+            "documented_name": "| - product_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product SKU",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "items[].inventory_id",
+            "documented_name": "| - inventory_id",
+            "documented_type": "int",
+            "documented_description": "Inventory (catalog) identifier",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity of this line item",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "items[].expiry_date",
+            "documented_name": "| - expiry_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "Expiry date in YYYY-MM-DD format",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "items[].batch",
+            "documented_name": "| - batch",
+            "documented_type": "varchar(128)",
+            "documented_description": "Batch number",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "items[].serial_no",
+            "documented_name": "| - serial_no",
+            "documented_type": "varchar(128)",
+            "documented_description": "Serial number",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "items[].supplier_code",
+            "documented_name": "| - supplier_code",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product code from supplier",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          },
+          {
+            "path": "items[].completed_quantity",
+            "documented_name": "| - completed_quantity",
+            "documented_type": "int",
+            "documented_description": "Received quantity",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "items[].item_cost",
+            "documented_name": "| - item_cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Item unit cost",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          },
+          {
+            "path": "items[].location",
+            "documented_name": "| - location",
+            "documented_type": "varchar(2550)",
+            "documented_description": "Storage location. When multiple locations are assigned, they are separated by a semicolon.",
+            "source_kind": "table_row",
+            "source_table_row": 18
+          },
+          {
+            "path": "items[].comments",
+            "documented_name": "| - comments",
+            "documented_type": "varchar(255)",
+            "documented_description": "Item comments or notes",
+            "source_kind": "table_row",
+            "source_table_row": 19
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "items",
+        "first_page": 1,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryPurchaseOrderLogs",
+      "method": "getInventoryPurchaseOrderLogs",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderLogs",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderLogs",
+        "retrieved_at": "2026-10-18T01:06:01.264509+00:00",
+        "http_status": 200,
+        "bytes": 53503,
+        "sha256": "279e251b0a3c49f55e66476101392c81636258a34e8b31b8f4a0e1a8efce8f4e",
+        "snapshot_document_method": "getInventoryPurchaseOrderLogs"
+      },
+      "documented_intro": "Returns a list of log entries for a given purchase order, allowing to track status changes, item modifications, and other events.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "purchase_order_id",
+            "documented_name": "purchase_order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order (delivery) identifier.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_from",
+            "documented_name": "date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from which logs are to be retrieved. Unix timestamp format.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_to",
+            "documented_name": "date_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Date to which logs are to be retrieved. Unix timestamp format.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "log_type",
+            "documented_name": "log_type",
+            "documented_type": "array",
+            "documented_description": "(optional) Array of event type IDs you want to retrieve. Available values:0 - Purchase order creation1 - Purchase order deletion2 - Status change3 - Email sent to supplier4 - Text field modifications5 - Items modifications6 - Landed costs modifications7 - Packages modifications8 - Shared via supply page9 - Item negotiations10 - Purchase order merge11 - Purchase order split",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_item_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ]
+          },
+          {
+            "name": "sort",
+            "documented_name": "sort",
+            "documented_type": "varchar(4)",
+            "documented_description": "(optional) Log sorting direction. Default: \"ASC\".",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "default": "ASC"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (100 log groups per page).",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "logs",
+            "documented_name": "logs",
+            "documented_type": "array",
+            "documented_description": "An array of logs grouped by date and the profile executing the change.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "logs[].profile",
+            "documented_name": "| - profile",
+            "documented_type": "text",
+            "documented_description": "The name of the profile that performed the change.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "logs[].date",
+            "documented_name": "| - date",
+            "documented_type": "int",
+            "documented_description": "Event date (unix timestamp).",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "logs[].entries",
+            "documented_name": "| - entries",
+            "documented_type": "array",
+            "documented_description": "An array of events performed by a given profile at a given time.log_type (text) - Event type key. Possible values:\"purchase_order_creation\"\"purchase_order_deletion\"\"status_change\"\"email_sent_to_supplier\"\"text_field_modification\"\"items_modification\"\"landed_costs_modification\"\"packages_modification\"\"shared_via_supply_page\"\"item_negotiations\"\"purchase_order_merge\"\"purchase_order_split\".status_key (text) - New status key. Returned only for log_type \"status_change\". Possible values: \"draft\", \"sent\", \"received_not_started\", \"received\", \"completed\", \"completed_partially\", \"canceled\".field_key (text) - Modified field key. Returned only for log_type \"text_field_modification\". Possible values: \"name\", \"status\", \"full_number\", \"notes\".previous_value (text) - Previous value of the modified text field. Returned only for log_type \"text_field_modification\".email_recipient (text) - Email recipient. Returned only for log_type \"email_sent_to_supplier\".items_changes_count (int) - Number of item modifications grouped in this log entry. Returned only for log_type \"items_modification\".landed_costs_changes_count (int) - Number of landed costs modifications grouped in this log entry. Returned only for log_type \"landed_costs_modification\".packages_changes_count (int) - Number of packages modifications grouped in this log entry. Returned only for log_type \"packages_modification\".item_negotiations_count (int) - Number of negotiation changes grouped in this log entry. Returned only for log_type \"item_negotiations\".related_purchase_order_id (int) - Identifier of the related purchase order. Returned only for log_type \"purchase_order_merge\" or \"purchase_order_split\".related_purchase_order_full_number (text) - Full number of the related purchase order. Returned only for log_type \"purchase_order_merge\" or \"purchase_order_split\".",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "logs[].entries[].log_type",
+            "documented_name": "log_type",
+            "documented_type": "text",
+            "documented_description": "Event type key. Possible values: \"purchase_order_creation\" \"purchase_order_deletion\" \"status_change\" \"email_sent_to_supplier\" \"text_field_modification\" \"items_modification\" \"landed_costs_modification\" \"packages_modification\" \"shared_via_supply_page\" \"item_negotiations\" \"purchase_order_merge\" \"purchase_order_split\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "documented_values": [
+              "purchase_order_creation",
+              "purchase_order_deletion",
+              "status_change",
+              "email_sent_to_supplier",
+              "text_field_modification",
+              "items_modification",
+              "landed_costs_modification",
+              "packages_modification",
+              "shared_via_supply_page",
+              "item_negotiations",
+              "purchase_order_merge",
+              "purchase_order_split"
+            ]
+          },
+          {
+            "path": "logs[].entries[].status_key",
+            "documented_name": "status_key",
+            "documented_type": "text",
+            "documented_description": "New status key. Returned only for log_type \"status_change\". Possible values: \"draft\", \"sent\", \"received_not_started\", \"received\", \"completed\", \"completed_partially\", \"canceled\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "documented_values": [
+              "draft",
+              "sent",
+              "received_not_started",
+              "received",
+              "completed",
+              "completed_partially",
+              "canceled"
+            ],
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "status_change"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].field_key",
+            "documented_name": "field_key",
+            "documented_type": "text",
+            "documented_description": "Modified field key. Returned only for log_type \"text_field_modification\". Possible values: \"name\", \"status\", \"full_number\", \"notes\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "documented_values": [
+              "name",
+              "status",
+              "full_number",
+              "notes"
+            ],
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "text_field_modification"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].previous_value",
+            "documented_name": "previous_value",
+            "documented_type": "text",
+            "documented_description": "Previous value of the modified text field. Returned only for log_type \"text_field_modification\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "text_field_modification"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].email_recipient",
+            "documented_name": "email_recipient",
+            "documented_type": "text",
+            "documented_description": "Email recipient. Returned only for log_type \"email_sent_to_supplier\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "email_sent_to_supplier"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].items_changes_count",
+            "documented_name": "items_changes_count",
+            "documented_type": "int",
+            "documented_description": "Number of item modifications grouped in this log entry. Returned only for log_type \"items_modification\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "items_modification"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].landed_costs_changes_count",
+            "documented_name": "landed_costs_changes_count",
+            "documented_type": "int",
+            "documented_description": "Number of landed costs modifications grouped in this log entry. Returned only for log_type \"landed_costs_modification\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "landed_costs_modification"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].packages_changes_count",
+            "documented_name": "packages_changes_count",
+            "documented_type": "int",
+            "documented_description": "Number of packages modifications grouped in this log entry. Returned only for log_type \"packages_modification\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "packages_modification"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].item_negotiations_count",
+            "documented_name": "item_negotiations_count",
+            "documented_type": "int",
+            "documented_description": "Number of negotiation changes grouped in this log entry. Returned only for log_type \"item_negotiations\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "item_negotiations"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].related_purchase_order_id",
+            "documented_name": "related_purchase_order_id",
+            "documented_type": "int",
+            "documented_description": "Identifier of the related purchase order. Returned only for log_type \"purchase_order_merge\" or \"purchase_order_split\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "purchase_order_merge",
+                "purchase_order_split"
+              ]
+            }
+          },
+          {
+            "path": "logs[].entries[].related_purchase_order_full_number",
+            "documented_name": "related_purchase_order_full_number",
+            "documented_type": "text",
+            "documented_description": "Full number of the related purchase order. Returned only for log_type \"purchase_order_merge\" or \"purchase_order_split\".",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "returned_only_when": {
+              "field": "logs[].entries[].log_type",
+              "values": [
+                "purchase_order_merge",
+                "purchase_order_split"
+              ]
+            }
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "log_groups",
+        "first_page": null,
+        "default_page": "not_documented",
+        "ordering": "sort",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryPurchaseOrderSeries",
+      "method": "getInventoryPurchaseOrderSeries",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderSeries",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrderSeries",
+        "retrieved_at": "2026-10-18T01:06:01.303769+00:00",
+        "http_status": 200,
+        "bytes": 49579,
+        "sha256": "ddc3c7137e99e774ef7dd39f0f2b374b334235e3ac3a2bb4c79ac47ba00a2b5e",
+        "snapshot_document_method": "getInventoryPurchaseOrderSeries"
+      },
+      "documented_intro": "The method allows you to retrieve a list of available purchase order numbering series. Each series is linked to a specific warehouse and defines the numbering format for purchase orders.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter series by warehouse ID",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "series",
+            "documented_name": "series",
+            "documented_type": "array",
+            "documented_description": "List of purchase order numbering series",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "series[].series_id",
+            "documented_name": "| - series_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order series identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "series[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(20)",
+            "documented_description": "Series name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "series[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier to which this series applies",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "series[].format",
+            "documented_name": "| - format",
+            "documented_type": "varchar(30)",
+            "documented_description": "Purchase order number format pattern",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryPurchaseOrders",
+      "method": "getInventoryPurchaseOrders",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrders",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryPurchaseOrders",
+        "retrieved_at": "2026-10-18T01:06:01.374393+00:00",
+        "http_status": 200,
+        "bytes": 55242,
+        "sha256": "3776779d45c14e854bddebabc57d7ddcac6ef8cdce4629a2d5e4003dc6266089",
+        "snapshot_document_method": "getInventoryPurchaseOrders"
+      },
+      "documented_intro": "The method allows you to retrieve a list of purchase orders from Base storage.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Warehouse ID. The list of identifiers can be retrieved using the method getInventoryWarehouses.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "supplier_id",
+            "documented_name": "supplier_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Limiting results to a specific supplier ID",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "series_id",
+            "documented_name": "series_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Limiting results to a specific document series ID",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_from",
+            "documented_name": "date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from which documents should be retrieved (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_to",
+            "documented_name": "date_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Date up to which documents should be retrieved (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_document_number",
+            "documented_name": "filter_document_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Filtering by document number (full or partial match)",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_product_id",
+            "documented_name": "filter_product_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Limiting results to purchase orders containing a product with the given ID",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (100 documents per page)",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "purchase_orders",
+            "documented_name": "purchase_orders",
+            "documented_type": "array",
+            "documented_description": "List of purchase orders. Each element contains fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "purchase_orders[].id",
+            "documented_name": "| - id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "purchase_orders[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(80)",
+            "documented_description": "Purchase order name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "purchase_orders[].series_id",
+            "documented_name": "| - series_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order series identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "purchase_orders[].document_number",
+            "documented_name": "| - document_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "Full document number",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "purchase_orders[].date_created",
+            "documented_name": "| - date_created",
+            "documented_type": "int",
+            "documented_description": "Purchase order creation date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "purchase_orders[].date_sent",
+            "documented_name": "| - date_sent",
+            "documented_type": "int",
+            "documented_description": "Purchase order sent date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "purchase_orders[].date_received",
+            "documented_name": "| - date_received",
+            "documented_type": "int",
+            "documented_description": "(optional) Purchase order received date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].date_completed",
+            "documented_name": "| - date_completed",
+            "documented_type": "int",
+            "documented_description": "(optional) Purchase order completed date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].date_expected_delivery",
+            "documented_name": "| - date_expected_delivery",
+            "documented_type": "int",
+            "documented_description": "(optional) Expected delivery date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "purchase_orders[].assigned_to",
+            "documented_name": "| - assigned_to",
+            "documented_type": "int",
+            "documented_description": "Assigned employee identifier. 0 if not assigned.",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "purchase_orders[].supplier_id",
+            "documented_name": "| - supplier_id",
+            "documented_type": "int",
+            "documented_description": "Supplier identifier",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "purchase_orders[].payer_id",
+            "documented_name": "| - payer_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Payer identifier",
+            "source_kind": "table_row",
+            "source_table_row": 15,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].currency",
+            "documented_name": "| - currency",
+            "documented_type": "varchar(3)",
+            "documented_description": "Purchase order currency (e.g. EUR, USD)",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "purchase_orders[].total_quantity",
+            "documented_name": "| - total_quantity",
+            "documented_type": "int",
+            "documented_description": "Total quantity of items",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          },
+          {
+            "path": "purchase_orders[].completed_total_quantity",
+            "documented_name": "| - completed_total_quantity",
+            "documented_type": "int",
+            "documented_description": "Total quantity of received items",
+            "source_kind": "table_row",
+            "source_table_row": 18
+          },
+          {
+            "path": "purchase_orders[].total_cost",
+            "documented_name": "| - total_cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Total order cost",
+            "source_kind": "table_row",
+            "source_table_row": 19
+          },
+          {
+            "path": "purchase_orders[].additional_cost",
+            "documented_name": "| - additional_cost",
+            "documented_type": "array",
+            "documented_description": "(optional) List of additional costs assigned to the purchase order. Each element contains fields listed belowname (varchar(30)) - Additional cost namecost (decimal(10,2)) - Additional cost value",
+            "source_kind": "table_row",
+            "source_table_row": 20,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].completed_total_cost",
+            "documented_name": "| - completed_total_cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Total cost of received items",
+            "source_kind": "table_row",
+            "source_table_row": 21
+          },
+          {
+            "path": "purchase_orders[].items_count",
+            "documented_name": "| - items_count",
+            "documented_type": "int",
+            "documented_description": "Number of unique items in purchase order",
+            "source_kind": "table_row",
+            "source_table_row": 22
+          },
+          {
+            "path": "purchase_orders[].completed_items_count",
+            "documented_name": "| - completed_items_count",
+            "documented_type": "int",
+            "documented_description": "Number of unique items received",
+            "source_kind": "table_row",
+            "source_table_row": 23
+          },
+          {
+            "path": "purchase_orders[].cost_invoice_no",
+            "documented_name": "| - cost_invoice_no",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Related invoice number",
+            "source_kind": "table_row",
+            "source_table_row": 24,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].date_cost_invoice_issue",
+            "documented_name": "| - date_cost_invoice_issue",
+            "documented_type": "int",
+            "documented_description": "(optional) Cost invoice issue date (Unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 25,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].cost_invoice_file",
+            "documented_name": "| - cost_invoice_file",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) URL to download uploaded cost invoice file",
+            "source_kind": "table_row",
+            "source_table_row": 26,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].notes",
+            "documented_name": "| - notes",
+            "documented_type": "text",
+            "documented_description": "(optional) Purchase order notes/description",
+            "source_kind": "table_row",
+            "source_table_row": 27,
+            "documented_optional": true
+          },
+          {
+            "path": "purchase_orders[].status",
+            "documented_name": "| - status",
+            "documented_type": "int",
+            "documented_description": "Order status. 0 - draft, 1 - sent, 2 - received, 3 - completed, 4 - completed partially, 5 - canceled",
+            "source_kind": "table_row",
+            "source_table_row": 28,
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "purchase_orders[].additional_cost[].name",
+            "documented_name": "name",
+            "documented_type": "varchar(30)",
+            "documented_description": "Additional cost name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 20
+          },
+          {
+            "path": "purchase_orders[].additional_cost[].cost",
+            "documented_name": "cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Additional cost value",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 20
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "documents",
+        "first_page": null,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table."
+      ]
+    },
+    {
+      "id": "BASE-API-setInventoryPurchaseOrderStatus",
+      "method": "setInventoryPurchaseOrderStatus",
+      "family": "Product catalog",
+      "group": "Purchase orders",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setInventoryPurchaseOrderStatus",
+        "final_url": "https://api.baselinker.com/index.php?method=setInventoryPurchaseOrderStatus",
+        "retrieved_at": "2026-10-18T01:06:01.741697+00:00",
+        "http_status": 200,
+        "bytes": 49534,
+        "sha256": "0f4f6884bc0f6e8ec3309fe3239778b37208ed508de88521690476adc783620c",
+        "snapshot_document_method": "setInventoryPurchaseOrderStatus"
+      },
+      "documented_intro": "The method allows you to change the status of a purchase order.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Purchase order identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "status",
+            "documented_name": "status",
+            "documented_type": "int",
+            "documented_description": "New order status. Available values:0 - draft1 - sent2 - received3 - completed4 - completed partially5 - canceled6 - received (not started)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          },
+          {
+            "name": "completed_items",
+            "documented_name": "completed_items",
+            "documented_type": "array",
+            "documented_description": "(optional) List of items received. Each element should contain fields listed below",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "completed_items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "completed_items[].completed_quantity",
+            "documented_name": "| - completed_quantity",
+            "documented_type": "int",
+            "documented_description": "Received quantity",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, specific errors, retry/unknown outcome handling, null/unknown parameters and validation order are not specified by the method table.",
+        "Transition permissions, stock effects and when completed_items must be supplied are not documented; do not infer from the setter name."
+      ]
+    }
+  ],
+  "boundary": "Documentation normalization only. Existing markdown/raw archives and historical traceability remain unchanged. No code-mapping, wire, account, business or product acceptance is granted."
+}

@@ -1,0 +1,12 @@
+.return-destination-parts { display: grid; gap: 14px; min-width: 0; }
+.return-destination-parts .rdp-line, .return-destination-parts .rdp-part { border: 1px solid var(--border, #ddd); border-radius: 8px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.return-destination-parts .rdp-part { background: var(--surface, #fff); }
+.return-destination-parts fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; }
+.return-destination-parts label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.return-destination-parts input, .return-destination-parts select { max-width: 100%; min-width: 0; }
+.return-destination-parts small, .return-destination-parts p { overflow-wrap: anywhere; margin: 0; }
+.return-destination-parts .rdp-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.return-destination-parts button { white-space: normal; overflow-wrap: anywhere; }
+.return-destination-parts .rdp-status { display: grid; gap: 6px; }
+.return-destination-parts .rdp-swatch { width: 16px; height: 16px; border: 1px solid currentColor; border-radius: 4px; }
+@media (max-width: 700px) { .return-destination-parts fieldset { grid-template-columns: 1fr; } }

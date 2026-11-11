@@ -1,0 +1,24 @@
+{
+  "schema": "dynaminds-existing-typecheck-helper-source-closure/v1",
+  "files": 15,
+  "bytes": 187797,
+  "runtime_data_copied": false,
+  "node_modules_copied": false,
+  "paths": [
+    "data/source-drafts/b2b-fa3-invoice159-issued-reader166.ts",
+    "data/source-drafts/b2b-fa3-invoice159-native-acceptance-oracles166.ts",
+    "data/source-drafts/b2b-fa3-native-acceptance-fixtures2.ts",
+    "data/source-drafts/b2b-financial-return162-root-capture189.ts",
+    "data/source-drafts/catalog-public-inventory-writer/inventory-correction-native.ts",
+    "data/source-drafts/competitor-observations165-portability-native.ts",
+    "data/source-drafts/fa3-xml-download-native.ts",
+    "data/source-drafts/fa3-xml-native-fixture.ts",
+    "data/source-drafts/inventory-correction-on-native2.ts",
+    "data/source-drafts/inventory-correction-on-public-fixture.ts",
+    "data/source-drafts/physical-parcel-wz-compatibility-native.ts",
+    "data/source-drafts/physical-parcel-wz-held-iam-native.ts",
+    "data/source-drafts/physical-parcel-wz-native-acceptance.ts",
+    "data/source-drafts/physical-parcel-wz-native-acceptance2.ts",
+    "data/source-drafts/physical-parcel-wz-native-fixture.ts"
+  ]
+}

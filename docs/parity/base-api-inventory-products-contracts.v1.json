@@ -1,0 +1,3474 @@
+{
+  "schema": "dynaminds-base-api-inventory-products-contracts/v1",
+  "as_of": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Product catalog",
+      "group": "Products"
+    }
+  ],
+  "method_count": 12,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "contract_review_complete_for_full_product_catalog": false,
+  "excluded_adjacent_group": "Product catalog / Inventories (3methods) is separate and not covered by thisfile",
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-inventory-products-sources-20261017.json.gz",
+    "sha256": "f775b0673b090433b39f20598daf857b3c0f5953ecdbde7917021237bdeac5db",
+    "bytes": 130602,
+    "format": "gzip UTF-8JSON;documents[].html_utf8 preservesexactsourcebytes",
+    "individual_documents": 12
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented; updatingbyexistingID does not reconcile anunknowncreate/trigger/delete or prevent repeatedexternal sideeffects"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "field_inventory": {
+    "input_table_rows": 92,
+    "output_table_rows": 87,
+    "embedded_input_prose_fields": 2,
+    "embedded_output_prose_fields": 30,
+    "inline_file_format_fields": 4
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T18:56:06.913Z",
+    "scope": "Read-only source/route review and exactmethod/transport search; no app/PG/provideraccount requests",
+    "searched_terms": [
+      "connector.php",
+      "X-BLToken",
+      "addInventoryProduct",
+      "deleteInventoryProduct",
+      "getInventoryParameters",
+      "getInventoryProductLogs",
+      "getInventoryProductsData",
+      "getInventoryProductsList",
+      "getInventoryProductsPrices",
+      "getInventoryProductsStock",
+      "runFulfillmentLinkProducts",
+      "runProductMacroTrigger",
+      "updateInventoryProductsPrices",
+      "updateInventoryProductsStock"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_server_web_TS_TSX",
+    "anchors": [
+      {
+        "path": "server/catalog-routes.ts",
+        "sha256": "44d12cdf6b90d5cf96cbb6446c2b64ed90d7b97764ddebbc0a4705d3ccb6bee3",
+        "symbol_or_anchor": "registerCatalogRoutes",
+        "boundary": "own products list/detail/PATCH and image library,UUID/cursorlimit200"
+      },
+      {
+        "path": "server/catalog.ts",
+        "sha256": "114a0b95083f2ec4e77251db6f2983a7f6a49896fb90d9a853924095d34157bb",
+        "symbol_or_anchor": "createProduct/editProduct/productDetail",
+        "boundary": "main/variant/bundle and own stock/catalogue gates, not Base product map wire"
+      },
+      {
+        "path": "server/app.ts",
+        "sha256": "5e8c69022baf302b4a68d28091f9d2729c722425b1828e8babf5d061e44607b7",
+        "symbol_or_anchor": "POST /api/products;GET /api/inventory;GET /api/audit;registerPimRoutes",
+        "boundary": "source route registration, no live capability assumption"
+      },
+      {
+        "path": "server/domain.ts",
+        "sha256": "fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476",
+        "symbol_or_anchor": "productSchema/catalogFields",
+        "boundary": "own product input schema, not Base 12method contract"
+      },
+      {
+        "path": "server/product-logistics.ts",
+        "sha256": "e193584194fa73981cfe532d8286c705d951f0f57dadf2cab0211adf0495b0bf",
+        "symbol_or_anchor": "attachProductLogistics/writeProductLogisticsInTx",
+        "boundary": "grams/mm logistic profile, not automatic kg/cm wire parity"
+      },
+      {
+        "path": "server/product-logistics-schema.ts",
+        "sha256": "858a9b30f268b5152c49c830c30c11ea269ace8b8b075fd0193962e135a87dd2",
+        "symbol_or_anchor": "productLogisticsPatchSchema",
+        "boundary": "typed local logistics units/limits"
+      },
+      {
+        "path": "server/product-catalogs-routes.ts",
+        "sha256": "324c4012923096554e1bb43ae849fb5f1cac6d37d28f5e79692073e7c8bcbc71",
+        "symbol_or_anchor": "registerProductCatalogRoutes",
+        "boundary": "own catalogue preview/commit/options/history, not Products group dispatch"
+      },
+      {
+        "path": "server/pim-dictionaries/routes.ts",
+        "sha256": "a74307774a45e87f8860bedefe0f555cdef5f0051d8a588392b7120171fd13a8",
+        "symbol_or_anchor": "registerPimRoutes/pimRouteDescriptors",
+        "boundary": "per-catalogue UUID dictionary/productvalues and preview/apply; source registration only"
+      },
+      {
+        "path": "server/pim-dictionaries/contract2.ts",
+        "sha256": "6287b6d94bce2999fd76bca898e9ef85f31609a16040ed3e051a03268228dacb",
+        "symbol_or_anchor": "Dictionary/ProductSource",
+        "boundary": "own dictionary/schema/custody does not establish Base parameter-key/translation wire"
+      },
+      {
+        "path": "server/price-bulk-edit-routes.ts",
+        "sha256": "d468c45a7e1c92d9942e6589da5822b3ce665d0a38bfb876cfe9188472f8a37d",
+        "symbol_or_anchor": "registerPriceBulkEditRoutes",
+        "boundary": "own selection/preview/execute/history pipeline"
+      },
+      {
+        "path": "server/price-bulk-edit-schema.ts",
+        "sha256": "b54db10c627f9603b9d517aa41eab3e77d188d188e7edb24403222079d8a63e9",
+        "symbol_or_anchor": "priceBulkEditPreviewInput",
+        "boundary": "price_list UUID,versions,500rows,minoramounts/gross-or-net differs Base1000 keyed gross"
+      },
+      {
+        "path": "server/inventory.ts",
+        "sha256": "c8bbf723ab0440deb1748c2e92547ceb25988030bd4ffacea10e745a39f92d78",
+        "symbol_or_anchor": "listInventory/inventorySnapshot/listMovements",
+        "boundary": "own warehouse/productUUID,rowcursor,physical/sellable/reservation read model"
+      },
+      {
+        "path": "server/inventory-bulk-edit-routes.ts",
+        "sha256": "aa87f466e68bdb683e9708b7231734db8d977ea11ee3c4051e5617e3d03bedc2",
+        "symbol_or_anchor": "registerInventoryBulkEditRoutes",
+        "boundary": "own bounded preview/execute/history instead of direct Base keyed stock update"
+      },
+      {
+        "path": "server/product-rule-routes.ts",
+        "sha256": "f80ff2ab8b80502f9eeefbb0963fee3b64c03c9c4f07d84f1d66cccbfc422601",
+        "symbol_or_anchor": "registerProductRuleRoutes",
+        "boundary": "rules CRUD and preview/queue, not proof arbitrary personal trigger execution"
+      },
+      {
+        "path": "server/amazon-fulfillment-routes.ts",
+        "sha256": "2027e9eafd6096e2215a8d99104012e3470cfdf63dc8b1687727aa69beb0364f",
+        "symbol_or_anchor": "registerAmazonFulfillmentRoutes",
+        "boundary": "provider order fulfillment workflow, not Base product linking by configured extra field"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "product_catalogue": {
+      "state": "adjacent_local_routes_not_wire_compatible",
+      "anchors": [
+        "server/catalog-routes.ts",
+        "server/catalog.ts",
+        "server/app.ts",
+        "server/domain.ts",
+        "server/product-logistics.ts",
+        "server/product-logistics-schema.ts",
+        "server/product-catalogs-routes.ts",
+        "server/pim-dictionaries/routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/products",
+        "GET /api/products",
+        "GET /api/products/:id",
+        "PATCH /api/products/:id",
+        "POST /api/product-images",
+        "GET /api/product-images"
+      ],
+      "open": [
+        "UUID,cursorlimit200 and separate mutations do not implement integerproductID/mapoutput/page1000.",
+        "PATCH active flag is not proof deleteInventoryProduct hard/cascade behavior.",
+        "Full tags/suppliers/relations/additionalEAN/channelmedia/textfield/thresholds/shippingtemplate Basepatch semantics not established.",
+        "Own grams/mm profiles require explicit unit mapping; cost/document/WMS effects require business readback."
+      ]
+    },
+    "parameter_dictionary": {
+      "state": "adjacent_local_PIM_contract_not_Base_wire",
+      "anchors": [
+        "server/pim-dictionaries/routes.ts",
+        "server/pim-dictionaries/contract2.ts",
+        "server/app.ts"
+      ],
+      "route_candidates": [
+        "GET /api/product-catalogs/:catalog_id/pim/dictionary",
+        "GET /api/product-catalogs/:catalog_id/pim/products/:product_id"
+      ],
+      "open": [
+        "BasegetInventoryParameters has no inventory_id and returns stored translations/groupkeys; localpercatalogue UUID dictionary DTO is different.",
+        "Route source registration is not current packaged capability or runtime acceptance."
+      ]
+    },
+    "product_history": {
+      "state": "adjacent_audit_and_workflow_history_not_Base_wire",
+      "anchors": [
+        "server/app.ts",
+        "server/catalog.ts",
+        "server/product-catalogs-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/audit",
+        "GET /api/product-catalogs/previews"
+      ],
+      "open": [
+        "General audit and catalogueoperations history do not establish grouped date/profile/entries/eventtypes1..10 or100editions page."
+      ]
+    },
+    "prices": {
+      "state": "adjacent_local_price_workflow_not_Base_wire",
+      "anchors": [
+        "server/price-bulk-edit-routes.ts",
+        "server/price-bulk-edit-schema.ts",
+        "server/catalog-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/products",
+        "POST /api/price-bulk-edit/previews",
+        "GET /api/price-bulk-edit/previews/:id"
+      ],
+      "open": [
+        "Local preview/execute/versions/UUID/minoramounts max500rows differs direct1000products map pergroup gross; counter/warnings wire is not established.",
+        "Full keyedvariants and1000page gross readback not established."
+      ]
+    },
+    "stock": {
+      "state": "adjacent_inventory_workflow_not_Base_wire",
+      "anchors": [
+        "server/inventory.ts",
+        "server/inventory-bulk-edit-routes.ts",
+        "server/app.ts"
+      ],
+      "route_candidates": [
+        "GET /api/inventory",
+        "GET /api/inventory/snapshot",
+        "GET /api/inventory/movements",
+        "POST /api/inventory/adjust/previews",
+        "POST /api/inventory/adjust"
+      ],
+      "open": [
+        "Own row cursor and warehouse/product UUID do not implement keyed stock/variantreservations across Basepages1000.",
+        "Policy/lot/document safeguards cannot be bypassed to mimic directstock setting; exact business translation and partialbatch outcomes need proof."
+      ]
+    },
+    "product_automation": {
+      "state": "adjacent_product_rules_not_personal_trigger_wire",
+      "anchors": [
+        "server/product-rule-routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/product-rule-runs/preview",
+        "POST /api/product-rule-runs/:id/queue",
+        "GET /api/product-rule-runs/:id"
+      ],
+      "open": [
+        "No proof mapping arbitrary Basepersonal triggerID/productID to localrule queue with equivalent sideeffects/completion."
+      ]
+    },
+    "fulfillment_links": {
+      "state": "Base_product_linking_by_fulfillment_extra_field_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/amazon-fulfillment-routes.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Order fulfillment writes are not product matching/linking to configured warehouse via extra_field.",
+        "Matchrules,own warehouse,linked/skipped and safe unknownoutcome remain open."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "PRODUCT-001",
+      "methods": [
+        "addInventoryProduct",
+        "getInventoryProductsData"
+      ],
+      "issue": "Several documented array values are keyedobjects/maps, with nested maps/units; preserve shape rather than assume numeric arrays.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-002",
+      "methods": [
+        "addInventoryProduct",
+        "getInventoryProductsData"
+      ],
+      "issue": "is_bundle input says partofbundle, while bundle_products requires is_bundletrue and output says productisbundle; do not silently reinterpret.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-003",
+      "methods": [
+        "addInventoryProduct",
+        "getInventoryProductsData",
+        "getInventoryProductsList"
+      ],
+      "issue": "SKU input/filtervarchar50 versus detailed/list outputvarchar32; decimal(10,2) write logistics versus float reads, kg explicit but inputheight unit not separately declared.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-004",
+      "methods": [
+        "addInventoryProduct",
+        "getInventoryProductsData"
+      ],
+      "issue": "Media input0based versus output1based; blank default deletion differs channelblank, emptyurl:removesoverride. Existing CDN URLs must not be reuploaded.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-005",
+      "methods": [
+        "getInventoryProductsData"
+      ],
+      "issue": "include_channels_media prose calls media_options top-level while outputtable nests it underproducts; preserve both with unresolvedplacement.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-006",
+      "methods": [
+        "addInventoryProduct",
+        "getInventoryProductsData"
+      ],
+      "issue": "text_fields standard language/source grammar differs marketplacecategory source/site grammar; file inputtitle/file differs outputtitle/url. Prose about name/shortfields asparameter maps is ambiguous with features.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-007",
+      "methods": [
+        "getInventoryProductLogs"
+      ],
+      "issue": "log_type declaredint but prose callslist; infoeventtype3textfield conflicts type3created/type5textchange; mixedvalues and outputdateunit remain partly unspecified.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-008",
+      "methods": [
+        "updateInventoryProductsPrices",
+        "updateInventoryProductsStock",
+        "addInventoryProduct"
+      ],
+      "issue": "Warnings may accompanySUCCESS, including skippedparameter value or partial product error. No documented all-or-nothing, idempotencykey or automaticretry contract.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-009",
+      "methods": [
+        "addInventoryProduct",
+        "updateInventoryProductsStock"
+      ],
+      "issue": "WarehouseIDgrammar includesexternaltypes on somepages, yet writingautoexternalstockwarehouse explicitlyforbidden; availability/reserved/incoming semantics not interchangeable.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-010",
+      "methods": [
+        "getInventoryProductsList",
+        "getInventoryProductsPrices",
+        "getInventoryProductsStock",
+        "getInventoryProductsData",
+        "getInventoryProductLogs"
+      ],
+      "issue": "Page1000lists and100editionlogs do not definefirst/end/total/stability; explicit-IDdata read has no statedbatchcap.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-011",
+      "methods": [
+        "addInventoryProduct"
+      ],
+      "issue": "Different patch semantics tags/relations replacement, thresholds partialmap/0clear, mediasparsepatch, shippingtemplate emptyclear must not be universalized.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    },
+    {
+      "id": "PRODUCT-012",
+      "methods": [
+        "runFulfillmentLinkProducts",
+        "runProductMacroTrigger"
+      ],
+      "issue": "Counters/status do not expose complete perproducteffect or run/completion/replay contract; account/config-specific side effects require independent acceptance.",
+      "decision": "preserve_page_specific_contract_and_explicit_unknowns; no_inferred_wire_alias_or_runtime_acceptance"
+    }
+  ],
+  "dependencies_outside_this_group": [
+    "getInventories",
+    "getInventoryManufacturers",
+    "addInventoryCategory",
+    "getInventoryPriceGroups",
+    "getInventoryWarehouses",
+    "getInventoryIntegrations",
+    "getInventoryExtraFields",
+    "getInventoryAvailableTextFieldKeys",
+    "getStoragesList",
+    "getInventoryShippingTemplates",
+    "getInventorySuppliers",
+    "getInventoryTags",
+    "getOrders"
+  ],
+  "open_operational_dependencies": [
+    "Authorizedaccount/catalogue/warehouse/pricegroups and actualAPIpermissions; absentcredentials isopen,notaccepted.",
+    "AdvancedWMS/ERPcostmethod/reservations/automaticexternalwarehouses must be configured and proven separately.",
+    "Channel/site/language/templates/extrafields/media parameterkeys require actualconfigured metadata; examples donotfreeze universalIDs.",
+    "Provider-specific matching/automatictrigger sideeffects, rate429RetryAfter,ACKloss,duplicateworker/restart require controlledlocal and separatelyauthorizedaccountproof."
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-addInventoryProduct",
+      "method": "addInventoryProduct",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryProduct",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryProduct",
+        "retrieved_at": "2026-10-17T18:52:29.741569+00:00",
+        "http_status": 200,
+        "bytes": 74448,
+        "sha256": "78a7dc51eea5228bf3001cb7767ed98d104bbd6dcfc1e8d5fa90416112b55b57",
+        "snapshot_document_method": "addInventoryProduct"
+      },
+      "documented_intro": "The method allows you to add a new product to Base catalog. Entering the product with the ID updates previously saved product.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Dodaje produkt; podanie product_id aktualizuje istniejący, a przy tworzeniu należy pozostawić je puste. Sposób reprezentacji pustej wartości nie jest zdefiniowany. parent_id dotyczy wyłącznie wariantu.",
+        "tags: pominięcie zachowuje, przekazana lista zastępuje, [] usuwa wszystkie. suppliers także zastępuje całość, [] usuwa wszystkie; zachowania pominięcia suppliers nie dopowiadamy poza tym opisem. relations: pominięcie zachowuje, lista zastępuje manualne relacje, [] usuwa; limit1000, własny produkt w tym katalogu, bez duplikowania parent/variant i bundle links oraz bez bundle↔bundle.",
+        "thresholds zmienia tylko podane wpisy; pusty map nic nie zmienia,0 usuwa próg. Zapis stock/thresholds nie może dotyczyć automatycznych magazynów stanów zewnętrznych.",
+        "average_cost przy włączonych dokumentach wolno ustawić tylko przy tworzeniu lub gdy obecny koszt=0; przy wyłączonych dokumentach ustawia średni koszt.",
+        "images:16 miejsc0–15; videos:6 miejsc0–5, MP4/WEBM do15MB. Zapis tylko zmienianych pozycji. Wpisy pominięte zachowane; pusta wartość usuwa domyślne media, ale dla kanału tworzy blank override. Kanałowe url: bez adresu usuwa override i przywraca media_options.",
+        "Nie ponownie wgrywać już istniejących URL BaseCDN: dokumentacja ostrzega przed ponownym importem i możliwym usunięciem. Input images data: do2MB, URL do1000znaków w przykładzie formatu; dokładnej definicji MB/bajty/metadane MIME brak.",
+        "text_fields: osobne klucze język/kanał, features jako mapa; marketplace_category_id używa odrębnego klucza bez komponentu języka, obowiązkowy site dla eBay/Amazon, zakazsite dla Allegro, Amazon konto0, amazon_vendor nieobsługiwane.",
+        "Plik extra_field zapisuje title varchar40 i file data:base64 do2MB; odczyt zwraca URL zamiast pliku. shipping_template pusty tekst usuwa przypisanie; IDs/zakresy źródeł zależą od metod spoza tej grupy.",
+        "warnings nie przerywają całego żądania, np. pominięta niepoprawna wartość parametru; SUCCESS nie dowodzi zastosowania wszystkich pól."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories. (inventory_id field).",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "product_id",
+            "required": false,
+            "requiredness_source": "explicit_create_omission_update_identity",
+            "default_status": "not_documented",
+            "documented_name": "product_id",
+            "documented_type": "int",
+            "documented_description": "Main product identifier, given only during the update. Should be left blank when creating a new product. The new product identifier is returned as a response to this method.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "applicable_when": "update_existing_product",
+            "create_behavior": "leave_blank_exact_representation_not_documented"
+          },
+          {
+            "name": "parent_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "parent_id",
+            "documented_type": "int",
+            "documented_description": "Product parent ID. To be provided only if the added/edited product is a variant of another product.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "applicable_when": "variant_only"
+          },
+          {
+            "name": "is_bundle",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "is_bundle",
+            "documented_type": "bool",
+            "documented_description": "Is the given product a part of a bundle",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "sku",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product SKU number.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "ean",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN number.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "ean_additional",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "ean_additional",
+            "documented_type": "array",
+            "documented_description": "A list containing EAN numbers. Each EAN data should be an array containing the fields listed below:ean (string) - EAN numberquantity (int) - quantity of product with given EAN number",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "asin",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "asin",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product ASIN number.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "requiredness_source": "explicit_omission_preserves_existing",
+            "default_status": "not_documented",
+            "documented_name": "tags",
+            "documented_type": "array",
+            "documented_description": "A list containing tag names. If:No tags are provided in the API request, the product retains its existing tags (e.g., A, B, C).Tags A, B, and C are provided in the API request, the product retains its existing tags (A, B, C).Tags B and C are provided in the API request, tag A is removed from the product, leaving tags B and C.An empty list of tags is provided in the API request, all existing tags (A, B, C) are removed from the product.",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "omission": "preserves_existing",
+            "provided": "replaces_existing",
+            "empty_array": "removes_all"
+          },
+          {
+            "name": "tax_rate",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "name": "weight",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "weight",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Weight in kilograms.",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "name": "height",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "height",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Product height",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "name": "width",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "width",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Product width",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "name": "length",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "length",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Product length",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "name": "average_cost",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "average_cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Product average cost. If storage documents are turned off, this field sets product average cost. If storage documents are turned on, a value in this field can be set in two cases: while creating a new product or when a current average cost is set to 0.",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          },
+          {
+            "name": "star",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "star",
+            "documented_type": "int",
+            "documented_description": "Product star type. It takes from 0 to 5 values. 0 means no starring.",
+            "source_kind": "table_row",
+            "source_table_row": 16,
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "zero": "no_star"
+          },
+          {
+            "name": "manufacturer_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "Product manufacturer ID. IDs can be retrieved with getInventoryManufacturers method.",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          },
+          {
+            "name": "category_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "category_id",
+            "documented_type": "int",
+            "documented_description": "Product category ID (category must be previously created with addInventoryCategory method).",
+            "source_kind": "table_row",
+            "source_table_row": 18
+          },
+          {
+            "name": "prices",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "prices",
+            "documented_type": "array",
+            "documented_description": "A list containing product prices, where the key is the price group ID and value is a product gross price for a given price group. The list of price groups can be retrieved with getInventoryPriceGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 19,
+            "shape": "object_keyed_by_price_group_id",
+            "price_basis": "gross"
+          },
+          {
+            "name": "stock",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "stock",
+            "documented_type": "array",
+            "documented_description": "A list containing product stocks, where the key is the warehouse ID and value is a product stock for a given warehouse. Warehouse ID should have the following format: \"bl_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method. Stocks cannot be assigned to the warehouses created automatically for purposes of keeping external stocks (shops, wholesalers, etc.).",
+            "source_kind": "table_row",
+            "source_table_row": 20,
+            "forbidden_target": "automatically_created_external_stock_warehouse"
+          },
+          {
+            "name": "thresholds",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "thresholds",
+            "documented_type": "array",
+            "documented_description": "A list containing product stock thresholds (reorder points), where the key is the warehouse ID and value is a threshold for a given warehouse. Warehouse ID should have the following format: \"bl_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method. Thresholds cannot be assigned to the warehouses created automatically for purposes of keeping external stocks (shops, wholesalers, etc.). Only supplied entries are changed. An empty map makes no change. Value 0 clears the threshold.",
+            "source_kind": "table_row",
+            "source_table_row": 21,
+            "shape": "object_keyed_by_bl_warehouse_id",
+            "provided": "only_supplied_entries_change",
+            "empty_object": "no_change",
+            "zero": "clear_threshold",
+            "forbidden_target": "automatically_created_external_stock_warehouse"
+          },
+          {
+            "name": "locations",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "locations",
+            "documented_type": "array",
+            "documented_description": "A list containing product locations where the key is the warehouse ID and value is a product location for a given warehouse, eg. \"A-5-2\". Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method. To assign multiple locations to a single warehouse, separate them with a semicolon.",
+            "source_kind": "table_row",
+            "source_table_row": 22
+          },
+          {
+            "name": "text_fields",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "text_fields",
+            "documented_type": "array",
+            "documented_description": "A list containing field text values (names, descriptions, etc.) of a product, where the key is the field text ID and value is the field value. The field text ID consists of the following components separated with the \"|\" character:[field] - Field name. Accepted field names: \"name\", \"description\", \"features\", \"description_extra1\", \"description_extra2\", \"description_extra3\", \"description_extra4\", \"extra_field_[extra-field-ID]\" e.g. \"extra_field_75\" (the list of extra fields IDs can be retrieved with getInventoryExtraFields method), \"marketplace_category_id\" - marketplace category identifier assigned to the product for a given integration account. This field uses a special format: marketplace_category_id|[source_id] or marketplace_category_id|[source_id]|[site] — it does not use the standard [lang] and [source_id] components from other text fields. The value is the category ID as known on the marketplace side. For integrations with per-site categories (eBay, Amazon), the [site] component is required (e.g. \"marketplace_category_id|ebay_123|us\"). For integrations without per-site categories (Allegro), the [site] component must not be provided. Note: amazon_vendor is not supported as a source type. For integrations where categories are assigned to all accounts (e.g. Amazon), only _0 is accepted as the account ID.[lang] - A two-letter code of language, which gets assigned given value e.g. \"en\". If this value is not specified, the default catalog language is assigned. The list of languages available for each integration can be retrieved with getInventoryIntegrations method.[source_id] - Integration ID provided when the given text field value is to be overwritten only for a specific integration. ID should have a following format: \"[type:varchar]_[id:int]\", where the type means a kind of integration (e.g. \"ebay\", \"amazon\", \"google\"), and ID is an account identifier for given integration (eg. \"ebay_2445\").If a value is to be overwritten throughout the integration (e.g. for all Amazon accounts), the value \"0\" should be used as the identifier. (e.g. \"amazon_0\").Examples of text field identifiers: \"name\" - Default name assigned to the default language.\"name|de\" - Name assigned to a particular language.\"name|de|amazon_0\" - Name assigned to a specific language for all Amazon accounts.\"name|de|amazon_123\" - Name assigned to a specific language for an Amazon account with ID 123.\"marketplace_category_id|allegro_123\" - Marketplace category for Allegro account with ID 123.\"marketplace_category_id|amazon_0|us\" - Marketplace category for Amazon on US marketplace site (Amazon categories are always assigned to all accounts, so only _0 is accepted; site component is required).\"marketplace_category_id|ebay_456|us\" - Marketplace category for eBay account 456 on US eBay site. Site component is required for eBay.The list of all text field identifiers can be retrieved with the getInventoryAvailableTextFieldKeys method.In the case of the name and short additional fields, the character limit for the field value is 200. When specifying the value of a product feature (field \"features\"), provide a list where the key is the name of the parameter (e.g. \"Colour\") and the value is the value of that parameter (e.g. \"White\").In case of file the following format is expected:{ \"title\": \"file.pdf\" (varchar(40) - the file name) \"file\": \"data:4AAQSkZJRgABA[...]\" (base64 - the file body limited to 2MB)}",
+            "source_kind": "table_row",
+            "source_table_row": 23,
+            "ordinary_key": "field[|language[|source_id]]",
+            "language_default": "catalog_default_when_omitted",
+            "fields": [
+              "name",
+              "description",
+              "features",
+              "description_extra1",
+              "description_extra2",
+              "description_extra3",
+              "description_extra4",
+              "extra_field_[id]"
+            ],
+            "short_text_limit": 200,
+            "features": "map_parameter_name_to_value",
+            "marketplace_category_key": "marketplace_category_id|source_id[|site]",
+            "marketplace_category_has_no_language_component": true,
+            "site_required_for": [
+              "ebay",
+              "amazon"
+            ],
+            "site_forbidden_for": [
+              "allegro"
+            ],
+            "unsupported_source": [
+              "amazon_vendor"
+            ],
+            "amazon_category_account": "0_only",
+            "source_grammar": "type_accountId;0_for_all_accounts"
+          },
+          {
+            "name": "images",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "images",
+            "documented_type": "array",
+            "documented_description": "A list of product images (maximum 16 per gallery). Each element of the list is a separate photo where the key identifies the photo position in the gallery (numbering from 0 to 15).The key has the following format:[position] - position in the default product gallery (e.g. \"0\", \"3\").[position]|[source_id] - position in the channel-specific gallery, where [source_id] has the format \"[type:varchar]_[id:int]\" (e.g. \"amazon_0\", \"allegro_123\"). The \"[type]\" is a kind of integration (e.g. \"ebay\", \"amazon\", \"allegro\"), and the \"[id]\" is an account identifier for the given integration. Use \"0\" as the id to apply the value across the whole integration (e.g. \"amazon_0\").Channel-specific images are used together with the media_options parameter (see below) - they are only visible to a given channel when its media_options is set to \"separate\" (1) or \"overwrite\" (2).IMPORTANT: Include in the request ONLY the images you want to add or modify. Images not included in the request will remain unchanged. Do not include links to images that are already uploaded to Base CDN, as this will cause them to be re-uploaded as external images and may result in their deletion.The value can be a URL prefixed with \"url:\" (e.g. \"url:https://example.com/image.jpg\"), base64-encoded binary data prefixed with \"data:\" (e.g. \"data:\"), or an empty string \"\". The meaning of \"\" differs by key type:For a default gallery key (e.g. \"5\"): \"\" deletes the photo at that position.For a channel-specific key (e.g. \"3|allegro_123\"): \"\" sets a blank override — the channel sees no photo at that position regardless of the default gallery. To remove a previously set channel override and revert to the behavior defined by media_options, send \"url:\" (empty URL) at the channel key.Example:{ \"0\": \"url:https://external-site.com/image.jpg\", (default gallery, position 0; url limited to 1000 characters length) \"3\": \"data:4AAQSkZJRgABA[...]\", (default gallery, position 3; base64, limited to 2MB) \"5\": \"\", (default gallery, position 5; deletes the photo) \"0|amazon_0\": \"url:https://external-site.com/amazon.jpg\", (channel-specific image for all Amazon accounts, position 0) \"3|allegro_123\": \"\", (channel-specific, position 3; blank override — Allegro account 123 sees no photo here) \"3|allegro_123\": \"url:\" (channel-specific, position 3; removes the override — reverts to media_options behavior)}When updating an existing product:- To add a new image at position 2, include only: {\"2\": \"url:https://...\"} or {\"2\": \"data:...\"}- To delete image at position 1, include only: {\"1\": \"\"}- Images at other positions (0, 2, 3, etc.) not mentioned in the request will remain unchanged- Never include existing Base CDN URLs (https://upload.cdn.baselinker.com/...) as they will be treated as new external images",
+            "source_kind": "table_row",
+            "source_table_row": 24,
+            "write_position_min": 0,
+            "write_position_max": 15,
+            "read_position_min": 1,
+            "read_position_max": 16,
+            "max_gallery_items": 16,
+            "url_character_limit": 1000,
+            "base64_size_limit": "2MB_exact_byte_definition_not_documented",
+            "key_grammar": "position_or_position|source_id",
+            "omission": "unchanged_positions",
+            "empty_default_value": "delete_default_position",
+            "empty_channel_value": "blank_override",
+            "channel_url_prefix_without_URL": "remove_override_revert_to_media_options",
+            "encoding": [
+              "url:URL",
+              "data:base64",
+              ""
+            ]
+          },
+          {
+            "name": "videos",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "videos",
+            "documented_type": "array",
+            "documented_description": "A list of product videos (maximum 6 per gallery). Each element of the list is a separate video where the key identifies the video position in the gallery (numbering from 0 to 5).The key has the following format:[position] - position in the default product video gallery (e.g. \"0\", \"2\").[position]|[source_id] - position in the channel-specific video gallery, where [source_id] has the format \"[type:varchar]_[id:int]\" (e.g. \"amazon_0\", \"allegro_123\"). The \"[type]\" is a kind of integration (e.g. \"ebay\", \"amazon\", \"allegro\"), and the \"[id]\" is an account identifier for the given integration. Use \"0\" as the id to apply the value across the whole integration (e.g. \"amazon_0\").Channel-specific videos are used together with the media_options parameter (see below) - they are only visible to a given channel when its media_options is set to \"separate\" (1) or \"overwrite\" (2).Input uses 0-based indexing (0-5), but the output in getInventoryProductsData returns 1-based positions (1-6). Supported formats: MP4, WEBM. Maximum file size: 15 MB. The value can be: a URL prefixed with \"url:\" (e.g. \"url:https://example.com/video.mp4\"), base64-encoded binary data prefixed with \"data:\" (e.g. \"data:\"), or an empty string \"\". The meaning of \"\" differs by key type:For a default gallery key (e.g. \"2\"): \"\" deletes the video at that position.For a channel-specific key (e.g. \"2|allegro_123\"): \"\" sets a blank override — the channel sees no video at that position regardless of the default gallery. To remove a previously set channel override and revert to the behavior defined by media_options, send \"url:\" (empty URL) at the channel key.",
+            "source_kind": "table_row",
+            "source_table_row": 25,
+            "write_position_min": 0,
+            "write_position_max": 5,
+            "read_position_min": 1,
+            "read_position_max": 6,
+            "max_gallery_items": 6,
+            "formats": [
+              "MP4",
+              "WEBM"
+            ],
+            "size_limit": "15MB_exact_byte_definition_not_documented",
+            "key_grammar": "position_or_position|source_id",
+            "omission": "unchanged_positions",
+            "empty_default_value": "delete_default_position",
+            "empty_channel_value": "blank_override",
+            "channel_url_prefix_without_URL": "remove_override_revert_to_media_options",
+            "encoding": [
+              "url:URL",
+              "data:base64",
+              ""
+            ]
+          },
+          {
+            "name": "media_options",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "media_options",
+            "documented_type": "array",
+            "documented_description": "A list defining how product media (images and videos) are resolved per channel. The key is the channel identifier in the format \"[type:varchar]_[id:int]\" (e.g. \"amazon_0\", \"allegro_123\"), and the value is one of:0 - use default: the channel uses default product media; any previously uploaded channel media are ignored.1 - separate: the channel has its own independent media gallery; default media are ignored.2 - overwrite: the channel inherits default media, but selected positions can be overridden via channel-specific keys in the images and videos parameters (an empty value at a given position blanks the inherited media for the channel).Example:{ \"amazon_0\": 1, \"allegro_123\": 2}",
+            "source_kind": "table_row",
+            "source_table_row": 26,
+            "documented_values": {
+              "0": "default_ignore_channel_media",
+              "1": "separate_ignore_default_media",
+              "2": "overwrite_inherit_default_with_overrides"
+            }
+          },
+          {
+            "name": "links",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "links",
+            "documented_type": "array",
+            "documented_description": "An array containing product links to external warehouses (e.g. shops, wholesalers). Each element of the array is a list in which the key is the identifier of the external warehouse in the format \"[type:shop|warehouse]_[id:int]\". (e.g. \"shop_2445\"). The warehouse identifiers can be retrieved with the getStoragesList method. The value is an array containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 27
+          },
+          {
+            "name": "links{storage_id}.product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - product_id",
+            "documented_type": "text",
+            "documented_description": "Product identifier in external warehouse.",
+            "source_kind": "table_row",
+            "source_table_row": 28
+          },
+          {
+            "name": "links{storage_id}.variant_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "| - variant_id",
+            "documented_type": "text",
+            "documented_description": "(optional) Product variant identifier in the external warehouse. When assigning a link to a main product, this parameter shall be omitted or a value of 0 provided.",
+            "source_kind": "table_row",
+            "source_table_row": 29
+          },
+          {
+            "name": "bundle_products",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "bundle_products",
+            "documented_type": "array",
+            "documented_description": "A list containing information about the products included in the bundle, where the key is the identifier of the product included in the bundle, and the value is the number of pieces of this product in the bundle.Subproducts can only be defined if the added/edited product is a bundle (is_bundle = true).",
+            "source_kind": "table_row",
+            "source_table_row": 30,
+            "applicable_when": "is_bundle=true"
+          },
+          {
+            "name": "suppliers",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "suppliers",
+            "documented_type": "array",
+            "documented_description": "A list of product suppliers. When provided, replaces all existing suppliers for the product. An empty array removes all suppliers.",
+            "source_kind": "table_row",
+            "source_table_row": 31,
+            "provided": "replaces_existing_suppliers",
+            "empty_array": "removes_all_suppliers"
+          },
+          {
+            "name": "suppliers[].id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - id",
+            "documented_type": "int",
+            "documented_description": "Supplier ID, retrievable with getInventorySuppliers.",
+            "source_kind": "table_row",
+            "source_table_row": 32
+          },
+          {
+            "name": "suppliers[].product_code",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - product_code",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product code at the supplier.",
+            "source_kind": "table_row",
+            "source_table_row": 33
+          },
+          {
+            "name": "suppliers[].cost",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - cost",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Purchase cost from the supplier.",
+            "source_kind": "table_row",
+            "source_table_row": 34
+          },
+          {
+            "name": "relations",
+            "required": false,
+            "requiredness_source": "explicit_omission_preserves_existing",
+            "default_status": "not_documented",
+            "documented_name": "relations",
+            "documented_type": "array",
+            "documented_description": "A complete list of up to 1000 manually defined product relationships. If omitted, existing relationships remain unchanged. If provided, replaces all existing manual relationships; an empty list removes them all. Parent-variant relationships and bundle-composition links cannot be duplicated manually, and relationships between two bundles are not allowed.",
+            "source_kind": "table_row",
+            "source_table_row": 35,
+            "omission": "preserves_existing",
+            "provided": "replaces_existing",
+            "empty_array": "removes_all",
+            "max_items": 1000,
+            "allowed_relation_types": [
+              "related",
+              "substitution",
+              "upsell",
+              "downsell",
+              "crosssell"
+            ],
+            "foreign_product_refused": "must_belong_to_current_user_and_selected_catalog",
+            "prohibited": [
+              "duplicate_parent_variant",
+              "duplicate_bundle_composition",
+              "bundle_to_bundle"
+            ]
+          },
+          {
+            "name": "relations[].product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Related product ID. The product must belong to the current user and the selected catalog.",
+            "source_kind": "table_row",
+            "source_table_row": 36
+          },
+          {
+            "name": "relations[].relation_type",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "| - relation_type",
+            "documented_type": "text",
+            "documented_description": "Relationship type from the perspective of the added or updated product. Possible values: \"related\", \"substitution\", \"upsell\", \"downsell\", \"crosssell\".",
+            "source_kind": "table_row",
+            "source_table_row": 37,
+            "documented_values": [
+              "related",
+              "substitution",
+              "upsell",
+              "downsell",
+              "crosssell"
+            ]
+          },
+          {
+            "name": "shipping_template",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "shipping_template",
+            "documented_type": "array",
+            "documented_description": "A list of shipping template assignments per integration channel. The key is the integration source identifier in the format \"[type]_[account_id]\" (e.g. \"allegro_123\", \"ebay_456\", \"amazon_0\", \"shopee_101\") optionally followed by \"|[site]\" for integrations with per-site templates (e.g. \"ebay_456|us\", \"amazon_0|de\"). The value is the shipping template ID (as returned by getInventoryShippingTemplates), or an empty string \"\" to clear the assignment. Available template IDs can be retrieved with the getInventoryShippingTemplates method.",
+            "source_kind": "table_row",
+            "source_table_row": 38,
+            "shape": "object_keyed_by_source_id_optional_|site",
+            "empty_string": "clear_assignment"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "name": "ean_additional[].ean",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "string",
+            "documented_description": "EAN number",
+            "source_kind": "input_table_row_description",
+            "source_table_row": 7
+          },
+          {
+            "name": "ean_additional[].quantity",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "documented_type": "int",
+            "documented_description": "quantity of product with given EAN number",
+            "source_kind": "input_table_row_description",
+            "source_table_row": 7
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented",
+        "inline_documented_file_format": {
+          "source_table_row": 23,
+          "source_kind": "input_table_row_description",
+          "applicable_when": "extra_field_value_is_file",
+          "fields": [
+            {
+              "name": "title",
+              "documented_type": "varchar(40)"
+            },
+            {
+              "name": "file",
+              "documented_type": "base64_with_data:_prefix;max2MB"
+            }
+          ],
+          "unknowns": [
+            "allowed_MIME",
+            "exact_MB_byte_definition",
+            "security_and_download_authentication"
+          ]
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "product_id",
+            "documented_name": "product_id",
+            "documented_type": "int",
+            "documented_description": "The number of an added or updated product in the Base inventory. In an external application you should create a link between the internal number and the number received here. It will later be used to update the added product. This number will also be included in the order items in the getOrders method.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "warnings",
+            "documented_name": "warnings",
+            "documented_type": "array",
+            "documented_description": "An object with notes on adding a product (e.g. image errors or others that do not interrupt the request). Each object field informs about a separate group of warnings.Currently supported groups:parameters - validation issues with predefined parameter values. Each key is the parameter identifier as sent in the request (predefined parameter ID or its display name), and the value is a human-readable warning message describing the skipped value(s).",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "inline_documented_warning_groups": {
+          "source_table_row": 3,
+          "source_kind": "output_table_row_description",
+          "shape": "object_warning_group_to_group_payload",
+          "parameters": "object_parameter_key_as_sent_to_human_readable_message_for_skipped_values",
+          "not_a_complete_future_warning_group_enumeration": true
+        }
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "product_catalogue",
+      "proposed_acceptance": [
+        "Create/update identity readback, main/variant/bundle and current ownership/catalogue boundaries.",
+        "Omitted/empty/nonempty tags, suppliers, relations, thresholds and shippingtemplate are tested independently; errors/warnings cannot be treated as all-fields-success.",
+        "Roundtrip per-language/channel text, parameter/file values, 0based→1based media, blank-vs-remove override, and averagecost/storage-doc policy with no hidden stock/cost effect.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteInventoryProduct",
+      "method": "deleteInventoryProduct",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteInventoryProduct",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteInventoryProduct",
+        "retrieved_at": "2026-10-17T18:52:29.529945+00:00",
+        "http_status": 200,
+        "bytes": 48570,
+        "sha256": "6fd83ecc4c60bd141b504eef648a55264f8cac3857687dfe093683e510d7bd78",
+        "snapshot_document_method": "deleteInventoryProduct"
+      },
+      "documented_intro": "The method allows you to remove the product from Base catalog.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Usuwa produkt wskazany product_id, bez inventory_id w tej metodzie.",
+        "Nie opisano skutków dla wariantów, bundle, ofert, zamówień/historii, stock/WMS, powtórnego usunięcia ani odwrócenia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "product_id",
+            "documented_type": "int",
+            "documented_description": "Base inventory product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "product_catalogue",
+      "proposed_acceptance": [
+        "Define and test deletion behavior for main/variant/bundle, existing orders/offers/stock/history and a repeated or unknown outcome; no inferred destructive cascade.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryParameters",
+      "method": "getInventoryParameters",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryParameters",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryParameters",
+        "retrieved_at": "2026-10-17T18:52:29.465902+00:00",
+        "http_status": 200,
+        "bytes": 51273,
+        "sha256": "f704d7ae659a611a6e2a6962cab1c82413f69537d0d57903b26514a0457cd855",
+        "snapshot_document_method": "getInventoryParameters"
+      },
+      "documented_intro": "Returns predefined inventory parameters with all stored translations, existing choice options, and parameter-group mappings.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Bez parametrów; definicje parametrów, tłumaczenia, istniejące opcje i relacje many-to-many grup.",
+        "name_translations/value_translations mają klucze lower-case language. type to text bez wyliczonego pełnego słownika typów; select/multiselect wspomniano przy options.",
+        "Brak inventory_id i paginacji; zakres account-owned jest opisany dla grup, a wielkość i kompletność listy nie są zagwarantowane."
+      ],
+      "input": {
+        "parameters": [],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "parameters",
+            "documented_name": "parameters",
+            "documented_type": "array",
+            "documented_description": "Predefined inventory parameter definitions.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "parameters[].parameter_key",
+            "documented_name": "| - parameter_key",
+            "documented_type": "text",
+            "documented_description": "Predefined parameter key.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "parameters[].type",
+            "documented_name": "| - type",
+            "documented_type": "text",
+            "documented_description": "Public parameter type.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "parameters[].name_translations",
+            "documented_name": "| - name_translations",
+            "documented_type": "array",
+            "documented_description": "Stored parameter names keyed by lower-case language code.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "parameters[].options",
+            "documented_name": "| - options",
+            "documented_type": "array",
+            "documented_description": "Translated options for select and multiselect parameters.option_id (text) - Existing option identifier from the predefined parameter data.value_translations (array) - Stored option values keyed by lower-case language code.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "parameter_groups",
+            "documented_name": "parameter_groups",
+            "documented_type": "array",
+            "documented_description": "Account-owned parameter groups and their many-to-many parameter mappings.",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "parameter_groups[].group_id",
+            "documented_name": "| - group_id",
+            "documented_type": "int",
+            "documented_description": "Stable parameter-group identifier.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "parameter_groups[].name",
+            "documented_name": "| - name",
+            "documented_type": "text",
+            "documented_description": "Parameter-group name.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "parameter_groups[].parameter_keys",
+            "documented_name": "| - parameter_keys",
+            "documented_type": "array",
+            "documented_description": "Returned parameter keys assigned to this group.",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "parameters[].options[].option_id",
+            "documented_type": "text",
+            "documented_description": "Existing option identifier from the predefined parameter data.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 6
+          },
+          {
+            "path": "parameters[].options[].value_translations",
+            "documented_type": "array",
+            "documented_description": "Stored option values keyed by lower-case language code.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 6
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "parameter_dictionary",
+      "proposed_acceptance": [
+        "All translations and choice option IDs/group mappings retained; dictionary account scope differs from per-catalogue local UUID PIM.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryProductLogs",
+      "method": "getInventoryProductLogs",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryProductLogs",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryProductLogs",
+        "retrieved_at": "2026-10-17T18:52:29.653123+00:00",
+        "http_status": 200,
+        "bytes": 52321,
+        "sha256": "01f2cbc1fd1f654a383018868aade9d67e3f391bfc492ed0452111f04f341111",
+        "snapshot_document_method": "getInventoryProductLogs"
+      },
+      "documented_intro": "The method allows to retrieve a list of events related to product change (or their variants) in the Base catalog.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Dla wariantu podać jego ID jako product_id; logi grupowane po dacie i profilu.",
+        "page:100 edycji produktu; nie definiuje liczby zagnieżdżonych entries, pierwszej/domyslnej strony, retencji lub warunku końca. sort domyślnieASC.",
+        "log_type opisano jako int, ale proza mówi o liście typów. info dla Eventtype3 opisuje pole tekstowe, choć słownik definiuje3 jako utworzenie,5 jako zmianę tekstu. Nie poprawiamy dokumentacji domysłem.",
+        "from/to/info to mixed zależne od typu; int date w wyniku nie ma osobno jawnie podanej jednostki, podczas gdy filtry dat mają Unix timestamp."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier. In case of retrieving logs for a variant, the variant identifier must be provided as the product identifier.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "date_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from which logs are to be retrieved. Unix time stamp format.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "date_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "date_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Date up to which logs are to be retrieved. Unix time stamp format.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "log_type",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "log_type",
+            "documented_type": "int",
+            "documented_description": "(optional) List of event types you want to retrieve. Available values:1 - Change in stock2 - Price change3 - Product creation4 - Product deletion5 - Text fields modifications6 - Locations modifications7 - Modifications of links8 - Gallery modifications9 - Variant modifications10 - Modifications of bundle products",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "documented_values": {
+              "1": "stock_change",
+              "2": "price_change",
+              "3": "created",
+              "4": "deleted",
+              "5": "text_changed",
+              "6": "locations_changed",
+              "7": "links_changed",
+              "8": "gallery_changed",
+              "9": "variants_changed",
+              "10": "bundle_products_changed"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_name": "sort",
+            "documented_type": "varchar(4)",
+            "documented_description": "(optional) Type of log sorting. Possible \"ASC\" values (ascending from date), \"DESC\" (descending after the date). By default the sorting is done in ascending order.",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "default": "ASC",
+            "documented_values": [
+              "ASC",
+              "DESC"
+            ]
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (100 product editions per page).",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "logs",
+            "documented_name": "logs",
+            "documented_type": "array",
+            "documented_description": "An array of logs grouped by date and the profile executing the change. An array contains the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "logs[].profile",
+            "documented_name": "| - profile",
+            "documented_type": "varchar(100)",
+            "documented_description": "The name of the profile performing the change.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "logs[].date",
+            "documented_name": "| - date",
+            "documented_type": "int",
+            "documented_description": "Event date",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "logs[].entries",
+            "documented_name": "| - entries",
+            "documented_type": "array",
+            "documented_description": "An array of events performed by a given profile at a given time. An array contains the fields listed below.type (int) - Event type. Available values:1 - Change in stock2 - Price change3 - Product creation4 - Product deletion5 - Text fields modifications6 - Locations modifications7 - Modifications of links8 - Gallery modifications9 - Variant modifications10 - Modifications of bundle productsfrom (mixed) - Previous value to be completed for some event types:Event type 1 - (int) Previous product stock.Event type 2 - (float) Previous product priceto (mixed) - New value completed for some event types:Event type 1 - (int) New product stock.Event type 2 - (float) New product priceinfo (mixed) - Additional information, completed for certain types of events:Event type 1 - (varchar) The identifier of the warehouse where the stock was changed.Event type 2 - (int) Identifier of the price group where the price has changed.Event type 3 - (varchar) Identifier of the text field where the value was changed.Event type 6 - (varchar) Identifier of the warehouse where the location has been changed",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "logs[].entries[].type",
+            "documented_type": "int",
+            "documented_description": "Event type. Available values: 1 - Change in stock 2 - Price change 3 - Product creation 4 - Product deletion 5 - Text fields modifications 6 - Locations modifications 7 - Modifications of links 8 - Gallery modifications 9 - Variant modifications 10 - Modifications of bundle products",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5,
+            "documented_values": {
+              "1": "stock_change",
+              "2": "price_change",
+              "3": "created",
+              "4": "deleted",
+              "5": "text_changed",
+              "6": "locations_changed",
+              "7": "links_changed",
+              "8": "gallery_changed",
+              "9": "variants_changed",
+              "10": "bundle_products_changed"
+            }
+          },
+          {
+            "path": "logs[].entries[].from",
+            "documented_type": "mixed",
+            "documented_description": "Previous value to be completed for some event types: Event type 1 - (int) Previous product stock. Event type 2 - (float) Previous product price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5
+          },
+          {
+            "path": "logs[].entries[].to",
+            "documented_type": "mixed",
+            "documented_description": "New value completed for some event types: Event type 1 - (int) New product stock. Event type 2 - (float) New product price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5
+          },
+          {
+            "path": "logs[].entries[].info",
+            "documented_type": "mixed",
+            "documented_description": "Additional information, completed for certain types of events: Event type 1 - (varchar) The identifier of the warehouse where the stock was changed. Event type 2 - (int) Identifier of the price group where the price has changed. Event type 3 - (varchar) Identifier of the text field where the value was changed. Event type 6 - (varchar) Identifier of the warehouse where the location has been changed",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 5
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "page_size": 100,
+        "unit": "product_editions_not_nested_entry_count",
+        "first_page": "not_documented",
+        "default_page": "not_documented",
+        "ordering": "sort_ASC_default;DESC_explicit",
+        "end_of_scan": "not_documented",
+        "retention": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "product_history",
+      "proposed_acceptance": [
+        "More than100 editions, ASC/DESC, filters/variants, grouped entries and mixed payload per eventtype; explicit handling of unresolved type3/text inconsistency.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryProductsData",
+      "method": "getInventoryProductsData",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryProductsData",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryProductsData",
+        "retrieved_at": "2026-10-17T18:52:29.973904+00:00",
+        "http_status": 200,
+        "bytes": 71633,
+        "sha256": "3503d8e24637b121754256c500685ecf862ab8d62c3cca56b735f4650bc5c33c",
+        "snapshot_document_method": "getInventoryProductsData"
+      },
+      "documented_intro": "The method allows you to retrieve detailed data for selected products from the Base inventory.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Odczyt wskazanych IDs, bez zadeklarowanego limitu partii lub paginacji. Nie przenosimy limitu1000 z innych metod.",
+        "products jest mapą kluczowaną ID mimo typu array. Warianty, ceny, stock, thresholds, incoming, locations, links i media mają odrębne mapy; stock_erp_units/stock_wms_units mają listy jednostek per magazyn.",
+        "include_erp_units wymaga kosztów innych niżAVCO; include_wms_units wymaga advancedWMS. Pozostałe flagi obejmują additionalEANs/suppliers/relations/categories/shippingtemplates/channelsmedia. Nie podano ogólnych wartości domyślnych wszystkich flag.",
+        "Galeria domyślna jest zwracana bez flagi kanałowej. Images pozycje1–16, videos1–6; zapis używa odpowiednio0–15 i0–5. include_channels_media dodaje override i media_options.",
+        "Proza flagi mówi top-level media_options, tabela umieszcza je pod produktem. Puste override oznacza blank, nie usunięcie override. marketplace_category_id pojawia się tylko po fladze.",
+        "shipping_template pojawia się tylko po fladze, zawiera wyłącznie niepuste przypisania i wartości ID jako string. attachments w text_fields zwracają title/url."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "products",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "An array of product ID numbers to download",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "include_erp_units",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_erp_units",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include ERP units in the response. Only available for inventories with purchase cost calculations system different than AVCO.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "include_wms_units",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_wms_units",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include WMS units in the response. Only available for inventories with enabled advanced warehouse management system.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "include_additional_eans",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_additional_eans",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include additional EANs in response. User can set additional EANs for product, to work with products cases (4-pack etc.) or different regional codes for the same product.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "include_suppliers",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_suppliers",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include suppliers data in the response.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "include_relations",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_relations",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include product relationships in the response (related, substitution, upsell, downsell, crosssell).",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "include_marketplace_categories",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_marketplace_categories",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include marketplace category assignments in the text_fields output. When set to true, the response will include marketplace_category_id|[source_id] entries showing the marketplace category set for each integration channel.",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "name": "include_shipping_templates",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_shipping_templates",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include shipping template assignments per integration channel in the response. When set to true, each product in the response will include a shipping_template field containing the assigned shipping template IDs per channel. Template IDs can be resolved to names using the getInventoryShippingTemplates method.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "name": "include_channels_media",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_channels_media",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include channel-specific media in the response. When true, the 'images' and 'videos' objects additionally contain keys with the format \"[position]|[source_id]\" for channel overrides (e.g. \"3|amazon_0\", \"3|allegro_123\"; an empty string value means the channel blanks the inherited media at that position) and a top-level 'media_options' object is returned describing how each channel resolves its media gallery (0 - use default, 1 - separate, 2 - overwrite).",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "products",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "A list of products where the key is the product id and the value is an array of fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_product_id"
+          },
+          {
+            "path": "products{product_id}.is_bundle",
+            "documented_name": "| - is_bundle",
+            "documented_type": "bool",
+            "documented_description": "Indicates whether a product is a bundle.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "products{product_id}.parent_id",
+            "documented_name": "| - parent_id",
+            "documented_type": "int",
+            "documented_description": "Product parent ID. Returns 0 for main products, or the main product ID for variants.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "products{product_id}.sku",
+            "documented_name": "| - sku",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product SKU number. It can be filled with e.g. an external system product number. This will later allow you to rebuild the list of product associations in case of loss.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "products{product_id}.ean",
+            "documented_name": "| - ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN number (primary EAN).",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "products{product_id}.ean_additional",
+            "documented_name": "| - ean_additional",
+            "documented_type": "array",
+            "documented_description": "A list containing EAN numbers. Each EAN data is an array containing the fields listed below.ean (string) - EAN numberquantity (int) - quantity of product with given EAN number",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "conditional_presence": "include_additional_eans=true"
+          },
+          {
+            "path": "products{product_id}.asin",
+            "documented_name": "| - asin",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product ASIN number (primary ASIN).",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "products{product_id}.tags",
+            "documented_name": "| - tags",
+            "documented_type": "array",
+            "documented_description": "A list of product tags.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "products{product_id}.tax_rate",
+            "documented_name": "| - tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "products{product_id}.weight",
+            "documented_name": "| - weight",
+            "documented_type": "float",
+            "documented_description": "Weight in kilograms",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "products{product_id}.height",
+            "documented_name": "| - height",
+            "documented_type": "float",
+            "documented_description": "Height in centimeters",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "products{product_id}.width",
+            "documented_name": "| - width",
+            "documented_type": "float",
+            "documented_description": "Width in centimeters",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "products{product_id}.length",
+            "documented_name": "| - length",
+            "documented_type": "float",
+            "documented_description": "Length in centimeters",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "products{product_id}.star",
+            "documented_name": "| - star",
+            "documented_type": "int",
+            "documented_description": "A type of star assigned to product",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          },
+          {
+            "path": "products{product_id}.category_id",
+            "documented_name": "| - category_id",
+            "documented_type": "int",
+            "documented_description": "Product category ID (the category must be created earlier with addInventoryCategory method).",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "products{product_id}.manufacturer_id",
+            "documented_name": "| - manufacturer_id",
+            "documented_type": "int",
+            "documented_description": "Product manufacturer ID. IDs can be retrieved with getInventoryManufacturers method.",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          },
+          {
+            "path": "products{product_id}.prices",
+            "documented_name": "| - prices",
+            "documented_type": "array",
+            "documented_description": "A list containing product gross prices, where the key is the price group ID and value is a product gross price for a given price group. The list of price groups can be retrieved with getInventoryPriceGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 18,
+            "shape": "object_keyed_by_price_group_id",
+            "price_basis": "gross"
+          },
+          {
+            "path": "products{product_id}.stock",
+            "documented_name": "| - stock",
+            "documented_type": "array",
+            "documented_description": "A list containing products stock, where the key is the warehouse ID and value is a product stock for a given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "table_row",
+            "source_table_row": 19,
+            "shape": "object_keyed_by_warehouse_id"
+          },
+          {
+            "path": "products{product_id}.reservations",
+            "documented_name": "| - reservations",
+            "documented_type": "array",
+            "documented_description": "A list containing product reserved quantities, where the key is the warehouse ID.",
+            "source_kind": "table_row",
+            "source_table_row": 20,
+            "shape": "object_keyed_by_warehouse_id"
+          },
+          {
+            "path": "products{product_id}.thresholds",
+            "documented_name": "| - thresholds",
+            "documented_type": "array",
+            "documented_description": "A list containing product stock thresholds (reorder points), where the key is the warehouse ID.",
+            "source_kind": "table_row",
+            "source_table_row": 21,
+            "shape": "object_keyed_by_warehouse_id"
+          },
+          {
+            "path": "products{product_id}.incoming",
+            "documented_name": "| - incoming",
+            "documented_type": "array",
+            "documented_description": "A list containing product incoming stock quantities (ordered from supplier), where the key is the warehouse ID.",
+            "source_kind": "table_row",
+            "source_table_row": 22,
+            "shape": "object_keyed_by_warehouse_id"
+          },
+          {
+            "path": "products{product_id}.locations",
+            "documented_name": "| - locations",
+            "documented_type": "array",
+            "documented_description": "A list containing product locations where the key is the warehouse ID and value is a product location for a given warehouse, eg. \"A-5-2\". Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "table_row",
+            "source_table_row": 23,
+            "shape": "object_keyed_by_warehouse_id"
+          },
+          {
+            "path": "products{product_id}.text_fields",
+            "documented_name": "| - text_fields",
+            "documented_type": "array",
+            "documented_description": "A list containing field text values (names, descriptions, etc.) of a product, where the key is the field text ID and value is the field value. The field text ID consists of the following components separated with the \"|\" character:[field] - Field name. Accepted field names: \"name\", \"description\", \"features\", \"description_extra1\", \"description_extra2\", \"description_extra3\", \"description_extra4\", \"extra_field_[extra-field-ID]\" e.g. \"extra_field_75\" (the list of extra fields IDs can be retrieved with getInventoryExtraFields method), \"marketplace_category_id\" - marketplace category identifier assigned to the product for a given integration account. This field only appears when include_marketplace_categories is set to true. It uses the format marketplace_category_id|[source_id] or marketplace_category_id|[source_id]|[site] for integrations with per-site categories (eBay, Amazon). Note: amazon_vendor categories are not included.[lang] - A two-letter code of language, which gets assigned given value eg. \"en\". If this value is not specified, the default catalog language is assigned. The list of languages available for each integration can be retrieved with getInventoryIntegrations method.[source_id] - Integration ID provided when the given text field value is to be overwritten only for a specific integration. ID should have a following format: \"[type:varchar]_[id:int]\", where the type means a kind of integration (e.g. \"ebay\", \"amazon\", \"google\"), and ID is an account identifier for given integration (eg. \"ebay_2445\").If a value is to be overwritten throughout the integration (e.g. for all Amazon accounts), the value \"0\" should be used as the identifier. (e.g. \"amazon_0\").Examples of text field identifiers: \"name\" - Default name set to the default language.\"name|de\" - Name set to a particular language.\"name|de|amazon_0\" - Name set to a specific language for all Amazon accounts.\"name|de|amazon_123\" - Name set to a specific language for an Amazon account with ID 123.\"marketplace_category_id|allegro_123\" - Marketplace category set for Allegro account 123.\"marketplace_category_id|amazon_0|us\" - Marketplace category for Amazon on US marketplace site (categories are assigned to all accounts, so only _0 is used; site component indicates the marketplace site).\"marketplace_category_id|ebay_456|us\" - Marketplace category for eBay account 456 on US eBay site.The list of all text field identifiers can be retrieved with the getInventoryAvailableTextFieldKeys method.In the case of the name and short additional fields, a list is returned, where the key is the name of the parameter (e.g. \"Colour\") and the value is the value of that parameter (e.g. \"White\").In case of file the following format is returned as value:{ \"title\": \"file.pdf\" (varchar(40) - the file name) \"url\": \"https://upload.cdn.baselinker.com/product_extra_fields/23/caa37889b042cb92b4fed8677423893f.pdf\" (url - the file url)}",
+            "source_kind": "table_row",
+            "source_table_row": 24,
+            "ordinary_key": "field[|language[|source_id]]",
+            "language_default": "catalog_default_when_omitted",
+            "fields": [
+              "name",
+              "description",
+              "features",
+              "description_extra1",
+              "description_extra2",
+              "description_extra3",
+              "description_extra4",
+              "extra_field_[id]"
+            ],
+            "short_text_limit": 200,
+            "features": "map_parameter_name_to_value",
+            "marketplace_category_key": "marketplace_category_id|source_id[|site]",
+            "marketplace_category_has_no_language_component": true,
+            "site_required_for": [
+              "ebay",
+              "amazon"
+            ],
+            "site_forbidden_for": [
+              "allegro"
+            ],
+            "unsupported_source": [
+              "amazon_vendor"
+            ],
+            "amazon_category_account": "0_only",
+            "source_grammar": "type_accountId;0_for_all_accounts"
+          },
+          {
+            "path": "products{product_id}.average_cost",
+            "documented_name": "| - average_cost",
+            "documented_type": "float",
+            "documented_description": "Average cost in the main currency of the account",
+            "source_kind": "table_row",
+            "source_table_row": 25
+          },
+          {
+            "path": "products{product_id}.average_landed_cost",
+            "documented_name": "| - average_landed_cost",
+            "documented_type": "float",
+            "documented_description": "Average landed cost in the main currency of the account",
+            "source_kind": "table_row",
+            "source_table_row": 26
+          },
+          {
+            "path": "products{product_id}.bundle_products",
+            "documented_name": "| - bundle_products",
+            "documented_type": "array",
+            "documented_description": "List (returned only if product is a bundle) containing products included in the bundle with number of pieces, where the key is product identifier, and the value is the number of pieces included in the bundle. The list of products can be retrieved using the getInventoryProductsList method.",
+            "source_kind": "table_row",
+            "source_table_row": 27,
+            "conditional_presence": "product_is_bundle"
+          },
+          {
+            "path": "products{product_id}.images",
+            "documented_name": "| - images",
+            "documented_type": "array",
+            "documented_description": "A list of product images. Each element of the list is a separate photo (given as an URL) where the key identifies the photo position in the gallery.By default only the default product gallery is returned and keys are simply the position number (numbering from 1 to 16).When the include_channels_media flag is set to true, the list additionally contains channel-specific overrides where the key has the format \"[position]|[source_id]\" (e.g. \"3|amazon_0\", \"3|allegro_123\"). An empty string value at such a key means that the channel blanks the inherited photo at that position (only relevant when the channel uses the \"overwrite\" media_options).",
+            "source_kind": "table_row",
+            "source_table_row": 28,
+            "write_position_min": 0,
+            "write_position_max": 15,
+            "read_position_min": 1,
+            "read_position_max": 16,
+            "max_gallery_items": 16,
+            "url_character_limit": 1000,
+            "base64_size_limit": "2MB_exact_byte_definition_not_documented",
+            "shape": "object_keyed_by_1based_position_or_1based_position|source_id",
+            "channel_override_presence": "include_channels_media=true",
+            "empty_channel_value": "blank_override"
+          },
+          {
+            "path": "products{product_id}.videos",
+            "documented_name": "| - videos",
+            "documented_type": "array",
+            "documented_description": "A list of product videos where the key is the video position in 1-based indexing (1-6) and the value is the video URL.By default only the default product video gallery is returned and keys are simply the position number (numbering from 1 to 6).When the include_channels_media flag is set to true, the list additionally contains channel-specific overrides where the key has the format \"[position]|[source_id]\" (e.g. \"2|amazon_0\", \"2|allegro_123\"). An empty string value at such a key means that the channel blanks the inherited video at that position (only relevant when the channel uses the \"overwrite\" media_options). Note: addInventoryProduct accepts 0-based input positions (0-5), which are stored and returned here as 1-based (1-6).",
+            "source_kind": "table_row",
+            "source_table_row": 29,
+            "write_position_min": 0,
+            "write_position_max": 5,
+            "read_position_min": 1,
+            "read_position_max": 6,
+            "max_gallery_items": 6,
+            "formats": [
+              "MP4",
+              "WEBM"
+            ],
+            "size_limit": "15MB_exact_byte_definition_not_documented",
+            "shape": "object_keyed_by_1based_position_or_1based_position|source_id",
+            "channel_override_presence": "include_channels_media=true",
+            "empty_channel_value": "blank_override"
+          },
+          {
+            "path": "products{product_id}.media_options",
+            "documented_name": "| - media_options",
+            "documented_type": "array",
+            "documented_description": "Returned only when the include_channels_media flag is set to true. A list describing how each channel resolves its media gallery, where the key is the channel identifier in the format \"[type:varchar]_[id:int]\" (e.g. \"amazon_0\", \"allegro_123\") and the value is one of:0 - use default: the channel uses default product media.1 - separate: the channel has its own independent media gallery; default media are ignored.2 - overwrite: the channel inherits default media, but selected positions can be overridden via channel-specific keys in the images and videos lists (an empty value at a given position blanks the inherited media for the channel).",
+            "source_kind": "table_row",
+            "source_table_row": 30,
+            "documented_values": {
+              "0": "default_ignore_channel_media",
+              "1": "separate_ignore_default_media",
+              "2": "overwrite_inherit_default_with_overrides"
+            },
+            "conditional_presence": "include_channels_media=true"
+          },
+          {
+            "path": "products{product_id}.links",
+            "documented_name": "| - links",
+            "documented_type": "array",
+            "documented_description": "A list containing product links with external warehouses (e.g. shops, wholesalers), where the key is the external warehouse identifier in the format \"[type:shop|warehouse]_[id:int]\". (e.g. \"shop_2445\"). The warehouse identifiers can be retrieved using getStoragesList method. The value is an array containing the fields listed below.product_id (varchar) - Product ID from the external warehouse. variant_id (varchar) - Product variant identifier in the external warehouse. When linked to the main product, the value 0 is returned.",
+            "source_kind": "table_row",
+            "source_table_row": 31
+          },
+          {
+            "path": "products{product_id}.variants",
+            "documented_name": "| - variants",
+            "documented_type": "array",
+            "documented_description": "A list containing available product variants, where the key is the variant identifier. The value is an array containing the fields listed below: name (varchar) - full variant namesku (varchar) - SKU number of the variantean (varchar) - EAN number of the variantasin (varchar) - ASIN number of the variantprices (array) - a list containing gross prices for the product, where the key is the price group identifier and the value is the product gross price in the price group. The list of price groups can be retrieved using the getInventoryPriceGroups method.stock (array) - a list containing product stocks, where the key is the warehouse ID and value is a product stock for a given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.locations (array) - a list containing product locations where the key is the warehouse ID and value is a product location for a given warehouse, eg. \"A-5-2\". Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "table_row",
+            "source_table_row": 32,
+            "shape": "object_keyed_by_variant_id"
+          },
+          {
+            "path": "products{product_id}.stock_erp_units",
+            "documented_name": "| - stock_erp_units",
+            "documented_type": "array",
+            "documented_description": "A list containing products stock erp units, where the key is the warehouse ID and value is a list of units in given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method. Each unit data is an array containing the fields listed below:quantity (int) - quantity of given ERP unitpurchase_cost (float) - purchase cost of given ERP unitexpiry_date (varchar) - expiry date of given ERP unit",
+            "source_kind": "table_row",
+            "source_table_row": 33,
+            "shape": "object_keyed_by_warehouse_id_with_unit_arrays",
+            "conditional_presence": "include_erp_units=true AND inventory_cost_method_not_AVCO"
+          },
+          {
+            "path": "products{product_id}.stock_wms_units",
+            "documented_name": "| - stock_wms_units",
+            "documented_type": "array",
+            "documented_description": "A list containing products stock wms units, where the key is the warehouse ID and value is a list of units in given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method. Each unit data is an array containing the fields listed below:quantity (int) - quantity of given WMS unitlocation (varchar) - location of given WMS unitexpiry_date (varchar) - expiry date of given WMS unitbatch (varchar) - batch of given WMS unitserial_no (varchar) - serial number of given WMS unit",
+            "source_kind": "table_row",
+            "source_table_row": 34,
+            "shape": "object_keyed_by_warehouse_id_with_unit_arrays",
+            "conditional_presence": "include_wms_units=true AND advanced_WMS_enabled"
+          },
+          {
+            "path": "products{product_id}.suppliers",
+            "documented_name": "| - suppliers",
+            "documented_type": "array",
+            "documented_description": "A list containing product suppliers data. Each supplier is an array containing the fields listed below:id (int) - Supplier IDproduct_code (varchar) - Product code of that suppliercost (float) - Product purchase price from this supplier",
+            "source_kind": "table_row",
+            "source_table_row": 35,
+            "conditional_presence": "include_suppliers=true"
+          },
+          {
+            "path": "products{product_id}.relations",
+            "documented_name": "| - relations",
+            "documented_type": "array",
+            "documented_description": "A list of product relationships. Each relationship is an array containing the fields listed below:product_id (int) - Related product IDrelation_type (string) - Relationship type (related, substitution, upsell, downsell, crosssell)",
+            "source_kind": "table_row",
+            "source_table_row": 36,
+            "conditional_presence": "include_relations=true"
+          },
+          {
+            "path": "products{product_id}.shipping_template",
+            "documented_name": "| - shipping_template",
+            "documented_type": "array",
+            "documented_description": "Returned only when the include_shipping_templates flag is set to true. A list of shipping template assignments, where the key is the integration source identifier in the format \"[type]_[account_id]\" (e.g. \"allegro_123\", \"ebay_456\", \"amazon_0\") optionally followed by \"|[site]\" for integrations with per-site templates (e.g. \"ebay_456|us\", \"amazon_0|de\"). The value is the assigned shipping template ID as a string. Only channels with a non-empty assignment are included. The template IDs can be resolved to names using the getInventoryShippingTemplates method.",
+            "source_kind": "table_row",
+            "source_table_row": 37,
+            "conditional_presence": "include_shipping_templates=true",
+            "empty_assignments": "omitted_from_map",
+            "value_type": "string_template_id"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "products{product_id}.ean_additional[].ean",
+            "documented_type": "string",
+            "documented_description": "EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 7
+          },
+          {
+            "path": "products{product_id}.ean_additional[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of product with given EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 7
+          },
+          {
+            "path": "products{product_id}.links{storage_id}.product_id",
+            "documented_type": "varchar",
+            "documented_description": "Product ID from the external warehouse.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 31
+          },
+          {
+            "path": "products{product_id}.links{storage_id}.variant_id",
+            "documented_type": "varchar",
+            "documented_description": "Product variant identifier in the external warehouse. When linked to the main product, the value 0 is returned.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 31
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.name",
+            "documented_type": "varchar",
+            "documented_description": "full variant name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.sku",
+            "documented_type": "varchar",
+            "documented_description": "SKU number of the variant",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.ean",
+            "documented_type": "varchar",
+            "documented_description": "EAN number of the variant",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.asin",
+            "documented_type": "varchar",
+            "documented_description": "ASIN number of the variant",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.prices",
+            "documented_type": "array",
+            "documented_description": "a list containing gross prices for the product, where the key is the price group identifier and the value is the product gross price in the price group. The list of price groups can be retrieved using the getInventoryPriceGroups method.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.stock",
+            "documented_type": "array",
+            "documented_description": "a list containing product stocks, where the key is the warehouse ID and value is a product stock for a given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.variants{variant_id}.locations",
+            "documented_type": "array",
+            "documented_description": "a list containing product locations where the key is the warehouse ID and value is a product location for a given warehouse, eg. \"A-5-2\". Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (eg. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 32
+          },
+          {
+            "path": "products{product_id}.stock_erp_units{warehouse_id}[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of given ERP unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 33
+          },
+          {
+            "path": "products{product_id}.stock_erp_units{warehouse_id}[].purchase_cost",
+            "documented_type": "float",
+            "documented_description": "purchase cost of given ERP unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 33
+          },
+          {
+            "path": "products{product_id}.stock_erp_units{warehouse_id}[].expiry_date",
+            "documented_type": "varchar",
+            "documented_description": "expiry date of given ERP unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 33
+          },
+          {
+            "path": "products{product_id}.stock_wms_units{warehouse_id}[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of given WMS unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 34
+          },
+          {
+            "path": "products{product_id}.stock_wms_units{warehouse_id}[].location",
+            "documented_type": "varchar",
+            "documented_description": "location of given WMS unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 34
+          },
+          {
+            "path": "products{product_id}.stock_wms_units{warehouse_id}[].expiry_date",
+            "documented_type": "varchar",
+            "documented_description": "expiry date of given WMS unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 34
+          },
+          {
+            "path": "products{product_id}.stock_wms_units{warehouse_id}[].batch",
+            "documented_type": "varchar",
+            "documented_description": "batch of given WMS unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 34
+          },
+          {
+            "path": "products{product_id}.stock_wms_units{warehouse_id}[].serial_no",
+            "documented_type": "varchar",
+            "documented_description": "serial number of given WMS unit",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 34
+          },
+          {
+            "path": "products{product_id}.suppliers[].id",
+            "documented_type": "int",
+            "documented_description": "Supplier ID",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 35
+          },
+          {
+            "path": "products{product_id}.suppliers[].product_code",
+            "documented_type": "varchar",
+            "documented_description": "Product code of that supplier",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 35
+          },
+          {
+            "path": "products{product_id}.suppliers[].cost",
+            "documented_type": "float",
+            "documented_description": "Product purchase price from this supplier",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 35
+          },
+          {
+            "path": "products{product_id}.relations[].product_id",
+            "documented_type": "int",
+            "documented_description": "Related product ID",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 36
+          },
+          {
+            "path": "products{product_id}.relations[].relation_type",
+            "documented_type": "string",
+            "documented_description": "Relationship type (related, substitution, upsell, downsell, crosssell)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 36
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "inline_documented_file_format": {
+          "source_table_row": 24,
+          "source_kind": "output_table_row_description",
+          "applicable_when": "extra_field_value_is_file",
+          "fields": [
+            {
+              "name": "title",
+              "documented_type": "varchar(40)"
+            },
+            {
+              "name": "url",
+              "documented_type": "URL"
+            }
+          ],
+          "unknowns": [
+            "allowed_MIME",
+            "exact_MB_byte_definition",
+            "security_and_download_authentication"
+          ]
+        }
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "product_catalogue",
+      "proposed_acceptance": [
+        "Selected main/variant/bundle IDs retain full keyed data and all conditional flags including ERP/WMS/relations/templates/channelsmedia.",
+        "Decode unit/cost/location/expiry/batch/serial and preserve media/textfield-specific grammars without array/object or indexing loss.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryProductsList",
+      "method": "getInventoryProductsList",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryProductsList",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryProductsList",
+        "retrieved_at": "2026-10-17T18:52:32.029050+00:00",
+        "http_status": 200,
+        "bytes": 53373,
+        "sha256": "43f156d3d16162ce3fc13022f05329319e840a0eaaa0029b45e4493c43f1d4ad",
+        "snapshot_document_method": "getInventoryProductsList"
+      },
+      "documented_intro": "The method allows to retrieve a basic data of chosen products from Base catalogs.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "page po1000 produktów dla Base warehouse. filter_sort dopuszcza id ASC/DESC, ale domyślnego porządku, pierwszej strony i końca nie podano.",
+        "filter_ean obejmuje także dodatkoweEAN; filter_tag używa ID tagu, inaczej niż lista nazw tags przy zapisie. include_variants opcjonalne.",
+        "Odpowiedź products jest mapą ID; id i parent_id jawne,0 dla main. SKU wynikuvarchar32, podczas gdy filtr i zapis mająvarchar50."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "filter_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_id",
+            "documented_type": "int",
+            "documented_description": "(optional) limiting results to a specific product id",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "filter_category_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_category_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Retrieving products from a specific category (optional)",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "filter_tag",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_tag",
+            "documented_type": "int",
+            "documented_description": "(optional) limits results to products assigned to the specified inventory tag ID. The list of tag IDs can be retrieved using getInventoryTags.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "filter_ean",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "(optional) limiting results to a specific ean (including additional product EANs)",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "filter_sku",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) limiting the results to a specific SKU (stock keeping number)",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "filter_name",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_name",
+            "documented_type": "varchar(200)",
+            "documented_description": "(optional) item name filter (part of the searched name or an empty field)",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "filter_price_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_price_from",
+            "documented_type": "float",
+            "documented_description": "(optional) minimum price limit (not displaying products with lower price)",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "name": "filter_price_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_price_to",
+            "documented_type": "float",
+            "documented_description": "(optional) maximum price limit",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "name": "filter_stock_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_stock_from",
+            "documented_type": "int",
+            "documented_description": "(optional) minimum quantity limit",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "name": "filter_stock_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_stock_to",
+            "documented_type": "int",
+            "documented_description": "(optional) maximum quantity limit",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (1000 products per page for Base warehouse)",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "name": "filter_sort",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_sort",
+            "documented_type": "varchar(30)",
+            "documented_description": "(optional) the value for sorting the product list. Possible values: \"id [ASC|DESC]\"",
+            "source_kind": "table_row",
+            "source_table_row": 13,
+            "documented_values": [
+              "id ASC",
+              "id DESC"
+            ]
+          },
+          {
+            "name": "filter_locations",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_locations",
+            "documented_type": "varchar(20)",
+            "documented_description": "(optional) filtering results by location name",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "name": "include_variants",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "include_variants",
+            "documented_type": "bool",
+            "documented_description": "(optional) Include product variants additonally to products",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "products",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "A list of products where the key is the product id and the value is an array of fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_product_id"
+          },
+          {
+            "path": "products{product_id}.id",
+            "documented_name": "| - id",
+            "documented_type": "int",
+            "documented_description": "Product ID number.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "products{product_id}.parent_id",
+            "documented_name": "| - parent_id",
+            "documented_type": "int",
+            "documented_description": "Product parent ID. Returns 0 for main products, or the main product ID for variants.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "products{product_id}.ean",
+            "documented_name": "| - ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN number.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "products{product_id}.sku",
+            "documented_name": "| - sku",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product SKU number.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "products{product_id}.name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(200)",
+            "documented_description": "Product name",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "products{product_id}.prices",
+            "documented_name": "| - prices",
+            "documented_type": "array",
+            "documented_description": "A list containing product gross prices, where the key is the price group ID and value is a product gross price for a given price group. The list of price groups can be retrieved with getInventoryPriceGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "shape": "object_keyed_by_price_group_id",
+            "price_basis": "gross"
+          },
+          {
+            "path": "products{product_id}.stock",
+            "documented_name": "| - stock",
+            "documented_type": "array",
+            "documented_description": "A list containing product stocks, where the key is the warehouse ID and value is a product stock for a given warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "page_size": 1000,
+        "scope": "Base_warehouse",
+        "first_page": "not_documented",
+        "default_page": "not_documented",
+        "ordering": "id_ASC_or_DESC_when_filter_sort_supplied;default_unknown",
+        "end_of_scan": "not_documented",
+        "total_or_next": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "product_catalogue",
+      "proposed_acceptance": [
+        "Over1000 main/variant products across pages, all filters/sort/tag/additionalEAN and complete keyed output; do not invent undocumented stable-snapshot guarantees.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryProductsPrices",
+      "method": "getInventoryProductsPrices",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryProductsPrices",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryProductsPrices",
+        "retrieved_at": "2026-10-17T18:52:30.059764+00:00",
+        "http_status": 200,
+        "bytes": 50410,
+        "sha256": "2288b3f75588d07fef33058d1a460bc8828f4abccaccad8101e5581c9fedd363",
+        "snapshot_document_method": "getInventoryProductsPrices"
+      },
+      "documented_intro": "The method allows to retrieve the gross prices of products from Base inventories.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "page po1000 produktów; brak pierwszej/domyslnej strony i total/next.",
+        "Ceny brutto kluczowane pricegroupID, warianty osobno variants{variantID}{groupID}. Brak opisanych currency/per-cell typów i zakresu walidacji na tej stronie."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (1000 products per page for Base warehouse)",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "products",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "A list containing product prices, where the key is the product ID and the value is an array containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_product_id"
+          },
+          {
+            "path": "products{product_id}.product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "ID of the product.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "products{product_id}.prices",
+            "documented_name": "| - prices",
+            "documented_type": "array",
+            "documented_description": "A list where the key is the price group identifier and the value is the gross price set for that price group. The list of price groups can be retrieved using the getInventoryPriceGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "shape": "object_keyed_by_price_group_id",
+            "price_basis": "gross"
+          },
+          {
+            "path": "products{product_id}.variants",
+            "documented_name": "| - variants",
+            "documented_type": "array",
+            "documented_description": "A list containing variant prices, where the key is the variant ID. The value is a list where a key is the price group identifier and value is the gross price set for that price group.",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "page_size": 1000,
+        "scope": "Base_warehouse",
+        "first_page": "not_documented",
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "end_of_scan": "not_documented",
+        "total_or_next": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "prices",
+      "proposed_acceptance": [
+        "Over1000 products, variants and all pricegroups; preserve gross values and undefined currency/decimal serialization boundaries.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryProductsStock",
+      "method": "getInventoryProductsStock",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryProductsStock",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryProductsStock",
+        "retrieved_at": "2026-10-17T18:52:30.080391+00:00",
+        "http_status": 200,
+        "bytes": 53230,
+        "sha256": "c476a5882c1282694d65a8cefc83d3d8f4ee9aabb0daa0c0f2ef3eaea2972ff5",
+        "snapshot_document_method": "getInventoryProductsStock"
+      },
+      "documented_intro": "The method allows you to retrieve stock and reservations data of products from Base catalogs, optionally narrowed down with product filters.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "page po1000 produktów, filtry ID/category/EAN/SKU/name/ASIN/stock/location; sort idASC/DESC, bez domyślnego porządku i końca.",
+        "Stock kluczowany warehouseID, variants osobno. reservations tylko gdy katalog ma włączone rezerwacje; variant_reservations dodatkowo tylko dla produktów z wariantami i wyłącznie niezerowe warianty.",
+        "Nie utożsamiamy stock z dostępnością po rezerwacjach lub incoming bez jawnej reguły źródłowej."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "filter_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_id",
+            "documented_type": "int",
+            "documented_description": "(optional) limits results to a specific product ID",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "name": "filter_category_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_category_id",
+            "documented_type": "int",
+            "documented_description": "(optional) limits results to products from a specific category",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "name": "filter_ean",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "(optional) limits results to a specific EAN (including additional product EANs)",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "name": "filter_sku",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) limits results to a specific SKU (stock keeping unit)",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "name": "filter_name",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_name",
+            "documented_type": "varchar(200)",
+            "documented_description": "(optional) product name filter (part of the searched name or an empty field)",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "name": "filter_asin",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_asin",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) limits results to a specific ASIN",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "name": "filter_stock_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_stock_from",
+            "documented_type": "int",
+            "documented_description": "(optional) minimum stock quantity",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "name": "filter_stock_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_stock_to",
+            "documented_type": "int",
+            "documented_description": "(optional) maximum stock quantity",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results paging (1000 products per page for Base warehouse)",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "name": "filter_sort",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_sort",
+            "documented_type": "varchar(30)",
+            "documented_description": "(optional) sorts the returned products. Possible values: \"id [ASC|DESC]\".",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "documented_values": [
+              "id ASC",
+              "id DESC"
+            ]
+          },
+          {
+            "name": "filter_locations",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_name": "filter_locations",
+            "documented_type": "varchar(20)",
+            "documented_description": "(optional) filters results by location name",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "products",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "A list containing product stocks, where the key is the product ID and the value is an array containing the fields listed below.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_product_id"
+          },
+          {
+            "path": "products{product_id}.product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "ID of the product.",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "products{product_id}.stock",
+            "documented_name": "| - stock",
+            "documented_type": "array",
+            "documented_description": "A list where the key is the warehouse ID and the value is a stock for this warehouse. Warehouse ID should have the following format: \"[type:bl|shop|warehouse]_[id:int]\" (e.g. \"bl_123\"). The list of warehouse IDs can be retrieved with getInventoryWarehouses method.",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "products{product_id}.reservations",
+            "documented_name": "| - reservations",
+            "documented_type": "array",
+            "documented_description": "Only returned for inventories that have reservations enabled. A list where the key is the warehouse ID and the value is a reserved stock for this warehouse.",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "conditional_presence": "inventory_reservations_enabled"
+          },
+          {
+            "path": "products{product_id}.variants",
+            "documented_name": "| - variants",
+            "documented_type": "array",
+            "documented_description": "A list containing variants stocks, where the key is the variant ID. The value is a list where a key is a warehouse ID and value is a stock in this warehouse.",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "products{product_id}.variant_reservations",
+            "documented_name": "| - variant_reservations",
+            "documented_type": "array",
+            "documented_description": "Only returned for inventories that have reservations enabled and only for products that have variants. A list containing variant reservations, where the key is the variant ID and the value is a list where the key is a warehouse ID and the value is a reserved stock for this warehouse. Only variants with non-zero reservations are included.",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "conditional_presence": "inventory_reservations_enabled AND product_has_variants;only_nonzero_variants"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "page_size": 1000,
+        "scope": "Base_warehouse",
+        "first_page": "not_documented",
+        "default_page": "not_documented",
+        "ordering": "id_ASC_or_DESC_when_filter_sort_supplied;default_unknown",
+        "end_of_scan": "not_documented",
+        "total_or_next": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_product_mutation",
+      "current_code_mapping_ref": "stock",
+      "proposed_acceptance": [
+        "Over1000 products, variants, filter variants and conditional/nonzero reservations; separate stock, reserved, physical/sellable semantics.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-runFulfillmentLinkProducts",
+      "method": "runFulfillmentLinkProducts",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=runFulfillmentLinkProducts",
+        "final_url": "https://api.baselinker.com/index.php?method=runFulfillmentLinkProducts",
+        "retrieved_at": "2026-10-17T18:52:30.472839+00:00",
+        "http_status": 200,
+        "bytes": 49365,
+        "sha256": "60f070534a5f9c666b1fedc7b93210f1a5d21f046ed5482d34f1004048065c6a",
+        "snapshot_document_method": "runFulfillmentLinkProducts"
+      },
+      "documented_intro": "The runFulfillmentLinkProducts method synchronously links selected inventory products to a fulfillment warehouse using its configured product extra field.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Synchronicznie wiąże produkty z fulfillmentwarehouse według skonfigurowanego extra_field produktu. product_ids:1–100 dodatnich liczb całkowitych.",
+        "linked i skipped_no_match są licznikami; brak listy wyników perID, pełnej definicji matching/config, odmów częściowych i klucza idempotencji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "fulfillment_warehouse_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "fulfillment_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Fulfillment warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "product_ids",
+            "required": true,
+            "requiredness_source": "explicit_nonempty_array_requirement",
+            "default_status": "not_documented",
+            "documented_name": "product_ids",
+            "documented_type": "array",
+            "documented_description": "Inventory product identifiers. The array must contain between 1 and 100 positive integers.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "min_items": 1,
+            "max_items": 100,
+            "item_type": "positive_integer"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "linked",
+            "documented_name": "linked",
+            "documented_type": "int",
+            "documented_description": "Number of products linked to the fulfillment account",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "skipped_no_match",
+            "documented_name": "skipped_no_match",
+            "documented_type": "int",
+            "documented_description": "Number of products without a matching fulfillment product",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "fulfillment_links",
+      "proposed_acceptance": [
+        "Boundary0/1/100/101 positive integerIDs, configured fulfillmentwarehouse/extra_field, mixed matched/unmatched and exact linked/skipped counts; reconcile unknown outcome.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ],
+      "dependencies": [
+        "configured_fulfillment_warehouse",
+        "configured_product_extra_field",
+        "upstream_match_rules_not_fully_documented"
+      ]
+    },
+    {
+      "id": "BASE-API-runProductMacroTrigger",
+      "method": "runProductMacroTrigger",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=runProductMacroTrigger",
+        "final_url": "https://api.baselinker.com/index.php?method=runProductMacroTrigger",
+        "retrieved_at": "2026-10-17T18:52:30.484056+00:00",
+        "http_status": 200,
+        "bytes": 48822,
+        "sha256": "861fa6ecd44ee1c85afffa68e5c8379877e3d0723e912a620ed3ca0857a8e89e",
+        "snapshot_document_method": "runProductMacroTrigger"
+      },
+      "documented_intro": "The method allows you to run personal trigger for products automatic actions.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Uruchamia personal trigger w automatycznych akcjach produktów dla product_id/trigger_id.",
+        "Odpowiedź tylko status; brak IDrun, listy wykonanych skutków, completion/async/replay/unknownoutcome i definicji configtrigger w tej metodzie."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier from Base product manager.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "trigger_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "trigger_id",
+            "documented_type": "int",
+            "documented_description": "Identifier of personal trigger from products automatic actions.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "product_automation",
+      "proposed_acceptance": [
+        "Own trigger and product, real downstream action completion/readback, disabled/foreign trigger and duplicate/unknown execution without unintended repeated side effects.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-updateInventoryProductsPrices",
+      "method": "updateInventoryProductsPrices",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=updateInventoryProductsPrices",
+        "final_url": "https://api.baselinker.com/index.php?method=updateInventoryProductsPrices",
+        "retrieved_at": "2026-10-17T18:52:30.597561+00:00",
+        "http_status": 200,
+        "bytes": 50027,
+        "sha256": "00ee221a24992bca672c438842564a48d236709182a32a17e37a6e49cacaf1a3",
+        "snapshot_document_method": "updateInventoryProductsPrices"
+      },
+      "documented_intro": "The method allows bulk update of gross prices of products (and/or their variants) in the Base catalog. Maximum 1000 products at a time.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Najwyżej1000 produktów/wariantów. Dwupoziomowa mapa productID→pricegroupID→cena brutto; wariant jako productID.",
+        "counter oznacza liczbę zaktualizowanych produktów; warnings mapuje tylko błędne productIDs na komunikat. Brak gwarancji atomowości całej partii, pominięć/zerowania nieprzesłanych cen lub odczytu wyniku perkomórka."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "products",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "An array of products, where the key is a product ID and the value is a list of prices. When determining the variant price, provide variant ID as a product ID.In the prices array the key should be the price group ID and the value - price for that price group. The list of price groups can be retrieved using the getInventoryPriceGroups method.",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "max_items": 1000,
+            "variant_addressing": "variant_id_as_product_id",
+            "shape": "object_product_id_to_price_group_id_to_gross_price"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "counter",
+            "documented_name": "counter",
+            "documented_type": "int",
+            "documented_description": "Number of updated products.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "warnings",
+            "documented_name": "warnings",
+            "documented_type": "array",
+            "documented_description": "Warning list for product updates. The key of each element is the product identifier, the value is the update error message. Only the keys containing an error are returned.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "shape": "object_keyed_by_failed_product_id_only"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "partial_outcome": {
+          "counter": "number_of_updated_products",
+          "warnings": "per_product_error_messages_only_for_failed_ids",
+          "atomicity": "not_documented",
+          "status_SUCCESS_is_not_proof_all_products_updated": true
+        }
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "prices",
+      "proposed_acceptance": [
+        "Boundary1000/1001, products+variants and multipricegroups, partial warning/counter and each changed cell readback with correct gross arithmetic.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    },
+    {
+      "id": "BASE-API-updateInventoryProductsStock",
+      "method": "updateInventoryProductsStock",
+      "family": "Product catalog",
+      "group": "Products",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=updateInventoryProductsStock",
+        "final_url": "https://api.baselinker.com/index.php?method=updateInventoryProductsStock",
+        "retrieved_at": "2026-10-17T18:52:30.966575+00:00",
+        "http_status": 200,
+        "bytes": 50268,
+        "sha256": "1cffc4a9dc69ecb64c5783e167095ee96eced40098a8d936b17fb2213ddcdaf9",
+        "snapshot_document_method": "updateInventoryProductsStock"
+      },
+      "documented_intro": "The method allows to update stocks of products (and/or their variants) in Base catalog. Maximum 1000 products at a time.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Najwyżej1000 produktów/wariantów. Mapa productID→warehouseID→stock; wariant jako productID.",
+        "Format klucza wspomina bl/shop/warehouse, ale zapis wyklucza automatycznie utworzone magazyny stanów zewnętrznych. Nie oznacza to zgody na zapis każdej zewnętrznej lokalizacji.",
+        "counter + warnings per błędny produkt nie stanowią gwarancji atomowości. Nie opisano CAS/version, efektu na rezerwacje/dokumenty/partie/koszty ani interpretacji brakujących komórek."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "inventory_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "inventory_id",
+            "documented_type": "int",
+            "documented_description": "Catalog ID. The list of identifiers can be retrieved using the method getInventories.",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "name": "products",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_name": "products",
+            "documented_type": "array",
+            "documented_description": "An array of products, where the key is a product ID and the value is a list of stocks. When determining the variant stock, provide variant ID as a product ID.In the stocks array the key should be the warehouse ID and the value - stock for that warehouse. The format of the warehouse identifier should be as follows: \"[type:bl|shop|warehouse]_[id:int]\". (e.g. \"bl_123\"). The list of warehouse identifiers can be retrieved using the getInventoryWarehouses method.Stocks cannot be assigned to the warehouses created automatically for purposes of keeping external stocks (shops, wholesalers, etc.).",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "max_items": 1000,
+            "variant_addressing": "variant_id_as_product_id",
+            "shape": "object_product_id_to_warehouse_id_to_stock",
+            "forbidden_target": "automatically_created_external_stock_warehouse"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "default_policy": "Only individual explicit omission/default behavior is promoted",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "counter",
+            "documented_name": "counter",
+            "documented_type": "int",
+            "documented_description": "Number of updated products.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "warnings",
+            "documented_name": "warnings",
+            "documented_type": "array",
+            "documented_description": "Warning list for product updates. The key of each element is the product identifier, the value is the update error message. Only the keys containing an error are returned.",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "shape": "object_keyed_by_failed_product_id_only"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "partial_outcome": {
+          "counter": "number_of_updated_products",
+          "warnings": "per_product_error_messages_only_for_failed_ids",
+          "atomicity": "not_documented",
+          "status_SUCCESS_is_not_proof_all_products_updated": true
+        }
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "stock",
+      "proposed_acceptance": [
+        "Boundary1000/1001, products+variants, warehouseallowlist and partial warning/counter readback; document effects on reservations/WMS/stockjournals explicitly.",
+        "Separate exact wire from local UI/API/worker acceptance; prove own/foreign permissions,429/retry,timeout/ACKloss/recovery without duplicate effects. No sandbox/account acceptance from fixtures or source alone."
+      ]
+    }
+  ]
+}

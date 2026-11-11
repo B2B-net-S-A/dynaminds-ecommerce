@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTETYCZNE: próbka ataku XXE do testu odrzucenia DTD, nie odpowiedź dostawcy. -->
+<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://sledzenie.pocztapolska.pl"><soapenv:Body><ns:sprawdzPrzesylkeResponse><return><numer>&xxe;</numer><status>0</status></return></ns:sprawdzPrzesylkeResponse></soapenv:Body></soapenv:Envelope>

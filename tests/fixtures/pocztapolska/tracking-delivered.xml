@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTETYCZNE: plik przygotowany ręcznie na podstawie publicznej dokumentacji Poczty Polskiej, nie jest nagraniem odpowiedzi dostawcy. -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://sledzenie.pocztapolska.pl">
+  <soapenv:Body>
+    <ns:sprawdzPrzesylkeResponse>
+      <return>
+        <numer>FAKEPP0000000001</numer>
+        <status>0</status>
+        <danePrzesylki>
+          <zdarzenia>
+            <zdarzenie><czas>2026-10-21 09:15</czas><kod>P_WD</kod><nazwa>Przekazano do doręczenia</nazwa><konczace>false</konczace><jednostka><nazwa>UP Kraków 1</nazwa></jednostka></zdarzenie>
+            <zdarzenie><czas>2026-10-20 16:02</czas><kod>P_NAD</kod><nazwa>Nadanie</nazwa><konczace>false</konczace><jednostka><nazwa>UP Warszawa 1</nazwa></jednostka></zdarzenie>
+            <zdarzenie><czas>2026-10-20 22:40</czas><kod>P_WZL</kod><nazwa>Wysłanie z węzła</nazwa><konczace>false</konczace><jednostka><nazwa>WER Warszawa</nazwa></jednostka></zdarzenie>
+            <zdarzenie><czas>2026-10-21 08:00</czas><kod>X_NOWY</kod><nazwa>Zdarzenie spoza tabeli</nazwa><konczace>false</konczace></zdarzenie>
+            <zdarzenie><czas>2026-10-21 13:47</czas><kod>P_D</kod><nazwa>Doręczono</nazwa><konczace>true</konczace><jednostka><nazwa>UP Kraków 1</nazwa></jednostka></zdarzenie>
+          </zdarzenia>
+        </danePrzesylki>
+      </return>
+    </ns:sprawdzPrzesylkeResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

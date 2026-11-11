@@ -1,0 +1,413 @@
+{
+  "schema": "dynaminds-full-base-scale-profile/v1",
+  "version": 1,
+  "as_of": "2026-10-17",
+  "parent": null,
+  "status": "frozen_required_specification_unmeasured",
+  "measurement_performed": false,
+  "acceptance_granted": false,
+  "config_digest_algorithm": "SHA256 of UTF-8 JSON with recursively sorted object keys, preserved array order, no whitespace, standard JSON string escaping; config only.",
+  "config_sha256": "1ab65a9256b67be9c50fd1ff964a8072d4ce1c4340b6c07900345b8c4926b8a7",
+  "config": {
+    "purpose": "Required local capacity and correctness specification; not a measurement, run receipt, Base SLA or provider-account acceptance.",
+    "dataset": {
+      "sku_records_total": 100000,
+      "orders_total": 100000,
+      "active_tenants": 5,
+      "per_tenant": [
+        {
+          "slot": "A",
+          "sku_records": 20000,
+          "orders": 20000,
+          "warehouses_min": 2,
+          "stock_locations_per_warehouse_min": 20,
+          "wms_lots": true
+        },
+        {
+          "slot": "B",
+          "sku_records": 20000,
+          "orders": 20000,
+          "warehouses_min": 2,
+          "stock_locations_per_warehouse_min": 20,
+          "wms_lots": false
+        },
+        {
+          "slot": "C",
+          "sku_records": 20000,
+          "orders": 20000,
+          "warehouses_min": 2,
+          "stock_locations_per_warehouse_min": 20,
+          "wms_lots": true
+        },
+        {
+          "slot": "D",
+          "sku_records": 20000,
+          "orders": 20000,
+          "warehouses_min": 2,
+          "stock_locations_per_warehouse_min": 20,
+          "wms_lots": false
+        },
+        {
+          "slot": "E",
+          "sku_records": 20000,
+          "orders": 20000,
+          "warehouses_min": 2,
+          "stock_locations_per_warehouse_min": 20,
+          "wms_lots": true
+        }
+      ],
+      "distribution_reason": "Equal 20k/20k tenant allocation is an adopted local recommendation: each of five active companies must bear the full per-company minimum; one large tenant cannot conceal four trivial datasets.",
+      "history_days": 180,
+      "order_status_percent": {
+        "draft": 10,
+        "confirmed": 15,
+        "picking": 15,
+        "packed": 10,
+        "shipped": 40,
+        "cancelled": 5,
+        "returned": 5
+      },
+      "sku_kind_percent": {
+        "simple": 90,
+        "variant": 8,
+        "bundle": 2
+      },
+      "order_line_buckets_percent": {
+        "1": 40,
+        "2_to_3": 40,
+        "4_to_10": 15,
+        "11_to_20": 5
+      },
+      "order_unit_buckets_percent": {
+        "1_to_5": 95,
+        "6_to_20": 5
+      },
+      "history_requirements": [
+        "Orders, lines, stock/reservation movements and audit/event history exist before the first cold start, with timestamps distributed across all 180 days.",
+        "Shipped/returned/history-dependent records use genuine ordinary business transitions, native admissions and documents; no direct SQL fabrication of native proofs or denormalized history.",
+        "Each tenant contains historical payments, shipment, cancellation and return records, with both known/zero/unknown WMS cost cases in A/C/E; the manifest records exact counts and oldest/newest timestamps.",
+        "At least 100 finite-stock hot SKUs per tenant start with 20 saleable units each and contend across HTTP/import/worker paths; replenishment, returns and cancellations must be recorded in the conservation ledger.",
+        "List/detail/search selection spans recent and historical data; at least 50 percent of read samples target records older than 30 days."
+      ],
+      "allowed_data": "Synthetic owned test data only, in a new isolated authorized database; existing Main and accepted history are preserved.",
+      "required_inventory": [
+        "count and digest per tenant/table/status/type",
+        "order line and unit histogram",
+        "stock, reservations and physical movement totals",
+        "worker/import/sync pending/running/unknown/completed totals",
+        "database bytes, disk free bytes, indexes and planner statistics"
+      ],
+      "counting_rule": "Count distinct non-deleted tenant/product records with actual unique SKU and genuine orders, not warehouse copies, lines, variants counted twice, event rows or pagination metadata. Baseline is exactly 20k SKU and 20k orders per tenant before cold/warmup; new admitted writes during warmup/measurement are additional and fully reconciled."
+    },
+    "timing": {
+      "clock": "Monotonic timestamps in driver and server; record wall-clock UTC only for correlation. Never subtract server execution time from network latency.",
+      "cold": {
+        "attempts": 3,
+        "sequential": true,
+        "fresh_process_each_attempt": true,
+        "application_cache_empty": true,
+        "os_cache_policy": "Record OS/page-cache state; do not flush shared host caches and do not describe a process-cold result as disk-cold.",
+        "start_to_authenticated_business_and_worker_ready_ms_max": 180000,
+        "scope": "Same populated dataset, release, configuration and authorization; include startup validation, dependency readiness and one successful authenticated ordinary read plus worker eligibility. Readiness HTTP 200 alone is insufficient."
+      },
+      "warmup_seconds": 600,
+      "warmup_excluded_from_latency_and_throughput": true,
+      "measurement_phases": [
+        {
+          "id": "steady12",
+          "duration_seconds": 1800,
+          "http_clients": 12,
+          "required_peak_actual_inflight": 12,
+          "one_second_windows_reaching_target_min": 60,
+          "success_http_rps_min": 10
+        },
+        {
+          "id": "steady24",
+          "duration_seconds": 1800,
+          "http_clients": 24,
+          "required_peak_actual_inflight": 24,
+          "one_second_windows_reaching_target_min": 60,
+          "success_http_rps_min": 20
+        }
+      ],
+      "measurement_seconds": 3600,
+      "recovery_excluded_from_steady_measurement": true,
+      "warm_restart_to_business_ready_ms_max": 60000,
+      "worker_drain_after_measurement_seconds_max": 120,
+      "warmup_policy": "Run the identical mix with all five tenants and all background lanes at prescribed rates. Fixed 600 seconds; no discarding slow samples or extending warmup until a preferred percentile appears."
+    },
+    "http": {
+      "model": "Closed loop, one real authenticated network request in flight per client, zero deliberate think-time, no automatic retry of writes. Both phase clocks run continuously; pauses, failures, GC and slow queries remain in the denominator.",
+      "tenant_share_percent": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "tenant_share_tolerance_percentage_points": 2,
+      "mix": [
+        {
+          "id": "order_list",
+          "class": "read",
+          "percent": 25,
+          "description": "Ordinary order list with filters, sort and pages of 50; half recent and half historical."
+        },
+        {
+          "id": "catalog_search",
+          "class": "read",
+          "percent": 20,
+          "description": "Ordinary product search, page size 50; SKU/text 50:50 and hit/no-hit/broad selections 50:25:25."
+        },
+        {
+          "id": "order_detail",
+          "class": "read",
+          "percent": 15,
+          "description": "Ordinary detail including actual lines, totals, status and bounded history."
+        },
+        {
+          "id": "order_create",
+          "class": "write",
+          "percent": 15,
+          "description": "Ordinary order creation, frozen line/unit buckets and finite stock, with native totals and stable client key."
+        },
+        {
+          "id": "reserve_and_status",
+          "class": "write",
+          "percent": 10,
+          "description": "Eligible stock reservation and status transitions; concurrent finite-stock contention included."
+        },
+        {
+          "id": "payment_or_document",
+          "class": "write",
+          "percent": 5,
+          "description": "Authorized ordinary payment declaration or native document creation, equal split, with legal state/version and reconciliation."
+        },
+        {
+          "id": "stock_operation",
+          "class": "write",
+          "percent": 5,
+          "description": "Ordinary owned transfer/adjustment using current versions, half of traffic targeting hot SKUs."
+        },
+        {
+          "id": "return_receive",
+          "class": "write",
+          "percent": 5,
+          "description": "Genuine eligible return receipt, sale/custody/reject and WMS OFF/ON, with physical and financial reconciliation."
+        }
+      ],
+      "mix_tolerance_percentage_points": 2,
+      "samples_per_tenant_per_operation_per_phase_min": 100,
+      "payload": {
+        "request_bytes_max": 65536,
+        "response_bytes_max": 1048576,
+        "attachment_payloads_in_this_profile": false,
+        "list_page_size": 50,
+        "order_lines_max": 20,
+        "order_units_per_line_max": 20,
+        "binary_documents": "Measure document creation acknowledgement and verify generated bytes/hash separately; do not omit generation cost from request if the normal endpoint is synchronous."
+      },
+      "timeouts_ms": {
+        "driver_request": 10000,
+        "runtime_statement": 8000,
+        "runtime_lock": 8000,
+        "cold_approval_only": 120000
+      },
+      "instrumentation": [
+        "Driver request start/end, stable operation ID, tenant slot, outcome and duration for every request, including failures and cancellations.",
+        "Driver overlap is derived from request intervals; server ingress/terminal counters independently prove actual application in-flight peak. Configured clients, TCP sockets, promises and process count are not concurrency evidence.",
+        "Record per-second active clients/in-flight peak and histogram, achieved per-minute throughput, total scheduled/started/completed requests and intentional waits (required zero).",
+        "Report separate operation/tenant/phase quantiles and pooled totals; no averaging percentiles. Use exact samples or mergeable histogram with <=1 ms resolution below 1 s and <=10 ms below 10 s.",
+        "Exact authenticated route/method, payload generator/source SHA and success status for every operation are bound in the run manifest before execution. An unsupported normal path blocks the run; it is not silently substituted or dropped.",
+        "Every client is actively issuing or awaiting an actual request for at least 95 percent of each phase. Count prerequisite/preview/version/readback HTTP calls in the observed traffic and concurrency too; assign their real operation class and disclose them separately. No hidden extra driver clients or unmeasured preparation loops during the hour.",
+        "Track driver request IDs through server ingress/terminal events without bypassing authentication. Show both driver-correlated and all-application in-flight counters; do not confuse outbound Woo requests or worker count with driver HTTP overlap."
+      ],
+      "client_active_fraction_per_phase_min": 0.95
+    },
+    "background": {
+      "required_during_both_entire_phases": true,
+      "tenant_slots": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "minimum_actual_worker_processors": 2,
+      "lanes": [
+        {
+          "id": "automation",
+          "per_tenant_per_minute": 5,
+          "effect": "Genuine durable scoped rule events and native workflow/status effects, including local SMTP or local Woo action where authorized."
+        },
+        {
+          "id": "order_import",
+          "per_tenant_per_minute": 6,
+          "effect": "Fresh distinct local Woo source orders, imported by the actual importer with stable external IDs and persisted source/result linkage."
+        },
+        {
+          "id": "stock_sync",
+          "per_tenant_per_minute": 12,
+          "effect": "Actual persisted sync jobs and accepted local Woo stock updates, with exact product/channel/version and observable readback."
+        }
+      ],
+      "method": [
+        "Authorize five actual tenant/channel identities through the ordinary local UI/API; preserve current IAM, session/account versions, MFA/policy, tenant and source/config/version checks.",
+        "Enable durable per-kind scoped worker/importer admissions for these five tenants only. Record the native opt-in IDs/versions and actual worker started/claim/effect/terminal events; enabled flags or a listening worker do not count as completed work.",
+        "Use existing real processors, leases and private branded transports. Do not enable a global legacy worker/reaper or fabricate browser sessions, native admissions or capability JSON to obtain throughput.",
+        "Fresh producer rates are sustained in every complete minute of both phases; every tenant and lane has completions in every rolling 60-second window after warmup. Record offered/claimed/completed/failed/unknown rates separately.",
+        "If the current runtime cannot authorize one of the five tenants or any required lane, retain unmeasured/blocked status and implement that actual product prerequisite before load. Do not set required lanes false."
+      ],
+      "queue_limits": {
+        "oldest_eligible_age_p95_ms_max": 15000,
+        "oldest_eligible_age_max_ms": 60000,
+        "end_drain_seconds_max": 120,
+        "unresolved_unknown_at_final_reconciliation_max": 0
+      },
+      "dependencies": {
+        "external_live_calls_allowed": false,
+        "allowed_targets": "Exact pre-authorized owned loopback origins, channels and own TLS CAs from the pinned runtime selection; no DNS/provider fallback, redirects or remote accounts.",
+        "official_local_woo_required_for_import_and_sync": true,
+        "local_official_woo_instances_min": 2,
+        "proof_label": "Own locally installed official WooCommerce on synthetic owned stores, or explicitly named pinned protocol models for separate fault cases. Neither is provider-account or external sandbox acceptance.",
+        "required_pins": [
+          "official Woo/plugin/runtime versions and fixture hashes",
+          "each local origin/CA/config digest and tenant/channel binding",
+          "protocol model source/version/hash and exact supported contract",
+          "process/resource budget and full deliberate fault schedule"
+        ]
+      }
+    },
+    "limits": {
+      "latency_ms": {
+        "read_p95_max": 500,
+        "read_p99_max": 1000,
+        "write_p95_max": 4000,
+        "write_p99_max": 8000
+      },
+      "latency_scope": "Every operation, each tenant, each phase and aggregate; successful ordinary requests and all unexpected failures are also shown separately. The expected contention scenario is not allowed to improve success percentiles by replacing writes with fast refusals.",
+      "unexpected_http_5xx_max": 0,
+      "unexpected_timeouts_max": 0,
+      "unexpected_errors_max": 0,
+      "duplicate_business_effects_max": 0,
+      "oversold_units_max": 0,
+      "tenant_isolation_violations_max": 0,
+      "expected_contention": {
+        "fraction_of_all_requests_max": 0.01,
+        "allowed_statuses": [
+          409
+        ],
+        "require_exact_native_reason": true,
+        "reconcile_no_effect": true,
+        "excluded_from_success_throughput": true,
+        "rule": "Only deliberately pre-labelled hot-SKU/version races may refuse. Unplanned 401/403/404/409/422/429 are errors. No provider faults are injected during the steady hour."
+      },
+      "throughput": "Each phase meets its success HTTP RPS minimum over all 1800 seconds and no complete 60-second bucket falls below half that minimum. Background completions are additional and never counted as HTTP success throughput.",
+      "resources": {
+        "sample_interval_seconds": 1,
+        "host_cpu_60s_mean_percent_max": 85,
+        "app_db_workers_total_rss_bytes_max": 12884901888,
+        "rss_fraction_physical_memory_max": 0.75,
+        "swap_growth_bytes_max": 268435456,
+        "event_loop_delay_p99_ms_max": 100,
+        "database_pool_wait_p95_ms_max": 50,
+        "database_pool_wait_p99_ms_max": 250,
+        "database_pool_timeout_max": 0,
+        "database_pool_utilization_p95_fraction_max": 0.8,
+        "database_connections_peak_must_fit_frozen_limits": true,
+        "free_disk_bytes_min": 32212254720,
+        "run_database_growth_bytes_max": 10737418240,
+        "evidence_bytes_max": 1073741824,
+        "record": [
+          "host hardware, OS, Node/Postgres, logical CPUs and physical RAM",
+          "per-process CPU/RSS, host memory pressure/swap, disk bytes/IO/latency",
+          "database connections/pool queue/wait, query latency/locks/idle-in-transaction age",
+          "worker backlog, oldest eligible age and actual completion latency",
+          "database size and evidence/disk growth before setup, after setup, each phase and cleanup"
+        ],
+        "measurement_host_policy": "Record all co-resident services and available resource limits. Do not kill Main or unrelated work to obtain a result. If uncontrolled heavy work invalidates the frozen resource budget, classify the run invalid and arrange a separate bounded measurement window."
+      }
+    },
+    "correctness": {
+      "write_ledger": "Persist request/client key, tenant, operation, expected version, source ID, pre-state digest and intended effect before dispatch; persist HTTP/COMMIT acknowledgement or explicit unknown, result ID/version and readback digest after. Keep complete countable intent/effect lineage, not only sampled writes.",
+      "reconciliation": [
+        "Every scheduled write/import/sync event resolves to exactly one committed native effect or an explicit validated no-effect; offered, admitted, attempted, acknowledged, unknown, rejected and completed counts reconcile per tenant/kind.",
+        "Replay the same idempotency key/source delivery under current authorization and confirm the same result or native conflict, with no extra order/payment/document/stock/worker/provider effect.",
+        "For every SKU/location/layer: opening + receipts + transfers-in + approved adjustments + return arrivals - issues - transfers-out equals final physical balance; actual reservations equal native open allocations and never exceed saleable stock.",
+        "Every accepted order allocation/issue consumes its authorized source quantities; total units allocated/sold beyond finite available inventory is zero, including HTTP/import/worker races.",
+        "For at least one finite-stock SKU per tenant in each phase, frozen competing authorized demand across HTTP/import/worker paths exceeds available units. Confirm a real contention refusal and conservation of accepted reservations/issues; freeze expected reasons/counts before dispatch. Keep planned contention within the error-budget bound, without suppressing its samples.",
+        "Order/line/shipping/payment/return/document totals reconcile in integer minor units and exact currency; known zero cost stays distinct from unknown cost.",
+        "Verify unique external IDs, client keys and native admission links at database and local dependency readback; tenant A cannot read/mutate B-E and vice versa with real independent sessions.",
+        "Compare full before/after counts/digests and sampled ordinary UI/readbacks against the complete write ledger. Source tests or a provider success response alone cannot stand in for final native state."
+      ],
+      "steady_unknown_or_unreconciled_max": 0,
+      "cleanup_policy": "After hashes/reports and Root review, remove only this owned test dataset/evidence according to the explicit retention manifest; never delete Main, accepted package/history or uncertain evidence to make a run green."
+    },
+    "recovery": {
+      "same_release_config_and_dataset_lineage_required": true,
+      "faults_outside_steady_hour_only": true,
+      "per_case_reconciliation_deadline_seconds": 120,
+      "backup_restore_deadline_seconds": 600,
+      "required_cases": [
+        {
+          "id": "duplicate_delivery",
+          "effect": "Replay 10 confirmed HTTP client keys plus 10 import source IDs and 10 stock sync event IDs per tenant; exactly one native/external effect each."
+        },
+        {
+          "id": "lost_commit_ack",
+          "effect": "Lose the database commit acknowledgement through an owned controlled fault boundary before any provider dispatch; prove no dispatch without a confirmed durable intent, then reconcile the actual commit outcome without blind replay."
+        },
+        {
+          "id": "lost_provider_ack",
+          "effect": "One accepted local dependency mutation per tenant/lane loses its response. Preserve attempted/unknown, do not auto-replay; ordinary readback/reconciliation identifies exactly one effect. Explicitly label protocol-model versus official-local-Woo evidence."
+        },
+        {
+          "id": "dependency_unavailable",
+          "effect": "Owned local dependency returns 429/503 before accepting, with pinned Retry-After schedule. Bounded durable retry is allowed only by the actual per-kind contract with proven no-effect; unknown remains unreplayed."
+        },
+        {
+          "id": "graceful_restart",
+          "effect": "Stop claims/new requests, drain actual in-flight work, restart the same release, preserve pending/attempted/unknown distinctions and resume only allowed pending work. No orphan owned child/ports or swallowed cleanup failure."
+        },
+        {
+          "id": "abrupt_app_exit",
+          "effect": "Abrupt exit of the isolated owned application with a known pending job and one acknowledged intent/effect. Restart preserves committed writes and never reclaims attempted/unknown as fresh pending. Do not signal Main or shared PostgreSQL."
+        },
+        {
+          "id": "backup_restore",
+          "effect": "Take a genuine backup of the isolated dataset including the confirmed final marker, restore into a different new owned database and start the same release. Reconcile all tenant/native/queue counts and digests; require zero lost committed markers and no provider replay."
+        }
+      ],
+      "graceful_drain_deadline_seconds": 30,
+      "unconfirmed_cleanup_is_failure": true,
+      "committed_write_loss_max": 0,
+      "duplicate_recovery_effects_max": 0
+    },
+    "binding_and_evidence": {
+      "exact_same_final_release": "One final immutable release SHA, source contract, native SQL/profile generation and dependency lock for cold/warm/steady/recovery/restore. A source or runtime/config change invalidates cross-phase aggregation and requires a complete new run.",
+      "required_run_manifest_before_execution": [
+        "profile config_sha256 and immutable version-file SHA256",
+        "release/package/runtime/source-contract/native-profile/config/driver/generator hashes",
+        "host limits and all allocated process/container/Postgres/pool/worker settings",
+        "owned database identity, per-tenant IDs and exact baseline counts/digests",
+        "dataset seed/as-of epoch, history/line/payload distributions and hot-SKU set",
+        "exact ordinary routes, operation payload generators, native success/error classifications and client-key policy",
+        "real IAM/channel/worker/importer/sync opt-ins and current versions for all five tenants",
+        "local dependency versions, targets, TLS CA/config hashes and fault injection schedule",
+        "all rate limits, caps, pacing, clocks, raw metric resolution and evidence retention paths",
+        "post-warmup native counts/inventory/queue watermark before measured phase, plus exact effects produced during warmup; never silently reset inventory, truncate history or pause workers between phases"
+      ],
+      "required_reports": [
+        "per-phase/tenant/operation counts and p50/p95/p99/max latency, errors and expected refusals",
+        "actual client and independently observed server in-flight overlap/peaks/windows; wall-clock duration and offered/achieved throughput",
+        "per-tenant/lane worker/import/sync offered, attempted, completed, backlog-age and completion latency",
+        "cold start, warm restart, drain, crash, ACK-loss, retry and restore timelines with actual exit/ack/state evidence",
+        "complete write/stock/payment/document/native-history and local dependency reconciliation, duplicates/oversell/unknown/isolation counts",
+        "CPU/RSS/memory pressure/swap/disk/DB pool metrics and before/after disk growth",
+        "exit codes, raw bounded log/metric/report hashes, exact configuration/release linkage and explicit observed failures"
+      ],
+      "storage": "No full success response bodies or cloned node_modules/package per observer. Compact complete intent/outcome ledger plus aggregate histograms; retain private bounded failure/unknown evidence with 0600 files and 0700 parents. No DSN/keys/cookies/passwords in public reports.",
+      "decision": "All measured gates must pass in one complete same-release run; missing or skipped measurement is false/unaccepted. A validator only confirms this specification is internally valid and grants no product, scale or provider-account acceptance."
+    }
+  }
+}

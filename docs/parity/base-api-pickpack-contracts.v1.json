@@ -1,0 +1,996 @@
+{
+  "schema": "dynaminds-base-api-pickpack-contracts/v1",
+  "as_of": "2026-10-18",
+  "source_content_date": "2026-10-18",
+  "index_membership_date": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Orders",
+      "group": "PickPack carts"
+    }
+  ],
+  "method_count": 8,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "shared_transport_ref": {
+    "path": "base-api-inventory-configuration-contracts.v1.json",
+    "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+    "pointer": "/shared_transport"
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "contract_review_complete_for_selected_groups": true,
+  "operational_contract_fully_resolved": false,
+  "documentation_only": true,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "implementation_verified": false,
+  "wire_acceptance": false,
+  "provider_account_acceptance": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-pickpack-sources-20261018.json.gz",
+    "sha256": "e1c35ce403578f0fbd54fe20e323653cc73bdfd45dc83675aae3a59bfedcb647",
+    "bytes": 79498,
+    "decoded_sha256": "149a3d06fea3030467b543486be7b9d391714be670fb1699268e664358dd4593",
+    "decoded_bytes": 451973,
+    "individual_documents": 8,
+    "selected_documents": 8,
+    "format": "gzip UTF-8 JSON; exact documents[].html_utf8 retained"
+  },
+  "normalization_basis": {
+    "model": "base-api-purchase-order-contracts.v1.json",
+    "sha256": "cffea36515949cc001c74a2483571b482acb4ffc7662655d22bb3cdee58c09fd",
+    "note": "Reuses accepted v1 table/prose/requiredness/source provenance conventions."
+  },
+  "secondary_markdown_ref": {
+    "path": "base-api-pickpack-contracts-20261018.md",
+    "sha256": "28d648874a3d4d1a67e99e4988588e9242e47388cf2db21d1e555637bdd8ec98"
+  },
+  "field_inventory": {
+    "input_table_rows": 10,
+    "output_table_rows": 21,
+    "nested_output_table_rows": 3,
+    "embedded_input_prose_fields": 0,
+    "embedded_output_prose_fields": 16
+  },
+  "boundary": "Documentation normalization only. No implementation, UI, wire, stock/WMS, split/merge, provider-account or business acceptance. Pages fetched18.10 do not establish page content17.10. No automatic retry is authorized for unknown outcomes.",
+  "methods": [
+    {
+      "id": "BASE-API-addPickPackCart",
+      "method": "addPickPackCart",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addPickPackCart",
+        "final_url": "https://api.baselinker.com/index.php?method=addPickPackCart",
+        "retrieved_at": "2026-10-18T00:50:41.094721+00:00",
+        "http_status": 200,
+        "bytes": 49504,
+        "sha256": "b4abc613ea3f532d3d4797f147f8d1fb4f1bd4e35714a3e124f79eba66a7744c",
+        "snapshot_document_method": "addPickPackCart"
+      },
+      "documented_intro": "Creates a new PickPack cart or updates an existing one. When creating a cart, you must provide a name, and optionally a color. When updating a cart, you must provide the cart_id and can optionally update the name and/or color. If no color is provided during creation, the system will automatically generate a random color. The cart will be assigned to the current user and positioned at the end of their cart list (for new carts).",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier for updating existing cart. If not provided, a new cart will be created",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "required_when": {
+              "operation": "update",
+              "source_text": "When updating a cart, you must provide the cart_id and can optionally update the name and/or color."
+            }
+          },
+          {
+            "name": "name",
+            "documented_name": "name",
+            "documented_type": "varchar(5)",
+            "documented_description": "Cart name (maximum 5 characters). Required for creation, optional for updates",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "required_when": {
+              "operation": "create",
+              "source_text": "When creating a cart, you must provide a name, and optionally a color."
+            },
+            "max_characters": 5
+          },
+          {
+            "name": "color",
+            "documented_name": "color",
+            "documented_type": "varchar(7)",
+            "documented_description": "Cart color in hex format (e.g., #FF0000). If not provided during creation, a random color will be generated automatically",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_format": "hex color",
+            "documented_example": "#FF0000",
+            "omission_behavior": {
+              "operation": "create",
+              "value": "random color generated automatically"
+            }
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "The ID number of the added/updated cart",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation.",
+        "Empty names, color normalization, foreign cart IDs and no-op updates are not documented."
+      ],
+      "documented_modes": {
+        "create": {
+          "condition": "cart_id not provided",
+          "required": [
+            "name"
+          ],
+          "optional": [
+            "color"
+          ]
+        },
+        "update": {
+          "condition": "cart_id provided",
+          "required": [
+            "cart_id"
+          ],
+          "optional": [
+            "name",
+            "color"
+          ]
+        }
+      },
+      "documented_effects": {
+        "new_cart_owner": "current user",
+        "new_cart_position": "end of current user cart list"
+      }
+    },
+    {
+      "id": "BASE-API-addPickPackOrdersToCart",
+      "method": "addPickPackOrdersToCart",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addPickPackOrdersToCart",
+        "final_url": "https://api.baselinker.com/index.php?method=addPickPackOrdersToCart",
+        "retrieved_at": "2026-10-18T00:50:41.194285+00:00",
+        "http_status": 200,
+        "bytes": 49485,
+        "sha256": "e78e2cb2d01d2a0403212b8a4cb03c158c7e6be8ed50865706d0918db04ebab9",
+        "snapshot_document_method": "addPickPackOrdersToCart"
+      },
+      "documented_intro": "The method allows you to assign multiple orders to a specific PickPack cart in a single API call. You can assign up to 20 orders at once. If any order is already assigned to another cart, it will be moved to the new cart (only one cart assignment per order is allowed).",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_ids",
+            "documented_name": "order_ids",
+            "documented_type": "array",
+            "documented_description": "Array of order identifiers to be assigned to the cart (maximum 20 orders per call)",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "max_items": 20,
+            "element_type": null,
+            "documented_element_meaning": "order identifiers"
+          },
+          {
+            "name": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier where the orders should be assigned",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "orders_assigned",
+            "documented_name": "orders_assigned",
+            "documented_type": "int",
+            "documented_description": "Number of orders successfully assigned to the cart",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "orders_failed",
+            "documented_name": "orders_failed",
+            "documented_type": "array",
+            "documented_description": "Array of order_ids that failed to be assigned (due to validation errors)",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "element_type": null,
+            "documented_element_meaning": "order identifiers"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation.",
+        "No guarantee of batch atomicity, duplicate handling, failed-ID ordering or arithmetic equality of result counts is documented.",
+        "Behavior for21 IDs or an empty list is not documented."
+      ],
+      "documented_effects": {
+        "already_assigned_order": "moved to requested cart",
+        "maximum_assignments_per_order": 1,
+        "partial_results": {
+          "success_count": "orders_assigned",
+          "failed_ids": "orders_failed"
+        }
+      }
+    },
+    {
+      "id": "BASE-API-deletePickPackCart",
+      "method": "deletePickPackCart",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deletePickPackCart",
+        "final_url": "https://api.baselinker.com/index.php?method=deletePickPackCart",
+        "retrieved_at": "2026-10-18T00:50:41.102426+00:00",
+        "http_status": 200,
+        "bytes": 48731,
+        "sha256": "5f039dad15005e89e83fcc0c384174fef12d9366d5796f3e7f10b25ebc21fc10",
+        "snapshot_document_method": "deletePickPackCart"
+      },
+      "documented_intro": "The method allows you to delete a PickPack cart from the user's account. When a cart is deleted, all order assignments to that cart are automatically cleared (all orders in the cart are unassigned). The cart must belong to the authenticated user.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier to be deleted",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ],
+      "documented_preconditions": [
+        {
+          "subject": "cart_id",
+          "requirement": "belongs_to_authenticated_user"
+        }
+      ],
+      "documented_effects": {
+        "cart": "deleted",
+        "all_assigned_orders": "unassigned"
+      }
+    },
+    {
+      "id": "BASE-API-deletePickPackCartOrders",
+      "method": "deletePickPackCartOrders",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deletePickPackCartOrders",
+        "final_url": "https://api.baselinker.com/index.php?method=deletePickPackCartOrders",
+        "retrieved_at": "2026-10-18T00:50:41.185044+00:00",
+        "http_status": 200,
+        "bytes": 48949,
+        "sha256": "d2fc16826bfb651f5a89e6d112a1cfa7b478be46ef0246f2d07c59c3023c20c2",
+        "snapshot_document_method": "deletePickPackCartOrders"
+      },
+      "documented_intro": "The method allows you to remove all orders from a specific PickPack cart. After clearing, the cart remains active but contains no orders. All orders that were in the cart become unassigned. The operation only affects carts belonging to the authenticated user.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier to be cleared of all orders",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "orders_removed",
+            "documented_name": "orders_removed",
+            "documented_type": "int",
+            "documented_description": "Number of orders that were removed from the cart",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ],
+      "documented_preconditions": [
+        {
+          "subject": "cart_id",
+          "requirement": "belongs_to_authenticated_user"
+        }
+      ],
+      "documented_effects": {
+        "cart": "remains active",
+        "all_assigned_orders": "unassigned",
+        "removed_count": "orders_removed"
+      }
+    },
+    {
+      "id": "BASE-API-deletePickPackOrderFromCart",
+      "method": "deletePickPackOrderFromCart",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deletePickPackOrderFromCart",
+        "final_url": "https://api.baselinker.com/index.php?method=deletePickPackOrderFromCart",
+        "retrieved_at": "2026-10-18T00:50:41.437712+00:00",
+        "http_status": 200,
+        "bytes": 48757,
+        "sha256": "42fa0344f4e3c2ce89a11338a81b84c93a9c0dbd5737adb3739c645dcf7ed34c",
+        "snapshot_document_method": "deletePickPackOrderFromCart"
+      },
+      "documented_intro": "The method allows you to remove a specific order from its assigned PickPack cart. After removal, the order will no longer be associated with any cart. The operation only affects orders belonging to the authenticated user.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order identifier to be removed from its cart",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ],
+      "documented_preconditions": [
+        {
+          "subject": "order_id",
+          "requirement": "belongs_to_authenticated_user"
+        }
+      ],
+      "documented_effects": {
+        "order_cart_assignment": "removed",
+        "order_deletion": "not_documented"
+      }
+    },
+    {
+      "id": "BASE-API-getPickPackCartOrders",
+      "method": "getPickPackCartOrders",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getPickPackCartOrders",
+        "final_url": "https://api.baselinker.com/index.php?method=getPickPackCartOrders",
+        "retrieved_at": "2026-10-18T00:50:41.622681+00:00",
+        "http_status": 200,
+        "bytes": 49146,
+        "sha256": "e7db55239b9a7d34e817da15f0a39af24a832977927d123a1e35245fab5778a5",
+        "snapshot_document_method": "getPickPackCartOrders"
+      },
+      "documented_intro": "Retrieves all orders assigned to a specific PickPack cart. Returns all order IDs in reverse chronological order (most recently assigned first) without any pagination restrictions.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier to retrieve orders from",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "orders",
+            "documented_name": "orders",
+            "documented_type": "array",
+            "documented_description": "Array of all order IDs assigned to the cart",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null,
+            "documented_element_meaning": "order identifiers"
+          },
+          {
+            "path": "total_count",
+            "documented_name": "total_count",
+            "documented_type": "int",
+            "documented_description": "Total number of orders in the cart",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "explicitly_unrestricted",
+        "parameters": [],
+        "result_cap": null,
+        "ordering": "most recently assigned first",
+        "completeness_guarantee": "all order IDs assigned to cart"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ]
+    },
+    {
+      "id": "BASE-API-getPickPackCarts",
+      "method": "getPickPackCarts",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getPickPackCarts",
+        "final_url": "https://api.baselinker.com/index.php?method=getPickPackCarts",
+        "retrieved_at": "2026-10-18T00:50:41.658745+00:00",
+        "http_status": 200,
+        "bytes": 49297,
+        "sha256": "12d76898e218fd1c3750bf5dc49755d0023cfeed995b2d129b84f3441f345e31",
+        "snapshot_document_method": "getPickPackCarts"
+      },
+      "documented_intro": "The method allows you to retrieve a list of all PickPack carts belonging to the authenticated user. The method returns cart details including ID, name, color.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "carts",
+            "documented_name": "carts",
+            "documented_type": "array",
+            "documented_description": "An array of carts containing cart details.",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "carts[].cart_id",
+            "documented_name": "| - cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "carts[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(5)",
+            "documented_description": "Cart name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "carts[].color",
+            "documented_name": "| - color",
+            "documented_type": "varchar(7)",
+            "documented_description": "Cart color in hex format",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ],
+      "documented_preconditions": [
+        {
+          "subject": "returned carts",
+          "requirement": "belong_to_authenticated_user"
+        }
+      ]
+    },
+    {
+      "id": "BASE-API-getPickPackOrderCart",
+      "method": "getPickPackOrderCart",
+      "family": "Orders",
+      "group": "PickPack carts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getPickPackOrderCart",
+        "final_url": "https://api.baselinker.com/index.php?method=getPickPackOrderCart",
+        "retrieved_at": "2026-10-18T00:50:41.621382+00:00",
+        "http_status": 200,
+        "bytes": 49314,
+        "sha256": "529d1d62a29e1bf78fe17c56097ba5457a2216d112ed64d3f5c0aea6ddd6a0d1",
+        "snapshot_document_method": "getPickPackOrderCart"
+      },
+      "documented_intro": "The method allows you to retrieve cart assignment information for a single order in the PickPack system. The method returns which cart (if any) the order is currently assigned to, along with cart details. The method uses singular naming since it handles a single order and its cart assignment.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_name": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order identifier to check cart assignment for",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "cart_id",
+            "documented_name": "cart_id",
+            "documented_type": "int",
+            "documented_description": "Cart identifier (0 if order is not assigned to any cart)",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "cart_name",
+            "documented_name": "cart_name",
+            "documented_type": "varchar(5)",
+            "documented_description": "Cart name (empty string if not assigned)",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "cart_color",
+            "documented_name": "cart_color",
+            "documented_type": "varchar(7)",
+            "documented_description": "Cart color (empty string if not assigned)",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "error_message",
+            "documented_name": "error_message",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          },
+          {
+            "path": "error_code",
+            "documented_name": "error_code",
+            "documented_type": null,
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 1,
+            "presence_condition": "status=ERROR"
+          }
+        ],
+        "format": "JSON",
+        "error_fields_ref": "common_error",
+        "success_fields_on_error": "not_documented"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "open_contract_issues": [
+        "Numeric ranges, null handling, unknown parameters and validation order are not documented.",
+        "Concrete error codes, HTTP operation statuses, token permissions, concurrency, idempotency and lost-ACK recovery are not established by documentation."
+      ],
+      "documented_unassigned_result": {
+        "cart_id": 0,
+        "cart_name": "",
+        "cart_color": ""
+      }
+    }
+  ]
+}

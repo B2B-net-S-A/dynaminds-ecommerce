@@ -1,0 +1,4090 @@
+{
+  "schema": "dynaminds-base-api-document-contracts/v1",
+  "as_of": "2026-10-17",
+  "selected_index_groups": [
+    {
+      "family": "Orders",
+      "group": "Invoices"
+    },
+    {
+      "family": "Orders",
+      "group": "Receipts"
+    },
+    {
+      "family": "Product catalog",
+      "group": "Documents"
+    }
+  ],
+  "method_count": 20,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "contract_review_complete_for_all_orders_or_catalog": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-document-sources-20261017.json.gz",
+    "sha256": "bc78d68758a8a990fdddd3134d3d0676ae75765fee9f75d3d54b91c4cbbb9fe7",
+    "bytes": 203503,
+    "format": "gzip UTF-8 JSON; documents[].html_utf8 exact UTF-8 source bytes",
+    "individual_documents": 20
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented_for_reviewed_document_methods; unknown_outcome_reconciliation_and_duplicate_number_or_stock_effect_prevention_require_separate_proof"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T18:38:54.746Z",
+    "scope": "Read-only server/web TypeScript/TSX exact method/transport searches and listed route/model anchors; no runtime/SQL/account requests",
+    "searched_terms": [
+      "connector.php",
+      "X-BLToken",
+      "addInvoice",
+      "addInvoiceCorrection",
+      "addOrderInvoiceFile",
+      "getInvoiceFile",
+      "getInvoices",
+      "getSeries",
+      "addOrderReceiptFile",
+      "addReceipt",
+      "getNewReceipts",
+      "getReceipt",
+      "getReceipts",
+      "setOrderReceipt",
+      "addInventoryDocument",
+      "addInventoryDocumentFile",
+      "addInventoryDocumentItems",
+      "getInventoryDocumentFile",
+      "getInventoryDocumentItems",
+      "getInventoryDocumentSeries",
+      "getInventoryDocuments",
+      "setInventoryDocumentStatusConfirmed"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_source",
+    "anchors": [
+      {
+        "path": "server/local-invoice-routes.ts",
+        "sha256": "27164482373e4ce081f89fb4667453e968f4069cec5800246eb0cbbd50c82ccc",
+        "symbol_or_anchor": "registerLocalInvoiceRoutes",
+        "boundary": "własny preview/issue/serie/rejestr/HTML, UUID; nie connector.php"
+      },
+      {
+        "path": "server/local-invoice-values.ts",
+        "sha256": "ffdffffcc9a020b087374285167e1d3df7ebc3f5a0d52fe2dfef08820298fa49",
+        "symbol_or_anchor": "localInvoicePreviewInput/localInvoiceSeriesInput",
+        "boundary": "lokalny, ograniczony model faktury i zgód, nie wszystkie stawki/ustawienia Base"
+      },
+      {
+        "path": "server/b2b-invoice-routes.ts",
+        "sha256": "49b0b7575b84e452daac2757d13f1e948b6abe16f2a0ff065dfeaa45749f1374",
+        "symbol_or_anchor": "registerB2bInvoiceRoutes",
+        "boundary": "odrębne B2B preview/issue/FA3, nie addInvoice wire"
+      },
+      {
+        "path": "server/local-consumer-credit-routes.ts",
+        "sha256": "8412e4cdeb105c4bc41f95cacdfa5b682d554283ae32521c13174b729d3302f0",
+        "symbol_or_anchor": "registerLocalConsumerCreditRoutes",
+        "boundary": "historyczna korekta konsumencka, własny source/preview/issue/commands"
+      },
+      {
+        "path": "server/return-credit206-routes.ts",
+        "sha256": "6b6dcb95d3c8375a5d3e155f2283ba814461360792c8badb575ff185d008db14",
+        "symbol_or_anchor": "registerReturnCredit206Routes",
+        "boundary": "korekty zwrotów destinations, strategia/historia/nochange, nie dowód pełnego addInvoiceCorrection"
+      },
+      {
+        "path": "server/b2b-credit-routes.ts",
+        "sha256": "c4b0ff0e148bd7b5f80d28514623e0baf318f7eb55e954739463fe1adf481b4a",
+        "symbol_or_anchor": "registerB2bCreditRoutes",
+        "boundary": "odrębny B2B correction workflow, nie dowolna korekta Base"
+      },
+      {
+        "path": "server/invoice-routes.ts",
+        "sha256": "0229341faa3c3f0b49f1bdbd2efc934e91bc07d66c09694603572df0a51c4aa1",
+        "symbol_or_anchor": "registerInvoiceRoutes",
+        "boundary": "provider preview/queue/cancel/reconcile/status; asynchroniczny plan, nie wire Base"
+      },
+      {
+        "path": "server/odoo-export-routes.ts",
+        "sha256": "7b3f40a491b36205ba960d380c1ae868b1762010aea847bd6150c6370f6dc4f0",
+        "symbol_or_anchor": "registerOdooExportRoutes",
+        "boundary": "eksport Odoo oraz pobieranie/cache PDF, nie dowolny upload ERP i nadpisanie numeru"
+      },
+      {
+        "path": "server/odoo-invoice-files.ts",
+        "sha256": "e9e529460d5241c7416ce43d3c056f0f37d01fefcc4b499c697b4bc8bedf5e52",
+        "symbol_or_anchor": "fetchOdooInvoiceFile/cachedOdooInvoiceFile",
+        "boundary": "zaszyfrowany cache PDF powiązany z eksportem Odoo"
+      },
+      {
+        "path": "server/warehouse-routes.ts",
+        "sha256": "a884f26499c3ff0ad5f9d3a462abefcda6b0e8aeb16f89205b12b500b1f5f613",
+        "symbol_or_anchor": "registerWarehouseRoutes",
+        "boundary": "własne draft/post/cancel i kursor UUID, nie typy0..5/page/filter Base"
+      },
+      {
+        "path": "server/warehouse.ts",
+        "sha256": "592908ec669c994149a4830ff9fd4c01e08377ec8940cfbb3280903f3445cf43",
+        "symbol_or_anchor": "warehouseSchema/createWarehouseDocument/postWarehouseDocument",
+        "boundary": "receipt/transfer/count/issue; pozycje UUID i stan, nie pełna schema koszt/expiry/batch/serial z Base"
+      },
+      {
+        "path": "server/warehouse-document-register-routes.ts",
+        "sha256": "9fd1c08227ac04d3106b88425b267b6e924bfc263becf6f71e1098f4fe460914",
+        "symbol_or_anchor": "registerWarehouseDocumentRegisterRoutes",
+        "boundary": "rejestr odczytowy/detail/export; mutacje odmawiane405"
+      },
+      {
+        "path": "server/warehouse-document-register.ts",
+        "sha256": "65823c253f5c57215a61dce5b5b64bf5e1d16feea528a2f183f0783b8e8150f9",
+        "symbol_or_anchor": "warehouseDocumentRegister/legacyUnion",
+        "boundary": "union własnych dokumentów i stocktake_adjustment, osobne uprawnienie wartości"
+      },
+      {
+        "path": "server/stocktake-adjustments-routes.ts",
+        "sha256": "b4d68ada03a710bde6bceb3f026e9950090a4774d669b792d4b41d92d8f7ec84",
+        "symbol_or_anchor": "registerStocktakeAdjustmentRoutes",
+        "boundary": "serie/preview/post i eksport dokumentów spisu, nie ogólne serie/mutacje Base"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "sales_invoices": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/local-invoice-routes.ts",
+        "server/local-invoice-values.ts",
+        "server/b2b-invoice-routes.ts",
+        "server/invoice-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/local-invoices/series",
+        "POST /api/local-invoices/orders/:id/previews",
+        "POST /api/local-invoices/previews/:id/issue",
+        "GET /api/local-invoices/documents",
+        "GET /api/local-invoices/documents/:id",
+        "POST /api/orders/:id/invoicing/preview"
+      ],
+      "open": [
+        "Własne UUID, wersje, zgody, preview/issue, lokalne statusy i kursor nie implementują integer-ID/Base envelope.",
+        "Consumer ordinary PL/PLN i osobne B2B nie dowodzą całości stawek EXPT/ZW/NP/OO, krajów, walut, wszystkich ustawień serii i gov_* Base.",
+        "HTML/FA3 i statusy provider nie zastępują pliku Base oraz jego government fields."
+      ]
+    },
+    "consumer_corrections": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/local-consumer-credit-routes.ts",
+        "server/return-credit206-routes.ts",
+        "server/b2b-credit-routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/local-consumer-credits/previews",
+        "POST /api/local-consumer-credits/previews/:id/issue",
+        "GET /api/consumer-return-credits/orders/:id/strategy",
+        "POST /api/consumer-return-credits/previews",
+        "POST /api/consumer-return-credits/previews/:id/issue"
+      ],
+      "open": [
+        "Lokalny RMA/consumer lub B2B financial chain nie dowodzi dowolnych korekt adresu/ceny/podatku i dodawania nowych pozycji.",
+        "Exact replay własnych kluczy i nochange nie oznacza udokumentowanej idempotencji addInvoiceCorrection.",
+        "Nadrzędność return_order_id/series_id oraz pełne Base items pozostają niezrealizowanym kontraktem wire."
+      ]
+    },
+    "sales_files": {
+      "state": "odoo_specific_adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/odoo-export-routes.ts",
+        "server/odoo-invoice-files.ts",
+        "server/local-invoice-routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/odoo-invoice-exports/:id/pdf",
+        "GET /api/odoo-invoice-exports/:id/pdf",
+        "GET /api/local-invoices/documents/:id/print"
+      ],
+      "open": [
+        "Cache/pobranie Odoo PDF i HTML lokalnej faktury nie implementują upload data:base64 do dowolnej istniejącej faktury ani nadpisania numeru.",
+        "Base/external fallback, XML zależny od kraju i JSON base64 envelope pozostają otwarte."
+      ]
+    },
+    "fiscal_receipts": {
+      "state": "base_fiscal_queue_and_receipt_wire_not_located_in_reviewed_source",
+      "anchors": [
+        "server/local-invoice-values.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Faktura konsumencka z not_fiscal_receipt_confirmed/fiscalized=false nie jest paragonem fiskalnym.",
+        "Nie znaleziono dispatchu sześciu nazw metod w server/web TypeScript; nie jest to dowód globalnej nieobecności każdego urządzenia/pośrednika.",
+        "Kolejka, device_id, potwierdzanie druku, zewnętrzny raw JWS i numeracja paragonów wymagają osobnej implementacji/odbioru."
+      ]
+    },
+    "warehouse_documents": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/warehouse-routes.ts",
+        "server/warehouse.ts",
+        "server/warehouse-document-register-routes.ts",
+        "server/warehouse-document-register.ts",
+        "server/stocktake-adjustments-routes.ts"
+      ],
+      "route_candidates": [
+        "POST /api/warehouse-documents",
+        "PATCH /api/warehouse-documents/:id",
+        "POST /api/warehouse-documents/:id/post",
+        "GET /api/warehouse-documents",
+        "GET /api/warehouse-documents/:id",
+        "GET /api/warehouse-document-register",
+        "GET /api/warehouse-document-register/:origin/:id",
+        "POST /api/stocktake-adjustments/series"
+      ],
+      "open": [
+        "4 string kinds, UUID i cursor/limit nie są 6 integer types, page100 ani Base source/connection fields.",
+        "Edytowanie pełnego lokalnego draft nie jest addInventoryDocumentItems append contract.",
+        "Istniejące serie spisu nie dowodzą pełnego getInventoryDocumentSeries; post wymaga wersji, Base confirm jej nie deklaruje.",
+        "Lot/cost/serial/expiry i transfer location schemas muszą być zmapowane na rzeczywiste ścieżki, nie tylko podobne nazwy kolumn."
+      ]
+    },
+    "warehouse_files": {
+      "state": "base_file_upload_and_base64_envelope_not_located_in_reviewed_routes",
+      "anchors": [
+        "server/warehouse-document-register-routes.ts",
+        "server/stocktake-adjustments-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/warehouse-document-register/:origin/:id/export",
+        "GET /api/stocktake-adjustments/documents/:id/export"
+      ],
+      "open": [
+        "Własny eksport rejestru/spisu nie jest dowodem uploadu PDF data:base64, external_document_number ani Base/external fallback."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "DOC-001",
+      "methods": [
+        "addInvoiceCorrection"
+      ],
+      "issue": "Pełny schemat items nie jest zadeklarowany; order_product_id tylko w prozie, inne klucze tylko w przykładzie. Powód9 wymaga komentarza, ale pola komentarza brak.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-002",
+      "methods": [
+        "getSeries"
+      ],
+      "issue": "Typ int identyfikatora różni się od tekstu w przykładzie; format numeracji nie ma pełnej gramatyki.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-003",
+      "methods": [
+        "getReceipt"
+      ],
+      "issue": "exchange_rate deklarowany decimal(10,4), przykład pusty tekst; getInvoices używa decimal(10,6).",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-004",
+      "methods": [
+        "addOrderReceiptFile",
+        "getReceipt",
+        "setOrderReceipt"
+      ],
+      "issue": "Długości numeru paragonu20 w upload/potwierdzeniu i30 w odczycie; nie wyrównujemy ich bez dowodu.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-005",
+      "methods": [
+        "getInvoices",
+        "getNewReceipts",
+        "getReceipt",
+        "getReceipts"
+      ],
+      "issue": "Listy używają invoices/items, orders/products, receiptroot/items i receipts/products; nie są wymienne.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-006",
+      "methods": [
+        "addInventoryDocument",
+        "getInventoryDocumentSeries"
+      ],
+      "issue": "Przykłady prefiksów/nazw i typów0..5 nie są konsekwentne; tworzenie nie podaje series_id.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-007",
+      "methods": [
+        "getInventoryDocuments"
+      ],
+      "issue": "connection_* i source_object_* mają osobne wartości;0 udokumentowane tylko dla źródła w wyniku, nie dla filtra/connection_type.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-008",
+      "methods": [
+        "getInvoiceFile",
+        "getInventoryDocumentFile"
+      ],
+      "issue": "get_external=true może zwrócić Base fallback; nie jest flagą potwierdzającą obecność pliku zewnętrznego.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-009",
+      "methods": [
+        "getInvoices",
+        "getReceipts",
+        "getNewReceipts"
+      ],
+      "issue": "id_from inkluzywne tylko jawnie w getReceipts; waiting queue nie ma limitu100 ani udokumentowanego claim/lease.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    },
+    {
+      "id": "DOC-010",
+      "methods": [
+        "addOrderReceiptFile",
+        "addOrderInvoiceFile"
+      ],
+      "issue": "Raw JWS paragonu, PDF data:base64 i krajowo dopuszczony XML faktury mają odrębne kontrakty; brak pełnej macierzy MIME/limitów/krajów.",
+      "decision": "preserve_individual_documented_rules_and_explicit_unknowns; no_inferred_universal_alias_or_default"
+    }
+  ],
+  "open_account_dependencies": [
+    "Osobno uprawniony sandbox lub testowe konto do rzeczywistego wire/readback każdej metody; brak konta nie jest odbiorem.",
+    "Fiskalna drukarka/urządzenie i e-paragon JWS wymagają odrębnego dopuszczonego środowiska, kolejki i dowodów wykonania.",
+    "Faktury/korekty: ustawienia serii/krajów/VAT/walut/ERP i governmentdata są zależne od konta; publikacja dokumentacji nie nadaje zgodności prawnej/fiskalnej.",
+    "Potwierdzenie dokumentu magazynowego i powtórzenie po nieznanym wyniku wymagają dokładnych odczytów stock/WMS/journal, nie samego status SUCCESS.",
+    "Brak jawnych kodów błędów, macierzy uprawnień, Retry-After i klientowego klucza idempotencji; nie wprowadzamy ich z podobnych lokalnych tras."
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-addInvoice",
+      "method": "addInvoice",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInvoice",
+        "final_url": "https://api.baselinker.com/index.php?method=addInvoice",
+        "retrieved_at": "2026-10-17T18:34:11.152324+00:00",
+        "http_status": 200,
+        "bytes": 49242,
+        "sha256": "16f030261719e2921a71f30d7eb8f551a6a1ab7e8df2903292c361a83ee871d1",
+        "snapshot_document_method": "addInvoice"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Tworzy fakturę dla zamówienia i wskazanej serii. vat_rate=DEFAULT jest domyślne i używa ustawień serii; ITEM używa stawki pozycji zamówienia.",
+        "vat_rate opisano jako text, ale dopuszczono także liczbę0–100 oraz EXPT/ZW/NP/OO. Sposób serializacji wartości liczbowej pozostaje nieokreślony."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from Base order manager",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "series_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Series numbering identifier",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "vat_rate",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "text",
+            "documented_description": "(optional) VAT rate - parameter accepts values:- \"DEFAULT\": according to the numbering series (is set as default value)- \"ITEM\": use the rate assigned to the item of the order- \"EXPT\" / \"ZW\": exempt from VAT- \"NP\": annotation NP- \"OO\": VAT reverse charge- value: number from range 0-100",
+            "source_table_row": 3,
+            "source_kind": "table_row",
+            "default": "DEFAULT",
+            "documented_values": [
+              "DEFAULT",
+              "ITEM",
+              "EXPT",
+              "ZW",
+              "NP",
+              "OO"
+            ],
+            "numeric_alternative": {
+              "min": 0,
+              "max": 100,
+              "json_number_or_numeric_string": "not_documented"
+            }
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "invoice_id",
+            "documented_type": "int",
+            "documented_description": "ID of the added invoice.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "sales_invoices",
+      "proposed_acceptance": [
+        "Wskazana seria/order tworzą jedną fakturę; odczyt ID, numeru, pozycji i każdej obsługiwanej stawki odpowiada oficjalnemu wire.",
+        "Powtórzenie/nieznany wynik nie zużywa numeracji ponownie bez udokumentowanego uzgodnienia.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addInvoiceCorrection",
+      "method": "addInvoiceCorrection",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInvoiceCorrection",
+        "final_url": "https://api.baselinker.com/index.php?method=addInvoiceCorrection",
+        "retrieved_at": "2026-10-17T18:34:11.646651+00:00",
+        "http_status": 200,
+        "bytes": 53283,
+        "sha256": "e820594f25835d5e368383fd9160f50036622511af028bdf817adde0bb4cb4b2",
+        "snapshot_document_method": "addInvoiceCorrection"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Wymagane original_invoice_id lub return_order_id. Gdy przekazano return_order_id, wszystkie pozostałe pola poza series_id są ignorowane, a dane pochodzą ze zwrotu. Nie zastępujemy tej reguły pierwszeństwa własną.",
+        "Pominięte pola opcjonalne korzystają z ustawień serii/domyślnych; konkretnych wartości nie podano.",
+        "Brak order_product_id powoduje dopisanie nowej pozycji na końcu. Nie ma formalnego schematu elementów items; pola w przykładzie nie stają się pełnym kontraktem.",
+        "correcting_reason=9 odsyła do komentarza, lecz parametr komentarza nie został wymieniony w tabeli wejścia."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "original_invoice_id",
+            "required": null,
+            "requiredness_source": "explicit_alternative_identifier",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Original invoice identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "required_when": "return_order_id absent"
+          },
+          {
+            "name": "return_order_id",
+            "required": null,
+            "requiredness_source": "explicit_alternative_identifier",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Return order identifier",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "required_when": "original_invoice_id absent"
+          },
+          {
+            "name": "series_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Series numbering identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_sell",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Sell date in unix timestamp",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "correcting_reason",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Reason for correction- 1: prepayments return - 2: compulsory discounts - 3: price increase after invoicing - 4: refund the buyer the amount of undue - 5: return the goods - 6: mistakes as to price, rate, amount of tax on invoices or position - 7: correcting buyer's address - 8: withdrawal from the contract - 9: other reason - fill in in the comments",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "documented_values": {
+              "1": "prepayments_return",
+              "2": "compulsory_discounts",
+              "3": "price_increase",
+              "4": "undue_amount_refund",
+              "5": "goods_return",
+              "6": "price_tax_or_item_mistake",
+              "7": "buyer_address",
+              "8": "contract_withdrawal",
+              "9": "other_reason_in_comments"
+            }
+          },
+          {
+            "name": "correcting_items",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "bool",
+            "documented_description": "(optional) Whether to correct invoice items (0 - no, 1 - yes)",
+            "source_table_row": 6,
+            "source_kind": "table_row",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "name": "correcting_data",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "bool",
+            "documented_description": "(optional) Whether to correct invoice data (0 - no, 1 - yes)",
+            "source_table_row": 7,
+            "source_kind": "table_row",
+            "documented_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "name": "invoice_fullname",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Full name for the invoice",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_company",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Company name",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_address",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Address",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_postcode",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Postal code",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_city",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) City",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_state",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) State/Province",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_country_code",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Country code (e.g. PL)",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_nip",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Tax ID number",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "array",
+            "documented_description": "(optional) Array of items to correct. If order_product_id is not provided, item will be added as new position at the end",
+            "source_table_row": 16,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "fv_payment",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Payment method",
+            "source_table_row": 17,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "fv_person",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "(optional) Issuer name",
+            "source_table_row": 18,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "original_invoice_id",
+              "return_order_id"
+            ]
+          },
+          {
+            "when": "return_order_id provided",
+            "ignored_parameters": "all_other_parameters_except_series_id"
+          }
+        ],
+        "items_schema": {
+          "fully_documented": false,
+          "prose_only_field": {
+            "name": "items[].order_product_id",
+            "documented_type": "not_documented",
+            "omission": "append_as_new_position_at_end"
+          },
+          "example_only_fields": [
+            "item_name",
+            "item_sku",
+            "item_ean",
+            "item_quantity",
+            "item_price_brutto",
+            "item_tax_rate"
+          ],
+          "example_only_fields_are_not_full_formal_schema": true
+        }
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "invoice_id",
+            "documented_type": "int",
+            "documented_description": "ID of the added invoice.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "consumer_corrections",
+      "proposed_acceptance": [
+        "Osobno sprawdzić original_invoice_id i return_order_id wraz z nadrzędnością zwrotu/wyjątkiem series_id.",
+        "Przypadki ilości/ceny/VAT/danych nabywcy i dopisania pozycji mają pełny odczyt kwot/przyczyny oraz oryginału; obecne lokalne korekty nie dowodzą tego pełnego zakresu.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addOrderInvoiceFile",
+      "method": "addOrderInvoiceFile",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderInvoiceFile",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderInvoiceFile",
+        "retrieved_at": "2026-10-17T18:34:11.606698+00:00",
+        "http_status": 200,
+        "bytes": 49428,
+        "sha256": "3527ece3e3853bd1d676c0cca4421223f7b147b42b9c3ff98fdf4b9f084d42bb",
+        "snapshot_document_method": "addOrderInvoiceFile"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Zastępuje standardowy plik wcześniej wystawionej faktury plikiem zewnętrznym. external_invoice_number nadpisuje numer Base.",
+        "PDF: binarna zawartość base64 z prefiksem data:. W niektórych krajach, np. Brazylii, dopuszczono XML z tym samym kodowaniem. Nie podano pełnej listy krajów, MIME i limitów pliku."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Base invoice identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "file",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "text",
+            "documented_description": "Invoice PDF file in binary format encoded in base64, at the very beginning of the invoice string provide a prefix \"data:\" e.g. \"data:4AAQSkSzkJRgABA[...]\"In some countries (e.g. Brazil), XML encoded in base64 is allowed - the string should also start with a prefix \"data:\" e.g. \"data:PG5mZVB[...]\"",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "encoding": "base64_binary_prefixed_data:",
+            "documented_formats": [
+              "PDF",
+              "XML_country_dependent"
+            ]
+          },
+          {
+            "name": "external_invoice_number",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "varchar(30)",
+            "documented_description": "External system invoice number (overwrites Base invoice number)",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "sales_files",
+      "proposed_acceptance": [
+        "Istniejąca faktura: upload PDF i tylko wspierany krajowo XML; odczyt external/numeru oraz zachowanie oryginału po odmowie.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInvoiceFile",
+      "method": "getInvoiceFile",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInvoiceFile",
+        "final_url": "https://api.baselinker.com/index.php?method=getInvoiceFile",
+        "retrieved_at": "2026-10-17T18:34:14.292625+00:00",
+        "http_status": 200,
+        "bytes": 49432,
+        "sha256": "fb94df5f2b9bebe0dfcb4e0d7e8785cfd918abb37f09915c3316124abdcb9f4f",
+        "snapshot_document_method": "getInvoiceFile"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "get_external=false jest domyślne. true pobiera zewnętrzny plik ERP/API, jeśli istnieje; gdy go brak, zwraca format Base.",
+        "Wynik invoice ma prefiks data: i base64; invoice_number zależy od wyboru pliku. Fallback nie jest dowodem istnienia zewnętrznego załącznika."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Base invoice identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "get_external",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "bool",
+            "documented_description": "false (by default) - download invoice file generated by Basetrue - download an invoice from an external accounting system (if provided there), or an invoice uploaded by API. If an additional invoice file does not exist, an invoice in Base format will be returned",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "default": false
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "invoice",
+            "documented_type": "text",
+            "documented_description": "Invoice file in binary format encoded in base64, at the very beginning of the invoice string a prefix \"data:\" is provided e.g. \"data:4AAQSkSzkJRgABA[...]\"",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "encoding": "base64_binary_prefixed_data:"
+          },
+          {
+            "path": "invoice_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "Base invoice number (or external accounting system number if get_external is set to true)",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "external_fallback": "Base_generated_file_when_external_missing"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "sales_files",
+      "proposed_acceptance": [
+        "Osobno Base, external i brak external→fallback, dekodowanie data:base64 i numer z właściwego źródła.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInvoices",
+      "method": "getInvoices",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInvoices",
+        "final_url": "https://api.baselinker.com/index.php?method=getInvoices",
+        "retrieved_at": "2026-10-17T18:34:11.799709+00:00",
+        "http_status": 200,
+        "bytes": 59434,
+        "sha256": "f46b1020414a6f564d8522d435931af2fa836db629d28b01726c1bedac8b05da",
+        "snapshot_document_method": "getInvoices"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Najwyżej100 faktur na wywołanie. id_from wskazuje punkt pobierania kolejnych ID; strona nie definiuje wprost inkluzywności ani kolejności i zakończenia skanowania.",
+        "get_external_invoices=false pomija faktury z zewnętrznym plikiem; domyślnej wartości nie podano.",
+        "get_government_data=true dodaje gov_id/gov_date/gov_status, opisane w prozie parametru wejścia; brak tych pól w głównej tabeli wyniku nie oznacza ich braku w kontrakcie warunkowym.",
+        "Pola correcting_* występują wyłącznie dla korekt, exchange_* wyłącznie przy przeliczeniu waluty. exchange_rate ma decimal(10,6).",
+        "items zawiera dziewięć pól opisanych w prozie wiersza; nie zlewamy ich z polami głównej faktury. invoice_country_code ma przykład EN, nie dopowiadamy walidacji ISO."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Invoice identifier. Completing this field will result in downloading information about only one specific invoice.",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "order_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Order identifier. Completing this field will result in downloading information only about the invoice associated with this order (if the order has an invoice created).",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from which invoices are to be collected. Unix time stamp format.",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "id_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The invoice ID number from which subsequent invoices are to be retrieved.",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "series_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) numbering series ID that allows filtering after the invoice numbering series.",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "get_external_invoices",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "bool",
+            "documented_description": "(optional) If set to 'false' then omits from the results invoices that already have an external invoice file uploaded by addOrderInvoiceFile method (useful for ERP integrations uploading invoice files to Base)",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "get_government_data",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "bool",
+            "documented_description": "(optional) If set to 'true' then includes government data fields in the response:- gov_id (varchar) - government invoice identifier- gov_date (int) - government invoice date (unix time format)- gov_status (int) - government invoice status ( 1 => Sent, 2 => Accepted, 3 => Rejected, 5 => Offline mode)",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "invoices",
+            "documented_type": "array",
+            "documented_description": "An array of the information about the invoices found. Each invoice is described by the fields listed below.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_id",
+            "documented_type": "int",
+            "documented_description": "Invoice identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].order_id",
+            "documented_type": "int",
+            "documented_description": "Order identifier for which an invoice is issued",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].series_id",
+            "documented_type": "int",
+            "documented_description": "Invoice numbering series identifier",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].type",
+            "documented_type": "varchar(10)",
+            "documented_description": "Type of invoice. Available values: normal - regular invoicecorrecting - corrective invoice",
+            "source_table_row": 6,
+            "source_kind": "table_row",
+            "documented_values": [
+              "normal",
+              "correcting"
+            ]
+          },
+          {
+            "path": "invoices[].number",
+            "documented_type": "varchar(30)",
+            "documented_description": "Full invoice number. Format depends on account settings. Usually [no]/[month]/[year]",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].sub_id",
+            "documented_type": "int",
+            "documented_description": "Monthly/yearly number - invoice number element",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].month",
+            "documented_type": "int",
+            "documented_description": "Month - element of invoice number (0 if annual numbering is used)",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].year",
+            "documented_type": "int",
+            "documented_description": "Year - invoice number element",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].postfix",
+            "documented_type": "varchar(1)",
+            "documented_description": "Suffix - invoice number element",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].date_add",
+            "documented_type": "int",
+            "documented_description": "Invoice creation date (unix time format)",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].date_sell",
+            "documented_type": "int",
+            "documented_description": "Sale date (unix time format)",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].date_pay_to",
+            "documented_type": "int",
+            "documented_description": "Due date (unix time format). Not completed by default (value 0)",
+            "source_table_row": 14,
+            "source_kind": "table_row",
+            "default": 0
+          },
+          {
+            "path": "invoices[].currency",
+            "documented_type": "char(3)",
+            "documented_description": "3-letter currency symbol (e.g. EUR, PLN)",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].total_price_brutto",
+            "documented_type": "float",
+            "documented_description": "Total gross invoice value",
+            "source_table_row": 16,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].total_price_netto",
+            "documented_type": "float",
+            "documented_description": "Total net invoice value",
+            "source_table_row": 17,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].payment",
+            "documented_type": "varchar(100)",
+            "documented_description": "Payment method name",
+            "source_table_row": 18,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].additional_info",
+            "documented_type": "varchar(500)",
+            "documented_description": "Additional information/invoice remarks",
+            "source_table_row": 19,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_fullname",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - name and surname",
+            "source_table_row": 20,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_company",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - company",
+            "source_table_row": 21,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_nip",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - Vat Reg. no./tax number",
+            "source_table_row": 22,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_address",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - street and house number",
+            "source_table_row": 23,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_postcode",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - postcode",
+            "source_table_row": 24,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_city",
+            "documented_type": "varchar(100)",
+            "documented_description": "Billing details - city",
+            "source_table_row": 25,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_country",
+            "documented_type": "varchar(20)",
+            "documented_description": "Billing details - country",
+            "source_table_row": 26,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].invoice_country_code",
+            "documented_type": "char(2)",
+            "documented_description": "Billing details - country code (two-letter, e.g. EN)",
+            "source_table_row": 27,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].seller",
+            "documented_type": "varchar(250)",
+            "documented_description": "Seller data (all in one field)",
+            "source_table_row": 28,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].issuer",
+            "documented_type": "varchar(100)",
+            "documented_description": "Issuer data",
+            "source_table_row": 29,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].correcting_to_invoice_id",
+            "documented_type": "int",
+            "documented_description": "Only with a corrective invoice. The identifier of the corrected invoice.",
+            "source_table_row": 30,
+            "source_kind": "table_row",
+            "conditional_presence": "corrective_invoice_only"
+          },
+          {
+            "path": "invoices[].correcting_reason",
+            "documented_type": "varchar(100)",
+            "documented_description": "Only with a corrective invoice. Reason for correcting an invoice.",
+            "source_table_row": 31,
+            "source_kind": "table_row",
+            "conditional_presence": "corrective_invoice_only"
+          },
+          {
+            "path": "invoices[].correcting_items",
+            "documented_type": "bool",
+            "documented_description": "Only with a corrective invoice. Flag indicating whether the correction changes the invoice items.",
+            "source_table_row": 32,
+            "source_kind": "table_row",
+            "conditional_presence": "corrective_invoice_only"
+          },
+          {
+            "path": "invoices[].correcting_data",
+            "documented_type": "bool",
+            "documented_description": "Only with a corrective invoice. A flag indicating whether the correction changes the buyer data.",
+            "source_table_row": 33,
+            "source_kind": "table_row",
+            "conditional_presence": "corrective_invoice_only"
+          },
+          {
+            "path": "invoices[].external_invoice_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "External system invoice number",
+            "source_table_row": 34,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].exchange_currency",
+            "documented_type": "char(3)",
+            "documented_description": "Only for converted invoices. The target currency into which the invoice value was additionally converted.",
+            "source_table_row": 35,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_invoice_only"
+          },
+          {
+            "path": "invoices[].exchange_rate",
+            "documented_type": "decimal(10,6)",
+            "documented_description": "Only for converted invoices. Exchange rate (conversion from field \"currency\" to field \"exchange_currency\".",
+            "source_table_row": 36,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_invoice_only"
+          },
+          {
+            "path": "invoices[].exchange_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "Only for converted invoices. Date of exchange rate.",
+            "source_table_row": 37,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_invoice_only"
+          },
+          {
+            "path": "invoices[].exchange_info",
+            "documented_type": "varchar(20)",
+            "documented_description": "Only for converted invoices. Information on the exchange rate source (NBP table number).",
+            "source_table_row": 38,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_invoice_only"
+          },
+          {
+            "path": "invoices[].external_id",
+            "documented_type": "int",
+            "documented_description": "Invoice identifier used in a remote accounting system.",
+            "source_table_row": 39,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "invoices[].items",
+            "documented_type": "array",
+            "documented_description": "An array of invoice items. Each element of the array is also an array containing fields:name (varchar) - item namesku (varchar) - product SKU numberean (varchar) - product EAN numberprice_brutto (float) - single item gross priceprice_netto (float) - single item net pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - quantity of piecesis_shipment (int) - if the item is a shipment (0 - no, 1 - yes)order_product_id (int) - ID of order item from Base order manager",
+            "source_table_row": 40,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "invoices[].items[].name",
+            "documented_type": "varchar",
+            "documented_description": "item name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].sku",
+            "documented_type": "varchar",
+            "documented_description": "product SKU number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].ean",
+            "documented_type": "varchar",
+            "documented_description": "product EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].price_brutto",
+            "documented_type": "float",
+            "documented_description": "single item gross price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].price_netto",
+            "documented_type": "float",
+            "documented_description": "single item net price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "invoices[].items[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of pieces",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].is_shipment",
+            "documented_type": "int",
+            "documented_description": "if the item is a shipment (0 - no, 1 - yes)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].items[].order_product_id",
+            "documented_type": "int",
+            "documented_description": "ID of order item from Base order manager",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 40
+          },
+          {
+            "path": "invoices[].gov_id",
+            "documented_type": "varchar",
+            "conditional_presence": "get_government_data=true",
+            "source_kind": "input_table_row_description",
+            "source_table_row": 7,
+            "documented_description": "government invoice identifier"
+          },
+          {
+            "path": "invoices[].gov_date",
+            "documented_type": "int",
+            "conditional_presence": "get_government_data=true",
+            "source_kind": "input_table_row_description",
+            "source_table_row": 7,
+            "encoding": "unix_time",
+            "documented_description": "government invoice date (unix time format)"
+          },
+          {
+            "path": "invoices[].gov_status",
+            "documented_type": "int",
+            "conditional_presence": "get_government_data=true",
+            "source_kind": "input_table_row_description",
+            "source_table_row": 7,
+            "documented_values": {
+              "1": "Sent",
+              "2": "Accepted",
+              "3": "Rejected",
+              "5": "Offline mode"
+            },
+            "documented_description": "government invoice status ( 1 => Sent, 2 => Accepted, 3 => Rejected, 5 => Offline mode)"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "id_from",
+        "result_cap": 100,
+        "starting_id_inclusive": "not_explicitly_documented",
+        "ordering": "not_documented",
+        "end_of_scan": "not_documented",
+        "default_start": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "filter_combination": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "sales_invoices",
+      "proposed_acceptance": [
+        "Przekroczyć100 wyników, przejść id_from bez braków/duplikatów i określić empiryczne granice, nie promując ich do gwarancji dokumentacji.",
+        "Filtry po ID/order/series/date, pomijanie external, korekty/waluty oraz warunkowe gov_* są odczytywane bez zgubienia pól.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getSeries",
+      "method": "getSeries",
+      "family": "Orders",
+      "group": "Invoices",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getSeries",
+        "final_url": "https://api.baselinker.com/index.php?method=getSeries",
+        "retrieved_at": "2026-10-17T18:34:12.179890+00:00",
+        "http_status": 200,
+        "bytes": 49476,
+        "sha256": "7fc19baab6771b4d381f4e10e72b06a1e084577f6fcf1ca30397089b29117af9",
+        "snapshot_document_method": "getSeries"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Brak zadeklarowanych parametrów; przykład przesyła {}. Typy serii: INVOICE/CORRECTION/RECEIPT.",
+        "id ma typ int, lecz przykład używa tekstowych identyfikatorów. Składnia format nie została w pełni opisana; to inny zbiór niż serie dokumentów magazynowych."
+      ],
+      "input": {
+        "parameters": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "series",
+            "documented_type": "array",
+            "documented_description": "An array of numbering series information.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "series[].id",
+            "documented_type": "int",
+            "documented_description": "Series numbering identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "series[].type",
+            "documented_type": "varchar(10)",
+            "documented_description": "Numbering type - possible values (INVOICE, CORRECTION, RECEIPT)",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "documented_values": [
+              "INVOICE",
+              "CORRECTION",
+              "RECEIPT"
+            ]
+          },
+          {
+            "path": "series[].name",
+            "documented_type": "varchar(20)",
+            "documented_description": "Numbering name",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "series[].format",
+            "documented_type": "varchar(30)",
+            "documented_description": "Numbering format",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "sales_invoices",
+      "proposed_acceptance": [
+        "Odczyt trzech typów serii oraz identyfikatorów/formatów, bez utożsamiania ich z magazynowymi.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addOrderReceiptFile",
+      "method": "addOrderReceiptFile",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addOrderReceiptFile",
+        "final_url": "https://api.baselinker.com/index.php?method=addOrderReceiptFile",
+        "retrieved_at": "2026-10-17T18:34:12.091575+00:00",
+        "http_status": 200,
+        "bytes": 49405,
+        "sha256": "244f7820484f134e7c94f95043ec79c10b669d5dc20461002a3fbd14dbdc26a5",
+        "snapshot_document_method": "addOrderReceiptFile"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Zastępuje standardowy plik wcześniej wystawionego paragonu zewnętrznym. external_receipt_number nadpisuje numer Base.",
+        "PDF wymaga data:base64; JWS jest surowym tokenem bez base64 i bez prefiksu data:. Nie wolno ujednolicić tych dwóch reprezentacji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Base receipt identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "file",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "text",
+            "documented_description": "Receipt file in PDF or JWS format. For PDF: binary content encoded in base64 with a \"data:\" prefix, e.g. \"data:4AAQSkSzkJRgABA[...]\". For JWS (e-receipt): raw JWS token string (without base64 encoding or \"data:\" prefix).",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "documented_formats": {
+              "PDF": "base64_binary_prefixed_data:",
+              "JWS": "raw_JWS_token_no_base64_no_data_prefix"
+            }
+          },
+          {
+            "name": "external_receipt_number",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "varchar(20)",
+            "documented_description": "External system receipt number (overwrites Base receipt number)",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Osobno PDF data:base64 i raw JWS; external number po odczycie, bez mylenia załącznika z fiskalizacją.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addReceipt",
+      "method": "addReceipt",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addReceipt",
+        "final_url": "https://api.baselinker.com/index.php?method=addReceipt",
+        "retrieved_at": "2026-10-17T18:34:12.360183+00:00",
+        "http_status": 200,
+        "bytes": 48904,
+        "sha256": "ead3e99780a2898a8ca9e0e2fd666ae397e861e9e535fb15e77b5d535a693cff",
+        "snapshot_document_method": "addReceipt"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Tworzy paragon dla zamówienia; pominięcie series_id wybiera domyślną serię paragonów.",
+        "Utworzenie paragonu w Base nie jest na tej stronie potwierdzeniem fiskalizacji na urządzeniu."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Order identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "series_id",
+            "required": false,
+            "requiredness_source": "explicit_omission_behavior",
+            "default_status": "documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Receipt numbering series identifier. If not provided, the default receipt series will be used.",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "default": "default_receipt_series"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "receipt_id",
+            "documented_type": "int",
+            "documented_description": "ID of the created receipt",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Tworzenie z jawną i domyślną serią, odczyt receipt_id oraz bezpieczne uzgodnienie nieznanego wyniku.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getNewReceipts",
+      "method": "getNewReceipts",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getNewReceipts",
+        "final_url": "https://api.baselinker.com/index.php?method=getNewReceipts",
+        "retrieved_at": "2026-10-17T18:34:13.225442+00:00",
+        "http_status": 200,
+        "bytes": 52236,
+        "sha256": "6a1bbd5b7817218ea2f8817db38455772b4bad8802c68a24713d57736ac8e913",
+        "snapshot_document_method": "getNewReceipts"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Kolejka paragonów oczekujących na druk; po wydruku setOrderReceipt potwierdza wykonanie i usuwa pozycję z oczekujących. Odpytywanie co10s jest przykładem, nie gwarancją SLA.",
+        "series_id służy m.in. rozdzieleniu drukarek; device_id jest opcjonalnym tekstowym identyfikatorem urządzenia. Nie opisano jego mechanizmu blokady lub wyłączności.",
+        "id_from ma domyślne0, a opis mówi o logs; inkluzywność i gwarancja bezstratnego kursora pozostają nieokreślone.",
+        "Wynik nazywa listę orders, a pozycje produktów products. NIP może zawierać litery, spacje i myślniki; czyszczenie pozostawiono odbiorcy."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "series_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The numbering series ID allows filtering by the receipt numbering series. Using multiple series numbering for receipts is recommended when the user has multiple fiscal printers. Each fiscal printer should have a separate series.",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "id_from",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "int",
+            "documented_description": "(optional) ID from which logs are to be retrieved. [default=0]",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "default": 0
+          },
+          {
+            "name": "device_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "text",
+            "documented_description": "(optional) Device identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "orders",
+            "documented_type": "array",
+            "documented_description": "An array of information on the receipts found. Each order is described by the fields listed below.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].receipt_id",
+            "documented_type": "int",
+            "documented_description": "The receipt ID, used in the setOrderReceipt method to return the receipt as printed.",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].series_id",
+            "documented_type": "int",
+            "documented_description": "Receipt numbering series identifier",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].receipt_full_nr",
+            "documented_type": "varchar(30)",
+            "documented_description": "The number assigned by BaseLinker when creating the receipt. Example number: \"123/10/2018/P\". The format depends on the settings - the numbering can be monthly, annual or continuous (then the number is a consecutive number). The number can be skipped, the fiscal printer can generate its own receipt number and save it in the setOrderReceipt method.",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].order_id",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from BaseLinker order manager",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].date_add",
+            "documented_type": "int",
+            "documented_description": "Date of order creation (in unix time format)",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].payment_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payment type name",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].nip",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payers details - VAT Reg No.. It may contain special characters: letters (prefix), hyphens and spaces. The VAT registration number should be cleared from these characters at your own discretion.",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "orders[].products",
+            "documented_type": "array",
+            "documented_description": "An array of order products. Each element of the array is also an array containing fields described below.name (text) - product nameprice_brutto (float) - single item gross pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - quantity of piecessku (text) - product SKU numberean (text) - product EAN number",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "orders[].products[].name",
+            "documented_type": "text",
+            "documented_description": "product name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10
+          },
+          {
+            "path": "orders[].products[].price_brutto",
+            "documented_type": "float",
+            "documented_description": "single item gross price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10
+          },
+          {
+            "path": "orders[].products[].tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "orders[].products[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of pieces",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10
+          },
+          {
+            "path": "orders[].products[].sku",
+            "documented_type": "text",
+            "documented_description": "product SKU number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10
+          },
+          {
+            "path": "orders[].products[].ean",
+            "documented_type": "text",
+            "documented_description": "product EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 10
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "waiting_queue_with_id_from",
+        "result_cap": null,
+        "default_start": 0,
+        "inclusivity": "not_documented",
+        "claim_or_lease": "not_documented",
+        "device_partition": "not_documented",
+        "ordering": "not_documented",
+        "poll_interval_seconds_example": 10,
+        "poll_interval_is_guarantee": false
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Dwie drukarki/serie/device_id, kolejka przed i po potwierdzeniu, jawna granica braku udokumentowanego claim/lease.",
+        "Nie powtarzać niepewnego wydruku; NIP i products zachowane bez nieautoryzowanej normalizacji.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getReceipt",
+      "method": "getReceipt",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getReceipt",
+        "final_url": "https://api.baselinker.com/index.php?method=getReceipt",
+        "retrieved_at": "2026-10-17T18:34:12.892851+00:00",
+        "http_status": 200,
+        "bytes": 53388,
+        "sha256": "faca5699eb72c34e9f4e22beb5cde1d105d712224f9f972ab88c6bd253b77531",
+        "snapshot_document_method": "getReceipt"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Wymagany receipt_id lub order_id; nie opisano pierwszeństwa ani odmowy przy podaniu obu sprzecznych identyfikatorów.",
+        "Wynik jest pojedynczym obiektem pól na poziomie głównym z items, inaczej niż orders/products i receipts/products w listach.",
+        "exchange_rate ma decimal(10,4), lecz przykład zwraca pusty tekst. exchange_* występują wyłącznie przy przeliczeniu."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "required": null,
+            "requiredness_source": "explicit_alternative_identifier",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Receipt ID. Not required if order_id is provided.",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "required_when": "order_id absent"
+          },
+          {
+            "name": "order_id",
+            "required": null,
+            "requiredness_source": "explicit_alternative_identifier",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Order ID. Not required if receipt_id is provided.",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "required_when": "receipt_id absent"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "receipt_id",
+              "order_id"
+            ],
+            "simultaneous_conflicting_values": "not_documented"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "receipt_id",
+            "documented_type": "int",
+            "documented_description": "The receipt ID, used in the setOrderReceipt method to return the receipt as printed.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "series_id",
+            "documented_type": "int",
+            "documented_description": "Receipt numbering series identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipt_full_nr",
+            "documented_type": "varchar(30)",
+            "documented_description": "The number assigned by Base when creating the receipt. Example number: \"123/10/2018/P\". The format depends on the settings - the numbering can be monthly, annual or continuous (then the number is a consecutive number). The number can be skipped, the fiscal printer can generate its own receipt number and save it in the setOrderReceipt method.",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "year",
+            "documented_type": "int",
+            "documented_description": "Year - an element of the receipt number",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "month",
+            "documented_type": "int",
+            "documented_description": "Month - element of receipt number (0 if annual numbering is used)",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "sub_id",
+            "documented_type": "int",
+            "documented_description": "Monthly/yearly number - receipt number element",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "order_id",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from Base order manager",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "date_add",
+            "documented_type": "int",
+            "documented_description": "Date of order creation (in unix time format)",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "payment_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payment type name",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "nip",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payers details - VAT Reg No.. It may contain special characters: letters (prefix), hyphens and spaces. The VAT registration number should be cleared from these characters at your own discretion.",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "currency",
+            "documented_type": "char(3)",
+            "documented_description": "3-letter currency symbol (e.g. EUR, PLN)",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "total_price_brutto",
+            "documented_type": "float",
+            "documented_description": "Łączna wartość paragonu brutto",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "external_receipt_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "Receipt number from the fiscal cash register or from the external system",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "exchange_currency",
+            "documented_type": "char(3)",
+            "documented_description": "Only for converted receipts. The target currency into which the receipt value was additionally converted.",
+            "source_table_row": 15,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_receipt_only"
+          },
+          {
+            "path": "exchange_rate",
+            "documented_type": "decimal(10,4)",
+            "documented_description": "Only for converted receipts. Exchange rate (conversion from field \"currency\" to field \"exchange_currency\".",
+            "source_table_row": 16,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_receipt_only"
+          },
+          {
+            "path": "exchange_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "Only for converted receipts. Date of exchange rate.",
+            "source_table_row": 17,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_receipt_only"
+          },
+          {
+            "path": "exchange_info",
+            "documented_type": "varchar(10)",
+            "documented_description": "Only for converted receipts. Information on the exchange rate source (NBP table number).",
+            "source_table_row": 18,
+            "source_kind": "table_row",
+            "conditional_presence": "converted_receipt_only"
+          },
+          {
+            "path": "items",
+            "documented_type": "array",
+            "documented_description": "An array of receipt items. Each element of the array is also an array containing fields:name (varchar) - item namesku (varchar) - product SKU numberean (varchar) - product EAN numberprice_brutto (float) - single item gross pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - quantity of pieces",
+            "source_table_row": 19,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "items[].name",
+            "documented_type": "varchar",
+            "documented_description": "item name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19
+          },
+          {
+            "path": "items[].sku",
+            "documented_type": "varchar",
+            "documented_description": "product SKU number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19
+          },
+          {
+            "path": "items[].ean",
+            "documented_type": "varchar",
+            "documented_description": "product EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19
+          },
+          {
+            "path": "items[].price_brutto",
+            "documented_type": "float",
+            "documented_description": "single item gross price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19
+          },
+          {
+            "path": "items[].tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "items[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of pieces",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 19
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Oba selektory i konflikt obu, pojedynczy obiekt items, waluta/przeliczenia i externalnumber.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getReceipts",
+      "method": "getReceipts",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getReceipts",
+        "final_url": "https://api.baselinker.com/index.php?method=getReceipts",
+        "retrieved_at": "2026-10-17T18:34:12.856941+00:00",
+        "http_status": 200,
+        "bytes": 51930,
+        "sha256": "cabf9af3b2684fcaac5048beab201b7c1247891f617ce0bb9ddbc71d7c1763c9",
+        "snapshot_document_method": "getReceipts"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Najwyżej100 paragonów. id_from jest jawnie inkluzywne; date_from/date_to to Unix timestamp, bez jawnych granic włącznie/wyłącznie i kolejności listy.",
+        "Nie podano total/next ani definicji końca, stabilności obrazu podczas zmian i kombinacji filtrów.",
+        "Wynik używa receipts[].products; nie zamieniamy go na items z getReceipt."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "series_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The numbering series ID allows filtering by the receipt numbering series.",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "id_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The ID of the receipt from which subsequent receipts will be retrieved (inclusive).",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Date from which receipts are to be collected. Unix timestamp format.",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "date_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Date to which receipts are to be collected. Unix timestamp format.",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "receipts",
+            "documented_type": "array",
+            "documented_description": "An array of information on the receipts found. Each receipt is described by the fields listed below.",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].receipt_id",
+            "documented_type": "int",
+            "documented_description": "The receipt ID",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].series_id",
+            "documented_type": "int",
+            "documented_description": "Receipt numbering series identifier",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].receipt_full_nr",
+            "documented_type": "varchar(30)",
+            "documented_description": "The number assigned by Base when creating the receipt.",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].order_id",
+            "documented_type": "int",
+            "documented_description": "Order Identifier from Base order manager",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].date_add",
+            "documented_type": "int",
+            "documented_description": "Date of order creation (in unix time format)",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].payment_method",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payment type name",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].nip",
+            "documented_type": "varchar(30)",
+            "documented_description": "Payers details - VAT Reg No.. It may contain special characters: letters (prefix), hyphens and spaces. The VAT registration number should be cleared from these characters at your own discretion.",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].currency",
+            "documented_type": "char(3)",
+            "documented_description": "3-letter currency symbol (e.g. EUR, PLN)",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "receipts[].products",
+            "documented_type": "array",
+            "documented_description": "An array of order products. Each element of the array is also an array containing fields:name (varchar) - product nameprice_brutto (float) - single item gross pricetax_rate (float) - VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)quantity (int) - quantity of piecessku (varchar) - product SKU numberean (varchar) - product EAN number",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [
+          {
+            "path": "receipts[].products[].name",
+            "documented_type": "varchar",
+            "documented_description": "product name",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11
+          },
+          {
+            "path": "receipts[].products[].price_brutto",
+            "documented_type": "float",
+            "documented_description": "single item gross price",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11
+          },
+          {
+            "path": "receipts[].products[].tax_rate",
+            "documented_type": "float",
+            "documented_description": "VAT tax rate e.g. \"23\", (value from range 0-100, EXCEPTION values: \"-1\" for \"EXPT\"/\"ZW\" exempt from VAT, \"-0.02\" for \"NP\" annotation, \"-0.03\" for \"OO\" VAT reverse charge)",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11,
+            "documented_values": {
+              "ordinary": {
+                "min": 0,
+                "max": 100
+              },
+              "exceptions": {
+                "-1": "EXPT/ZW",
+                "-0.02": "NP",
+                "-0.03": "OO"
+              }
+            }
+          },
+          {
+            "path": "receipts[].products[].quantity",
+            "documented_type": "int",
+            "documented_description": "quantity of pieces",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11
+          },
+          {
+            "path": "receipts[].products[].sku",
+            "documented_type": "varchar",
+            "documented_description": "product SKU number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11
+          },
+          {
+            "path": "receipts[].products[].ean",
+            "documented_type": "varchar",
+            "documented_description": "product EAN number",
+            "source_kind": "output_table_row_description",
+            "source_table_row": 11
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "id_from",
+        "result_cap": 100,
+        "starting_id_inclusive": true,
+        "ordering": "not_documented",
+        "end_of_scan": "not_documented",
+        "default_start": "not_documented",
+        "snapshot_consistency": "not_documented",
+        "filter_combination": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Ponad100 wyników i inkluzywny id_from; granice dat/serii, products oraz kompletność sprawdzane odrębnie.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-setOrderReceipt",
+      "method": "setOrderReceipt",
+      "family": "Orders",
+      "group": "Receipts",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setOrderReceipt",
+        "final_url": "https://api.baselinker.com/index.php?method=setOrderReceipt",
+        "retrieved_at": "2026-10-17T18:34:13.347755+00:00",
+        "http_status": 200,
+        "bytes": 49451,
+        "sha256": "d3ad0eda6a29e0e5d682e94d7b79d1242f4bec07ec1048db1a7e29ffc9262a77",
+        "snapshot_document_method": "setOrderReceipt"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Oznacza paragon z getNewReceipts jako wydrukowany. receipt_nr może być pusty, jeśli drukarka nie zwraca numeru.",
+        "date to Unix time druku; printer_error domyślnie false. Nie opisano idempotencji potwierdzenia, ponowienia niepewnego druku i relacji błędu z usunięciem pozycji z kolejki."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Receipt_id number received in the getNewReceipts method",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "receipt_nr",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "varchar(20)",
+            "documented_description": "The number of the issued receipt (may be blank if the printer does not return the number)",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "blank": "allowed_when_printer_does_not_return_number"
+          },
+          {
+            "name": "date",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Receipt printing date (unixtime format)",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "printer_error",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "bool",
+            "documented_description": "Flag indicating whether an error occurred during receipt printing (false by default)",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "default": false
+          },
+          {
+            "name": "printer_name",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Printer name",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "fiscal_receipts",
+      "proposed_acceptance": [
+        "Po udanym druku potwierdzić numer/datę, pusty numer i printer_error; odczyt kolejki oraz kontrola podwójnego potwierdzenia/nieznanego wyniku.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryDocument",
+      "method": "addInventoryDocument",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryDocument",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryDocument",
+        "retrieved_at": "2026-10-17T18:34:13.633953+00:00",
+        "http_status": 200,
+        "bytes": 50577,
+        "sha256": "a474609bc9b058ba09246d5f74e3a5a9af00dd3e1ef9010c1de52be7285d5617",
+        "snapshot_document_method": "addInventoryDocument"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Tworzy szkic dokumentu. Potwierdzenie przez użytkownika lub API powoduje wpływ na stan magazynu.",
+        "document_type:0 GR,1 IGR,2 GI,3 IGI,4 IT,5 OB. target_warehouse_id jest wymagane tylko dla typu4. daty pominięte oznaczają bieżącą datę; strefy/źródła zegara nie podano.",
+        "Brak parametru series_id pomimo osobnej metody odczytu serii. Przykładowy document_type=2 i numer z prefiksem GR nie ustanawiają reguły numeracji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Source warehouse identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "document_type",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Document type: 0 - GR (Goods Received), 1 - IGR (Internal Goods Received), 2 - GI (Goods Issue), 3 - IGI (Internal Goods Issue), 4 - IT (Internal Transfer), 5 - OB (Opening Balance)",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "GR",
+              "1": "IGR",
+              "2": "GI",
+              "3": "IGI",
+              "4": "IT",
+              "5": "OB"
+            }
+          },
+          {
+            "name": "target_warehouse_id",
+            "required": true,
+            "requiredness_source": "explicit_conditional_requirement",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Target warehouse identifier - required only for transfer documents (type 4)",
+            "source_table_row": 3,
+            "source_kind": "table_row",
+            "required_when": "document_type=4"
+          },
+          {
+            "name": "date_add",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Date of document creation (unix timestamp). If not specified, the current date will be used.",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "default": "current_date_unspecified_timezone"
+          },
+          {
+            "name": "date_execute",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Date of document execution (unix timestamp). If not specified, the current date will be used.",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "default": "current_date_unspecified_timezone"
+          },
+          {
+            "name": "contractor",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(500)",
+            "documented_description": "(optional) Contractor description/notes",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "invoice_no",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Related invoice number",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "notes",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(500)",
+            "documented_description": "(optional) Document notes/comments",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "document_id",
+            "documented_type": "int",
+            "documented_description": "Created document identifier",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "document_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "Generated document number",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Każdy obsługiwany typ0..5 zaczyna jako draft; transfer wymaga celu, a utworzenie szkicu nie zmienia stock.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryDocumentFile",
+      "method": "addInventoryDocumentFile",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryDocumentFile",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryDocumentFile",
+        "retrieved_at": "2026-10-17T18:34:13.908367+00:00",
+        "http_status": 200,
+        "bytes": 49267,
+        "sha256": "19423ca85d7764b92b199c923cc828eab576f3ea646f95a1bad157d07fb09413",
+        "snapshot_document_method": "addInventoryDocumentFile"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Załącza plik zewnętrznego systemu do dokumentu magazynowego: PDF data:base64.",
+        "Opis external_document_number nie deklaruje nadpisania wewnętrznego numeru tak jak w plikach faktur/paragonów; nie dopowiadamy tego skutku."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "document_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Warehouse document identifier from Base",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "file",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "text",
+            "documented_description": "Document PDF file in binary format encoded in base64. Provide a prefix \"data:\" at the beginning e.g. \"data:4AAQSkSzkJRgABA[...]\"",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "encoding": "base64_binary_prefixed_data:",
+            "documented_formats": [
+              "PDF"
+            ]
+          },
+          {
+            "name": "external_document_number",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "varchar(100)",
+            "documented_description": "External system document number",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouse_files",
+      "proposed_acceptance": [
+        "PDF data:base64 pod właściwym own dokumentem; numer zewnętrzny i fallback odczytu nie przyjmują nieopisanej semantyki nadpisania.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-addInventoryDocumentItems",
+      "method": "addInventoryDocumentItems",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryDocumentItems",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryDocumentItems",
+        "retrieved_at": "2026-10-17T18:34:13.844796+00:00",
+        "http_status": 200,
+        "bytes": 51576,
+        "sha256": "b7c62616f129b52e376599249f0da29fcca789582fcec290c5cafc38636671f1",
+        "snapshot_document_method": "addInventoryDocumentItems"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Dodaje pozycje do dokumentu; zwraca utworzone item_id i position.",
+        "Cena decimal(10,2), lokalizacje, ważność YYYY-MM-DD, partia, numer seryjny i komentarz są opcjonalne. target_location_name dotyczy tylko transferu.",
+        "Brak limitu partii, jawnej atomowości, semantyki dopisania duplikatu lub zastąpienia istniejących pozycji i reguły znaku quantity."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "document_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Document identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "array",
+            "documented_description": "List of document items",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].product_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "The product ID",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].quantity",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "The quantity of this line item in the document",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].price",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "(optional) Item unit price",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].location_name",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Source storage location",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].target_location_name",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Target storage location (only for Internal Transfer documents)",
+            "source_table_row": 7,
+            "source_kind": "table_row",
+            "applicable_when": "Internal Transfer document"
+          },
+          {
+            "name": "items[].expiry_date",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(10)",
+            "documented_description": "(optional) The expiry date. Date format YYYY-MM-DD (ISO 8601)",
+            "source_table_row": 8,
+            "source_kind": "table_row",
+            "format": "YYYY-MM-DD"
+          },
+          {
+            "name": "items[].batch",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) Batch number",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].serial_no",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) The product serial number",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "items[].comments",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Item comments or notes",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "items",
+            "documented_type": "array",
+            "documented_description": "List of created document items",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].item_id",
+            "documented_type": "int",
+            "documented_description": "Created item identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].position",
+            "documented_type": "int",
+            "documented_description": "Item position in document",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Dopisanie pozycji, ID/position, typy decimal, partia/serial/ważność oraz lokalizacje transferu; odmowa nie zostawia częściowego stanu bez jawnie sprawdzonej atomowości.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryDocumentFile",
+      "method": "getInventoryDocumentFile",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryDocumentFile",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryDocumentFile",
+        "retrieved_at": "2026-10-17T18:34:13.971258+00:00",
+        "http_status": 200,
+        "bytes": 49289,
+        "sha256": "8cde13050e98224cb06079f12785631d7857293cb41d608bf31a53df81f1fefb",
+        "snapshot_document_method": "getInventoryDocumentFile"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "get_external=false jest domyślne; true pobiera zewnętrzny plik, a przy jego braku wraca do formatu Base.",
+        "file to PDF data:base64; document_number ma varchar(100), inaczej niż numer tworzenia/listy varchar(30)."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "document_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Warehouse document identifier from Base",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "get_external",
+            "required": false,
+            "requiredness_source": "explicit_default",
+            "default_status": "documented",
+            "documented_type": "bool",
+            "documented_description": "false (by default) - download document file generated by Base. true - download a document from an external accounting system (if available). If an external document file does not exist, a document in Base format will be returned",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "default": false
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "file",
+            "documented_type": "text",
+            "documented_description": "Document PDF file in binary format encoded in base64, with prefix \"data:\"",
+            "source_table_row": 2,
+            "source_kind": "table_row",
+            "encoding": "base64_binary_prefixed_data:",
+            "documented_format": "PDF"
+          },
+          {
+            "path": "document_number",
+            "documented_type": "varchar(100)",
+            "documented_description": "Document number",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error",
+        "external_fallback": "Base_generated_file_when_external_missing"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "warehouse_files",
+      "proposed_acceptance": [
+        "Base/external/fallback i dekodowanie PDF z właściwym numerem dokumentu.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryDocumentItems",
+      "method": "getInventoryDocumentItems",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryDocumentItems",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryDocumentItems",
+        "retrieved_at": "2026-10-17T18:34:15.178730+00:00",
+        "http_status": 200,
+        "bytes": 51713,
+        "sha256": "34601599add940a435e388367063d42d60e1d23560baaf0582e833b98c0f50ea",
+        "snapshot_document_method": "getInventoryDocumentItems"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Strony numerowane od1, po100 pozycji. Domyślna strona, sortowanie, total/next i warunek końca nie zostały opisane.",
+        "Pozycje obejmują lokalizacje, partię, serial_no, expiry_date i wartości decimal(10,2); target_location_name tylko dla transferu."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "document_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Document identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page number (100 items per page, numbered from 1)",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "items",
+            "documented_type": "array",
+            "documented_description": "List of document items",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].document_id",
+            "documented_type": "int",
+            "documented_description": "Document identifier",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].position",
+            "documented_type": "int",
+            "documented_description": "Line item number",
+            "source_table_row": 5,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].product_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Product name",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].product_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].product_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product SKU",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].inventory_id",
+            "documented_type": "int",
+            "documented_description": "Inventory (catalog) identifier",
+            "source_table_row": 10,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity of this line item",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].expiry_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "Expiry date in YYYY-MM-DD format",
+            "source_table_row": 12,
+            "source_kind": "table_row",
+            "format": "YYYY-MM-DD"
+          },
+          {
+            "path": "items[].batch",
+            "documented_type": "varchar(128)",
+            "documented_description": "Batch number",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].serial_no",
+            "documented_type": "varchar(128)",
+            "documented_description": "Serial number",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].price",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Unit price",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].total_price",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Total value of the item",
+            "source_table_row": 16,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].location_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Storage location",
+            "source_table_row": 17,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "items[].target_location_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Target location (only for Internal Transfer documents)",
+            "source_table_row": 18,
+            "source_kind": "table_row",
+            "conditional_presence": "Internal Transfer document"
+          },
+          {
+            "path": "items[].comments",
+            "documented_type": "varchar(255)",
+            "documented_description": "Item comments or notes",
+            "source_table_row": 19,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "first_page": 1,
+        "page_size": 100,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "total_or_next": "not_documented",
+        "end_of_scan": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Ponad100 pozycji, strony od1, komplet pól/porządek i brak pominięć przy uzgodnionym modelu zmian.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryDocumentSeries",
+      "method": "getInventoryDocumentSeries",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryDocumentSeries",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryDocumentSeries",
+        "retrieved_at": "2026-10-17T18:34:15.017739+00:00",
+        "http_status": 200,
+        "bytes": 49998,
+        "sha256": "d8aebd21304749750ff297030b814878b666204ccf05ec81e4d3cbe017958f84",
+        "snapshot_document_method": "getInventoryDocumentSeries"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Opcjonalny filtr warehouse_id. document_series zawiera ID, nazwę, typ0..5, magazyn i format.",
+        "Przykładowe nazwy/prefiksy nie odpowiadają konsekwentnie opisom typów; nie tworzymy na ich podstawie słownika ani parsera numeracji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter series by warehouse ID",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "document_series",
+            "documented_type": "array",
+            "documented_description": "List of document series",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "document_series[].document_series_id",
+            "documented_type": "int",
+            "documented_description": "Document series identifier",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "document_series[].name",
+            "documented_type": "varchar(20)",
+            "documented_description": "Document series name",
+            "source_table_row": 4,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "document_series[].document_type",
+            "documented_type": "int",
+            "documented_description": "The type of document for which this series is intended: 0-GR, 1-IGR, 2-GI, 3-IGI, 4-IT, 5-OB",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "GR",
+              "1": "IGR",
+              "2": "GI",
+              "3": "IGI",
+              "4": "IT",
+              "5": "OB"
+            }
+          },
+          {
+            "path": "document_series[].warehouse_id",
+            "documented_type": "int",
+            "documented_description": "The warehouse ID to which this series applies",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "document_series[].format",
+            "documented_type": "varchar(30)",
+            "documented_description": "Document number format pattern",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Filtr magazynu i wszystkie obsługiwane typy/formaty bez parsera wywiedzionego z przykładu.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryDocuments",
+      "method": "getInventoryDocuments",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryDocuments",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryDocuments",
+        "retrieved_at": "2026-10-17T18:34:14.397501+00:00",
+        "http_status": 200,
+        "bytes": 54076,
+        "sha256": "d4ad019b17c8f447a7ebce6b23920b0bd82cd6bd2fa46baf0bd05dd0469da9dd",
+        "snapshot_document_method": "getInventoryDocuments"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Strony od1, po100 dokumentów; filtry źródła, ID, typu0..5, statusu0/1, daty utworzenia i magazynu.",
+        "source_object_type w wyniku dopuszcza0 (brak źródła); filtr wejścia wymienia1/2/3/4/7/8, bez0. connection_type również nie wymienia0.",
+        "connection_* oraz source_object_* są osobnymi polami; przykład nie potwierdza równości ani aliasowania.",
+        "date_confirmed=0 oznacza brak potwierdzenia; warehouse_id2 to magazyn docelowy transferu. Brak reguł kombinacji filtrów, granic dat i stabilności paginacji."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "filter_source_object_type",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The source object type to filter by: 1 - order, 2 - purchase order, 3 - stock take, 4 - order return, 7 - fulfillment delivery, 8 - transfer",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": {
+              "1": "order",
+              "2": "purchase_order",
+              "3": "stocktake",
+              "4": "order_return",
+              "7": "fulfillment_delivery",
+              "8": "transfer"
+            }
+          },
+          {
+            "name": "filter_source_object_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The source object ID to filter by",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_document_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) A specific inventory document ID",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_document_type",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The document type: 0 - GR (Goods Received), 1 - IGR (Internal Goods Received), 2 - GI (Goods Issue), 3 - IGI (Internal Goods Issue), 4 - IT (Internal Transfer), 5 - OB (Opening Balance)",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "GR",
+              "1": "IGR",
+              "2": "GI",
+              "3": "IGI",
+              "4": "IT",
+              "5": "OB"
+            }
+          },
+          {
+            "name": "filter_document_status",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The document status: 0 - Draft, 1 - Confirmed",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "Draft",
+              "1": "Confirmed"
+            }
+          },
+          {
+            "name": "filter_date_from",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The minimum creation date (unix timestamp) to filter by",
+            "source_table_row": 6,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_date_to",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The maximum creation date (unix timestamp) to filter by",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "filter_warehouse_id",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) The warehouse ID",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "name": "page",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page number (100 documents per page, numbered from 1)",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "documents",
+            "documented_type": "array",
+            "documented_description": "An array of inventory documents",
+            "source_table_row": 2,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].document_id",
+            "documented_type": "int",
+            "documented_description": "The unique identifier of the inventory document",
+            "source_table_row": 3,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].document_type",
+            "documented_type": "int",
+            "documented_description": "The document type: 0-GR, 1-IGR, 2-GI, 3-IGI, 4-IT, 5-OB",
+            "source_table_row": 4,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "GR",
+              "1": "IGR",
+              "2": "GI",
+              "3": "IGI",
+              "4": "IT",
+              "5": "OB"
+            }
+          },
+          {
+            "path": "documents[].document_status",
+            "documented_type": "int",
+            "documented_description": "The document status: 0 - Draft, 1 - Confirmed",
+            "source_table_row": 5,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "Draft",
+              "1": "Confirmed"
+            }
+          },
+          {
+            "path": "documents[].direction",
+            "documented_type": "int",
+            "documented_description": "The document direction (0 = incoming, 1 = outgoing)",
+            "source_table_row": 6,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "incoming",
+              "1": "outgoing"
+            }
+          },
+          {
+            "path": "documents[].document_series_id",
+            "documented_type": "int",
+            "documented_description": "The ID of the document series",
+            "source_table_row": 7,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].full_number",
+            "documented_type": "varchar(30)",
+            "documented_description": "The full document number",
+            "source_table_row": 8,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].date_created",
+            "documented_type": "int",
+            "documented_description": "The creation date of the document in unix time",
+            "source_table_row": 9,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].date_confirmed",
+            "documented_type": "int",
+            "documented_description": "The confirmation date in unix time. 0 if not confirmed",
+            "source_table_row": 10,
+            "source_kind": "table_row",
+            "when_not_confirmed": 0
+          },
+          {
+            "path": "documents[].warehouse_id",
+            "documented_type": "int",
+            "documented_description": "The main warehouse ID used for this document",
+            "source_table_row": 11,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].warehouse_id2",
+            "documented_type": "int",
+            "documented_description": "The second (destination) warehouse ID for transfers",
+            "source_table_row": 12,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items in the document",
+            "source_table_row": 13,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].total_quantity",
+            "documented_type": "int",
+            "documented_description": "Total quantity of products in the document",
+            "source_table_row": 14,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].total_price",
+            "documented_type": "decimal(10,2)",
+            "documented_description": "Total value (price) for the entire document",
+            "source_table_row": 15,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].connection_type",
+            "documented_type": "int",
+            "documented_description": "Source object type: 1-order, 2-purchase order, 3-stock take, 4-order return, 7-fulfillment delivery, 8-transfer",
+            "source_table_row": 16,
+            "source_kind": "table_row",
+            "documented_values": {
+              "1": "order",
+              "2": "purchase_order",
+              "3": "stocktake",
+              "4": "order_return",
+              "7": "fulfillment_delivery",
+              "8": "transfer"
+            }
+          },
+          {
+            "path": "documents[].connection_id",
+            "documented_type": "int",
+            "documented_description": "Source object ID",
+            "source_table_row": 17,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].notes",
+            "documented_type": "varchar(500)",
+            "documented_description": "Document notes/comments",
+            "source_table_row": 18,
+            "source_kind": "table_row"
+          },
+          {
+            "path": "documents[].source_object_type",
+            "documented_type": "int",
+            "documented_description": "Type of source object that created this document: 0-no source, 1-order, 2-purchase order, 3-stock take, 4-order return, 7-fulfillment delivery, 8-transfer",
+            "source_table_row": 19,
+            "source_kind": "table_row",
+            "documented_values": {
+              "0": "no_source",
+              "1": "order",
+              "2": "purchase_order",
+              "3": "stocktake",
+              "4": "order_return",
+              "7": "fulfillment_delivery",
+              "8": "transfer"
+            }
+          },
+          {
+            "path": "documents[].source_object_id",
+            "documented_type": "int",
+            "documented_description": "ID of the source object. 0 if no source",
+            "source_table_row": 20,
+            "source_kind": "table_row",
+            "when_no_source": 0
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page_number",
+        "parameter": "page",
+        "first_page": 1,
+        "page_size": 100,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "total_or_next": "not_documented",
+        "end_of_scan": "not_documented",
+        "snapshot_consistency": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_applicable_as_document_mutation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Ponad100 dokumentów, filtry typ/status/source/date/warehouse i obie pary connection/source bez fałszywego aliasu.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    },
+    {
+      "id": "BASE-API-setInventoryDocumentStatusConfirmed",
+      "method": "setInventoryDocumentStatusConfirmed",
+      "family": "Product catalog",
+      "group": "Documents",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setInventoryDocumentStatusConfirmed",
+        "final_url": "https://api.baselinker.com/index.php?method=setInventoryDocumentStatusConfirmed",
+        "retrieved_at": "2026-10-17T18:34:14.870423+00:00",
+        "http_status": 200,
+        "bytes": 48648,
+        "sha256": "2512cc3fe93ca8f9c12610233d4f75facaeed2dcb8c851da850cb4879794c3c4",
+        "snapshot_document_method": "setInventoryDocumentStatusConfirmed"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "documented_notes_pl": [
+        "Potwierdza szkic i wpływa na stany magazynowe.",
+        "Nie opisano idempotencji powtórnego potwierdzenia, odwrócenia, kontroli wersji, rozchodu według partii/kosztu ani pełnej macierzy odmów."
+      ],
+      "input": {
+        "parameters": [
+          {
+            "name": "document_id",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_type": "int",
+            "documented_description": "Document identifier",
+            "source_table_row": 1,
+            "source_kind": "table_row"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_table_row": 1,
+            "source_kind": "table_row",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "warehouse_documents",
+      "proposed_acceptance": [
+        "Dla każdego typu potwierdzenie wpływa dokładnie raz na właściwe stany, lokalizacje/partie i journale; błąd/powtórzenie/konkurencja mają jawny wynik.",
+        "Osobno zweryfikować tenant/rolę/obce ID, błędy i zwykły UI/API/worker; dokumentacja lub lokalna symulacja nie nadaje odbioru konta/sandbox."
+      ]
+    }
+  ],
+  "field_inventory": {
+    "input_table_rows": 89,
+    "output_table_rows": 156,
+    "embedded_prose_output_fields": 30,
+    "example_only_fields_not_promoted_to_schema": 6
+  }
+}

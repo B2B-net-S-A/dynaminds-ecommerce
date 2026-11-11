@@ -1,0 +1,37 @@
+# Dedicated scale PostgreSQL. Start/stop/status through tools/scale/docker/scale-pg.sh, not directly: it sets the
+# project (dyna-scale-pg for dyna-scale-pg18, the container name for a second instance, SCALE_PG_CONTAINER).
+name: dyna-scale-pg
+services:
+  pg:
+    build: .
+    image: dyna-scale-pg18-faketime:18.4
+    container_name: ${SCALE_PG_CONTAINER:-dyna-scale-pg18}
+    ports:
+      - "127.0.0.1:${SCALE_PG_PORT:-57090}:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/scale-secrets/postgres.password
+      POSTGRES_INITDB_ARGS: "--locale=C.UTF-8 --encoding=UTF8"
+      TZ: UTC
+      # libfaketime is preloaded only into the server binary (postgres-faketime.sh); the offset lives in
+      # /faketime/faketime.rc, which the generator rewrites between simulated days. For the measurement
+      # start with SCALE_FAKETIME=off (real clock, no preload): `SCALE_FAKETIME=off scale-pg.sh up`.
+      SCALE_FAKETIME: ${SCALE_FAKETIME:-on}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - walarchive:/wal-archive
+      - ${SCALE_PG_STATE:?set by scale-pg.sh}/faketime:/faketime
+      - ${SCALE_PG_STATE:?set by scale-pg.sh}/secrets:/run/scale-secrets:ro
+    shm_size: 2gb
+    stop_grace_period: 120s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
+volumes:
+  pgdata:
+    name: ${SCALE_PG_CONTAINER:-dyna-scale-pg18}-data
+  walarchive:
+    name: ${SCALE_PG_CONTAINER:-dyna-scale-pg18}-wal-archive

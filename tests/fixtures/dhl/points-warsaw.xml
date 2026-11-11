@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture: authored by hand from the public DHL24 WebAPI2 documentation, not recorded from DHL. -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="https://dhl24.com.pl/webapi2/provider/service.html?ws=1"><SOAP-ENV:Body><ns1:getNearestServicepointsResponse><getNearestServicepointsResult><points>
+<item><sap>1000001</sap><name>DHL POP Żabka (syntetyczny)</name><type>POP</type><address><street>Prosta</street><houseNumber>5</houseNumber><postcode>00-838</postcode><city>Warszawa</city></address><description>Przy wejściu</description><latitude>52.2318</latitude><longitude>20.9897</longitude><workingHours><item><day>MON</day><open>06:00</open><close>23:00</close></item></workingHours></item>
+<item><sap>1000002</sap><name>DHL Parcelshop (syntetyczny)</name><type>PARCELSHOP</type><address><street>Chmielna</street><houseNumber>10</houseNumber><postcode>00020</postcode><city>Warszawa</city></address><description></description><latitude></latitude><longitude></longitude></item>
+</points></getNearestServicepointsResult></ns1:getNearestServicepointsResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>

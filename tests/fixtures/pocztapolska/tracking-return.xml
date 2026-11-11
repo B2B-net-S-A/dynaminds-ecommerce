@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTETYCZNE: plik przygotowany ręcznie na podstawie publicznej dokumentacji Poczty Polskiej, nie jest nagraniem odpowiedzi dostawcy. -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://sledzenie.pocztapolska.pl">
+  <soapenv:Body>
+    <ns:sprawdzPrzesylkeResponse>
+      <return>
+        <numer>FAKEPP0000000002</numer>
+        <status>0</status>
+        <danePrzesylki>
+          <zdarzenia>
+            <zdarzenie><czas>2026-10-01 10:00</czas><kod>P_NAD</kod><nazwa>Nadanie</nazwa></zdarzenie>
+            <zdarzenie><czas>2026-10-02 10:00</czas><kod>P_A</kod><nazwa>Awizo</nazwa></zdarzenie>
+            <zdarzenie><czas>2026-10-16 10:00</czas><kod>P_ZWR</kod><nazwa>Zwrot do nadawcy</nazwa></zdarzenie>
+            <zdarzenie><czas>2026-10-17 10:00</czas><kod>P_WZL</kod><nazwa>Wysłanie z węzła</nazwa></zdarzenie>
+            <zdarzenie><czas>2026-10-18 10:00</czas><kod>P_D</kod><nazwa>Doręczono</nazwa><konczace>true</konczace></zdarzenie>
+          </zdarzenia>
+        </danePrzesylki>
+      </return>
+    </ns:sprawdzPrzesylkeResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

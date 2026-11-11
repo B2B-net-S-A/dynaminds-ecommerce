@@ -1,0 +1,19 @@
+.warehouse-inventory-policies { min-width: 0; }
+.warehouse-inventory-policies > header { padding: 20px 24px 0; }
+.warehouse-inventory-policies .wip-body { display: grid; gap: 16px; padding: 20px 24px 24px; min-width: 0; }
+.warehouse-inventory-policies label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.warehouse-inventory-policies label.wip-check { flex-direction: row; align-items: flex-start; gap: 8px; }
+.warehouse-inventory-policies .wip-check input { width: auto; flex: 0 0 auto; margin-top: 3px; }
+.warehouse-inventory-policies fieldset, .warehouse-inventory-policies .wip-review { border: 1px solid var(--border, #ddd); border-radius: 8px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.warehouse-inventory-policies .wip-summary { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 12px; margin: 0; }
+.warehouse-inventory-policies .wip-summary dd { margin: 0; overflow-wrap: anywhere; }
+.warehouse-inventory-policies .wip-history { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; overflow-wrap: anywhere; }
+.warehouse-inventory-policies button { white-space: normal; overflow-wrap: anywhere; }
+.warehouse-inventory-policies input, .warehouse-inventory-policies select { min-width: 0; max-width: 100%; }
+.warehouse-inventory-policies .wip-table-scroll { overflow-x: auto; max-width: 100%; }
+.warehouse-inventory-policies table { width: 100%; min-width: 680px; text-align: left; }
+.warehouse-inventory-policies th, .warehouse-inventory-policies td { padding: 8px; vertical-align: top; }
+@media (max-width: 700px) {
+  .warehouse-inventory-policies > header, .warehouse-inventory-policies .wip-body { padding-left: 14px; padding-right: 14px; }
+  .warehouse-inventory-policies .wip-summary { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,101 @@
+.packing-measurements {
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  color: #172033;
+}
+.packing-measurements legend {
+  padding: 0 6px;
+  font-weight: 700;
+}
+.packing-measurements p {
+  margin: 8px 0;
+}
+.packing-measurements-help,
+.packing-measurements-field small {
+  color: #526079;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.packing-measurements-carton {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #f7f9fc;
+  overflow-wrap: anywhere;
+}
+.packing-measurements-carton .button {
+  margin-top: 4px;
+}
+.packing-measurements-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.packing-measurements-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.packing-measurements-field label {
+  font-weight: 600;
+  line-height: 1.4;
+}
+.packing-measurements-field input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #94a3b8;
+  border-radius: 7px;
+  font: inherit;
+  background: #fff;
+  color: #172033;
+}
+.packing-measurements-field input:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+.packing-measurements-field input[aria-invalid='true'] {
+  border-color: #b91c1c;
+}
+.packing-measurements-field input:disabled,
+.packing-measurements-field input[readonly] {
+  background: #f1f5f9;
+}
+.packing-measurements .packing-measurements-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.packing-measurements-exact {
+  padding: 10px 12px;
+  border-radius: 7px;
+  background: #eff6ff;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .packing-measurements-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .packing-measurements {
+    padding: 12px;
+  }
+  .packing-measurements-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .packing-measurements-carton .button {
+    width: 100%;
+    white-space: normal;
+  }
+}

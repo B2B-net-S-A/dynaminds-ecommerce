@@ -1,0 +1,24 @@
+.proforma-batch-panel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.proforma-batch-panel .proforma-batch-row {
+  padding: 14px 0;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+.proforma-batch-panel details > summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.proforma-batch-panel .proforma-batch-history {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.proforma-batch-panel .proforma-batch-history > .button {
+  justify-content: flex-start;
+  text-align: left;
+}
+.proforma-batch-panel .proforma-batch-history .toolbar-actions {
+  flex-wrap: wrap;
+}

@@ -1,0 +1,22 @@
+.b2b-fa3-panel.panel { min-width: 0; padding: 24px; display: grid; gap: 16px; }
+.b2b-fa3-panel h3, .b2b-fa3-panel h4, .b2b-fa3-panel p { margin: 0; }
+.b2b-fa3-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.b2b-fa3-panel fieldset, .b2b-fa3-panel article { min-width: 0; margin: 0; padding: 18px; display: grid; gap: 14px; border: 1px solid var(--border, #dbe2ea); border-radius: 10px; }
+.b2b-fa3-panel legend { font-weight: 700; padding: 0 6px; }
+.b2b-fa3-panel .fa3-fields, .b2b-fa3-panel .fa3-parties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.b2b-fa3-panel .fa3-fields > h4, .b2b-fa3-panel .fa3-check { grid-column: 1 / -1; }
+.b2b-fa3-panel .fa3-parties > div { padding: 12px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; }
+.b2b-fa3-panel .fa3-draft { min-width: 0; display: grid; gap: 14px; }
+.b2b-fa3-panel label { display: grid; gap: 7px; margin: 0; min-width: 0; line-height: 1.5; }
+.b2b-fa3-panel input:not([type='checkbox']), .b2b-fa3-panel select { width: 100%; box-sizing: border-box; min-height: 42px; padding: 9px 11px; border: 1px solid #94a3b8; border-radius: 7px; color: inherit; background: #fff; font: inherit; }
+.b2b-fa3-panel .fa3-check { display: flex; align-items: flex-start; gap: 10px; }
+.b2b-fa3-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; margin: 3px 0 0; padding: 0; }
+.b2b-fa3-panel .notice { display: grid; gap: 12px; }
+.b2b-fa3-panel .button, .b2b-fa3-panel .text-button { justify-self: start; white-space: normal; }
+.b2b-fa3-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.b2b-fa3-panel table { width: 100%; border-collapse: collapse; }
+.b2b-fa3-panel th, .b2b-fa3-panel td { padding: 10px; vertical-align: top; border-bottom: 1px solid var(--border, #dbe2ea); text-align: left; }
+.b2b-fa3-panel td:not(:first-child) { white-space: nowrap; }
+.b2b-fa3-panel small { display: block; white-space: normal; line-height: 1.5; }
+.b2b-fa3-panel [role='alert'] { padding: 12px; border-radius: 8px; border: 1px solid #fecaca; color: #991b1b; background: #fef2f2; }
+@media (max-width: 680px) { .b2b-fa3-panel.panel { padding: 16px; } .b2b-fa3-panel .fa3-fields, .b2b-fa3-panel .fa3-parties { grid-template-columns: minmax(0, 1fr); } }

@@ -1,0 +1,18 @@
+.shipment-label-batches { margin-top: 18px; padding: 22px; }
+.shipment-label-batches h3,.shipment-label-batches h4 { margin: 0 0 10px; }
+.shipment-label-batches p { margin: 10px 0; line-height: 1.55; }
+.slb-heading { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
+.slb-heading .button { flex-shrink:0; }
+.slb-config,.slb-review,.slb-history,.slb-pending { margin-top:18px; padding:18px; border:1px solid var(--border,#dce2eb); border-radius:12px; min-width:0; }
+.slb-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:16px 0; }
+.slb-grid label { display:flex; flex-direction:column; gap:7px; }
+.slb-grid input,.slb-grid select { width:100%; padding:10px; border:1px solid var(--border,#dce2eb); border-radius:8px; background:var(--surface,#fff); }
+.slb-check { display:flex; align-items:flex-start; gap:9px; margin:14px 0; line-height:1.5; }
+.slb-check input { margin-top:4px; flex-shrink:0; }
+.slb-table { overflow-x:auto; margin:14px 0; }
+.slb-table table { width:100%; border-collapse:collapse; }
+.slb-table th,.slb-table td { padding:12px; text-align:left; border-bottom:1px solid var(--border,#dce2eb); vertical-align:top; }
+.slb-table code { overflow-wrap:anywhere; font-size:12px; }
+.slb-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.slb-history-row { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border,#dce2eb); }
+@media(max-width:760px) { .shipment-label-batches { padding:14px; } .slb-heading,.slb-history-row { flex-direction:column; } .slb-grid { grid-template-columns:1fr; } .slb-config,.slb-review,.slb-history { padding:12px; } }

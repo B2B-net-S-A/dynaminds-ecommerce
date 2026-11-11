@@ -1,0 +1,24 @@
+{
+  "scope": "isolated_local_PostgreSQL_no_provider_requests",
+  "sku_count": 10001,
+  "page_size": 50,
+  "worker_page_size": 200,
+  "checkpoints": 51,
+  "refresh_ms": 25163.00312500028,
+  "samples_ms": [
+    526.8530830000527,
+    507.2203329997137,
+    474.2499170000665,
+    461.58325000014156,
+    461.09975000005215,
+    482.02100000018254,
+    481.04799999995157,
+    447.3650839999318,
+    450.4344580001198,
+    517.8312910003588
+  ],
+  "p95_ms": 526.8530830000527,
+  "deep_page_ms": 519.5679170000367,
+  "deep_page_after_row": 9950,
+  "full_goal_capacity_proven": false
+}

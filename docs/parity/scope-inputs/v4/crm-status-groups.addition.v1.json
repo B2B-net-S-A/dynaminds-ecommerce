@@ -1,0 +1,800 @@
+{
+  "schema": "dynaminds-base-functional-domain-scope-addition/v1",
+  "version": 4,
+  "as_of": "2026-10-17",
+  "prepared_on": "2026-10-19",
+  "status": "SOURCE_ONLY_ADDITIVE_PROPOSAL_NOT_FROZEN",
+  "scope_complete": false,
+  "acceptance_granted": false,
+  "frozen_scope_mutated": false,
+  "source_kind": "existing_retained_official_Base_documentation_only",
+  "parent": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope.v3.json",
+    "bytes": 2283319,
+    "sha256": "72c8fd34337d13f1cc397ace3761ebf8013f91680c9ff41a9b4da4a43f11ccb9"
+  },
+  "domain_input_parent": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope-inputs/v2/domains.json",
+    "bytes": 389487,
+    "sha256": "e586ae249a4ea44d2c3016ba6e122e8b1cbb203c66f994efa4ec32408fa83eea"
+  },
+  "existing_crm001_proposal": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope-inputs/v4/crm-client-profile.addition.v1.json",
+    "bytes": 10626,
+    "sha256": "8ada912bb747113c7dfd8be293db4535d5eb3c9283c803965b712f2b06acbf68"
+  },
+  "official_contract": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-contracts.v1.json",
+    "bytes": 52288,
+    "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330"
+  },
+  "official_source_bundle": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+    "bytes": 109499,
+    "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+  },
+  "source_validation": {
+    "observed_source_date": "2026-10-17",
+    "review_date": "2026-10-19",
+    "HTML_body_count": 6,
+    "all6_actual_HTML_size_SHA_match_contract": true,
+    "network_requests": 0,
+    "authenticated_Base_requests": 0,
+    "source_records": [
+      {
+        "method": "addCrmClientStatus",
+        "url": "https://api.baselinker.com/index.php?method=addCrmClientStatus",
+        "observed_at": "2026-10-17T17:57:13.652318+00:00",
+        "html_utf8_bytes": 49477,
+        "html_utf8_sha256": "23bc7e6c2c2c4350eedb475f56300d9738c73fe5440825f55db7ed950fad2114",
+        "contract_record_canonical_sha256": "6c768ad4863aa418635f5003b6de331801a5a4a52cf43a675194aaa46ca81c19"
+      },
+      {
+        "method": "getCrmClientStatuses",
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientStatuses",
+        "observed_at": "2026-10-17T17:57:14.633337+00:00",
+        "html_utf8_bytes": 49614,
+        "html_utf8_sha256": "a1e7c34e0f5aa25aa5546c7b0391322769849f7b1d524be5370fc43c81fd8d57",
+        "contract_record_canonical_sha256": "c5633ae743e76c165b95e1547bf7f0eeb4b7902de3b609fde7a7a46c62303205"
+      },
+      {
+        "method": "deleteCrmClientStatus",
+        "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatus",
+        "observed_at": "2026-10-17T17:57:14.830016+00:00",
+        "html_utf8_bytes": 48937,
+        "html_utf8_sha256": "83c21c4f15d13eadf9c3b0ac1efe52b1bb8f7c13b25f3555b9935a3de7dbe11a",
+        "contract_record_canonical_sha256": "a284a5b327e9a93792410939a4d2545d7d2814c3e33a626e1185a489f22f3afb"
+      },
+      {
+        "method": "addCrmClientStatusGroup",
+        "url": "https://api.baselinker.com/index.php?method=addCrmClientStatusGroup",
+        "observed_at": "2026-10-17T17:57:13.968403+00:00",
+        "html_utf8_bytes": 49010,
+        "html_utf8_sha256": "9fb7fc7d7734f25efddaec8f9e8df32880f0f56ab6e41578e3bc49195b288135",
+        "contract_record_canonical_sha256": "396cddedcaa0acc650e59ade7bef72256aa1c6ee6fb10f96f53bc37093eed18b"
+      },
+      {
+        "method": "getCrmClientStatusGroups",
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientStatusGroups",
+        "observed_at": "2026-10-17T17:57:14.441957+00:00",
+        "html_utf8_bytes": 49073,
+        "html_utf8_sha256": "c3e9a06d37f5ccd204bb9bf76249d324417ea61be0d4d29f07cd3408227665a6",
+        "contract_record_canonical_sha256": "1dd610d5cb5018fc5ecaffa0c9888543558dcf44c38ebf37a36a36cad90c2627"
+      },
+      {
+        "method": "deleteCrmClientStatusGroup",
+        "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatusGroup",
+        "observed_at": "2026-10-17T17:57:14.347110+00:00",
+        "html_utf8_bytes": 48669,
+        "html_utf8_sha256": "18871fd25230698019db0f07fbb01348424ed841f101c0361b449b12180fa6f9",
+        "contract_record_canonical_sha256": "c3c3086b11cbcae49f950d8be22479b75811629c221f857fa51a1101bace5a54"
+      }
+    ],
+    "frozen_domain_rows_basis": "docs/parity/scope-inputs/v2/domains.json",
+    "mutable_domains_not_adopted": true
+  },
+  "change": {
+    "kind": "append_domain_rows_only",
+    "target_collection": "domains.rows",
+    "append_rows": [
+      {
+        "domain": "CRM",
+        "status": "unverified",
+        "acceptance_state": "OPEN",
+        "required_evidence_level": "local",
+        "implementation_assessment": "not_assessed_in_this_change",
+        "bound_scope": "Additive source discovery proposal only; not implementation, UI/API, Base wire, provider account, completeness or Goal acceptance.",
+        "evidence": {
+          "code": [],
+          "local": [],
+          "sandbox": [],
+          "account": []
+        },
+        "full_goal_acceptance": "not_evaluated",
+        "requirement_origin": "retained_official_documentation_decomposed_for_parity",
+        "id": "DOM-CRM-002",
+        "requirement": "Osobny słownik statusów CRM: tworzenie, aktualizacja, odczyt i usunięcie z przeniesieniem klientów do innego statusu oraz ochroną statusu głównego",
+        "operations": [
+          "utworzenie statusu z nazwą i kolorem, bez group_id do grupy głównej",
+          "aktualizacja statusu po jego ID; pominięcie group_id zachowuje przypisanie",
+          "lista id/name/color/group_id/is_primary, gdzie is_primary to integer0/1",
+          "usunięcie statusu niegłównego z target_status_id różnym od źródła i przeniesieniem wszystkich jego klientów",
+          "odmowa usunięcia statusu głównego",
+          "nowy status dopisywany na końcu listy statusów we własnej grupie"
+        ],
+        "base_sources": [
+          {
+            "method": "addCrmClientStatus",
+            "url": "https://api.baselinker.com/index.php?method=addCrmClientStatus",
+            "observed_at": "2026-10-17T17:57:13.652318+00:00",
+            "html_utf8_bytes": 49477,
+            "html_utf8_sha256": "23bc7e6c2c2c4350eedb475f56300d9738c73fe5440825f55db7ed950fad2114",
+            "contract_record_canonical_sha256": "6c768ad4863aa418635f5003b6de331801a5a4a52cf43a675194aaa46ca81c19",
+            "source_id": "BASE-API-addCrmClientStatus",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          },
+          {
+            "method": "getCrmClientStatuses",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClientStatuses",
+            "observed_at": "2026-10-17T17:57:14.633337+00:00",
+            "html_utf8_bytes": 49614,
+            "html_utf8_sha256": "a1e7c34e0f5aa25aa5546c7b0391322769849f7b1d524be5370fc43c81fd8d57",
+            "contract_record_canonical_sha256": "c5633ae743e76c165b95e1547bf7f0eeb4b7902de3b609fde7a7a46c62303205",
+            "source_id": "BASE-API-getCrmClientStatuses",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          },
+          {
+            "method": "deleteCrmClientStatus",
+            "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatus",
+            "observed_at": "2026-10-17T17:57:14.830016+00:00",
+            "html_utf8_bytes": 48937,
+            "html_utf8_sha256": "83c21c4f15d13eadf9c3b0ac1efe52b1bb8f7c13b25f3555b9935a3de7dbe11a",
+            "contract_record_canonical_sha256": "a284a5b327e9a93792410939a4d2545d7d2814c3e33a626e1185a489f22f3afb",
+            "source_id": "BASE-API-deleteCrmClientStatus",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          }
+        ],
+        "acceptance": [
+          "Normalne UI/API: utworzyć dwie własne grupy i status; odczytać trwałe statusID (wynikcreate status_id, lista id), nazwę, kolor, grupę oraz integer is_primary.",
+          "Utworzyć status bez group_id i wykazać przypisanie do oznaczonej grupy głównej. Jawnie umieścić inny w grupie dodatkowej, zmienić nazwę/kolor bez group_id i wykazać zachowanie grupy.",
+          "Przypisać co najmniej dwóch własnych klientów do statusu, jednego do innego. Usunąć pierwszy do różnego statusu docelowego; wykazać przeniesienie wszystkich i tylko jego klientów oraz brak zmiany danych profili i dawnych zamówień.",
+          "Spróbować usunięcia primary oraz source==target: odmowa bez zmian wszystkich klientów/statusów/grup. Dokładny kodBase/HTTP nie jest udokumentowany i nie jest zgadywany.",
+          "Granice name30/color7 sprawdzić w osobno zaakceptowanym kontrakcie walidacji, bez przypisywania Base nieopisanej obowiązkowości/typów błędów.",
+          "Normalny UI: w grupie z co najmniej dwoma statusami utworzyć nowy i sprawdzić dopisanie na końcu tej grupy. Nie zakładać nieudokumentowanej globalnej kolejności API między grupami."
+        ],
+        "project_specific_safety_requirements": [
+          "Lokalna migracja klientów+usunięcie statusu atomowo, również przy błędzie/utracieACK; to wymaganie integralności projektu, nie twierdzenie o transakcjach Base.",
+          "Administrator własnej firmy, odmowa obcej firmy i nieuprawnionej roli; readback po restarcie z tymi samymiID; nie ponawiać tworzenia po nieznanymACK bez uzgodnienia.",
+          "Nie używać order_status jako tożsamości statusu CRM; zachować pełne oryginalne zamówienia/dokumenty/kwoty/historię."
+        ]
+      },
+      {
+        "domain": "CRM",
+        "status": "unverified",
+        "acceptance_state": "OPEN",
+        "required_evidence_level": "local",
+        "implementation_assessment": "not_assessed_in_this_change",
+        "bound_scope": "Additive source discovery proposal only; not implementation, UI/API, Base wire, provider account, completeness or Goal acceptance.",
+        "evidence": {
+          "code": [],
+          "local": [],
+          "sandbox": [],
+          "account": []
+        },
+        "full_goal_acceptance": "not_evaluated",
+        "requirement_origin": "retained_official_documentation_decomposed_for_parity",
+        "id": "DOM-CRM-003",
+        "requirement": "Grupy statusów CRM: tworzenie, aktualizacja, lista i usunięcie z przeniesieniem statusów do grupy głównej oraz ochroną grupy głównej",
+        "operations": [
+          "utworzenie grupy bez group_id i zwrot group_id",
+          "aktualizacja istniejącej grupy po group_id",
+          "lista group_id/name/is_main_group, gdzie znacznik to integer0/1",
+          "usunięcie grupy niegłównej i przeniesienie wszystkich jej statusów do głównej",
+          "odmowa usunięcia grupy głównej"
+        ],
+        "base_sources": [
+          {
+            "method": "addCrmClientStatusGroup",
+            "url": "https://api.baselinker.com/index.php?method=addCrmClientStatusGroup",
+            "observed_at": "2026-10-17T17:57:13.968403+00:00",
+            "html_utf8_bytes": 49010,
+            "html_utf8_sha256": "9fb7fc7d7734f25efddaec8f9e8df32880f0f56ab6e41578e3bc49195b288135",
+            "contract_record_canonical_sha256": "396cddedcaa0acc650e59ade7bef72256aa1c6ee6fb10f96f53bc37093eed18b",
+            "source_id": "BASE-API-addCrmClientStatusGroup",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          },
+          {
+            "method": "getCrmClientStatusGroups",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClientStatusGroups",
+            "observed_at": "2026-10-17T17:57:14.441957+00:00",
+            "html_utf8_bytes": 49073,
+            "html_utf8_sha256": "c3e9a06d37f5ccd204bb9bf76249d324417ea61be0d4d29f07cd3408227665a6",
+            "contract_record_canonical_sha256": "1dd610d5cb5018fc5ecaffa0c9888543558dcf44c38ebf37a36a36cad90c2627",
+            "source_id": "BASE-API-getCrmClientStatusGroups",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          },
+          {
+            "method": "deleteCrmClientStatusGroup",
+            "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatusGroup",
+            "observed_at": "2026-10-17T17:57:14.347110+00:00",
+            "html_utf8_bytes": 48669,
+            "html_utf8_sha256": "18871fd25230698019db0f07fbb01348424ed841f101c0361b449b12180fa6f9",
+            "contract_record_canonical_sha256": "c3c3086b11cbcae49f950d8be22479b75811629c221f857fa51a1101bace5a54",
+            "source_id": "BASE-API-deleteCrmClientStatusGroup",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained official public HTML observed17.10.2026; not authenticated request; original HTTPstatus/finalURL not recorded."
+          }
+        ],
+        "acceptance": [
+          "Normalne UI/API: utworzyć grupę, odczytać trwałe group_id na liście, zmienić nazwę przez ten samID; name udokumentowane varchar15.",
+          "W grupie umieścić co najmniej dwa statusy, z klientami i bez klientów, a w innej status kontrolny. Usunąć pierwszą grupę; oba jej statusy zachowująID/nazwę/kolor/klientów i otrzymują group_id głównej; pozostały status pozostaje bez zmian.",
+          "Odczytać is_main_group jako integer0/1; próba usunięcia głównej grupy nie zmienia żadnych grup/statusów/klientów.",
+          "Wymagane jest zachowanie danych klientów i wcześniejszych zamówień; usunięcie grupy nie jest kasowaniem jej statusów ani klientów."
+        ],
+        "project_specific_safety_requirements": [
+          "Lokalne przeniesienie statusów+usunięcie grupy atomowo; odmowy/nieznaneACK/restart bez częściowego osierocenia. Nie twierdzimy, że publiczna dokumentacja opisuje mechanizm transakcyjny Base.",
+          "Sprawdzić administratora, obcą firmę i niedozwoloną rolę; brak udokumentowanychBase uprawnień nie jest dowodem ich zgodności.",
+          "Nie utożsamiać z grupami produktów/cen/uprawnień/statusami zamówień."
+        ]
+      }
+    ],
+    "remove_ids": [],
+    "replace_ids": [],
+    "preserve_all_existing_requirements": true,
+    "preserve_all_existing_required_ids": true,
+    "preserve_all_existing_domain_rows": true,
+    "domain_rows_before": 135,
+    "domain_rows_after_this_only": 137,
+    "domain_rows_after_with_crm001": 138,
+    "required_records_before": 2585,
+    "required_records_after_this_only": 2587,
+    "required_records_after_with_crm001": 2588,
+    "new_required_keys": [
+      "domains:operation:DOM-CRM-002",
+      "domains:operation:DOM-CRM-003"
+    ],
+    "canonical_hash_algorithm": "SHA256 UTF8 JSON sorted object keys recursively, compact separators, arrays in original order, unescapedUnicode",
+    "existing_requirements_canonical_sha256": "6931647ed3e44d57f1becc0396bcda6c5df3ac499f1293418af712d33aaac6a4",
+    "existing_required_ids_canonical_sha256": "1847c977d46e2056bc25ea0f9e779601d1695ea8b3a6068fe28b8cc6ab0b0db6",
+    "existing_domain_rows_canonical_sha256": "a50ee75cbba64495684eca41fb0217aed7f4378ec5523ff4066d27f124a3fe03"
+  },
+  "source_contracts": [
+    {
+      "id": "BASE-API-addCrmClientStatus",
+      "method": "addCrmClientStatus",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addCrmClientStatus",
+        "retrieved_at": "2026-10-17T17:57:13.652318+00:00",
+        "bytes": 49477,
+        "sha256": "23bc7e6c2c2c4350eedb475f56300d9738c73fe5440825f55db7ed950fad2114",
+        "snapshot_document_method": "addCrmClientStatus"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Tworzy lub aktualizuje status według status_id; bez group_id nowy trafia do głównej grupy, istniejący zachowuje grupę.",
+      "input": {
+        "parameters": [
+          {
+            "name": "status_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_omit_for_create",
+            "meaning_pl": "identyfikator statusu CRM",
+            "default": null,
+            "omission": "create",
+            "empty_representation": "not_documented"
+          },
+          {
+            "name": "name",
+            "documented_type": "varchar(30)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "nazwa",
+            "default": null,
+            "max_length": 30
+          },
+          {
+            "name": "color",
+            "documented_type": "varchar(7)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "kolor szesnastkowy",
+            "default": null,
+            "max_length": 7,
+            "format": "hex_color",
+            "example": "#FF0000"
+          },
+          {
+            "name": "group_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_omission_behavior",
+            "meaning_pl": "identyfikator grupy statusów",
+            "default": null,
+            "omission_on_create": "main_group",
+            "omission_on_update": "preserve_group"
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "status_id",
+            "documented_type": "int"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "create default main-group status; update without group_id preserves assignment",
+        "verify requiredness/name/color omission independently; readback via getCrmClientStatuses"
+      ]
+    },
+    {
+      "id": "BASE-API-getCrmClientStatuses",
+      "method": "getCrmClientStatuses",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientStatuses",
+        "retrieved_at": "2026-10-17T17:57:14.633337+00:00",
+        "bytes": 49614,
+        "sha256": "a1e7c34e0f5aa25aa5546c7b0391322769849f7b1d524be5370fc43c81fd8d57",
+        "snapshot_document_method": "getCrmClientStatuses"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Lista statusów CRM użytkownika; id jest identyfikatorem statusu, is_primary ma wartości 0/1.",
+      "input": {
+        "parameters": [],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "statuses",
+            "documented_type": "array"
+          },
+          {
+            "path": "statuses[].id",
+            "documented_type": "int"
+          },
+          {
+            "path": "statuses[].name",
+            "documented_type": "text"
+          },
+          {
+            "path": "statuses[].color",
+            "documented_type": "text"
+          },
+          {
+            "path": "statuses[].group_id",
+            "documented_type": "int"
+          },
+          {
+            "path": "statuses[].is_primary",
+            "documented_type": "int",
+            "documented_values": [
+              0,
+              1
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "read id/name/color/group_id/integer primary marker; resolve group ID through groups, not order-status IDs"
+      ]
+    },
+    {
+      "id": "BASE-API-deleteCrmClientStatus",
+      "method": "deleteCrmClientStatus",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatus",
+        "retrieved_at": "2026-10-17T17:57:14.830016+00:00",
+        "bytes": 48937,
+        "sha256": "83c21c4f15d13eadf9c3b0ac1efe52b1bb8f7c13b25f3555b9935a3de7dbe11a",
+        "snapshot_document_method": "deleteCrmClientStatus"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Przenosi wszystkich klientów usuwanego statusu do target_status_id; statusu głównego nie wolno usuwać.",
+      "input": {
+        "parameters": [
+          {
+            "name": "status_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "identyfikator statusu CRM",
+            "default": null
+          },
+          {
+            "name": "target_status_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "status docelowy klientów",
+            "default": null,
+            "must_differ_from": "status_id"
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "all clients migrate to different target; primary status refuses deletion",
+        "same target/source invalid; missing target/error code not documented"
+      ]
+    },
+    {
+      "id": "BASE-API-addCrmClientStatusGroup",
+      "method": "addCrmClientStatusGroup",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addCrmClientStatusGroup",
+        "retrieved_at": "2026-10-17T17:57:13.968403+00:00",
+        "bytes": 49010,
+        "sha256": "9fb7fc7d7734f25efddaec8f9e8df32880f0f56ab6e41578e3bc49195b288135",
+        "snapshot_document_method": "addCrmClientStatusGroup"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Tworzy grupę albo aktualizuje wskazaną przez group_id; organizuje statusy w panelu.",
+      "input": {
+        "parameters": [
+          {
+            "name": "group_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_omit_for_create",
+            "meaning_pl": "identyfikator grupy statusów",
+            "default": null,
+            "omission": "create",
+            "empty_representation": "not_documented"
+          },
+          {
+            "name": "name",
+            "documented_type": "varchar(15)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "nazwa",
+            "default": null,
+            "max_length": 15
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "group_id",
+            "documented_type": "int"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "create/rename and readback via groups; varchar15 boundary; existing group remains stable"
+      ]
+    },
+    {
+      "id": "BASE-API-getCrmClientStatusGroups",
+      "method": "getCrmClientStatusGroups",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientStatusGroups",
+        "retrieved_at": "2026-10-17T17:57:14.441957+00:00",
+        "bytes": 49073,
+        "sha256": "c3e9a06d37f5ccd204bb9bf76249d324417ea61be0d4d29f07cd3408227665a6",
+        "snapshot_document_method": "getCrmClientStatusGroups"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Lista grup; is_main_group ma wartości całkowite 0/1.",
+      "input": {
+        "parameters": [],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "status_groups",
+            "documented_type": "array"
+          },
+          {
+            "path": "status_groups[].group_id",
+            "documented_type": "int"
+          },
+          {
+            "path": "status_groups[].name",
+            "documented_type": "text"
+          },
+          {
+            "path": "status_groups[].is_main_group",
+            "documented_type": "int",
+            "documented_values": [
+              0,
+              1
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "read groups and integer0/1 main marker; no undocumented paging or stable ordering assumption"
+      ]
+    },
+    {
+      "id": "BASE-API-deleteCrmClientStatusGroup",
+      "method": "deleteCrmClientStatusGroup",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteCrmClientStatusGroup",
+        "retrieved_at": "2026-10-17T17:57:14.347110+00:00",
+        "bytes": 48669,
+        "sha256": "18871fd25230698019db0f07fbb01348424ed841f101c0361b449b12180fa6f9",
+        "snapshot_document_method": "deleteCrmClientStatusGroup"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Przenosi statusy usuwanej grupy do grupy głównej; grupa główna nie podlega usunięciu.",
+      "input": {
+        "parameters": [
+          {
+            "name": "group_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "identyfikator grupy statusów",
+            "default": null
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "status_vocabulary",
+      "proposed_acceptance": [
+        "statuses move to main group, without deleting clients/statuses; main group refuses deletion"
+      ]
+    }
+  ],
+  "nonduplicate_review": [
+    {
+      "existing_id": "DOM-CRM-001",
+      "boundary": "Independent client profile CRUD/list/patch/history; explicitly leaves status/group family outside that row."
+    },
+    {
+      "existing_id": "DOM-SEC-004",
+      "boundary": "Permission profiles restrict orderstatus/statistics/functions; not CRM status dictionary and migration."
+    },
+    {
+      "existing_id": "DOM-AUTO-001",
+      "boundary": "Order automation once after Woo import; not CRM lifecycle."
+    },
+    {
+      "existing_id": "DOM-PIM-010",
+      "boundary": "Product parameter groups/types; not CRM status group."
+    },
+    {
+      "existing_id": "DOM-PIM-012",
+      "boundary": "Pricegroup/currency; not CRM group."
+    },
+    {
+      "existing_id": "DOM-ANALYTICS-003",
+      "boundary": "Customer statistics; not mutable CRM dictionary."
+    }
+  ],
+  "deliberately_open": [
+    "No CRM implementation absence claim from missing inventory entries. Source/runtime/UI assessment is pending.",
+    "No fullfamily completeness: getCrmClientExtraFields/customfieldserialization/files remain independently OPEN.",
+    "Undocumented Base HTTPmapping/errorcodes/validationorder/default-null-empty-ID and listcaps/order/pagination not invented.",
+    "No account or tenantrole behavior of Base observed; local project safety tests are labeled separately.",
+    "DOM-GAP-001/004/005/006/007/010/011 and all other unresolved gaps remain; newfreeze may remainpartial, never labelcomplete by counting2588.",
+    "Atomic all-or-nothing local operations and restart/unknownACK handling are project acceptance requirements, not directly asserted Base transaction implementation."
+  ],
+  "integration_plan": [
+    "Root review this proposal and retained CRM001proposal; no publicfreeze is modified by this artifact.",
+    "Create NEWversioned scope-inputs/v4 using exact prior frozen domain/integration/provider documents. Append CRM001+002+003 only to domains.rows; preserve original135 rows bytevalue and all oldgaps/status/evidence.",
+    "Recompute derived inventory counters honestly (domainrows138, domaincount17 if nootherchanges), retaining inherited coveragegaps and inventory_complete:false.",
+    "Keep integration inputs/providerroster and catalogue2052codes/2060listings separate and unchanged unless separately reviewed additions; catalogue is not operation acceptance.",
+    "Preserve or extend evidence archive with retainedsource refs; do not overwrite frozen v1/v2/v3 inputs or oldparentSHA.",
+    "Use existing createScopeSnapshot in tools/parity/scope-freeze.mjs with parentactualv3/version4/snapshot_kindpartial and catalogue_inventory_version1; add explicitassert all2585oldkeys+definitions+evidencelevels unchanged, newkeys exactly3 withCRM001.",
+    "Verify output2588 requiredrecords and zero removed/redefined/leveldowngraded requirements; all threeCRMrequirements OPEN, all acceptanceflagsfalse.",
+    "CompleteSourcev4 cannot beclaimed until everydiscovery gap/sourcefamily/provider operation boundary is actually reconciled and existingvalidator permitscomplete; 2588 remains a partial additive denominator."
+  ]
+}

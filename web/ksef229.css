@@ -1,0 +1,19 @@
+/* 229 KSeF: settings form, invoice section with offline QR codes, queue. Wraps at phone width. */
+.ksef-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 14px; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin: 12px 0; min-width: 0; }
+.ksef-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; min-width: 0; }
+.ksef-form textarea, .ksef-form input, .ksef-form select { width: 100%; box-sizing: border-box; font-family: inherit; }
+.ksef-form details, .ksef-form .notice, .ksef-form .ksef-actions { grid-column: 1 / -1; }
+.ksef-form details { display: grid; gap: 8px; }
+.ksef-form .ksef-check { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 8px; }
+.ksef-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.ksef-document { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 8px; }
+.ksef-document code { overflow-wrap: anywhere; }
+.ksef-qr { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+.ksef-qr p { flex-basis: 100%; margin: 0; overflow-wrap: anywhere; }
+.ksef-qr figure { margin: 0; text-align: center; font-size: 11px; font-weight: 600; }
+.ksef-qr img { display: block; background: #fff; border: 1px solid var(--border); }
+.ksef-offline { background: #fff4e5; color: #9a5b00; }
+.ksef-offline.overdue, .ksef-overdue { background: #fdecec; color: #b42318; }
+.ksef-offline-choice { display: inline-grid; gap: 6px; }
+.ksef-settings td small, .ksef-queue td small { display: block; color: var(--muted); }
+.ksef-form input[type=checkbox] { width: auto; flex: none; }

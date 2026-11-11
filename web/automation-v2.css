@@ -1,0 +1,486 @@
+/* Automation rules v2 editor (Uwagi v3 §0). Follows the panel/button/switch styles of styles.css. */
+/* styles.css spaces stacked form labels (label + label); the editor lays labels out in rows and grids. */
+.av2 label + label {
+  margin-top: 0;
+}
+.av2-pad {
+  padding: 0 23px 18px;
+}
+.av2-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 23px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.av2-studio-tabs {
+  padding: 0 0 14px;
+  margin-bottom: 18px;
+}
+.av2-tabs button[aria-selected='true'] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+.av2-rule-group {
+  padding: 16px 23px 4px;
+}
+.av2-rule-group h3,
+.av2-section h3 {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #4c5973;
+  margin: 0 0 10px;
+}
+.av2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.av2-table th {
+  text-align: left;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.av2-table td {
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.av2-table td > small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.av2-table td > strong {
+  color: var(--ink);
+}
+.av2-rules {
+  table-layout: fixed;
+}
+.av2-rules th:nth-child(1) {
+  width: 110px;
+}
+.av2-rules th:nth-child(3) {
+  width: 80px;
+}
+.av2-rules th:nth-child(4) {
+  width: 330px;
+}
+.av2-table tr.av2-invalid > td {
+  background: #fff6f7;
+}
+.av2-tree {
+  max-width: 640px;
+}
+.av2-order {
+  white-space: nowrap;
+  width: 1%;
+}
+.av2-order > span:not(.av2-handle) {
+  display: inline-block;
+  min-width: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.av2-handle {
+  cursor: grab;
+  color: #8896a9;
+  padding: 0 6px 0 0;
+  user-select: none;
+}
+.av2-dragging {
+  opacity: 0.5;
+}
+.av2-row-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.av2-editor .av2-body {
+  padding: 0 23px 10px;
+}
+.av2-section {
+  border-top: 1px solid var(--border);
+  padding: 16px 0;
+}
+.av2-basics {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  border-top: 0;
+}
+.av2-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #4c5973;
+}
+.av2-editor input:not([type='checkbox']),
+.av2-editor select,
+.av2-editor textarea,
+.av2-manual input {
+  border: 1px solid #dfe5f0;
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 11px;
+  color: var(--ink);
+  background: white;
+  min-width: 0;
+}
+.av2-editor label.av2-check,
+.av2-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.av2-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.av2-table .av2-inline {
+  align-items: flex-start;
+}
+.av2-inline > input[type='number'] {
+  width: 90px;
+}
+.av2-run-grid {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+.av2-hours {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 8px;
+}
+.av2-unit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.av2-unit input {
+  width: 100px;
+}
+.av2-days {
+  display: inline-flex;
+  gap: 4px;
+}
+.av2-editor .av2-days label {
+  flex-direction: row;
+  border: 1px solid #dfe5f0;
+  border-radius: 6px;
+  padding: 5px 7px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.av2-days label.on {
+  background: #eef2fe;
+  border-color: #5674e4;
+  color: #2646d3;
+}
+.av2-days input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.av2-logic {
+  margin-bottom: 10px;
+}
+.av2-joiner td {
+  padding: 2px 8px;
+  border-bottom: 0;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #5674e4;
+}
+.av2-subgroup-row > td {
+  padding: 8px 0;
+}
+.av2-group {
+  border: 1px dashed #c9d3e6;
+  border-radius: 8px;
+  padding: 8px 10px 10px;
+  margin: 0;
+}
+.av2-group.negated {
+  border-color: #cd5263;
+}
+.av2-group legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 6px;
+}
+.av2-picker,
+.av2-manual {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.av2-picker-pop,
+.av2-manual-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  width: 320px;
+  background: white;
+  border: 1px solid #dfe5f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px #10204322;
+  padding: 8px;
+}
+.av2-picker-pop > input {
+  width: 100%;
+  margin-bottom: 6px;
+}
+.av2-picker-list,
+.av2-list-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.av2-picker-group {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  padding: 8px 6px 3px;
+}
+.av2-picker-list button,
+.av2-manual-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.av2-picker-list button:hover:not(:disabled),
+.av2-manual-menu button:hover {
+  background: #f2f5fc;
+}
+.av2-picker-list button:disabled {
+  color: #a5afbf;
+  cursor: not-allowed;
+}
+.av2-list {
+  position: relative;
+  min-width: 220px;
+  max-width: 420px;
+}
+.av2-list-summary {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #dfe5f0;
+  border-radius: 6px;
+  background: white;
+  padding: 7px 9px;
+  font-size: 11px;
+  color: var(--ink);
+  text-align: left;
+}
+.av2-list-pop {
+  border: 1px solid #dfe5f0;
+  border-radius: 6px;
+  margin-top: 4px;
+  padding: 6px;
+  background: #fbfcfe;
+}
+.av2-list-pop > input {
+  width: 100%;
+  margin-bottom: 4px;
+}
+.av2-editor .av2-list-group,
+.av2-editor .av2-list-option {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  font-size: 11px;
+}
+.av2-editor .av2-list-group {
+  font-weight: 700;
+  margin-top: 4px;
+}
+.av2-editor .av2-list-option {
+  font-weight: 400;
+  padding-left: 18px;
+}
+.av2-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+.av2-param-multi {
+  display: grid;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.av2-barcode-svg svg {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.av2-table td > small.av2-error {
+  color: #cd5263;
+}
+.notice.av2-errors {
+  display: block;
+}
+.av2-errors ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.av2-error {
+  color: #cd5263;
+  font-size: 10px;
+}
+.av2-ok {
+  color: #1f8a5b;
+}
+.av2-fail {
+  color: #cd5263;
+}
+.av2-footer {
+  border-top: 1px solid var(--border);
+  padding: 14px 23px;
+  font-size: 11px;
+  display: grid;
+  gap: 8px;
+}
+.av2-sample {
+  margin: 0;
+  padding-left: 18px;
+}
+.av2-test ul,
+.av2-test ol {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+.av2-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 23px 16px;
+}
+.av2-log {
+  padding: 14px 23px;
+  font-size: 11px;
+}
+.av2-log ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+.av2-log ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+.av2-runs label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.av2-runs .table-scroll {
+  padding: 0 23px 18px;
+}
+.av2-manual-error {
+  display: inline-block;
+}
+.av2-manual-menu {
+  width: 260px;
+}
+@media (max-width: 900px) {
+  .av2-basics,
+  .av2-run-grid {
+    grid-template-columns: 1fr;
+  }
+  .av2-table thead {
+    display: none;
+  }
+  .av2-table td {
+    display: block;
+    border-bottom: 0;
+  }
+  .av2-table tr {
+    display: block;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* "Zmiana statusu zamówienia": Ze statusu / Na status (empty = any). */
+.av2-status-change {
+  margin-top: 8px;
+  align-items: flex-start;
+}
+.av2-status-col {
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+}
+
+/* Asortyment tab: product rules of the "Reguły produktów" module and their run log. */
+.av2-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.av2-group-head h3 {
+  margin: 0;
+}
+.av2-subhead {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+  padding: 18px 23px 0;
+  border-top: 1px solid var(--border);
+}
+.av2-consent {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 10px;
+}
+.av2-product-runs {
+  padding-bottom: 18px;
+}
+
+/* Order counts in the status condition list (order.status / order.workflow_status). */
+.av2-list-option .av2-list-count {
+  margin-left: auto;
+  padding-left: 8px;
+  font-variant-numeric: tabular-nums;
+  color: #5b6880;
+}

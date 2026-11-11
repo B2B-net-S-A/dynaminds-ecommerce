@@ -1,0 +1,95 @@
+{
+  "scope": "File-only Source202 overlay tool mirrors. Historical original references are retained as history; current bytes below derive from the staged reviewed Native202 contract/resource inventory. No native operation or application activation.",
+  "files": [
+    {
+      "file": "portable-release.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/guard549-first-flow-fixes-build-ui/stage/shared/large-import-dependencies/pim-large-import173-business-traversal-ui/portable-release.mjs",
+      "original_sha256": "6945622f400ed4f6a76f7ae6b2c25932958a1eb875f1c2f44240a40bcfbc399c",
+      "sha256": "6945622f400ed4f6a76f7ae6b2c25932958a1eb875f1c2f44240a40bcfbc399c",
+      "bytes": 14209,
+      "current_canonical_source_before_sha256": "6945622f400ed4f6a76f7ae6b2c25932958a1eb875f1c2f44240a40bcfbc399c"
+    },
+    {
+      "file": "emitted-release.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/guard549-first-flow-fixes-build-ui/stage/shared/large-import-dependencies/pim-large-import173-business-traversal-ui/emitted-release.mjs",
+      "original_sha256": "6c9fade75c88b3b32798f2e1d1a25b141fee42ff57b8d0241c7f839c8014d1fa",
+      "sha256": "49a43cb452980d7d0570618c32ea4c0ab81e1c3e8a89c198892be0cb4eb827fd",
+      "bytes": 13114,
+      "current_canonical_source_before_sha256": "49a43cb452980d7d0570618c32ea4c0ab81e1c3e8a89c198892be0cb4eb827fd"
+    },
+    {
+      "file": "ordinary177-contract.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/guard549-first-flow-fixes-build-ui/stage/shared/large-import-dependencies/pim-large-import173-business-traversal-ui/ordinary177-contract.mjs",
+      "original_sha256": "4d3997484cf102f5265058800c33a17cf769a5fbdf5469415c258998b9ea317d",
+      "sha256": "5239555ab11f32c7cb458d9c15bbe2b3ba4828a827077cb856f4f32fc23246f5",
+      "bytes": 2045,
+      "current_canonical_source_before_sha256": "82678c586151123a44af1c9052dcc8955aae4b3996564c93a84f7a00e1ecb7aa"
+    },
+    {
+      "file": "resource-definitions.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/guard549-first-flow-fixes-build-ui/stage/shared/large-import-dependencies/pim-large-import173-business-traversal-ui/resource-definitions.mjs",
+      "original_sha256": "304362e2329d9fd9f93752dca00a0cf83cf2fd415f60cc11764e60e98ab9e3ab",
+      "sha256": "8ac49565d9f4c5a78b2d9cf21932bbd8613bc6ff9db64e6d3a19f9ad8b2db4d3",
+      "bytes": 40281,
+      "current_canonical_source_before_sha256": "75d89d7bbfb3c77ebd28023457ef21b425bdcfd4d0c9bebdbb0ba8bf14845362"
+    },
+    {
+      "file": "output-closure.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/pim-large-import173-runtime-closure-root/output-closure.mjs",
+      "original_sha256": "cef461a3aa43f9839f7e16f97405780bf7b8003640b33197e73d5b58db652803",
+      "sha256": "cef461a3aa43f9839f7e16f97405780bf7b8003640b33197e73d5b58db652803",
+      "bytes": 1814,
+      "current_canonical_source_before_sha256": "cef461a3aa43f9839f7e16f97405780bf7b8003640b33197e73d5b58db652803"
+    },
+    {
+      "file": "inspect.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/pim-large-import173-runtime-closure-root/inspect.mjs",
+      "original_sha256": "4492fa769057c0fd2d5535cf1b5d427cc3455e5bdcad023c0d081af57c29a3b5",
+      "sha256": "66fcf2b34d9eca3be7a343b9f441adc29fb02569bf562879c98d86a521cf8a42",
+      "bytes": 6742,
+      "current_canonical_source_before_sha256": "66fcf2b34d9eca3be7a343b9f441adc29fb02569bf562879c98d86a521cf8a42"
+    },
+    {
+      "file": "package-builder.mjs",
+      "original_path": "<workspace>/worktrees/stock-file-import/data/source-drafts/guard549-first-flow-fixes-build-ui/package-builder.mjs",
+      "original_sha256": "b6c0a139ece74512ae31e998d5a3c8f32e237f4ad352062357d51a6e1b03a7c6",
+      "sha256": "beb4716d859c5153235e709c8bc6364b97ee372d8dee08e112574ea802811e45",
+      "bytes": 18031,
+      "current_canonical_source_before_sha256": "beb4716d859c5153235e709c8bc6364b97ee372d8dee08e112574ea802811e45"
+    }
+  ],
+  "emitter_changes": [
+    "five relative build-tool imports",
+    "one pathToFileURL import and resource-definition file URL construction",
+    "metafile saved beside selected output instead of tool directory",
+    "historical-source-only resolver; actual output still refuses historical references",
+    "export original unchanged runtime-output assertion for direct refusal tests"
+  ],
+  "inspector_changes": [
+    "portable helper import only",
+    "historical-source-only resolver and tagged archive-edge classification; no opening archive modules"
+  ],
+  "focused_checks": {
+    "node_tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "chunk": "87c959",
+    "duration_ms": 335.073375,
+    "real_source45_check_only": {
+      "passed": true,
+      "chunk": "538917",
+      "files": 45,
+      "runtime_source_members": 14,
+      "bytes": 25896286
+    },
+    "full_emission": false,
+    "PG_app_services": false
+  },
+  "quota202_source_overlay": {
+    "source_manifest_sha256": "72492c3c5ab166e4e785627890680a05b8fd838ef65964a70431ba9828f33a04",
+    "native_execution": false,
+    "application_activation": false,
+    "source_check_only_pass": true,
+    "focused_typecheck_diagnostics": 0
+  }
+}

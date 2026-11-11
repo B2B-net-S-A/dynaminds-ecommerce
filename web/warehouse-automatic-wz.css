@@ -1,0 +1,16 @@
+.warehouse-automatic-wz { min-width: 0; }
+.warehouse-automatic-wz > header { padding: 20px 24px 0; }
+.warehouse-automatic-wz .waw-body { display: grid; gap: 16px; padding: 20px 24px 24px; min-width: 0; }
+.warehouse-automatic-wz label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.warehouse-automatic-wz label.waw-check { flex-direction: row; align-items: flex-start; gap: 8px; }
+.warehouse-automatic-wz .waw-check input { width: auto; flex: 0 0 auto; margin-top: 3px; }
+.warehouse-automatic-wz fieldset, .warehouse-automatic-wz .waw-review { display: grid; gap: 12px; border: 1px solid var(--border, #ddd); border-radius: 8px; padding: 16px; min-width: 0; }
+.warehouse-automatic-wz .waw-summary { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 6px 12px; margin: 0; }
+.warehouse-automatic-wz .waw-summary dd { margin: 0; overflow-wrap: anywhere; }
+.warehouse-automatic-wz .waw-history { display: grid; gap: 8px; list-style: none; padding: 0; margin: 0; overflow-wrap: anywhere; }
+.warehouse-automatic-wz button { white-space: normal; overflow-wrap: anywhere; }
+.warehouse-automatic-wz input, .warehouse-automatic-wz select { min-width: 0; max-width: 100%; }
+@media (max-width: 700px) {
+  .warehouse-automatic-wz > header, .warehouse-automatic-wz .waw-body { padding-left: 14px; padding-right: 14px; }
+  .warehouse-automatic-wz .waw-summary { grid-template-columns: 1fr; }
+}

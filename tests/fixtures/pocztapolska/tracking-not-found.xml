@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTETYCZNE: plik przygotowany ręcznie na podstawie publicznej dokumentacji Poczty Polskiej, nie jest nagraniem odpowiedzi dostawcy. -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://sledzenie.pocztapolska.pl"><soapenv:Body><ns:sprawdzPrzesylkeResponse><return><numer>FAKEPP0000000009</numer><status>-1</status></return></ns:sprawdzPrzesylkeResponse></soapenv:Body></soapenv:Envelope>

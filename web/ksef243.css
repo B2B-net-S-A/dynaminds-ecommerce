@@ -1,0 +1,14 @@
+.ksef-purchase-sync { display: grid; gap: 10px; margin-bottom: 12px; }
+.ksef-purchase-nip { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: grid; gap: 4px; min-width: 0; }
+.ksef-purchase-events { margin: 6px 0 0; padding-left: 18px; font-size: 12px; }
+.ksef-purchase-filters { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.ksef-purchase td small, .ksef-purchase td code { display: block; overflow-wrap: anywhere; }
+.ksef-purchase td.num, .ksef-purchase th.num { text-align: right; white-space: nowrap; }
+.ksef-purchase tr.selected td { background: var(--surface-2, rgba(127, 127, 127, 0.08)); }
+.ksef-badges .badge { display: inline-block; margin: 0 4px 2px 0; padding: 0 6px; border-radius: 9px; border: 1px solid var(--border); font-size: 11px; white-space: nowrap; }
+.ksef-purchase-facts { display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 4px 12px; margin: 8px 0; }
+.ksef-purchase-facts dt { color: var(--muted, #667); }
+.ksef-purchase-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .ksef-purchase-facts { grid-template-columns: 1fr; } .ksef-purchase-facts dd { margin-bottom: 6px; } }
+.ksef-purchase-nip, .ksef-purchase-facts, .ksef-purchase-detail ul, .ksef-purchase-nip summary { font-size: 13px; }
+.ksef-purchase-detail h3 { font-size: 16px; }

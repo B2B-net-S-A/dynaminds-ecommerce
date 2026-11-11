@@ -1,0 +1,117 @@
+.price-bulk-edit {
+  min-width: 0;
+  margin: 20px 0;
+}
+.price-bulk-edit .panel-heading {
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.price-bulk-edit .pbe-body {
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.price-bulk-edit p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.price-bulk-edit label {
+  display: grid;
+  gap: 8px;
+}
+.price-bulk-edit .pbe-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.price-bulk-edit .pbe-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.price-bulk-edit table {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 830px;
+}
+.price-bulk-edit td,
+.price-bulk-edit th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 12px 8px;
+  vertical-align: top;
+}
+.price-bulk-edit small {
+  display: block;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+.price-bulk-edit .pbe-sheet th:first-child {
+  width: 21%;
+}
+.price-bulk-edit .pbe-sheet th:nth-child(2) {
+  width: 13%;
+}
+.price-bulk-edit .pbe-sheet th:nth-child(3) {
+  width: 15%;
+}
+.price-bulk-edit .pbe-sheet th:nth-child(4) {
+  width: 17%;
+}
+.price-bulk-edit .pbe-sheet th:nth-child(5) {
+  width: 11%;
+}
+.price-bulk-edit input:not([type='checkbox']),
+.price-bulk-edit select {
+  width: 100%;
+  min-width: 0;
+}
+.price-bulk-edit .pbe-result {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.price-bulk-edit .pbe-check {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.price-bulk-edit .pbe-check input {
+  flex: none;
+  margin-top: 5px;
+}
+.price-bulk-edit .pbe-technical {
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+.price-bulk-edit .pbe-apply {
+  padding: 12px;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  align-items: end;
+}
+.price-bulk-edit .pbe-apply button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+@media (max-width: 700px) {
+  .price-bulk-edit .pbe-body {
+    padding: 0 12px 16px;
+  }
+  .price-bulk-edit .pbe-result {
+    padding: 10px;
+  }
+  .price-bulk-edit .pbe-apply {
+    grid-template-columns: 1fr;
+  }
+}

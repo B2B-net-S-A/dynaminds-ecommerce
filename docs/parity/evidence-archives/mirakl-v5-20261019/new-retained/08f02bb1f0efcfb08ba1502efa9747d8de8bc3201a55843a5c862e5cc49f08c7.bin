@@ -1,0 +1,862 @@
+import { shopifyCredentialIdentity } from './shopify-auth-input';
+import { shopifyAccountPolicy } from './shopify-oauth';
+import { normalizeAmazon } from './amazon';
+import { normalizeEbay, ebayConnectionHash } from './ebay';
+import { normalizeOdooOrder } from './odoo-orders';
+import { normalizeMiraklOrder } from './mirakl';
+import { parseMiraklSettings, miraklChannelConnectionHash } from './mirakl-channel';
+import { normalizeShopify, shopifyOrderTime } from './shopify';
+import { randomUUID, createHash } from 'node:crypto';
+import { z } from 'zod';
+import type { PoolClient } from 'pg';
+import { tenantTx, hasAcknowledgedTenantRollback } from './db';
+import { audit, createOrder, getOrder, orderSchema, transition, type Actor } from './domain';
+import { ensure, Problem } from './errors';
+import { normalizePrestaShop } from './prestashop-orders';
+import { appendPayment, paymentBalance } from './payments';
+import { observeOrderFieldSourceInTx, acquireMappingOAuthInTx } from './order-field-mappings';
+import {
+  prepareMappedInitialOrderFieldsInTx,
+  completeMappedInitialImportInTx,
+} from './order-field-mappings-initial';
+import type { MappedInitialConsent } from './order-field-mappings-schema';
+import { mappingHash } from './order-field-mappings-source';
+import { orderSourceLinesAvailable, bindOrderSourceLinesInTx } from './order-source-lines';
+import type { ExternalImportConsent } from './b2b-external-order-imports-schema';
+import {
+  externalImportAdmissionInTx,
+  externalImportFinishInTx,
+  externalImportReplayInTx,
+  prepareB2bExternalImportInTx,
+  completeB2bExternalImportInTx,
+  normalizeExternalImportOrder,
+} from './b2b-external-order-imports';
+
+const externalId = z
+  .union([z.string().min(1).max(160), z.number().int().positive()])
+  .transform(String);
+const minor = z.number().int().min(0).max(2147483647);
+export const canonicalSchema = z.object({
+  external_id: externalId,
+  currency: z.enum(['PLN', 'EUR', 'USD', 'GBP', 'CZK']),
+  customer_name: z.string().trim().min(2).max(200),
+  email: z.email().or(z.literal('')),
+  address: orderSchema.shape.address,
+  shipping_cost: minor,
+  total: minor,
+  paid: z.boolean(),
+  payment_mode: z.enum(['prepaid', 'cod']).default('prepaid'),
+  paid_amount: minor.default(0),
+  source_status: z.string().max(80),
+  note: z.string().max(2000),
+  items: z
+    .array(
+      z.object({
+        remote_line_id: z.string().min(1).max(200).optional(),
+        external_id: externalId,
+        name: z.string().min(1).max(200),
+        sku: z.string().max(160),
+        quantity: z.number().int().min(1).max(100000),
+        line_total: minor,
+      }),
+    )
+    .min(1)
+    .max(100),
+  blockers: z.array(z.string()),
+});
+export type CanonicalOrder = z.infer<typeof canonicalSchema>;
+export function allegroPaymentAmount(raw: any, currency: string) {
+  if (raw.payment?.type === 'CASH_ON_DELIVERY') return 0;
+  ensure(raw.payment?.type === 'ONLINE', 422, 'Typ płatności Allegro wymaga uzgodnienia');
+  const payments = [raw.payment];
+  const charges = raw.surcharges ?? [];
+  ensure(Array.isArray(charges) && charges.length <= 100, 422, 'Nieprawidłowe dopłaty Allegro');
+  const ids = new Set<string>();
+  for (const s of charges) {
+    ensure(
+      typeof s.id === 'string' && s.id.length > 0 && !ids.has(s.id),
+      422,
+      'Powtórzona lub nieprawidłowa dopłata Allegro',
+    );
+    ids.add(s.id);
+    if (s.finishedAt) {
+      ensure(s.type === 'ONLINE' && s.paidAmount, 422, 'Nieprawidłowa zakończona dopłata Allegro');
+      payments.push(s);
+    }
+  }
+  let total = 0;
+  for (const p of payments) {
+    if (p.paidAmount) {
+      ensure(p.paidAmount.currency === currency, 422, 'Niezgodna waluta płatności');
+      total += cents(p.paidAmount.amount);
+    }
+    ensure(
+      !p.reconciliation || cents(p.reconciliation.amount) === 0,
+      422,
+      'Wyrównanie finansowane przez Allegro wymaga osobnego uzgodnienia',
+    );
+  }
+  ensure(
+    Number.isSafeInteger(total) && total <= 2147483647,
+    422,
+    'Kwota płatności przekracza limit',
+  );
+  return total;
+}
+// Monetary strings are converted without floating-point multiplication or silent rounding.
+export function cents(value: unknown) {
+  ensure(
+    typeof value === 'string' && /^\d+(\.\d{1,2})?$/.test(value),
+    422,
+    'Kwota musi mieć najwyżej dwa miejsca po przecinku',
+  );
+  const [whole, fraction = ''] = value.split('.');
+  const amount = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+  ensure(Number.isSafeInteger(amount) && amount <= 2147483647, 422, 'Kwota przekracza limit');
+  return amount;
+}
+function sorted(value: any): any {
+  if (Array.isArray(value)) return value.map(sorted);
+  if (value && typeof value === 'object')
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((k) => [k, sorted(value[k])]),
+    );
+  return value;
+}
+export const importSourceHash = (value: unknown) =>
+  createHash('sha256')
+    .update(JSON.stringify(sorted(value)))
+    .digest('hex');
+// Cursors describe transport pagination, not the observed order. Hydrated snapshots
+// from a batch and a singular query may use different cursors for the same data.
+export function shopifyOrderHash(raw: any) {
+  const value = structuredClone(raw);
+  for (const field of ['lineItems', 'shippingLines'])
+    if (value?.[field]?.pageInfo?.hasNextPage === false)
+      value[field].pageInfo = { hasNextPage: false };
+  const time = shopifyObservationTime(value);
+  if (time !== null) value.updatedAt = new Date(time).toISOString();
+  return importSourceHash(value);
+}
+export function importConnectionHash(ch: any) {
+  if (ch.provider === 'mirakl') return miraklChannelConnectionHash(ch);
+  return ch.provider === 'ebay'
+    ? ebayConnectionHash(ch)
+    : importSourceHash({
+        provider: ch.provider,
+        mode: ch.mode,
+        settings: ch.settings,
+        credentials: ch.provider === 'shopify' ? shopifyCredentialIdentity(ch) : ch.credentials,
+      });
+}
+export function normalizeOrder(
+  provider: string,
+  raw: any,
+  settings: Record<string, unknown> = {},
+  sourceLines = false,
+): CanonicalOrder {
+  ensure(raw && typeof raw === 'object', 422, 'Nieprawidłowe dane zamówienia');
+  let normalized: unknown;
+  if (provider === 'amazon') {
+    normalized = normalizeAmazon(raw, settings, sourceLines);
+  } else if (provider === 'ebay') {
+    normalized = normalizeEbay(raw, sourceLines);
+  } else if (provider === 'odoo') {
+    normalized = normalizeOdooOrder(raw, settings, sourceLines);
+  } else if (provider === 'shopify') {
+    normalized = normalizeShopify(raw);
+  } else if (provider === 'prestashop') {
+    normalized = normalizePrestaShop(raw, settings, sourceLines);
+  } else if (provider === 'mirakl') {
+    // Always retain real OR11 line identity, including staging before source-line binding.
+    normalized = normalizeMiraklOrder(raw, parseMiraklSettings(settings).currency);
+  } else if (provider === 'woocommerce') {
+    const a = raw.shipping?.address_1 ? raw.shipping : raw.billing;
+    const blockers: string[] = [];
+    if (!['processing', 'on-hold'].includes(raw.status))
+      blockers.push(`Status źródłowy ${raw.status}: wymaga osobnego procesu uzgodnienia`);
+
+    if ((raw.fee_lines ?? []).some((f: any) => cents(f.total) + cents(f.total_tax) !== 0))
+      blockers.push('Dodatkowe opłaty wymagają osobnych pozycji rozliczenia');
+    normalized = {
+      external_id: raw.id,
+      currency: raw.currency,
+      customer_name: [a?.first_name, a?.last_name].filter(Boolean).join(' ') || a?.company,
+      email: raw.billing?.email,
+      address: {
+        street: [a?.address_1, a?.address_2].filter(Boolean).join(' '),
+        city: a?.city,
+        postal_code: a?.postcode,
+        country: a?.country,
+        phone: raw.billing?.phone ?? '',
+      },
+      shipping_cost: cents(raw.shipping_total) + cents(raw.shipping_tax),
+      total: cents(raw.total),
+      payment_mode: raw.payment_method === 'cod' ? 'cod' : 'prepaid',
+      paid_amount: raw.payment_method === 'cod' ? 0 : raw.date_paid ? cents(raw.total) : 0,
+      paid: raw.payment_method !== 'cod' && Boolean(raw.date_paid),
+      source_status: raw.status,
+      note: raw.customer_note ?? '',
+      blockers,
+      items: (raw.line_items ?? []).map((i: any) => ({
+        ...(sourceLines
+          ? { remote_line_id: Number.isSafeInteger(i.id) && i.id > 0 ? String(i.id) : undefined }
+          : {}),
+        external_id: i.variation_id || i.product_id,
+        name: i.name,
+        sku: i.sku ?? '',
+        quantity: i.quantity,
+        line_total: cents(i.total) + cents(i.total_tax),
+      })),
+    };
+  } else if (provider === 'allegro') {
+    const a = raw.delivery?.address,
+      currency = raw.summary?.totalToPay?.currency;
+    const total = cents(raw.summary?.totalToPay?.amount),
+      blockers: string[] = [];
+    if (raw.status !== 'READY_FOR_PROCESSING')
+      blockers.push(`Status źródłowy ${raw.status}: formularz nie jest gotowy do realizacji`);
+    if (raw.fulfillment?.status && !['NEW', 'PROCESSING'].includes(raw.fulfillment.status))
+      blockers.push('Zamówienie jest już realizowane lub wysłane w kanale źródłowym');
+    if (raw.fulfillment?.provider?.id === 'ALLEGRO')
+      blockers.push('One Fulfillment wymaga osobnego procesu magazynowego');
+    const cod = raw.payment?.type === 'CASH_ON_DELIVERY';
+    if (!['ONLINE', 'CASH_ON_DELIVERY'].includes(raw.payment?.type))
+      blockers.push('Typ płatności wymaga osobnego uzgodnienia');
+    if (raw.payment?.paidAmount && raw.payment.paidAmount.currency !== currency)
+      blockers.push('Niezgodna waluta płatności');
+    if (cod && raw.payment?.paidAmount && cents(raw.payment.paidAmount.amount) > 0)
+      blockers.push('Pobranie z zadeklarowaną wpłatą wymaga uzgodnienia');
+    let paidAmount = 0;
+    if (!cod && raw.payment?.type === 'ONLINE') {
+      try {
+        paidAmount = allegroPaymentAmount(raw, currency);
+      } catch (e) {
+        blockers.push(e instanceof Problem ? e.message : 'Nieprawidłowa płatność Allegro');
+      }
+    }
+    const paid = !cod && paidAmount >= total;
+    if (
+      (raw.lineItems ?? []).some((i: any) => i.price?.currency !== currency) ||
+      raw.delivery?.cost?.currency !== currency
+    )
+      blockers.push('Niezgodna waluta pozycji lub dostawy');
+    if ((raw.lineItems ?? []).some((i: any) => i.offer?.productSet?.products?.length > 1))
+      blockers.push('Zestaw Allegro wymaga mapowania składników zestawu');
+    normalized = {
+      external_id: raw.id,
+      currency,
+      customer_name: [a?.firstName, a?.lastName].filter(Boolean).join(' '),
+      email: raw.buyer?.email,
+      address: {
+        street: a?.street,
+        city: a?.city,
+        postal_code: a?.zipCode,
+        country: a?.countryCode,
+        phone: a?.phoneNumber ?? '',
+        ...(raw.delivery?.pickupPoint?.id ? { locker_code: raw.delivery.pickupPoint.id } : {}),
+      },
+      shipping_cost: cents(raw.delivery?.cost?.amount),
+      total,
+      paid,
+      payment_mode: cod ? 'cod' : 'prepaid',
+      paid_amount: paidAmount,
+      source_status: raw.status,
+      note: raw.messageToSeller ?? '',
+      blockers,
+      items: (raw.lineItems ?? []).map((i: any) => ({
+        ...(sourceLines ? { remote_line_id: i.id } : {}),
+        external_id: i.offer?.id,
+        name: i.offer?.name,
+        sku: i.offer?.external?.id ?? '',
+        quantity: i.quantity,
+        line_total: cents(i.price?.amount) * i.quantity,
+      })),
+    };
+  } else throw new Problem(422, 'Ten kanał nie obsługuje importu zamówień');
+  const order = canonicalSchema.parse(normalized);
+  ensure(order.email || provider === 'amazon', 422, 'Brak email kupującego');
+  ensure(
+    order.total === order.items.reduce((sum, i) => sum + i.line_total, order.shipping_cost),
+    422,
+    'Suma pozycji i dostawy różni się od kwoty zamówienia. Wymagane uzgodnienie opłat lub rabatów',
+  );
+  return order;
+}
+export async function acquireOrderFieldObservationAdmissionInTx(
+  c: PoolClient,
+  a: { tenantId: string },
+  provider: string,
+) {
+  if (
+    Object.hasOwn({ woocommerce: true, allegro: true, shopify: true }, provider) &&
+    (await c.query("SELECT to_regclass('public.order_field_source_observations') present")).rows[0]
+      .present
+  )
+    await c.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
+      `order-field-observation-quota:${a.tenantId}`,
+    ]);
+}
+export async function stageOrders(c: PoolClient, actor: Actor, channel: any, raws: any[]) {
+  ensure(
+    ['woocommerce', 'allegro', 'prestashop', 'shopify', 'odoo', 'ebay', 'amazon', 'mirakl'].includes(
+      channel.provider,
+    ),
+    422,
+    'Ten kanał nie obsługuje importu zamówień',
+  );
+  let observations = raws;
+  if (channel.provider === 'mirakl') {
+    ensure(channel.tenant_id === actor.tenantId, 403, 'Mirakl: obcy kanał stagingu');
+    parseMiraklSettings(channel.settings);
+    ensure(Array.isArray(raws) && raws.length <= 100, 422, 'Mirakl: staging przyjmuje najwyżej jedną stronę 100 zamówień');
+    const connectionHash = miraklChannelConnectionHash(channel);
+    const sourceId = z.string().min(1).max(160).refine(v => !/[\x00-\x1f\x7f]/.test(v));
+    observations = raws.map(raw => {
+      const identity = sourceId.safeParse(raw?.order_id);
+      ensure(identity.success && (raw.id === undefined || raw.id === identity.data),
+        422, 'Mirakl: brak lub sprzeczna tożsamość zamówienia OR11');
+      // The adapter's local id projection is canonical; direct documented OR11 rows
+      // receive the same projection without dropping any source metadata.
+      ensure(raw._dyna_mirakl === undefined, 422, 'Mirakl: zastrzeżone metadane źródła');
+      return {...raw, id: identity.data, _dyna_mirakl: {connection_hash: connectionHash}};
+    });
+    ensure(new Set(observations.map(raw => raw.id)).size === observations.length,
+      422, 'Mirakl: powtórzone zamówienie w stronie stagingu');
+  }
+  const result: { id: string; state: string; source_hash: string; observation?: string }[] = [];
+  let skippedOlder = 0,
+    repeated = 0;
+  // Serialize the bounded evidence admission before any inbound lock, including
+  // multi-row staging. It never takes an order/member/field-admission lock.
+  await acquireOrderFieldObservationAdmissionInTx(c, actor, channel.provider);
+  // Lock even the absent row: two first observations must not race an INSERT.
+  // Sorted IDs avoid deadlocks when concurrent Shopify batches overlap in a different order.
+  if (channel.provider === 'shopify') {
+    for (const id of [...new Set(raws.map((raw) => externalId.parse(raw?.id)))].sort())
+      await c.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
+        'shopify-order:' + actor.tenantId + ':' + channel.id + ':' + id,
+      ]);
+  }
+  for (const raw of observations) {
+    const id = externalId.parse(raw?.id);
+    const hash = channel.provider === 'shopify' ? shopifyOrderHash(raw) : importSourceHash(raw);
+    if (channel.provider === 'shopify') {
+      const previous = (
+        await c.query(
+          'SELECT id,state,source_hash,raw FROM inbound_orders WHERE channel_id=$1 AND external_id=$2 FOR UPDATE',
+          [channel.id, id],
+        )
+      ).rows[0];
+      if (previous) {
+        const before = shopifyObservationTime(previous.raw),
+          incoming = shopifyObservationTime(raw);
+        if (before !== null) {
+          ensure(incoming !== null, 422, 'Brak prawidłowej wersji zamówienia Shopify');
+          if (incoming < before) {
+            result.push({
+              id: previous.id,
+              state: previous.state,
+              source_hash: previous.source_hash,
+              observation: 'older_ignored',
+            });
+            skippedOlder++;
+            continue;
+          }
+          if (incoming === before) {
+            ensure(
+              hash === shopifyOrderHash(previous.raw),
+              409,
+              'Sprzeczne dane tej samej wersji Shopify; ponów odczyt lub uzgodnij źródło',
+            );
+            result.push({
+              id: previous.id,
+              state: previous.state,
+              source_hash: previous.source_hash,
+              observation: 'unchanged',
+            });
+            repeated++;
+            await observeOrderFieldSourceInTx(c, actor, channel, previous, raw, {
+              sourceHash: hash,
+            });
+            continue;
+          }
+        }
+      }
+    }
+    let normalized: CanonicalOrder | null = null,
+      issues: string[] = [];
+    try {
+      if (channel.provider === 'shopify')
+        ensure(
+          shopifyObservationTime(raw) !== null,
+          422,
+          'Brak prawidłowej wersji zamówienia Shopify',
+        );
+      normalized = normalizeOrder(channel.provider, raw, channel.settings ?? {});
+      issues = normalized.blockers;
+    } catch (e) {
+      issues = [
+        e instanceof Problem ? e.message : 'Niekompletne lub nieprawidłowe dane zamówienia',
+      ];
+    }
+    const row = (
+      await c.query(
+        `INSERT INTO inbound_orders(id,tenant_id,channel_id,external_id,raw,normalized,source_hash,state,issues)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(tenant_id,channel_id,external_id) DO UPDATE SET
+      raw=EXCLUDED.raw,
+      normalized=CASE WHEN inbound_orders.order_id IS NOT NULL AND inbound_orders.source_hash=EXCLUDED.source_hash
+        THEN inbound_orders.normalized ELSE EXCLUDED.normalized END,
+      source_hash=EXCLUDED.source_hash,
+      state=CASE WHEN inbound_orders.order_id IS NOT NULL THEN 'imported' ELSE EXCLUDED.state END,
+      issues=EXCLUDED.issues,updated_at=CASE WHEN inbound_orders.source_hash=EXCLUDED.source_hash THEN inbound_orders.updated_at ELSE clock_timestamp() END RETURNING id,state,source_hash`,
+        [
+          randomUUID(),
+          actor.tenantId,
+          channel.id,
+          id,
+          JSON.stringify(raw),
+          normalized ? JSON.stringify(normalized) : null,
+          hash,
+          normalized ? 'staged' : 'error',
+          JSON.stringify(issues),
+        ],
+      )
+    ).rows[0];
+    await observeOrderFieldSourceInTx(c, actor, channel, row, raw, { sourceHash: hash });
+    result.push(row);
+  }
+  await audit(c, actor, 'integration.stage', channel.id, {
+    count: result.length,
+    ...(channel.provider === 'shopify' ? { older_ignored: skippedOlder, unchanged: repeated } : {}),
+  });
+  return result;
+}
+/** Ordinary Mirakl imports reuse the existing OMS writer and Native106 line binding.
+ * This admission only reads current membership and rechecks the staged source cut. */
+export async function miraklImportAdmissionInTx(c: PoolClient, actor: Actor, channel: any,
+  inbound: any, expectedHash: string | undefined, expectedConnection: string | undefined): Promise<CanonicalOrder> {
+  ensure(channel.provider === 'mirakl' && channel.tenant_id === actor.tenantId
+    && inbound.tenant_id === actor.tenantId && inbound.channel_id === channel.id,
+  403, 'Mirakl: obce źródło importu');
+  ensure((await c.query('SELECT offer_sync_is_admin($1) ok', [actor.userId])).rows[0]?.ok,
+    403, 'Administrator utracił prawo importu Mirakl');
+  ensure(expectedConnection && importConnectionHash(channel) === expectedConnection,
+    409, 'Połączenie Mirakl zmieniło się przed importem');
+  ensure(expectedHash && inbound.source_hash === expectedHash
+    && inbound.source_hash === importSourceHash(inbound.raw)
+    && inbound.external_id === inbound.raw?.order_id
+    && (inbound.raw.id === undefined || inbound.raw.id === inbound.raw.order_id)
+    && inbound.raw._dyna_mirakl?.connection_hash === expectedConnection,
+  409, 'Mirakl: zmienione źródło lub tożsamość zamówienia; odśwież staging');
+  const current = normalizeOrder('mirakl', inbound.raw, channel.settings);
+  ensure(current.blockers.length === 0, 422, current.blockers.join('; '));
+  ensure(importSourceHash(current) === importSourceHash(canonicalSchema.parse(inbound.normalized)),
+    409, 'Mirakl: normalizacja stagingu różni się od aktualnego źródła');
+  return current;
+}
+function shopifyObservationTime(raw: any): number | null {
+  return shopifyOrderTime(raw?.updatedAt);
+}
+type ImportOrderRollbackRefusal = Readonly<{version: 1; outcome: 'rolled_back'; tenant_id: string; user_id: string; inbound_id: string; expected_hash: string; warehouse_id: string; issues_update: 'committed' | 'not_required'}>;
+const importOrderRollbackRefusals = new WeakMap<object, ImportOrderRollbackRefusal>();
+/** Only records minted after this import's own acknowledged rollback are inspectable. */
+export function inspectImportOrderRollbackRefusal(error: unknown, actor: Actor, id: string, warehouseId: string, expectedHash: string | undefined): ImportOrderRollbackRefusal | undefined {
+  if (!error || typeof error !== 'object') return undefined;
+  const refusal = importOrderRollbackRefusals.get(error);
+  if (!refusal || refusal.tenant_id !== actor.tenantId || refusal.user_id !== actor.userId || refusal.inbound_id !== id || refusal.warehouse_id !== warehouseId || refusal.expected_hash !== expectedHash) return undefined;
+  return Object.freeze({...refusal});
+}
+export type ImportOrderOptions = {
+  mappedInitial?: MappedInitialConsent;
+  externalImportConsent?: ExternalImportConsent;
+  /** Captured ordinary session; implementation enlists current IAM through final DB clock. */
+  miraklAuthority?: (c: PoolClient, channelId: string) => Promise<void>;
+};
+export async function importOrder(
+  actor: Actor,
+  id: string,
+  warehouseId: string,
+  expectedHash?: string,
+  expectedConnection?: string,
+  options: ImportOrderOptions = {},
+) {
+  let originalWork: unknown;
+  try {
+    return await tenantTx(
+      actor.tenantId,
+      originalWork = async (c: PoolClient) => {
+        if (options.externalImportConsent) {
+          ensure(
+            !options.mappedInitial,
+            422,
+            'Mapowane pola początkowe wymagają osobnego uzgodnienia dla importu z intencją',
+          );
+          await externalImportAdmissionInTx(c, actor);
+          const old = await externalImportReplayInTx(c, actor, id, options.externalImportConsent);
+          if (old) return externalImportFinishInTx(c, actor, old);
+        }
+        if (options.mappedInitial) {
+          await c.query('SELECT pg_advisory_xact_lock_shared(hashtextextended($1,0))', [
+            `order-fields:${actor.tenantId}`,
+          ]);
+          await c.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
+            `order-field-mapping-execution:${actor.tenantId}`,
+          ]);
+          const provider = (
+            await c.query(
+              'SELECT ch.provider FROM inbound_orders i JOIN channels ch ON(ch.tenant_id,ch.id)=(i.tenant_id,i.channel_id) WHERE i.id=$1',
+              [id],
+            )
+          ).rows[0]?.provider;
+          if (provider) await acquireMappingOAuthInTx(c, actor, provider);
+        }
+        const inbound = (await c.query('SELECT * FROM inbound_orders WHERE id=$1 FOR UPDATE', [id]))
+          .rows[0];
+        ensure(inbound, 404, 'Nie znaleziono zamówienia do importu');
+        const mapped = options.mappedInitial
+          ? await prepareMappedInitialOrderFieldsInTx(
+              c,
+              actor,
+              inbound,
+              warehouseId,
+              options.mappedInitial,
+            )
+          : undefined;
+        if (mapped?.reused)
+          return {
+            order: await getOrder(c, mapped.order_id!),
+            execution: mapped.execution,
+            reused: true,
+          };
+        ensure(
+          !expectedHash || inbound.source_hash === expectedHash,
+          409,
+          'Podgląd źródłowego zamówienia zmienił się; odśwież kolejkę',
+        );
+        const channel = (
+          await c.query('SELECT * FROM channels WHERE id=$1' + (mapped ? '' : ' FOR SHARE'), [
+            inbound.channel_id,
+          ])
+        ).rows[0];
+        if (channel.provider === 'mirakl') {
+          ensure(options.miraklAuthority, 503, 'Mirakl: brak portu aktualnej sesji importu');
+          await options.miraklAuthority(c, channel.id);
+        }
+        const mirakl = channel.provider === 'mirakl'
+          ? await miraklImportAdmissionInTx(c, actor, channel, inbound, expectedHash, expectedConnection)
+          : undefined;
+        if (channel.provider === 'shopify') {
+          if (!mapped && !options.externalImportConsent)
+            ensure(
+              (await c.query('SELECT offer_sync_is_admin($1) ok', [actor.userId])).rows[0]?.ok,
+              403,
+              'Administrator utracił prawo importu Shopify',
+            );
+          ensure(
+            expectedConnection && importConnectionHash(channel) === expectedConnection,
+            409,
+            'Połączenie zmieniło się przed importem Shopify',
+          );
+          if (!mapped) await shopifyAccountPolicy(c, channel);
+        }
+        if (inbound.order_id) {
+          ensure(
+            inbound.source_hash === inbound.imported_hash,
+            409,
+            'Dane źródłowe zmieniły się po imporcie. Wymagane ręczne uzgodnienie',
+          );
+          return getOrder(c, inbound.order_id);
+        }
+        ensure(inbound.normalized, 422, 'Popraw błędy danych źródłowych przed importem');
+        let o = options.externalImportConsent
+          ? normalizeExternalImportOrder(channel, inbound.raw)
+          : canonicalSchema.parse(inbound.normalized);
+        ensure(o.blockers.length === 0, 422, o.blockers.join('; '));
+        if (channel.provider === 'shopify')
+          o = normalizeOrder(channel.provider, inbound.raw, channel.settings);
+        if (['odoo', 'ebay', 'amazon'].includes(channel.provider)) {
+          if (!options.externalImportConsent)
+            ensure(
+              (await c.query('SELECT offer_sync_is_admin($1) ok', [actor.userId])).rows[0]?.ok,
+              403,
+              'Administrator utracił prawo importu kanału',
+            );
+          ensure(
+            expectedConnection && importConnectionHash(channel) === expectedConnection,
+            409,
+            'Połączenie zmieniło się przed importem kanału',
+          );
+          normalizeOrder(channel.provider, inbound.raw, channel.settings);
+        }
+        if (mirakl) o = mirakl;
+        const externalPrepared = options.externalImportConsent
+          ? await prepareB2bExternalImportInTx(
+              c,
+              actor,
+              inbound,
+              channel,
+              o,
+              warehouseId,
+              options.externalImportConsent,
+            )
+          : undefined;
+        const hasRemoteLines = o.items.some((i) => i.remote_line_id !== undefined);
+        if (hasRemoteLines) {
+          ensure(
+            o.items.every(
+              (i) => typeof i.remote_line_id === 'string' && i.remote_line_id.length > 0,
+            ) && new Set(o.items.map((i) => i.remote_line_id)).size === o.items.length,
+            422,
+            'Brak lub powtórzone ID źródłowych pozycji',
+          );
+          ensure(
+            await orderSourceLinesAvailable(c),
+            503,
+            'Kopia nie zawiera trwałych powiązań pozycji źródłowych',
+          );
+        }
+        if (mapped || hasRemoteLines)
+          await c.query('SELECT pg_advisory_xact_lock_shared(hashtextextended($1,0))', [
+            `catalog:${actor.tenantId}`,
+          ]);
+        const mappings = (
+          await c.query(
+            'SELECT id,external_id,product_id FROM listings WHERE channel_id=$1 AND external_id=ANY($2::text[]) ORDER BY id' +
+              (mapped || hasRemoteLines ? ' FOR SHARE' : ''),
+            [inbound.channel_id, o.items.map((i) => i.external_id)],
+          )
+        ).rows;
+        if (mapped)
+          ensure(
+            mappingHash(mappings) === mappingHash(mapped.row.listing_snapshot),
+            409,
+            'Powiązanie pozycji zmieniło się po podglądzie',
+          );
+        const totals = new Map<string, number>();
+        const bindings: Parameters<typeof bindOrderSourceLinesInTx>[2]['lines'] = [];
+        const fragments: NonNullable<
+          NonNullable<Parameters<typeof createOrder>[4]>['importFragments']
+        > = [];
+        const items = o.items.map((i) => {
+          const mapping = mappings.find((m) => m.external_id === i.external_id);
+          ensure(mapping, 422, `Brak powiązania oferty ${i.external_id} (${i.name}) z produktem`);
+          totals.set(mapping.product_id, (totals.get(mapping.product_id) ?? 0) + i.line_total);
+          if (hasRemoteLines) {
+            const itemId = externalPrepared
+              ? externalPrepared.fragments[bindings.length].id
+              : randomUUID();
+            fragments.push({
+              id: itemId,
+              product_id: mapping.product_id,
+              quantity: i.quantity,
+              line_total: i.line_total,
+            });
+            bindings.push({
+              source_item_id: itemId,
+              remote_line_id: i.remote_line_id!,
+              external_product_id: i.external_id,
+              product_id: mapping.product_id,
+              listing_id: mapping.id,
+              quantity: i.quantity,
+              line_total: i.line_total,
+              mapping_evidence: {
+                source_index: bindings.length,
+                remote_line_id: i.remote_line_id,
+                external_product_id: i.external_id,
+                listing: { ...mapping, channel_id: inbound.channel_id },
+                source_line: i,
+              },
+            });
+          }
+          return { product_id: mapping.product_id, quantity: i.quantity };
+        });
+        const input = orderSchema.parse({
+          ...o,
+          source: channel.provider,
+          warehouse_id: warehouseId,
+          items,
+        });
+        const order = await createOrder(c, actor, input, totals, {
+          mappedInitial: mapped,
+          ...(hasRemoteLines ? { importFragments: fragments } : {}),
+          ...(externalPrepared
+            ? {
+                externalImportIntentLines: {
+                  admission_id: externalPrepared.preview.id,
+                  lines: externalPrepared.fragments.map((f) => ({
+                    customer_item_id: f.id,
+                    product_id: f.product_id,
+                    quantity: f.quantity,
+                    local_quantity: externalPrepared.allocations.find(
+                      (v) => v.customer_item_id === f.id,
+                    )!.local_quantity,
+                  })),
+                },
+              }
+            : {}),
+        });
+        await c.query(
+          'UPDATE orders SET channel_id=$1,external_id=$2,source_snapshot=$3 WHERE id=$4',
+          [
+            inbound.channel_id,
+            o.external_id,
+            JSON.stringify({
+              source_status: o.source_status,
+              vat_source: 'local_catalog',
+              ...(channel.provider === 'mirakl'
+                ? {mirakl: {instance_url: channel.settings.instance_url, shop_id: channel.settings.shop_id,
+                    currency: channel.settings.currency, last_updated_date: inbound.raw.last_updated_date,
+                    order_tax_mode: inbound.raw.order_tax_mode, payment_workflow: inbound.raw.payment_workflow,
+                    payment_type: inbound.raw.payment_type ?? null,
+                    customer_debited_date: inbound.raw.customer_debited_date ?? null,
+                    customer_directly_pays_seller: inbound.raw.customer_directly_pays_seller}}
+                : {}),
+              ...(channel.provider === 'ebay'
+                ? {
+                    ebay: {
+                      buyer_total: o.total,
+                      field_groups: 'TAX_BREAKDOWN',
+                      ebay_collect_and_remit: inbound.raw.ebayCollectAndRemitTax === true,
+                      pricing: inbound.raw.pricingSummary,
+                      tax_details: inbound.raw.lineItems.map((i: any) => ({
+                        line_item_id: i.lineItemId,
+                        taxes: i.taxes,
+                        collect_and_remit: i.ebayCollectAndRemitTaxes ?? [],
+                      })),
+                    },
+                  }
+                : {}),
+              items: o.items,
+              ...(channel.provider === 'amazon'
+                ? {
+                    amazon: {
+                      version: '2026-01-01',
+                      marketplace_id: inbound.raw.salesChannel.marketplaceId,
+                      payment_source: 'unreconciled',
+                      proceeds: inbound.raw.proceeds,
+                      payment: inbound.raw.payment,
+                      tax: inbound.raw.tax,
+                      items: inbound.raw.orderItems.map((i: any) => ({
+                        order_item_id: i.orderItemId,
+                        sku: i.product.sellerSku,
+                        asin: i.product.asin,
+                        proceeds: i.proceeds,
+                        tax: i.tax,
+                      })),
+                    },
+                  }
+                : {}),
+              ...(channel.provider === 'odoo'
+                ? {
+                    odoo: {
+                      number: inbound.raw.name,
+                      company_id: inbound.raw._dyna.context.company_id,
+                      warehouse_id: inbound.raw._dyna.context.warehouse_id,
+                      invoice_status: inbound.raw.invoice_status,
+                      payment_source: 'payment.transaction.done',
+                    },
+                  }
+                : {}),
+            }),
+            order.id,
+          ],
+        );
+        const sourcePaid = o.paid_amount || (o.paid && o.payment_mode === 'prepaid' ? o.total : 0);
+        if (sourcePaid > 0)
+          await appendPayment(
+            c,
+            actor,
+            order.id,
+            'source-import:' + id,
+            {},
+            {
+              kind: 'receipt',
+              amount: sourcePaid,
+              currency: o.currency,
+              method: 'source_import',
+              reference: channel.provider + ':' + o.external_id,
+              note:
+                channel.provider === 'odoo'
+                  ? 'Deklaracja płatności ze źródła Odoo; bez weryfikacji rachunku bankowego'
+                  : 'Deklaracja płatności z API kanału; bez weryfikacji rachunku bankowego',
+            },
+          );
+        if (o.paid && (!externalPrepared || (await paymentBalance(c, order.id)).amount_due === 0))
+          await transition(c, actor, order.id, 'paid');
+        await c.query(
+          "UPDATE inbound_orders SET state='imported',issues='[]',order_id=$1,imported_hash=source_hash,updated_at=clock_timestamp() WHERE id=$2",
+          [order.id, id],
+        );
+        if (hasRemoteLines)
+          await bindOrderSourceLinesInTx(c, actor, {
+            channel_id: inbound.channel_id,
+            inbound_id: id,
+            source_order_id: order.id,
+            source_hash: inbound.source_hash,
+            lines: bindings,
+          });
+        await audit(c, actor, 'integration.import', order.id, {
+          inbound_id: id,
+          channel_id: inbound.channel_id,
+          external_id: o.external_id,
+        });
+        if (externalPrepared)
+          return externalImportFinishInTx(
+            c,
+            actor,
+            await completeB2bExternalImportInTx(c, actor, externalPrepared, order),
+          );
+        if (mapped)
+          return {
+            order: await getOrder(c, order.id),
+            execution: await completeMappedInitialImportInTx(c, actor, mapped, order.id),
+            reused: false,
+          };
+        return getOrder(c, order.id);
+      },
+      options.externalImportConsent
+        ? { purchasingAdmission: true, wmsAdmission: 'read' }
+        : undefined,
+    );
+  } catch (e) {
+    if (e && typeof e === 'object') importOrderRollbackRefusals.delete(e);
+    const originalRollback = hasAcknowledgedTenantRollback(e, actor.tenantId, originalWork);
+    if (
+      options.externalImportConsent &&
+      (e as { code?: string; message?: string }).code === '23514' &&
+      (e as Error).message === 'Brak aktualnej zgody administratora'
+    )
+      throw new Problem(403, 'Administrator utracił uprawnienia');
+    if (
+      options.externalImportConsent &&
+      (e as { code?: string; message?: string }).code === 'P0001' &&
+      (e as Error).message.startsWith('Limit historii źródłowych intencji')
+    )
+      throw new Problem(429, (e as Error).message);
+    if (
+      e instanceof Problem &&
+      e.status !== 404 &&
+      e.status !== 403 &&
+      !options.mappedInitial &&
+      !options.externalImportConsent
+    )
+      await tenantTx(actor.tenantId, (c) =>
+        c.query(
+          'UPDATE inbound_orders SET issues=$2,updated_at=clock_timestamp() WHERE id=$1 AND normalized IS NOT NULL',
+          [id, JSON.stringify([e.message])],
+        ),
+      );
+    // Secondary issues persistence above must complete before recording a refusal.
+    // This proves rollback of the order writer, not zero database side effects.
+    if (originalRollback && e instanceof Problem && e.status >= 400 && e.status < 500 &&
+      !options.mappedInitial && !options.externalImportConsent && !expectedConnection &&
+      typeof expectedHash === 'string' && /^[a-f0-9]{64}$/.test(expectedHash) &&
+      [actor.tenantId, actor.userId, id, warehouseId].every(value => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value))) {
+      importOrderRollbackRefusals.set(e, Object.freeze({version: 1, outcome: 'rolled_back', tenant_id: actor.tenantId, user_id: actor.userId, inbound_id: id, expected_hash: expectedHash, warehouse_id: warehouseId, issues_update: e.status !== 404 && e.status !== 403 ? 'committed' : 'not_required'}));
+    }
+    throw e;
+  }
+}

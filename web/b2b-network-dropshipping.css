@@ -1,0 +1,186 @@
+.network-dropshipping {
+  border: 1px solid #d9e2ed;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.network-dropshipping h2,
+.network-dropshipping h3,
+.network-dropshipping h4 {
+  margin: 0 0 10px;
+}
+.network-dropshipping p {
+  line-height: 1.55;
+  margin: 7px 0 12px;
+}
+.drop-actions,
+.drop-pagination,
+.drop-amounts {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.drop-search {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+.drop-search label {
+  flex: 1;
+  max-width: 550px;
+}
+.network-dropshipping label:not(.drop-check) {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.network-dropshipping input:not([type='checkbox']),
+.network-dropshipping select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccd7e4;
+  border-radius: 7px;
+  padding: 9px 10px;
+  background: #fff;
+  color: inherit;
+  min-height: 39px;
+}
+.network-dropshipping input[type='checkbox'] {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  flex: 0 0 17px;
+}
+.drop-check {
+  display: flex;
+  align-items: start;
+  gap: 9px;
+  line-height: 1.55;
+  margin: 13px 0;
+  font-size: 13px;
+}
+.drop-check input {
+  margin-top: 3px !important;
+}
+.drop-section,
+.drop-subsection {
+  border-top: 1px solid #e3e9f0;
+  padding-top: 18px;
+  margin-top: 10px;
+  min-width: 0;
+}
+.drop-section > .button {
+  margin-top: 14px;
+}
+.drop-receiver {
+  background: #f1f7ff;
+  border-left: 3px solid #4b80cf;
+  padding: 13px 15px;
+  border-radius: 6px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.drop-wholesale {
+  background: #fafbfd;
+  border: 1px solid #e4e9f0;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+.drop-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.network-dropshipping table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+.network-dropshipping th,
+.network-dropshipping td {
+  padding: 11px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5ebf1;
+  vertical-align: top;
+  min-width: 90px;
+}
+.network-dropshipping th {
+  background: #f5f8fc;
+  font-weight: 600;
+  color: #52647c;
+}
+.network-dropshipping td small {
+  display: block;
+  color: #68778c;
+  margin-top: 4px;
+}
+.network-dropshipping td input:not([type='checkbox']) {
+  width: 100px;
+}
+.network-dropshipping td .button {
+  white-space: nowrap;
+}
+.network-dropshipping details {
+  font-size: 11px;
+  color: #69788b;
+  margin-top: 7px;
+}
+.network-dropshipping code {
+  overflow-wrap: anywhere;
+}
+.drop-mappings {
+  display: grid;
+  gap: 11px;
+  border: 1px solid #dce6f3;
+  border-radius: 9px;
+  padding: 15px;
+  margin: 13px 0;
+}
+.drop-notice {
+  background: #eef5ff;
+  color: #2e4b70;
+  border: 1px solid #d5e4f9;
+  border-radius: 8px;
+  padding: 13px 15px;
+  line-height: 1.55;
+}
+.drop-error {
+  background: #fff3f1;
+  border-color: #f2d5d0;
+  color: #9b342a;
+}
+.drop-amounts {
+  gap: 18px 30px;
+  margin: 13px 0;
+}
+.drop-amounts span {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.drop-pagination {
+  justify-content: space-between;
+  margin: 14px 0;
+  font-size: 13px;
+}
+@media (max-width: 650px) {
+  .network-dropshipping {
+    padding: 14px;
+  }
+  .drop-search {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .drop-actions .button {
+    flex: 1 1 auto;
+  }
+  .drop-wholesale {
+    padding: 10px;
+  }
+}

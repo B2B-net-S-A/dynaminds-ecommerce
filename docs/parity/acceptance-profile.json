@@ -1,0 +1,44 @@
+{
+  "schema": "dynaminds-full-base-scale-acceptance/v1",
+  "as_of": "2026-10-17",
+  "status": "frozen_required_specification_unmeasured",
+  "measurement_performed": false,
+  "acceptance_granted": false,
+  "config_sha256": "1ab65a9256b67be9c50fd1ff964a8072d4ce1c4340b6c07900345b8c4926b8a7",
+  "specification": {
+    "path": "acceptance-profile.v1.json",
+    "sha256": "83c76d8373a5eadcb7b733dacb8a9616c2ce848bf49bea7ead9011504a74e873",
+    "bytes": 25267
+  },
+  "minimum_dataset": {
+    "sku_records": 100000,
+    "orders": 100000,
+    "simultaneously_active_tenants": 5,
+    "sku_records_per_tenant": 20000,
+    "orders_per_tenant": 20000
+  },
+  "minimum_measurement": {
+    "duration_seconds_excluding_setup_and_warmup": 3600,
+    "mixed_HTTP_concurrency_levels": [
+      12,
+      24
+    ],
+    "duration_seconds_per_level": 1800,
+    "background_workers_enabled": true,
+    "imports_active": true,
+    "stock_synchronization_active": true,
+    "order_create_p95_ms_max": 4000,
+    "list_and_search_p95_ms_max": 500,
+    "unexpected_HTTP_500_max": 0,
+    "unexpected_timeouts_max": 0,
+    "oversold_units_max": 0,
+    "duplicate_business_effects_max": 0
+  },
+  "preservation": {
+    "benchmark_original_Main_database": false,
+    "send_load_to_external_provider_accounts": false,
+    "reuse_V2_workers_off_measurement_as_this_result": false,
+    "claim_Base_capacity_or_SLA": false
+  },
+  "evidence": []
+}

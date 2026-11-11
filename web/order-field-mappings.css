@@ -1,0 +1,145 @@
+.order-field-mappings {
+  display: grid;
+  gap: 20px;
+}
+.order-field-mappings .ofm-panel {
+  padding: 22px;
+  min-width: 0;
+}
+.order-field-mappings .panel-heading {
+  padding: 0 0 16px;
+  gap: 16px;
+}
+.order-field-mappings label {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+}
+.order-field-mappings input:not([type='checkbox']):not([type='radio']),
+.order-field-mappings select,
+.order-field-mappings textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #dce1eb;
+  border-radius: 7px;
+  background: white;
+  color: #172033;
+}
+.order-field-mappings fieldset {
+  min-width: 0;
+}
+.order-field-mappings .ofm-inputs {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.order-field-mappings .ofm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.order-field-mappings .ofm-toolbar,
+.order-field-mappings .ofm-tabs,
+.order-field-mappings .ofm-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+  align-items: center;
+}
+.order-field-mappings .ofm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.order-field-mappings .ofm-mapping,
+.order-field-mappings .ofm-row {
+  border: 1px solid #dce1eb;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 12px 0;
+  min-width: 0;
+}
+.order-field-mappings li > button,
+.order-field-mappings .ofm-row > button,
+.order-field-mappings .ofm-inputs > button {
+  margin: 5px 8px 5px 0;
+}
+.order-field-mappings .ofm-table-wrap {
+  overflow-x: auto;
+}
+.order-field-mappings .ofm-order-summary {
+  margin: 18px 0;
+  padding: 14px;
+  background: #f6f8fc;
+  border-radius: 8px;
+}
+.order-field-mappings .ofm-order-summary h4 {
+  margin: 0 0 12px;
+}
+.order-field-mappings table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.order-field-mappings th,
+.order-field-mappings td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #e7eaf0;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.order-field-mappings .ofm-evidence {
+  background: #f6f8fc;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 8px 0;
+}
+.order-field-mappings pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 360px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.order-field-mappings .ofm-help,
+.order-field-mappings small {
+  color: #647087;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.order-field-mappings .ofm-error {
+  color: #9b2637;
+  overflow-wrap: anywhere;
+}
+.order-field-mappings li {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.order-field-mappings .ofm-summary span {
+  background: #f2f5fb;
+  padding: 7px 10px;
+  border-radius: 5px;
+}
+.order-field-mappings button:disabled {
+  cursor: not-allowed;
+}
+.order-field-mappings .ofm-dictionary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+@media (max-width: 650px) {
+  .order-field-mappings .ofm-panel {
+    padding: 14px;
+  }
+  .order-field-mappings .ofm-grid,
+  .order-field-mappings .ofm-dictionary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .order-field-mappings .panel-heading {
+    flex-wrap: wrap;
+  }
+}

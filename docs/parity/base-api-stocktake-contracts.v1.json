@@ -1,0 +1,1421 @@
+{
+  "as_of": "2026-10-18",
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "shared_transport_ref": {
+    "path": "base-api-inventory-configuration-contracts.v1.json",
+    "sha256": "924cb821a966d95701ef5528357c59eed6409a4b9f5a0252cbfb32261eb9ca2b",
+    "pointer": "/shared_transport"
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "schema": "dynaminds-base-api-stocktake-contracts/v1",
+  "selected_index_groups": [
+    {
+      "family": "Product catalog",
+      "group": "Stocktakes"
+    }
+  ],
+  "method_count": 6,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_selected_groups": true,
+  "documentation_only": true,
+  "operational_contract_fully_resolved": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "wire_acceptance": false,
+  "provider_account_acceptance": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-stocktake-fulfillment-sources-20261018.json.gz",
+    "sha256": "6b016b5366c4424dc8311136c9368af0738a0493f9b5208e3c4da9bafe9fea79",
+    "bytes": 122971,
+    "individual_documents": 12,
+    "selected_documents": 6,
+    "format": "gzip UTF-8 JSON; original documents[].html_utf8 retained"
+  },
+  "normalization_basis": {
+    "model": "base-api-transfer-contracts.v1.json",
+    "sha256": "d0223caa05cd7cac46d59a3212588cb172da014fda5a0d2bbde164977ba6b9f9",
+    "note": "Reuses accepted v1 field/source/requiredness conventions; no implementation acceptance."
+  },
+  "methods": [
+    {
+      "id": "BASE-API-addInventoryStocktake",
+      "method": "addInventoryStocktake",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryStocktake",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryStocktake",
+        "retrieved_at": "2026-10-18T01:06:30.811582+00:00",
+        "http_status": 200,
+        "bytes": 52662,
+        "sha256": "76d8e9cf567eb65076875fc6ad7fcb81bbb1eb8f2e420e09bf385a7517ffb4e3",
+        "snapshot_document_method": "addInventoryStocktake"
+      },
+      "documented_intro": "The method allows you to create a new stocktake (inventory count) in draft status. For non-manual scopes, the product list is automatically populated based on the selected scope and warehouse.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier. The list of identifiers can be retrieved using the method getInventoryWarehouses.",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "scope",
+            "documented_name": "scope",
+            "documented_type": "int",
+            "documented_description": "Stocktake scope defining which products are included: 0 - all products, 1 - manual product selection, 3 - specific warehouse zones, 4 - specific location prefixes, 5 - random product selection",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_values": [
+              0,
+              1,
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "name": "name",
+            "documented_name": "name",
+            "documented_type": "varchar(80)",
+            "documented_description": "(optional) Stocktake name/description",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "priority",
+            "documented_name": "priority",
+            "documented_type": "int",
+            "documented_description": "(optional) Priority: 0 - low (default), 1 - medium, 2 - high, 3 - urgent",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "default": 0
+          },
+          {
+            "name": "assigned_to",
+            "documented_name": "assigned_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Assigned employee identifier",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_scheduled",
+            "documented_name": "date_scheduled",
+            "documented_type": "int",
+            "documented_description": "(optional) Execution scheduled date (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "date_due",
+            "documented_name": "date_due",
+            "documented_type": "int",
+            "documented_description": "(optional) Execution due date (unix timestamp). Must be later than or equal to date_scheduled.",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "minimum_parameter": "date_scheduled"
+          },
+          {
+            "name": "approval_method",
+            "documented_name": "approval_method",
+            "documented_type": "text",
+            "documented_description": "(optional) Approval method: \"immediate\" (default) - stocktake is completed immediately after counting, \"confirm\" - requires secondary approval step after counting",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "documented_values": [
+              "immediate",
+              "confirm"
+            ],
+            "default": "immediate"
+          },
+          {
+            "name": "blind_count",
+            "documented_name": "blind_count",
+            "documented_type": "bool",
+            "documented_description": "(optional) If true, hides the expected quantity from the counter. Default: false",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "default": false
+          },
+          {
+            "name": "confirm_location",
+            "documented_name": "confirm_location",
+            "documented_type": "bool",
+            "documented_description": "(optional) If true, forces the user to scan/confirm the location before counting. Default: false",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "default": false
+          },
+          {
+            "name": "allow_add_remove_items",
+            "documented_name": "allow_add_remove_items",
+            "documented_type": "bool",
+            "documented_description": "(optional) If true, allows adding or removing products during the counting phase. Default: false. Always true for manual scope.",
+            "source_kind": "table_row",
+            "source_table_row": 11,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "documented",
+            "default": false,
+            "scope_override": {
+              "scope": 1,
+              "value": true
+            }
+          },
+          {
+            "name": "product_ids",
+            "documented_name": "product_ids",
+            "documented_type": "array",
+            "documented_description": "(optional) List of simple product or variant identifiers to include. Required when scope is 1 (manual).",
+            "source_kind": "table_row",
+            "source_table_row": 12,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type": null,
+            "required_when": {
+              "parameter": "scope",
+              "equals": 1
+            }
+          },
+          {
+            "name": "scope_zones",
+            "documented_name": "scope_zones",
+            "documented_type": "array",
+            "documented_description": "(optional) List of warehouse zone identifiers. Required when scope is 3 (zones).",
+            "source_kind": "table_row",
+            "source_table_row": 13,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type": null,
+            "required_when": {
+              "parameter": "scope",
+              "equals": 3
+            }
+          },
+          {
+            "name": "scope_locations_prefix",
+            "documented_name": "scope_locations_prefix",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Semicolon-separated location name prefixes to filter by. Required when scope is 4 (locations). Example: \"A-1;B-2\"",
+            "source_kind": "table_row",
+            "source_table_row": 14,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "required_when": {
+              "parameter": "scope",
+              "equals": 4
+            },
+            "documented_separator": ";",
+            "documented_example": "A-1;B-2"
+          },
+          {
+            "name": "scope_random_count",
+            "documented_name": "scope_random_count",
+            "documented_type": "int",
+            "documented_description": "(optional) Number of random products to select. Required when scope is 5 (random). Must be a positive integer.",
+            "source_kind": "table_row",
+            "source_table_row": 15,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "required_when": {
+              "parameter": "scope",
+              "equals": 5
+            },
+            "minimum": 1,
+            "documented_constraint": "positive integer"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "parameter": "date_due",
+            "operator": ">=",
+            "other_parameter": "date_scheduled",
+            "source_text": "Must be later than or equal to date_scheduled."
+          }
+        ]
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "stocktake_id",
+            "documented_name": "stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Created stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2
+          },
+          {
+            "path": "stocktake_number",
+            "documented_name": "stocktake_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "Generated stocktake document number",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items_preparation_status",
+            "documented_name": "items_preparation_status",
+            "documented_type": "text",
+            "documented_description": "Stocktake items preparation status: ready or pending",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "documented_values": [
+              "ready",
+              "pending"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented.",
+        "Scope2 and empty/unknown scope selector behavior are not documented.",
+        "No advanced-WMS prerequisite is stated on this page; do not import one from Transfers."
+      ],
+      "documented_effects": {
+        "created_status": "draft",
+        "non_manual_scope": "product list automatically populated from selected scope and warehouse"
+      }
+    },
+    {
+      "id": "BASE-API-addInventoryStocktakeItems",
+      "method": "addInventoryStocktakeItems",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addInventoryStocktakeItems",
+        "final_url": "https://api.baselinker.com/index.php?method=addInventoryStocktakeItems",
+        "retrieved_at": "2026-10-18T01:06:31.103552+00:00",
+        "http_status": 200,
+        "bytes": 50975,
+        "sha256": "fa07ae9a39ed7b0f1a8e79b07335317d436101ea92601cd339f26344ecec2ba0",
+        "snapshot_document_method": "addInventoryStocktakeItems"
+      },
+      "documented_intro": "The method allows you to add items to an existing stocktake in draft status. Entering a product with the same ID and matching parameters updates the previously saved position. If any parameter differs, a new item will be added.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "stocktake_id",
+            "documented_name": "stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of items to add to the stocktake",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "element_type": null
+          },
+          {
+            "name": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Expected quantity. Must be a non-negative integer.",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "minimum": 0,
+            "documented_constraint": "non-negative integer"
+          },
+          {
+            "name": "items[].location_name",
+            "documented_name": "| - location_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "(optional) Storage location name",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].expiry_date",
+            "documented_name": "| - expiry_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "(optional) Expiry date in YYYY-MM-DD format (ISO 8601)",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].batch",
+            "documented_name": "| - batch",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) Batch number",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "items[].serial_no",
+            "documented_name": "| - serial_no",
+            "documented_type": "varchar(128)",
+            "documented_description": "(optional) Serial number",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of created/updated stocktake items",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Item position in stocktake",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented.",
+        "The quantity update description does not resolve replacement versus increment."
+      ],
+      "documented_preconditions": [
+        {
+          "subject": "stocktake_id",
+          "requirement": "draft_status"
+        }
+      ],
+      "documented_effects": {
+        "matching_product_and_all_other_parameters": "updates_existing_position",
+        "any_parameter_differs": "creates_new_position"
+      }
+    },
+    {
+      "id": "BASE-API-getInventoryStocktakeItems",
+      "method": "getInventoryStocktakeItems",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryStocktakeItems",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryStocktakeItems",
+        "retrieved_at": "2026-10-18T01:06:30.907617+00:00",
+        "http_status": 200,
+        "bytes": 51459,
+        "sha256": "0dff411720355c06a39efef88780c965d19d49010fedf67d3533cb79212947ea",
+        "snapshot_document_method": "getInventoryStocktakeItems"
+      },
+      "documented_intro": "The method allows you to retrieve items from a specific stocktake. Supports pagination for stocktakes with a large number of items.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "stocktake_id",
+            "documented_name": "stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page number (100 items per page, numbered from 1)",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "items",
+            "documented_name": "items",
+            "documented_type": "array",
+            "documented_description": "List of stocktake items",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "items[].stocktake_id",
+            "documented_name": "| - stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "items[].position",
+            "documented_name": "| - position",
+            "documented_type": "int",
+            "documented_description": "Line item number",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "items[].product_id",
+            "documented_name": "| - product_id",
+            "documented_type": "int",
+            "documented_description": "Product identifier",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          },
+          {
+            "path": "items[].product_name",
+            "documented_name": "| - product_name",
+            "documented_type": "varchar(255)",
+            "documented_description": "Product name",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "items[].product_ean",
+            "documented_name": "| - product_ean",
+            "documented_type": "varchar(32)",
+            "documented_description": "Product EAN",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "items[].product_sku",
+            "documented_name": "| - product_sku",
+            "documented_type": "varchar(50)",
+            "documented_description": "Product SKU",
+            "source_kind": "table_row",
+            "source_table_row": 9
+          },
+          {
+            "path": "items[].inventory_id",
+            "documented_name": "| - inventory_id",
+            "documented_type": "int",
+            "documented_description": "Inventory (catalog) identifier",
+            "source_kind": "table_row",
+            "source_table_row": 10
+          },
+          {
+            "path": "items[].quantity",
+            "documented_name": "| - quantity",
+            "documented_type": "int",
+            "documented_description": "Quantity of this line item",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "items[].expiry_date",
+            "documented_name": "| - expiry_date",
+            "documented_type": "varchar(10)",
+            "documented_description": "Expiry date in YYYY-MM-DD format",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "items[].batch",
+            "documented_name": "| - batch",
+            "documented_type": "varchar(128)",
+            "documented_description": "Batch number",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "items[].serial_no",
+            "documented_name": "| - serial_no",
+            "documented_type": "varchar(128)",
+            "documented_description": "Serial number",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "items[].verified_quantity",
+            "documented_name": "| - verified_quantity",
+            "documented_type": "int",
+            "documented_description": "Verified (actually counted) quantity",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          },
+          {
+            "path": "items[].is_verified",
+            "documented_name": "| - is_verified",
+            "documented_type": "bool",
+            "documented_description": "Whether the item has been counted/verified",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "items[].location_name",
+            "documented_name": "| - location_name",
+            "documented_type": "varchar(2550)",
+            "documented_description": "Storage location name. When multiple locations are assigned, they are separated by a semicolon.",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "items",
+        "first_page": 1,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryStocktakeSeries",
+      "method": "getInventoryStocktakeSeries",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryStocktakeSeries",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryStocktakeSeries",
+        "retrieved_at": "2026-10-18T01:06:31.119348+00:00",
+        "http_status": 200,
+        "bytes": 49540,
+        "sha256": "a2d685346a672792e6ac059a9de7ec24d737854f3808402260b97b553e9f162b",
+        "snapshot_document_method": "getInventoryStocktakeSeries"
+      },
+      "documented_intro": "The method allows you to retrieve a list of available stocktake numbering series. Each series is linked to a specific warehouse and defines the numbering format for stocktakes.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "warehouse_id",
+            "documented_name": "warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter series by warehouse ID",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "series",
+            "documented_name": "series",
+            "documented_type": "array",
+            "documented_description": "List of stocktake numbering series",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "series[].series_id",
+            "documented_name": "| - series_id",
+            "documented_type": "int",
+            "documented_description": "Numbering series identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "series[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(20)",
+            "documented_description": "Series name",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "series[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier to which this series applies",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "series[].format",
+            "documented_name": "| - format",
+            "documented_type": "varchar(30)",
+            "documented_description": "Stocktake number format pattern",
+            "source_kind": "table_row",
+            "source_table_row": 6
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented."
+      ]
+    },
+    {
+      "id": "BASE-API-getInventoryStocktakes",
+      "method": "getInventoryStocktakes",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getInventoryStocktakes",
+        "final_url": "https://api.baselinker.com/index.php?method=getInventoryStocktakes",
+        "retrieved_at": "2026-10-18T01:06:31.320376+00:00",
+        "http_status": 200,
+        "bytes": 54205,
+        "sha256": "eff81c2f2ceee0d8d584ffe3ea0f0e7f351ad1930b1736321239b8abda35e9a6",
+        "snapshot_document_method": "getInventoryStocktakes"
+      },
+      "documented_intro": "The method allows you to retrieve a paginated list of stocktakes from BaseLinker storage. It supports filtering by stocktake, warehouse, status, series, number, and creation date range.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "filter_stocktake_id",
+            "documented_name": "filter_stocktake_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by a specific stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_warehouse_id",
+            "documented_name": "filter_warehouse_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_stocktake_status",
+            "documented_name": "filter_stocktake_status",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by stocktake status: 0 - draft, 1 - commissioned, 2 - in progress, 3 - completed, 4 - counted, 5 - rejected",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "name": "filter_series_id",
+            "documented_name": "filter_series_id",
+            "documented_type": "int",
+            "documented_description": "(optional) Filter by numbering series identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_stocktake_number",
+            "documented_name": "filter_stocktake_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "(optional) Filter by stocktake number (partial match)",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_date_from",
+            "documented_name": "filter_date_from",
+            "documented_type": "int",
+            "documented_description": "(optional) Minimum creation date (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "filter_date_to",
+            "documented_name": "filter_date_to",
+            "documented_type": "int",
+            "documented_description": "(optional) Maximum creation date (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 7,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "page",
+            "documented_name": "page",
+            "documented_type": "int",
+            "documented_description": "(optional) Results page number (100 stocktakes per page, numbered from 1)",
+            "source_kind": "table_row",
+            "source_table_row": 8,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          },
+          {
+            "path": "stocktakes",
+            "documented_name": "stocktakes",
+            "documented_type": "array",
+            "documented_description": "List of stocktakes",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "element_type": null
+          },
+          {
+            "path": "stocktakes[].stocktake_id",
+            "documented_name": "| - stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 3
+          },
+          {
+            "path": "stocktakes[].stocktake_number",
+            "documented_name": "| - stocktake_number",
+            "documented_type": "varchar(50)",
+            "documented_description": "Full stocktake document number",
+            "source_kind": "table_row",
+            "source_table_row": 4
+          },
+          {
+            "path": "stocktakes[].name",
+            "documented_name": "| - name",
+            "documented_type": "varchar(80)",
+            "documented_description": "Stocktake name",
+            "source_kind": "table_row",
+            "source_table_row": 5
+          },
+          {
+            "path": "stocktakes[].stocktake_status",
+            "documented_name": "| - stocktake_status",
+            "documented_type": "int",
+            "documented_description": "Stocktake status: 0 - draft, 1 - commissioned, 2 - in progress, 3 - completed, 4 - counted, 5 - rejected",
+            "source_kind": "table_row",
+            "source_table_row": 6,
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "path": "stocktakes[].series_id",
+            "documented_name": "| - series_id",
+            "documented_type": "int",
+            "documented_description": "Numbering series identifier",
+            "source_kind": "table_row",
+            "source_table_row": 7
+          },
+          {
+            "path": "stocktakes[].warehouse_id",
+            "documented_name": "| - warehouse_id",
+            "documented_type": "int",
+            "documented_description": "Warehouse identifier",
+            "source_kind": "table_row",
+            "source_table_row": 8
+          },
+          {
+            "path": "stocktakes[].priority",
+            "documented_name": "| - priority",
+            "documented_type": "int",
+            "documented_description": "Priority: 0 - low, 1 - medium, 2 - high, 3 - urgent",
+            "source_kind": "table_row",
+            "source_table_row": 9,
+            "documented_values": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "path": "stocktakes[].assigned_to",
+            "documented_name": "| - assigned_to",
+            "documented_type": "int",
+            "documented_description": "Assigned employee identifier. 0 if not assigned.",
+            "source_kind": "table_row",
+            "source_table_row": 10,
+            "documented_zero_meaning": "not assigned"
+          },
+          {
+            "path": "stocktakes[].items_count",
+            "documented_name": "| - items_count",
+            "documented_type": "int",
+            "documented_description": "Total number of items in the stocktake",
+            "source_kind": "table_row",
+            "source_table_row": 11
+          },
+          {
+            "path": "stocktakes[].verified_items_count",
+            "documented_name": "| - verified_items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items that have been verified (counted)",
+            "source_kind": "table_row",
+            "source_table_row": 12
+          },
+          {
+            "path": "stocktakes[].total_quantity",
+            "documented_name": "| - total_quantity",
+            "documented_type": "int",
+            "documented_description": "Total expected quantity of products",
+            "source_kind": "table_row",
+            "source_table_row": 13
+          },
+          {
+            "path": "stocktakes[].verified_total_quantity",
+            "documented_name": "| - verified_total_quantity",
+            "documented_type": "int",
+            "documented_description": "Total verified (actually counted) quantity",
+            "source_kind": "table_row",
+            "source_table_row": 14
+          },
+          {
+            "path": "stocktakes[].compliant_items_count",
+            "documented_name": "| - compliant_items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items where verified quantity matches expected quantity",
+            "source_kind": "table_row",
+            "source_table_row": 15
+          },
+          {
+            "path": "stocktakes[].not_compliant_items_count",
+            "documented_name": "| - not_compliant_items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items where verified quantity differs from expected quantity",
+            "source_kind": "table_row",
+            "source_table_row": 16
+          },
+          {
+            "path": "stocktakes[].missing_items_count",
+            "documented_name": "| - missing_items_count",
+            "documented_type": "int",
+            "documented_description": "Number of items with expected stock > 0 but verified quantity = 0",
+            "source_kind": "table_row",
+            "source_table_row": 17
+          },
+          {
+            "path": "stocktakes[].date_created",
+            "documented_name": "| - date_created",
+            "documented_type": "int",
+            "documented_description": "Stocktake creation date (unix timestamp)",
+            "source_kind": "table_row",
+            "source_table_row": 18
+          },
+          {
+            "path": "stocktakes[].date_completed",
+            "documented_name": "| - date_completed",
+            "documented_type": "int",
+            "documented_description": "Stocktake completion date (unix timestamp). 0 if not completed.",
+            "source_kind": "table_row",
+            "source_table_row": 19,
+            "documented_zero_meaning": "not completed"
+          },
+          {
+            "path": "stocktakes[].date_scheduled",
+            "documented_name": "| - date_scheduled",
+            "documented_type": "int",
+            "documented_description": "Execution scheduled date (unix timestamp). 0 if not set.",
+            "source_kind": "table_row",
+            "source_table_row": 20,
+            "documented_zero_meaning": "not set"
+          },
+          {
+            "path": "stocktakes[].date_due",
+            "documented_name": "| - date_due",
+            "documented_type": "int",
+            "documented_description": "Execution due date (unix timestamp). 0 if not set.",
+            "source_kind": "table_row",
+            "source_table_row": 21,
+            "documented_zero_meaning": "not set"
+          },
+          {
+            "path": "stocktakes[].notes",
+            "documented_name": "| - notes",
+            "documented_type": "text",
+            "documented_description": "Stocktake notes",
+            "source_kind": "table_row",
+            "source_table_row": 22
+          },
+          {
+            "path": "stocktakes[].items_preparation_status",
+            "documented_name": "| - items_preparation_status",
+            "documented_type": "text",
+            "documented_description": "Stocktake items preparation status: ready, pending, or error",
+            "source_kind": "table_row",
+            "source_table_row": 23,
+            "documented_values": [
+              "ready",
+              "pending",
+              "error"
+            ]
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "page",
+        "input": "page",
+        "page_size": 100,
+        "unit": "stocktakes",
+        "first_page": 1,
+        "default_page": "not_documented",
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented."
+      ]
+    },
+    {
+      "id": "BASE-API-setInventoryStocktakeStatus",
+      "method": "setInventoryStocktakeStatus",
+      "family": "Product catalog",
+      "group": "Stocktakes",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=setInventoryStocktakeStatus",
+        "final_url": "https://api.baselinker.com/index.php?method=setInventoryStocktakeStatus",
+        "retrieved_at": "2026-10-18T01:06:31.304423+00:00",
+        "http_status": 200,
+        "bytes": 49702,
+        "sha256": "d7fe95d74b4ac1b18253ee9db3249f9c58a526e20a300659744fd1127539bf84",
+        "snapshot_document_method": "setInventoryStocktakeStatus"
+      },
+      "documented_intro": "The method allows you to change the status of a stocktake. When completing a stocktake, verified quantities are applied to warehouse stock and corresponding documents are generated.",
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "wire_acceptance": false,
+      "provider_account_acceptance": false,
+      "acceptance_granted": false,
+      "input": {
+        "parameters": [
+          {
+            "name": "stocktake_id",
+            "documented_name": "stocktake_id",
+            "documented_type": "int",
+            "documented_description": "Stocktake identifier",
+            "source_kind": "table_row",
+            "source_table_row": 1,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "status",
+            "documented_name": "status",
+            "documented_type": "int",
+            "documented_description": "Target stocktake status: 0 - draft, 1 - commissioned, 2 - in progress, 3 - completed, 4 - counted, 5 - rejected",
+            "source_kind": "table_row",
+            "source_table_row": 2,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "documented_values": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "name": "completed_items",
+            "documented_name": "completed_items",
+            "documented_type": "array",
+            "documented_description": "(optional) List of verified items with counted quantities. Can be provided when changing status to in progress (2), counted (4), or completed (3).",
+            "source_kind": "table_row",
+            "source_table_row": 3,
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default_status": "not_documented",
+            "element_type": null,
+            "allowed_statuses": [
+              2,
+              4,
+              3
+            ]
+          },
+          {
+            "name": "completed_items[].item_id",
+            "documented_name": "| - item_id",
+            "documented_type": "int",
+            "documented_description": "Item identifier",
+            "source_kind": "table_row",
+            "source_table_row": 4,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "completed_items[].completed_quantity",
+            "documented_name": "| - completed_quantity",
+            "documented_type": "int",
+            "documented_description": "Verified (actually counted) quantity. Must not be negative.",
+            "source_kind": "table_row",
+            "source_table_row": 5,
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "default_status": "not_documented",
+            "minimum": 0,
+            "documented_constraint": "must not be negative"
+          }
+        ],
+        "embedded_documented_fields": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "validation_order": "not_documented",
+        "cross_field_constraints": []
+      },
+      "output": {
+        "fields": [
+          {
+            "path": "status",
+            "documented_name": "status",
+            "documented_type": "varchar(30)",
+            "documented_description": "SUCCESS - request executed correctlyERROR - an error occurred during an API request. Error details will be described in 2 additional returned fields: error_message and error_code",
+            "source_kind": "table_row",
+            "source_table_row": 1
+          }
+        ],
+        "embedded_documented_fields": [],
+        "format": "JSON",
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "ordering": "not_documented",
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "mutation_idempotency": "not_documented",
+      "open_contract_issues": [
+        "Role/tenant permissions, precise errors, idempotency/lost-ACK replay and transaction boundaries are not documented.",
+        "Null/unknown parameters, validation order and atomicity of partial item updates are not documented.",
+        "Legal status transitions, omission handling for unverified items, generated document types and exact warehouse effects are not documented."
+      ],
+      "documented_effects": {
+        "on_completion": "verified quantities applied to warehouse stock and corresponding documents generated",
+        "omitted_unverified_items": "not_documented"
+      }
+    }
+  ],
+  "boundary": "Documentation/source normalization only. Existing index, raw archives, registry/domain/scope and612 implementation acceptance plans remain unchanged. A page retrieved18.10 does not prove its content17.10. No API/account requests, automatic retry, stock/WMS or business acceptance.",
+  "field_inventory": {
+    "input_table_rows": 39,
+    "output_table_rows": 55,
+    "embedded_input_prose_fields": 0,
+    "embedded_output_prose_fields": 0
+  }
+}

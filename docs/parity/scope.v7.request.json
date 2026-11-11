@@ -1,0 +1,37 @@
+{
+  "schema": "dynaminds-parity-scope-freeze-request/v1",
+  "snapshot": {
+    "goal": "DYNAMINDS-FULL-BASE-20261017",
+    "version": 7,
+    "snapshot_kind": "partial",
+    "inputs": {
+      "domains": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope-inputs/v4/domains.json",
+        "bytes": 418795,
+        "sha256": "4b2a2749c0a0646368501c030d8106befe08986312b265ce38162165610c43fa"
+      },
+      "integrations": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope-inputs/v7/integrations.json",
+        "bytes": 1344067,
+        "sha256": "0f01acff5c07cfe85a3b99adbb67376584d8b77a90166ab3f385f48cc0df21bd"
+      },
+      "providerRoster": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/local-app/docs/parity/scope-inputs/v2/base-provider-roster.json",
+        "sha256": "b4c1ea152a16bdd2186c56d46d706299ad77ac3007798487b66fa16177e3915a",
+        "bytes": 3672322
+      }
+    },
+    "parent": {
+      "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope.v6.json",
+      "bytes": 2351722,
+      "sha256": "910ca6af86d539718c8227682946821799ece21b2ae5e7563f1a1486db205b90"
+    },
+    "catalogue_inventory_version": 1,
+    "evidence_archive": {
+      "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v5-20261019/archive.json",
+      "bytes": 8038,
+      "sha256": "8d749e15486f9e943600e8c4664c87988a31cd87f1119b68747c8be9c0f94523"
+    }
+  },
+  "output": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope.v7.json"
+}

@@ -1,0 +1,113 @@
+.translation-bulk-edit {
+  min-width: 0;
+  margin: 20px 0;
+}
+.translation-bulk-edit .panel-heading {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.translation-bulk-edit .ptbe-body {
+  padding: 0 24px 24px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.translation-bulk-edit .ptbe-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.translation-bulk-edit label {
+  display: grid;
+  gap: 6px;
+}
+.translation-bulk-edit p,
+.translation-bulk-edit small {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.translation-bulk-edit .ptbe-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.translation-bulk-edit table {
+  width: 100%;
+  min-width: 950px;
+  table-layout: fixed;
+}
+.translation-bulk-edit td,
+.translation-bulk-edit th {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  padding: 12px 8px;
+}
+.translation-bulk-edit th:first-child {
+  width: 23%;
+}
+.translation-bulk-edit input:not([type='checkbox']),
+.translation-bulk-edit select,
+.translation-bulk-edit textarea {
+  width: 100%;
+  min-width: 0;
+}
+.translation-bulk-edit textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+.translation-bulk-edit small {
+  display: block;
+}
+.translation-bulk-edit .ptbe-box {
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+}
+.translation-bulk-edit .ptbe-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.6;
+}
+.translation-bulk-edit .ptbe-check input {
+  margin-top: 5px;
+  flex: none;
+}
+.translation-bulk-edit .ptbe-text {
+  white-space: pre-wrap;
+  max-height: 350px;
+  overflow: auto;
+}
+.translation-bulk-edit .ptbe-locales {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.translation-bulk-edit .ptbe-apply {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+}
+.translation-bulk-edit .ptbe-apply .ptbe-wide {
+  grid-column: 1 / -1;
+}
+.translation-bulk-edit .ptbe-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.translation-bulk-edit .ptbe-error {
+  color: var(--danger, #b42318);
+}
+@media (max-width: 650px) {
+  .translation-bulk-edit .ptbe-body {
+    padding: 0 12px 16px;
+  }
+  .translation-bulk-edit .ptbe-apply,
+  .translation-bulk-edit .ptbe-diff {
+    grid-template-columns: 1fr;
+  }
+}

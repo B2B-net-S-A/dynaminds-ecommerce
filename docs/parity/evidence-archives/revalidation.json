@@ -1,0 +1,11 @@
+{
+  "schema": "dynaminds-parity-evidence-archive-revalidation/v1",
+  "archive": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/integrations-v7-20261026/archive.json",
+    "bytes": 8850,
+    "sha256": "47d9c703eb08b72e214c48ac4db7c889f83a9c3be5e24a7befc6b36ba8c55f2d"
+  },
+  "extends": "evidence-archives/mirakl-v5-20261019/archive.json",
+  "reason": "server/integrations.ts changed after scope v6/v7 pinned it (b82c2d0, 3b3abab, registry step v8 for Mirakl L4); the archive adds only the exact pinned Git blob fb494304, which still covers v8.",
+  "acceptance_granted": false
+}

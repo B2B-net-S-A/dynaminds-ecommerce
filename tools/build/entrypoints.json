@@ -1,0 +1,15 @@
+{
+  "entrypoints": [
+    "server/local-import-runtime.ts",
+    "server/ordinary-local-cli.ts",
+    "server/ordinary-local-runtime.ts",
+    "shared/large-import-dependencies/pim-large-import-write-hook-registry-backend/installed-checker.ts",
+    "shared/large-import-dependencies/pim-large-import-write-hook-registry-backend/installed-census.ts",
+    "server/large-import/private-acceptance-bootstrap.ts",
+    "shared/large-import-dependencies/pim-large-import-write-hook-registry-backend/closed-proof.ts",
+    "server/large-import/private-closed-acceptance.ts",
+    "server/large-import/local-quota-enrollment.ts",
+    "server/large-import/tiny-upload-acceptance.ts",
+    "server/ordinary-local-worker.ts"
+  ]
+}

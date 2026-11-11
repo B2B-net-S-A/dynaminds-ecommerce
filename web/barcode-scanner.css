@@ -1,0 +1,91 @@
+.scanner {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.scanner button {
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid #c7d2e1;
+  background: #fff;
+  color: #18365e;
+  padding: 9px 13px;
+  border-radius: 8px;
+  min-height: 42px;
+  justify-self: start;
+}
+.scanner button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.scanner button:focus-visible {
+  outline: 3px solid #88adff;
+  outline-offset: 2px;
+}
+.scanner-start::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 3px, currentColor 3px 4px, transparent 4px 6px);
+}
+.scanner-view {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0f1a2e;
+}
+.scanner-view[hidden] {
+  display: none;
+}
+.scanner-view video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.scanner-frame {
+  position: absolute;
+  inset: 22% 10%;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 0 0 999px rgba(15, 26, 46, 0.35);
+}
+.scanner-status,
+.scanner-note {
+  margin: 0;
+  font-size: 13px;
+  color: #53647b;
+  line-height: 1.5;
+}
+.scanner-error {
+  margin: 0;
+  background: #fff1f1;
+  border: 1px solid #e0b2b2;
+  color: #973b3b;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.scanner-prominent button {
+  justify-self: stretch;
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+.scanner-prominent .scanner-start {
+  background: #183c87;
+  border-color: #183c87;
+  color: #fff;
+}
+.scanner-prominent .scanner-view {
+  max-width: none;
+}

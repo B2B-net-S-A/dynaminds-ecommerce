@@ -1,0 +1,41 @@
+.proforma-panel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.proforma-panel .proforma-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.proforma-panel label {
+  display: block;
+  margin: 12px 0;
+}
+.proforma-panel fieldset {
+  margin: 16px 0;
+}
+.proforma-panel .proforma-pending {
+  padding: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+}
+.proforma-panel .proforma-review {
+  border-top: 1px solid var(--border, #e2e8f0);
+  padding-top: 16px;
+}
+.proforma-panel .proforma-snapshot {
+  overflow-x: auto;
+}
+.proforma-panel small {
+  display: block;
+  margin: 5px 0;
+}
+.proforma-panel .proforma-text {
+  white-space: pre-wrap;
+}
+@media (max-width: 600px) {
+  .proforma-panel .proforma-grid {
+    grid-template-columns: 1fr;
+  }
+}

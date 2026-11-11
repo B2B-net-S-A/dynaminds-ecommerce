@@ -1,0 +1,14 @@
+-- Migration 259_jobs_running_lease (prepared as 275, registered after 258_wz_issuer_refresh; docs/parity/SCOPED-CLAIM-P275-20261029.md).
+-- Done jobs are never pruned (their rows are the attempt history that automation runs, plans and the worker panel
+-- read), so jobs only grows: 7 k -> 102 k rows in the 29.10 load run, ~2 rows per order. Two queries look for leases
+-- still held and had no index for state='running', so each read the whole table:
+--  * the reaper at the start of every tick() of the generic worker (server/worker.ts), up to 10 ticks per second
+--    while it claims work: 52 ms at 102 k rows, 230 ms at 1 018 k;
+--  * expireAutomationLeases() of the scoped rule processor (server/automations.ts), every 30 s per process:
+--    22 ms / 146 ms.
+-- Running jobs are few (one lease per worker slot), so the index stays a handful of entries and a full scan of it is
+-- bounded by the leases held, not by the history; locked_at is filtered and sorted over those few rows. The key is id
+-- (never updated), not locked_at: lease renewals that set only locked_at (provider syncs, once per page) stay HOT.
+-- jobs_claim already has state in its predicate, so updates of state were not HOT before either.
+-- Only this index is created; no table, column, trigger, function or grant changes.
+CREATE INDEX jobs_running_lease ON public.jobs(id) WHERE state='running';

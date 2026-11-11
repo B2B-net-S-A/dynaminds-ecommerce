@@ -1,0 +1,121 @@
+.mfa-gate {
+  min-height: 100vh;
+  padding: 28px;
+  background: #f4f6fa;
+  color: #18263c;
+}
+.mfa-gate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1100px;
+  margin: auto;
+}
+.mfa-gate-content {
+  max-width: 760px;
+  margin: 44px auto;
+}
+.mfa-gate-content > .workspace-picker {
+  margin-bottom: 32px;
+  color: #18263c;
+  background: white;
+}
+.mfa-gate .workspace-picker select {
+  color: #18263c;
+  background: #fff;
+}
+.mfa-gate-content h1 {
+  font-size: 30px;
+  margin: 18px 0;
+}
+.mfa-gate-content > p {
+  line-height: 1.65;
+}
+.mfa-verify-form,
+.workspace-security-body {
+  padding: 24px;
+}
+.mfa-verify-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+.workspace-security-body .table-wrap {
+  margin: 20px 0;
+}
+.workspace-security-body p {
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0 0 16px;
+}
+.workspace-security-body td small {
+  display: block;
+  color: #68758a;
+  margin-top: 4px;
+}
+.workspace-security-body .policy-confirm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.workspace-security-body .policy-confirm input {
+  width: auto;
+}
+@media (max-width: 640px) {
+  .mfa-gate {
+    padding: 16px;
+  }
+  .mfa-gate-header {
+    flex-wrap: wrap;
+  }
+  .mfa-gate-content {
+    margin: 28px auto;
+  }
+  .workspace-security-body {
+    padding: 16px;
+  }
+}
+/* 237: login history (own account and organisation members). */
+.login-history {
+  margin-top: 22px;
+}
+.login-history h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+.login-history p {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.login-history td:first-child {
+  white-space: nowrap;
+}
+.login-history td small {
+  display: block;
+  color: #6d7d92;
+}
+.login-history td code {
+  font-size: 11px;
+}
+/* 238: members login list person filter and older pages. */
+.login-history-filter {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.login-history-filter select {
+  min-width: 240px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.login-history > .button {
+  margin-top: 10px;
+}

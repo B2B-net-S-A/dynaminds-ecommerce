@@ -1,0 +1,45 @@
+import {importFinalizationInput} from './finalization';
+/** Exact-owned OPEN continuation for job/review HTTP commands; upload uses existing once-replay broker unchanged. */
+import assert from 'node:assert/strict';import{requireActiveSharedOriginalRequest}from'./shared-session-writer';import{createHash}from'node:crypto';import type{Actor}from'../domain';import type{FastifyRequest}from'fastify';
+import{createDedicatedMetadataTransport,type Ports}from'../../shared/large-import-dependencies/pim-large-import173-composed-runtime-backend/transport';
+import{quotaTransaction}from'../../shared/large-import-dependencies/pim-large-import-upload-quota-broker-backend3/transaction';
+import type{OwnedRequest,Resource,Observed}from'../../shared/large-import-dependencies/pim-large-import-upload-quota-broker-backend3/broker';
+import{createOwnedBusinessQuotaKeeper}from'../../shared/large-import-dependencies/pim-large-import-business-native-proof-ui/owned-keeper';
+import{phaseKey}from'../../shared/large-import-dependencies/pim-large-import-job-coordinator-backend5/coordinator';
+import {Problem} from '../errors';
+import type{PortsKeeper}from'../../shared/large-import-dependencies/pim-large-import-quota-terminal-reconcile-backend2/keeper';
+const hash=(x:string)=>createHash('sha256').update(x).digest('hex');
+export async function createOpenBusinessQuota(ports0:Ports,original:FastifyRequest,expected:Actor,input:OwnedRequest,mode?:'existing-finalization'){
+ if(mode!==undefined){assert(mode==='existing-finalization'&&original.method==='POST'&&original.url.split('?')[0].endsWith('/jobs/'+(original.params as {id:string}).id+'/finalize'),'local-finalize-quota-exact-original-route');importFinalizationInput.parse(original.body);}
+ const ports={...ports0},request=structuredClone(input);assert(request.kind==='job'||request.kind==='review');assert(request.ceiling.raw===0);const transport=createDedicatedMetadataTransport(ports),actor=transport.capture(original);assert.deepEqual({t:actor.tenantId,u:actor.userId,k:actor.apiKeyId??null,r:actor.role},{t:expected.tenantId,u:expected.userId,k:expected.apiKeyId??null,r:expected.role});const bound=transport.bind(actor),credential=actor.apiKeyId?original.headers.authorization?.replace(/^Bearer /,''):(original.cookies[ports.sessionName]??original.headers.authorization?.replace(/^Bearer /,''));assert(credential);const args=[actor.userId,actor.tenantId,actor.apiKeyId??null,actor.role,hash(credential)],token=hash(request.privateToken);
+ async function invoke(name:'reserve'|'intent'|'settle'|'snapshot'|'close',values:unknown[]){requireActiveSharedOriginalRequest(original);let c:Awaited<ReturnType<typeof bound.ports.connect>>|undefined,failed=false,first:unknown,value:any;try{c=await bound.ports.connect(bound.scope);const client=c;value=await quotaTransaction(client,async()=>{await bound.ports.admit(client,bound.scope);const all=[...args,...values],r=(await client.query(`SELECT public.large_import_quota_${name}173(${all.map((_,n)=>'$'+(n+1)).join(',')}) fact`,all)).rows[0]?.fact;assert(r);await bound.ports.admit(client,bound.scope);return structuredClone(r);},bound.ports.cleanupFailure);}catch(e){failed=true;first=(e as {code?:string;message?:string})?.code==='40001'&&['Quota lease expired; retained allocation requires reconciliation','Quota group lease unavailable'].includes((e as {message?:string})?.message??'')?new Problem(409,'Czas rezerwacji importu wygasł. Odczytaj podgląd odnowienia job/review i jawnie odnów tę samą parę; nie powtarzaj operacji PIM.','QUOTA_LEASE_EXPIRED_RENEWAL_REQUIRED'):e;}finally{if(c)try{await c.end();}catch(e){try{ports.cleanupFailure(e);}catch{}if(!failed){failed=true;first=e;}}}if(failed)throw first;return value;}
+ const exact=(r:any)=>{assert(r.id===request.reservationId&&r.request_id===request.requestId&&r.tenant_id===actor.tenantId&&r.actor_id===actor.userId&&r.api_key_id===(actor.apiKeyId??null)&&r.kind===request.kind&&String(r.raw_ceiling)===String(request.ceiling.raw)&&String(r.metadata_ceiling)===String(request.ceiling.metadata)&&String(r.objects_ceiling)===String(request.ceiling.objects),'local-business-original-native-custody');};
+ const fact=mode?await invoke('snapshot',[request.reservationId,token]):await invoke('reserve',[request.reservationId,request.requestId,token,request.kind,0,request.ceiling.metadata,request.ceiling.objects]),row=mode?fact.reservation:fact;exact(row);if(row.state==='unknown')throw new Problem(409,'Rezerwacja tego importu pozostaje nierozstrzygnięta. Zachowano dane i pełne naliczenie; operacje zapisu są zablokowane.','IMPORT_ALLOCATION_HELD_UNKNOWN');assert(mode?(row.state==='open'||row.state==='retained'&&row.outcome==='ready'):row.state==='open'&&(row.reused===true||row.reused===false),'local-business-non-open-is-inspection-only-no-mutation');
+ const resource=(r:Resource)=>{assert(/^(raw|blob|batch|job|review|event):[a-z0-9:-]{1,160}$/.test(r.key)&&r.key.split(':')[0]===r.kind&&Number.isSafeInteger(r.byte_count)&&r.byte_count>=0&&/^[a-f0-9]{64}$/.test(r.sha256));if(r.kind==='raw')assert(r.payload_text===undefined);else assert(typeof r.payload_text==='string'&&Buffer.byteLength(r.payload_text)===r.byte_count&&hash(r.payload_text)===r.sha256);};
+ return{async intent(input:Resource){assert(!mode,'local-finalize-no-new-intent');const r=structuredClone(input);resource(r);return invoke('intent',[request.reservationId,token,r.key,r.kind,r.byte_count,r.sha256,r.payload_text??null]);},async settle(input:Observed){assert(!mode,'local-finalize-no-settle');const r=structuredClone(input);resource(r);assert(r.witness&&r.witness.id&&/^[a-f0-9]{64}$/.test(r.witness.sha256)&&Number.isSafeInteger(r.witness.byte_count)&&r.witness.byte_count>=0&&['settled','quarantined'].includes(r.state));return invoke('settle',[request.reservationId,token,r.key,r.byte_count,r.sha256,r.state==='quarantined']);},async snapshot(){const s=await invoke('snapshot',[request.reservationId,token]);exact(s.reservation);return s;},async unknown(){assert(!mode,'local-finalize-no-unknown-close');return invoke('close',[request.reservationId,token,'unknown',null,null]);}};
+}
+
+/** Fixed exact-original terminal keeper; no generic inventory or supplied success proof. */
+export async function closeKnownBusinessQuota(ports:PortsKeeper,original:FastifyRequest,expected:Actor,input:OwnedRequest,jobId:string){
+ const request=structuredClone(input);assert(request.kind==='job'||request.kind==='review');assert(request.ceiling.raw===0);
+ const keeper=createOwnedBusinessQuotaKeeper(ports),actor=keeper.capture(original);
+ assert.deepEqual({t:actor.tenantId,u:actor.userId,k:actor.apiKeyId??null,r:actor.role},{t:expected.tenantId,u:expected.userId,k:expected.apiKeyId??null,r:expected.role},'local-known-close-original-principal');
+ // requestId is the immutable, separately-owned job/review key saved in original custody.
+ // Native begin/finish + exact FS/metadata inspection refuse UNKNOWN/pending/quarantine.
+ return keeper.bind(actor,request,jobId).closeKnown(request.requestId);
+}
+
+/** Original bound review only: release physically absent witness locks before strict native close. */
+export async function closeKnownReviewQuota(ports:PortsKeeper,original:FastifyRequest,expected:Actor,input:OwnedRequest,jobId:string,review:Pick<Awaited<ReturnType<typeof createOpenBusinessQuota>>,'snapshot'>){
+ const request=structuredClone(input),snapshot=review.snapshot.bind(review);assert(request.kind==='review'&&request.ceiling.raw===0,'local-review-original-allocation');
+ const keeper=createOwnedBusinessQuotaKeeper(ports),actor=keeper.capture(original);
+ assert.deepEqual({t:actor.tenantId,u:actor.userId,k:actor.apiKeyId??null,r:actor.role},{t:expected.tenantId,u:expected.userId,k:expected.apiKeyId??null,r:expected.role},'local-known-close-original-principal');
+ const held=keeper.bind(actor,request,jobId),fact=structuredClone(await snapshot()),b=fact?.reservation;
+ assert(b?.id===request.reservationId&&b.request_id===request.requestId&&b.kind==='review'&&b.tenant_id===actor.tenantId&&b.actor_id===actor.userId&&b.api_key_id===(actor.apiKeyId??null),'local-review-snapshot-original-owner');
+ if(b.state==='retained'&&b.outcome==='ready')return held.closeKnown(request.requestId);
+ assert(b.state==='open'&&b.outcome===null&&Array.isArray(fact.resources)&&fact.resources.length>0,'local-review-snapshot-open-only');
+ const seen=new Set<string>();
+ for(const r of fact.resources){assert(r.tenant_id===actor.tenantId&&r.reservation_id===request.reservationId&&typeof r.resource_key==='string'&&!seen.has(r.resource_key)&&['settled','released'].includes(r.state),'local-review-snapshot-no-pending-foreign-duplicate');seen.add(r.resource_key);}
+ for(const r of fact.resources){if(/^blob:fs:witnesses:[a-f0-9-]{36}:lock:[a-f0-9-]{36}$/.test(r.resource_key)&&r.state!=='released'){assert(r.kind==='blob','local-review-witness-lock-kind');await held.releaseWitnessLock(r.resource_key,phaseKey(jobId,hash(r.resource_key),0,'business-witness-lock-release'));}}
+ return held.closeKnown(request.requestId);
+}

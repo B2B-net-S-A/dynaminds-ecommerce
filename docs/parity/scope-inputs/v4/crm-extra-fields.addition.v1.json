@@ -1,0 +1,756 @@
+{
+  "schema": "dynaminds-base-functional-domain-scope-addition/v1",
+  "version": 4,
+  "as_of": "2026-10-17",
+  "prepared_on": "2026-10-19",
+  "status": "SOURCE_ONLY_ADDITIVE_PROPOSAL_NOT_FROZEN",
+  "scope_complete": false,
+  "acceptance_granted": false,
+  "frozen_scope_mutated": false,
+  "parent": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope.v3.json",
+    "bytes": 2283319,
+    "sha256": "72c8fd34337d13f1cc397ace3761ebf8013f91680c9ff41a9b4da4a43f11ccb9"
+  },
+  "domain_input_parent": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/scope-inputs/v2/domains.json",
+    "bytes": 389487,
+    "sha256": "e586ae249a4ea44d2c3016ba6e122e8b1cbb203c66f994efa4ec32408fa83eea"
+  },
+  "official_contract": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-contracts.v1.json",
+    "bytes": 52288,
+    "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330"
+  },
+  "official_source_bundle": {
+    "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+    "bytes": 109499,
+    "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+  },
+  "change": {
+    "kind": "append_domain_row_only",
+    "target_collection": "domains.rows",
+    "append_rows": [
+      {
+        "id": "DOM-CRM-004",
+        "domain": "CRM",
+        "requirement": "Definicje dodatkowych pól CRM oraz jawny odczyt i zapis wartości klienta, z odrębnym transportem plików i usuwaniem wartości",
+        "operations": [
+          "odczyt definicji extra_field_id/name/editor_type/options",
+          "prezentacja i rozróżnienie typów text,number,select,checkbox,radio,date,file",
+          "jawny odczyt wartości konkretnego klienta przez getCrmClientData(include_custom_extra_fields=true), defaultfalse",
+          "zapis wartości według istniejącego extra_field_id przez addCrmClient(custom_extra_fields), usunięcie wartości pustym tekstem",
+          "plik: zapis title i data:<base64>, odczyt title/url zamiast zwracania uploadbase64"
+        ],
+        "base_sources": [
+          {
+            "method": "addCrmClient",
+            "url": "https://api.baselinker.com/index.php?method=addCrmClient",
+            "observed_at": "2026-10-17T17:57:12.092696+00:00",
+            "html_utf8_bytes": 53202,
+            "html_utf8_sha256": "e37e513c047be1e563cdc84f0a5a7a71034c5dc78c406da329c2d0fdfa72da4c",
+            "source_id": "BASE-API-addCrmClient",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained public officialHTML17.10; bodySHA verified19.10; no authenticatedHTTP/finalURL/status evidence."
+          },
+          {
+            "method": "getCrmClientData",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClientData",
+            "observed_at": "2026-10-17T17:57:13.212315+00:00",
+            "html_utf8_bytes": 53084,
+            "html_utf8_sha256": "8f656c57f196e75252b10403072f553509157d760d425a0f271b312896994ac5",
+            "source_id": "BASE-API-getCrmClientData",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained public officialHTML17.10; bodySHA verified19.10; no authenticatedHTTP/finalURL/status evidence."
+          },
+          {
+            "method": "getCrmClientExtraFields",
+            "url": "https://api.baselinker.com/index.php?method=getCrmClientExtraFields",
+            "observed_at": "2026-10-17T17:57:12.099765+00:00",
+            "html_utf8_bytes": 50193,
+            "html_utf8_sha256": "05738237a944676666eadd158573ac663651c81d599b5a226ed281ea66894528",
+            "source_id": "BASE-API-getCrmClientExtraFields",
+            "snapshot_ref": {
+              "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/base-api-client-sources-20261017.json.gz",
+              "bytes": 109499,
+              "sha256": "b1f15949d2101be724136ec8ea561cfe26a518e7eb8c31314deda7c2a56a7b18"
+            },
+            "support": "Retained public officialHTML17.10; bodySHA verified19.10; no authenticatedHTTP/finalURL/status evidence."
+          }
+        ],
+        "status": "unverified",
+        "acceptance_state": "OPEN",
+        "required_evidence_level": "local",
+        "implementation_assessment": "not_assessed_in_this_change",
+        "bound_scope": "Additive discovery only; this row refines custom-field behavior deliberately outside CRM001, not another profileCRUD requirement. No implementation/account/wire/completeness acceptance.",
+        "evidence": {
+          "code": [],
+          "local": [],
+          "sandbox": [],
+          "account": []
+        },
+        "acceptance": [
+          "Odczytać definicje z trwałymiID oraz siedmioma udokumentowanymi typami edytora. Opcje select/checkbox/radio odczytać bez wymyślania schematu ich zapisu. Dokumentacja nie deklaruje API tworzenia definicji; nie dopisujemy takiej operacjiBase.",
+          "Normalny UI/API pokazuje wartości tylko w profilu klienta z jawnym include; pominięcieflag ma defaultfalse. Nie dodawać include_custom_extra_fields do listygetCrmClients na podstawie sprzecznego tekstu innejstrony.",
+          "Zapis/odczyt tego samego extra_field_id oraz usunięcie pustymtekstem, z zachowaniem innych pól/profilu/zamówień. Dokładna serializacja typów skalarnych i kontenera musi być rozstrzygnięta przed przyznaniem zgodnościwire.",
+          "Dla file udokumentowane titlevarchar40 i data:<base64> w zapisie; szczegóły zwracają title/url. Zachować udokumentowane2MB jako nierozstrzygniętą interpretację bajtów, bez wymyślania binarnego/dziesiętnego limituBase.",
+          "Maksymalnie pełne testytypów/plików po zatwierdzeniu niejasności; testy niezgodnegoID/typu/nadmiarurozmiaru nie mogą przypisywać Base odgadniętych kodów/HTTP."
+        ],
+        "project_specific_safety_requirements": [
+          "Autoryzacja firmy/roli obejmuje definicje, odczyt wartości oraz pobieranie pliku. Brak wycieku pomiędzy klientami/firmami; to wymaganie lokalnego produktu, nie deklaracja nieudokumentowanych uprawnieńBase.",
+          "Pozostałe profile i stare zamówienia zachowane; lokalny restart odtwarza te sameID/wartości/linki; nie powtarzać nieznanego zapisu bez readbackuzgodnienia.",
+          "Lokalna polityka typów/limitów/retencji plików jest jawna i oddzielona od niepotwierdzonego protokołuBase."
+        ],
+        "full_goal_acceptance": "not_evaluated",
+        "requirement_origin": "retained_official_documentation_decomposed_for_parity"
+      }
+    ],
+    "remove_ids": [],
+    "replace_ids": [],
+    "preserve_all_existing_requirements": true,
+    "preserve_all_existing_required_ids": true,
+    "preserve_all_existing_domain_rows": true,
+    "new_required_key_if_integrated": "domains:operation:DOM-CRM-004",
+    "required_records_before": 2585,
+    "required_records_after_this_only": 2586,
+    "required_records_after_with_crm001_002_003": 2589,
+    "domain_rows_after_all_fourCRM": 139
+  },
+  "source_contracts": [
+    {
+      "id": "BASE-API-getCrmClientExtraFields",
+      "method": "getCrmClientExtraFields",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientExtraFields",
+        "retrieved_at": "2026-10-17T17:57:12.099765+00:00",
+        "bytes": 50193,
+        "sha256": "05738237a944676666eadd158573ac663651c81d599b5a226ed281ea66894528",
+        "snapshot_document_method": "getCrmClientExtraFields"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca definicje dodatkowych pól CRM, nie wartości przypisane klientowi.",
+      "input": {
+        "parameters": [],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "extra_fields",
+            "documented_type": "array"
+          },
+          {
+            "path": "extra_fields[].extra_field_id",
+            "documented_type": "int"
+          },
+          {
+            "path": "extra_fields[].name",
+            "documented_type": "text"
+          },
+          {
+            "path": "extra_fields[].editor_type",
+            "documented_type": "text",
+            "documented_values": [
+              "text",
+              "number",
+              "select",
+              "checkbox",
+              "radio",
+              "date",
+              "file"
+            ]
+          },
+          {
+            "path": "extra_fields[].options",
+            "documented_type": "array",
+            "required": false,
+            "conditional_editors": [
+              "select",
+              "checkbox",
+              "radio"
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "custom_fields",
+      "proposed_acceptance": [
+        "all seven editor types represented; options only documented for select/checkbox/radio",
+        "resolve array-versus-keyed prose conflict before freezing serializer"
+      ]
+    },
+    {
+      "id": "BASE-API-addCrmClient",
+      "method": "addCrmClient",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=addCrmClient",
+        "retrieved_at": "2026-10-17T17:57:12.092696+00:00",
+        "bytes": 53202,
+        "sha256": "e37e513c047be1e563cdc84f0a5a7a71034c5dc78c406da329c2d0fdfa72da4c",
+        "snapshot_document_method": "addCrmClient"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "crm_client_id >0 aktualizuje istniejącego klienta; 0 lub pominięcie tworzy nowego. Przy aktualizacji zmieniają się tylko przekazane pola.",
+      "input": {
+        "parameters": [
+          {
+            "name": "crm_client_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_omission_creates",
+            "meaning_pl": "identyfikator klienta CRM",
+            "default": null,
+            "omission": "create",
+            "zero": "create",
+            "positive": "update_existing",
+            "negative": "not_documented"
+          },
+          {
+            "name": "status_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "identyfikator statusu CRM",
+            "default": null
+          },
+          {
+            "name": "star",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "gwiazdka 0..5; 0 oznacza brak",
+            "default": null,
+            "documented_range": [
+              0,
+              5
+            ]
+          },
+          {
+            "name": "contractor_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "powiązanie kontrahenta Base Connect",
+            "default": null
+          },
+          {
+            "name": "login",
+            "documented_type": "varchar(156)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "login klienta",
+            "default": null,
+            "max_length": 156
+          },
+          {
+            "name": "phone",
+            "documented_type": "varchar(156)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "telefon",
+            "default": null,
+            "max_length": 156
+          },
+          {
+            "name": "email",
+            "documented_type": "varchar(220)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "email",
+            "default": null,
+            "max_length": 220
+          },
+          {
+            "name": "notes",
+            "documented_type": "text",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "notatki klienta",
+            "default": null
+          },
+          {
+            "name": "invoice_company",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: firma",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "invoice_fullname",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: imię i nazwisko",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "invoice_address",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: adres",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "invoice_postcode",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: kod pocztowy",
+            "default": null,
+            "max_length": 20
+          },
+          {
+            "name": "invoice_city",
+            "documented_type": "varchar(100)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: miasto",
+            "default": null,
+            "max_length": 100
+          },
+          {
+            "name": "invoice_state",
+            "documented_type": "varchar(35)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: region",
+            "default": null,
+            "max_length": 35
+          },
+          {
+            "name": "invoice_country_code",
+            "documented_type": "varchar(2)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: kraj",
+            "default": null,
+            "max_length": 2,
+            "standard": "ISO 3166-1 alpha-2",
+            "case_handling": "not_documented"
+          },
+          {
+            "name": "invoice_tax_id",
+            "documented_type": "varchar(50)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "faktura: NIP",
+            "default": null,
+            "max_length": 50,
+            "normalization": "remove_whitespace_and_dashes"
+          },
+          {
+            "name": "delivery_company",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: firma",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "delivery_fullname",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: imię i nazwisko",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "delivery_address",
+            "documented_type": "varchar(500)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: adres",
+            "default": null,
+            "max_length": 500
+          },
+          {
+            "name": "delivery_postcode",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: kod pocztowy",
+            "default": null,
+            "max_length": 20
+          },
+          {
+            "name": "delivery_city",
+            "documented_type": "varchar(100)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: miasto",
+            "default": null,
+            "max_length": 100
+          },
+          {
+            "name": "delivery_state",
+            "documented_type": "varchar(35)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: region",
+            "default": null,
+            "max_length": 35
+          },
+          {
+            "name": "delivery_country_code",
+            "documented_type": "varchar(2)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "dostawa: kraj",
+            "default": null,
+            "max_length": 2,
+            "standard": "ISO 3166-1 alpha-2",
+            "case_handling": "not_documented"
+          },
+          {
+            "name": "custom_extra_fields",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "wartości pól według ID",
+            "default": null,
+            "container_declared": "array",
+            "sample_json_shape": "object_keyed_by_field_id",
+            "value_removal": "empty_string",
+            "file_write": {
+              "title": "varchar(40)",
+              "file": "data:<base64>",
+              "documented_body_limit": "2MB",
+              "exact_byte_interpretation": "not_documented"
+            }
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "crm_client_id",
+            "documented_type": "int"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "client_profile",
+      "proposed_acceptance": [
+        "create then detail; update only supplied field; unspecified existing fields survive",
+        "0/omitted ID create; positive ID targets update; unknown positive ID outcome remains an open contract",
+        "NIP normalization; custom field empty-string clear; file write/read shape differs; lost ACK never blindly recreate"
+      ]
+    },
+    {
+      "id": "BASE-API-getCrmClientData",
+      "method": "getCrmClientData",
+      "family": "Clients (CRM)",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCrmClientData",
+        "retrieved_at": "2026-10-17T17:57:13.212315+00:00",
+        "bytes": 53084,
+        "sha256": "8f656c57f196e75252b10403072f553509157d760d425a0f271b312896994ac5",
+        "snapshot_document_method": "getCrmClientData"
+      },
+      "contract_reviewed": true,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca pojedynczego klienta, w tym notes; custom_extra_fields tylko przy include_custom_extra_fields=true.",
+      "input": {
+        "parameters": [
+          {
+            "name": "crm_client_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "meaning_pl": "identyfikator klienta CRM",
+            "default": null
+          },
+          {
+            "name": "include_custom_extra_fields",
+            "documented_type": "bool",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "meaning_pl": "dołączenie wartości dodatkowych pól",
+            "default": false
+          }
+        ],
+        "undocumented": [
+          "unknown_parameter_handling",
+          "null_handling",
+          "validation_order"
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "crm_client_id",
+            "documented_type": "int"
+          },
+          {
+            "path": "status_id",
+            "documented_type": "int"
+          },
+          {
+            "path": "star",
+            "documented_type": "int",
+            "documented_range": [
+              0,
+              5
+            ]
+          },
+          {
+            "path": "login",
+            "documented_type": "text"
+          },
+          {
+            "path": "phone",
+            "documented_type": "text"
+          },
+          {
+            "path": "email",
+            "documented_type": "text"
+          },
+          {
+            "path": "notes",
+            "documented_type": "text"
+          },
+          {
+            "path": "contractor_id",
+            "documented_type": "int",
+            "zero_means": "no_connect_contractor"
+          },
+          {
+            "path": "invoice_company",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_fullname",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_address",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_postcode",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_city",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_state",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_country_code",
+            "documented_type": "text"
+          },
+          {
+            "path": "invoice_tax_id",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_company",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_fullname",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_address",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_postcode",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_city",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_state",
+            "documented_type": "text"
+          },
+          {
+            "path": "delivery_country_code",
+            "documented_type": "text"
+          },
+          {
+            "path": "custom_extra_fields",
+            "documented_type": "array",
+            "condition": "include_custom_extra_fields=true",
+            "container_declared": "array",
+            "described_shape": "keyed_by_field_id",
+            "file_read": {
+              "title": "varchar(40)",
+              "url": "file_url"
+            },
+            "scalar_editor_serialization": "not_documented"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "missing_identifier_outcome": "not_documented"
+      },
+      "current_code_mapping_ref": "client_profile",
+      "proposed_acceptance": [
+        "detail includes notes; optional false default omits custom fields, true includes them",
+        "file custom field returns title/url, not the uploaded base64 payload"
+      ]
+    }
+  ],
+  "nonduplicate_review": [
+    {
+      "id": "DOM-CRM-001",
+      "boundary": "ProfileCRUD/list/delete-history; customfield/file serialization explicitly excluded in originalproposal."
+    },
+    {
+      "id": "DOM-PIM-010",
+      "boundary": "Product parameter groups/types, not client-owned CRM extra values or clientfiletransport."
+    },
+    {
+      "id": "DOM-CRM-002/003",
+      "boundary": "CRM status/group dictionaries, not extra-field definitions/values."
+    }
+  ],
+  "unresolved_wire_contracts": [
+    {
+      "id": "CRM-DOC-001",
+      "methods": [
+        "getCrmClientExtraFields",
+        "getCrmClients"
+      ],
+      "issue": "ExtraFields prose mentions include_custom_extra_fields in getCrmClients; its own input table has no such argument and output explicitly excludes custom fields.",
+      "decision": "Only getCrmClientData has a documented include flag; do not silently add it to the list method."
+    },
+    {
+      "id": "CRM-DOC-002",
+      "methods": [
+        "getCrmClientExtraFields"
+      ],
+      "issue": "extra_fields prose describes an ID-keyed collection; example JSON is an array of field objects with extra_field_id.",
+      "decision": "Preserve both; exact wire shape remains unresolved."
+    },
+    {
+      "id": "CRM-DOC-003",
+      "methods": [
+        "addCrmClient",
+        "getCrmClientData"
+      ],
+      "issue": "custom_extra_fields is declared array, while description/example uses ID keys and add example is an object.",
+      "decision": "Do not coerce to a positional list; confirm keyed JSON shape separately."
+    },
+    {
+      "id": "CRM-DOC-004",
+      "methods": [
+        "addCrmClient",
+        "deleteCrmClient",
+        "getCrmClientData",
+        "getCrmClientExtraFields",
+        "getCrmClients",
+        "addCrmClientStatus",
+        "addCrmClientStatusGroup",
+        "deleteCrmClientStatus",
+        "deleteCrmClientStatusGroup",
+        "getCrmClientStatusGroups",
+        "getCrmClientStatuses"
+      ],
+      "issue": "No global requiredness marker, null semantics, specific error taxonomy or HTTP error mapping.",
+      "decision": "Null requiredness is deliberate; later compatibility tests must settle missing/invalid input rather than inventing behavior."
+    }
+  ],
+  "deliberately_open": [
+    "All four CRM rows remain OPEN; fullCRM authenticatedUI discovery is not proven by covering11publicmethodnames.",
+    "No definitioncreate/update/deleteAPI inferred from getCrmClientExtraFields read-only method.",
+    "ArrayvsIDkeyed conflicts retained; no coercion/unknownnullsemantics/defaultpaging invented.",
+    "Observed source17.10; review19.10. No new providercontact/HTTP/account/runtime/SQL."
+  ]
+}

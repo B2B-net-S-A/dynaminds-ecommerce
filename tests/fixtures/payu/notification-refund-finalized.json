@@ -1,0 +1,16 @@
+{
+  "_synthetic": "SYNTETYCZNE: kształt według publicznej dokumentacji PayU REST API 2.1, nie nagranie z PayU",
+  "orderId": "FIXT9ZZ1ABC251026GUEST000P01",
+  "extOrderId": "sess-fixture-1",
+  "refund": {
+    "refundId": "5000001",
+    "extRefundId": "ret-fixture-1",
+    "amount": "2345",
+    "currencyCode": "PLN",
+    "status": "FINALIZED",
+    "statusDateTime": "2026-10-27T09:00:00.000+01:00",
+    "reason": "refund",
+    "reasonDescription": "Zwrot syntetyczny",
+    "refundDate": "2026-10-27T08:59:00.000+01:00"
+  }
+}

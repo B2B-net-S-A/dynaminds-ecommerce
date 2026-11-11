@@ -1,0 +1,328 @@
+{
+  "schema": "dynaminds-base-api-crm-source-inventory/v2",
+  "as_of": "2026-10-19",
+  "evidence_level": "STATIC_CODE_INVENTORY_ONLY",
+  "source_revision": "dbaa1a479a9e3635f938f8a9892d49dbe991c521",
+  "parent": {
+    "path": "docs/parity/base-api-crm-coverage-20261019.json",
+    "bytes": 23692,
+    "sha256": "c97981cb7b03fad1627acc77400251d58faa16423ae6e94f3fa9a50853ccba08",
+    "role": "HISTORICAL_SOURCE_AUDIT_NOT_FRESH_SOURCE_PROOF"
+  },
+  "contract": {
+    "path": "docs/parity/base-api-client-contracts.v1.json",
+    "bytes": 52288,
+    "sha256": "9228489b7cdb7b6f104a90c1059e21f0a9f4d55f82c21691ec2895855af6f330"
+  },
+  "scope_mutated": false,
+  "coverage_complete": false,
+  "family_acceptance_granted": false,
+  "full_goal_complete": false,
+  "counts": {
+    "retained_family_methods": 11,
+    "methods_with_code_adapter": 11,
+    "methods_with_dispatch_branch": 11,
+    "client_adapter_methods": 5,
+    "dictionary_adapter_methods": 6,
+    "ordinary_release_runtime_accepted": 0,
+    "vendor_protocol_verified": 0
+  },
+  "source_pins": [
+    {
+      "path": "server/base-wire-crm.ts",
+      "bytes": 9688,
+      "sha256": "1b5324e1082f4e039377c568e83b62fb05ae15caef9e7066773f9d625a402eeb"
+    },
+    {
+      "path": "server/base-wire-crm-dictionaries.ts",
+      "bytes": 10285,
+      "sha256": "4e3cdf384793673ffc9424ce3a76677dd875ba19add369ad7c44430ddef0ae97"
+    },
+    {
+      "path": "server/base-wire-crm-dispatch.ts",
+      "bytes": 3835,
+      "sha256": "9703cd0fbb76faf3c032c3069042f7c0af1221c251ef827ee75363dec51713dc"
+    },
+    {
+      "path": "server/base-wire-crm-routes.ts",
+      "bytes": 8291,
+      "sha256": "ad69c5d5ab543cd8029300a0fda8593f2d117f142467f22a3a3524fc7e3c99d3"
+    },
+    {
+      "path": "server/base-wire-crm-runtime.ts",
+      "bytes": 2255,
+      "sha256": "f79143e4e478f6afe9a121bc4dfaaa3c364a338fe7cf416b7d26e2aa7cfd84c6"
+    },
+    {
+      "path": "server/base-wire-crm-dictionaries-runtime.ts",
+      "bytes": 2886,
+      "sha256": "69952fe88aad898b80b2130dba85c0c3e924e90bab92a92f62cf11f04764b91b"
+    },
+    {
+      "path": "server/base-wire-crm-authority.ts",
+      "bytes": 1584,
+      "sha256": "bfdd194b38dfc21c953c590ca1704f2e34a32d3d7d273ce10467a19c40a5530a"
+    },
+    {
+      "path": "server/crm.ts",
+      "bytes": 46793,
+      "sha256": "19d8b72a0bc0099f0fe838c05d22515ac7ff6fa9d979fbb076e89425107f655e"
+    },
+    {
+      "path": "server/base-wire-codec.ts",
+      "bytes": 9078,
+      "sha256": "c0f97e07e912eac31e23061094a3b0d84c0f8864db480f32b106603346cdd924"
+    },
+    {
+      "path": "server/crm-schema.ts",
+      "bytes": 4121,
+      "sha256": "2f60abed3606ed35311375c2bf009738e398171930fdc198d3fd6e5060258a9a"
+    },
+    {
+      "path": "server/crm-field-definitions.ts",
+      "bytes": 7941,
+      "sha256": "0a4039d69de0b45b65a8c471046c66d73a4fe901e73a74c954fb60ce26cf828b"
+    }
+  ],
+  "controlled_test_references": {
+    "status": "REFERENCED_SOURCE_FILES_NOT_RERUN_BY_THIS_INVENTORY",
+    "refs": [
+      {
+        "path": "tests/base-wire-crm.test.ts",
+        "bytes": 49344,
+        "sha256": "c0054463d3cc9c9c0795b03a86f3d7b728d51773f5b8ef4c76178cfb69d5327b"
+      },
+      {
+        "path": "tests/base-wire-crm-dictionaries.test.ts",
+        "bytes": 24265,
+        "sha256": "62b69e52a0f0a267745603d71040f6e5646f374d6477461ef194f917a5f08061"
+      },
+      {
+        "path": "tests/base-wire-crm-dictionary-port.test.ts",
+        "bytes": 18181,
+        "sha256": "66a9f84e64fe2fe445a218f8845267e5c5166903f4682b3c8b8707a89ddde5e5"
+      },
+      {
+        "path": "tests/base-wire-crm-dictionaries-runtime.test.ts",
+        "bytes": 13464,
+        "sha256": "d0a718c55c901b0f01cea797b035632558318b758979bc4952115217d7b8cdc1"
+      },
+      {
+        "path": "tests/base-wire-crm-dispatch.test.ts",
+        "bytes": 14450,
+        "sha256": "cbaf84de07c70357da30fdf16734ea6dfa5bf618e643005fc4e5a66303a87c0c"
+      },
+      {
+        "path": "tests/base-wire-crm-dispatch-runtime.test.ts",
+        "bytes": 12720,
+        "sha256": "5cc7464e09e7f26e00482e34d7af098da5186aca96ba28ec12274eff7c39a525"
+      },
+      {
+        "path": "tests/base-wire-crm-dispatch-routes.test.ts",
+        "bytes": 11243,
+        "sha256": "9eb8fcb98496b31fd5a82611150ecd43baba6d0788ccdbd89c727f8598679c50"
+      },
+      {
+        "path": "tests/base-wire-crm-rate.test.ts",
+        "bytes": 5412,
+        "sha256": "2c7346193f9c9e90d7d3e31b8e4c9802245bdbfc5fb3d696c0078da03d99bc56"
+      },
+      {
+        "path": "tests/base-wire-crm-lifecycle.test.ts",
+        "bytes": 7632,
+        "sha256": "6f33153beacca4e2968bb88be78958ff729b4ff22f8fb6f465279030d43e274a"
+      },
+      {
+        "path": "tests/crm.test.ts",
+        "bytes": 55051,
+        "sha256": "3d1d244deca8c6d3adcb5a1aa670b21e7297b7f834b7dd9789a7e18415aba9c9"
+      },
+      {
+        "path": "tests/crm215-acceptance.test.ts",
+        "bytes": 9608,
+        "sha256": "499b688f6fab5641475be106ad6b9e1e468cd578cd5e7e230c71eafdcc226f96"
+      }
+    ]
+  },
+  "methods": [
+    {
+      "contract_id": "BASE-API-addCrmClient",
+      "method": "addCrmClient",
+      "adapter": "server/base-wire-crm.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": false,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-deleteCrmClient",
+      "method": "deleteCrmClient",
+      "adapter": "server/base-wire-crm.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": false,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-getCrmClientData",
+      "method": "getCrmClientData",
+      "adapter": "server/base-wire-crm.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": false,
+      "requires_verified218": true,
+      "requires_verified219": false,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-getCrmClientExtraFields",
+      "method": "getCrmClientExtraFields",
+      "adapter": "server/base-wire-crm.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": false,
+      "requires_verified218": true,
+      "requires_verified219": false,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-getCrmClients",
+      "method": "getCrmClients",
+      "adapter": "server/base-wire-crm.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": false,
+      "requires_verified218": true,
+      "requires_verified219": false,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-addCrmClientStatus",
+      "method": "addCrmClientStatus",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-addCrmClientStatusGroup",
+      "method": "addCrmClientStatusGroup",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-deleteCrmClientStatus",
+      "method": "deleteCrmClientStatus",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-deleteCrmClientStatusGroup",
+      "method": "deleteCrmClientStatusGroup",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": true,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-getCrmClientStatusGroups",
+      "method": "getCrmClientStatusGroups",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": false,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    },
+    {
+      "contract_id": "BASE-API-getCrmClientStatuses",
+      "method": "getCrmClientStatuses",
+      "adapter": "server/base-wire-crm-dictionaries.ts",
+      "code_adapter_present": true,
+      "dispatch_branch_present": true,
+      "writing": false,
+      "requires_verified218": true,
+      "requires_verified219": true,
+      "dictionary_route_default_enabled": false,
+      "semantics_complete": false,
+      "ordinary_release_runtime_accepted": false,
+      "vendor_protocol_verified": false,
+      "acceptance_granted": false
+    }
+  ],
+  "running_release": {
+    "revision": "2e05da9f4d87f9941f39111714c21af17d661ce199e60d607caacfab6397790b",
+    "schema": "217_crm_field_definitions",
+    "base_wire_accepted": false,
+    "evidence": "docs/parity/N24-RECOVERY-READONLY-LOCAL-20261019.md"
+  },
+  "open_gates": [
+    "Actual218 nine-guard admission: ordinary187/173/PIM still timeout8s; privatecompile18 does not close this gate.",
+    "Current physical installer equivalence, complete catalogue inverse, resource/cold contract and normal upgrade remain unaccepted.",
+    "Real database business acceptance and ordinary UI/API acceptance remain unaccepted.",
+    "Dictionary219 migration, cold/native acceptance and startup capability remain disabled/unaccepted.",
+    "Vendor protocol ambiguities and provider/account verification remain open."
+  ],
+  "boundary": "This successor inventories committed code for the same retained11 methods. Adapter/dispatch presence does not prove complete semantics, operational wire support or runtime/provider acceptance. Historicalv1 remains unchanged and its old source pins are not treated as current. Global scope and its acceptance are unchanged. No SQL, installation, network or test suite was executed by this inventory."
+}

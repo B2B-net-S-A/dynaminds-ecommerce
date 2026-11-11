@@ -1,0 +1,93 @@
+name: Uptime probe
+
+# Godzinowa sonda demo DYNAMINDS Ecommerce: GET <DEMO_URL>/api/health musi dać HTTP 200 i status "ok".
+# Awaria otwiera issue (albo dopisuje komentarz do otwartego); zielony bieg zamyka otwarte.
+# Bez sekretów. Adres: zmienna repo `DEMO_URL` (Settings → Variables), domyślnie https://demo.dynaminds.pl.
+# Cron GitHuba bywa nieregularny (co 1–6 h przy obciążeniu) — to sygnał „demo leży”, nie pomiar SLA.
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uptime-probe
+  cancel-in-progress: false
+
+env:
+  DEMO_URL: ${{ vars.DEMO_URL || 'https://demo.dynaminds.pl' }}
+  MARKER: "Demo DYNAMINDS Ecommerce niedostępne (sonda GitHub)"
+
+jobs:
+  probe:
+    name: Check demo /api/health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: /api/health
+        id: health
+        run: |
+          set -uo pipefail
+          # Ponowienia: restart przy wdrożeniu daje kilkanaście sekund prawdziwego 503.
+          # `-o` do pliku: curl przy ponowieniu nadpisuje plik, a stdout by sklejał odpowiedzi.
+          body_file=$(mktemp)
+          code=$(curl -sS -o "$body_file" -w '%{http_code}' --retry 2 --retry-delay 20 --retry-all-errors \
+            --max-time 15 -A "dynaminds-uptime-probe" "${DEMO_URL%/}/api/health" || echo "000")
+          body=$(head -c 2000 "$body_file")
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" = "200" ] && echo "$body" | jq -e '.status == "ok"' > /dev/null 2>&1; then
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+            {
+              echo "detail<<EOF_DETAIL"
+              echo "HTTP $code z \`${DEMO_URL%/}/api/health\`; odpowiedź (do 500 znaków):"
+              echo '```'
+              echo "${body:0:500}"
+              echo '```'
+              echo "EOF_DETAIL"
+            } >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open or comment issue
+        if: ${{ steps.health.outputs.ok == '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DETAIL: ${{ steps.health.outputs.detail }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --repo "$REPO" --state open --search "\"$MARKER\" in:title" \
+            --json number --jq '.[0].number // empty' || echo "")
+          {
+            echo "$DETAIL"
+            echo
+            echo "Bieg: $RUN_URL"
+            echo
+            echo "_Auto: .github/workflows/uptime-probe.yml_"
+          } > "$RUNNER_TEMP/issue.md"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$REPO" --body-file "$RUNNER_TEMP/issue.md"
+          else
+            gh issue create --repo "$REPO" --title "$MARKER" --body-file "$RUNNER_TEMP/issue.md"
+          fi
+          echo "::error::Demo nie odpowiada poprawnie na /api/health."
+          exit 1
+      - name: Close issue after green run
+        if: ${{ steps.health.outputs.ok == '1' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          for n in $(gh issue list --repo "$REPO" --state open --search "\"$MARKER\" in:title" --json number --jq '.[].number'); do
+            gh issue close "$n" --repo "$REPO" --comment "Sonda znów zielona: $RUN_URL"
+          done

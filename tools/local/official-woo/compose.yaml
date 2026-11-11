@@ -1,0 +1,569 @@
+{
+  "name": "${COMPOSE_PROJECT_NAME:?Private owned project name required}",
+  "services": {
+    "database": {
+      "image": "${MARIADB_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "environment": {
+        "MARIADB_ROOT_PASSWORD_FILE": "/run/secrets/db_root"
+      },
+      "secrets": [
+        "db_root"
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/mariadb:/var/lib/mysql",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/10-stores.sql:/docker-entrypoint-initdb.d/10-stores.sql:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "healthcheck.sh",
+          "--connect",
+          "--innodb_initialized"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 24
+      },
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "wp-a": {
+      "image": "${WORDPRESS_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec docker-entrypoint.sh apache2-foreground"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_a",
+        "WORDPRESS_DB_USER": "woo_a",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "a"
+      },
+      "secrets": [
+        {
+          "source": "db_a",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-a:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/php.ini:/usr/local/etc/php/conf.d/dyna-owned.ini:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/apache.conf:/etc/apache2/conf-enabled/dyna-owned.conf:ro"
+      ],
+      "depends_on": {
+        "database": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "cli-a": {
+      "image": "${WPCLI_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "profiles": [
+        "tools"
+      ],
+      "user": "0:0",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec wp --allow-root \"$$@\"",
+        "wp-cli"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_a",
+        "WORDPRESS_DB_USER": "woo_a",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "a"
+      },
+      "secrets": [
+        {
+          "source": "db_a",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-a:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/vendor/woocommerce.zip:/fixture/woocommerce.zip:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/bootstrap.php:/fixture/bootstrap.php:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "wp-b": {
+      "image": "${WORDPRESS_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec docker-entrypoint.sh apache2-foreground"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_b",
+        "WORDPRESS_DB_USER": "woo_b",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "b"
+      },
+      "secrets": [
+        {
+          "source": "db_b",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-b:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/php.ini:/usr/local/etc/php/conf.d/dyna-owned.ini:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/apache.conf:/etc/apache2/conf-enabled/dyna-owned.conf:ro"
+      ],
+      "depends_on": {
+        "database": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "cli-b": {
+      "image": "${WPCLI_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "profiles": [
+        "tools"
+      ],
+      "user": "0:0",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec wp --allow-root \"$$@\"",
+        "wp-cli"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_b",
+        "WORDPRESS_DB_USER": "woo_b",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "b"
+      },
+      "secrets": [
+        {
+          "source": "db_b",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-b:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/vendor/woocommerce.zip:/fixture/woocommerce.zip:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/bootstrap.php:/fixture/bootstrap.php:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "wp-c": {
+      "image": "${WORDPRESS_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec docker-entrypoint.sh apache2-foreground"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_c",
+        "WORDPRESS_DB_USER": "woo_c",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "c"
+      },
+      "secrets": [
+        {
+          "source": "db_c",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-c:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/php.ini:/usr/local/etc/php/conf.d/dyna-owned.ini:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/apache.conf:/etc/apache2/conf-enabled/dyna-owned.conf:ro"
+      ],
+      "depends_on": {
+        "database": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "cli-c": {
+      "image": "${WPCLI_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "profiles": [
+        "tools"
+      ],
+      "user": "0:0",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec wp --allow-root \"$$@\"",
+        "wp-cli"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_c",
+        "WORDPRESS_DB_USER": "woo_c",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "c"
+      },
+      "secrets": [
+        {
+          "source": "db_c",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-c:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/vendor/woocommerce.zip:/fixture/woocommerce.zip:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/bootstrap.php:/fixture/bootstrap.php:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "wp-d": {
+      "image": "${WORDPRESS_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec docker-entrypoint.sh apache2-foreground"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_d",
+        "WORDPRESS_DB_USER": "woo_d",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "d"
+      },
+      "secrets": [
+        {
+          "source": "db_d",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-d:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/php.ini:/usr/local/etc/php/conf.d/dyna-owned.ini:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/apache.conf:/etc/apache2/conf-enabled/dyna-owned.conf:ro"
+      ],
+      "depends_on": {
+        "database": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "cli-d": {
+      "image": "${WPCLI_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "profiles": [
+        "tools"
+      ],
+      "user": "0:0",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec wp --allow-root \"$$@\"",
+        "wp-cli"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_d",
+        "WORDPRESS_DB_USER": "woo_d",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "d"
+      },
+      "secrets": [
+        {
+          "source": "db_d",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-d:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/vendor/woocommerce.zip:/fixture/woocommerce.zip:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/bootstrap.php:/fixture/bootstrap.php:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "wp-e": {
+      "image": "${WORDPRESS_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec docker-entrypoint.sh apache2-foreground"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_e",
+        "WORDPRESS_DB_USER": "woo_e",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "e"
+      },
+      "secrets": [
+        {
+          "source": "db_e",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-e:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/php.ini:/usr/local/etc/php/conf.d/dyna-owned.ini:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/apache.conf:/etc/apache2/conf-enabled/dyna-owned.conf:ro"
+      ],
+      "depends_on": {
+        "database": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "cli-e": {
+      "image": "${WPCLI_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "profiles": [
+        "tools"
+      ],
+      "user": "0:0",
+      "entrypoint": [
+        "/bin/sh",
+        "-ec",
+        "export WORDPRESS_DB_PASSWORD=\"$$(cat /run/secrets/db_password)\"; exec wp --allow-root \"$$@\"",
+        "wp-cli"
+      ],
+      "environment": {
+        "WORDPRESS_DB_HOST": "database:3306",
+        "WORDPRESS_DB_NAME": "woo_e",
+        "WORDPRESS_DB_USER": "woo_e",
+        "WORDPRESS_CONFIG_EXTRA": "define('WP_HTTP_BLOCK_EXTERNAL',true); define('AUTOMATIC_UPDATER_DISABLED',true); define('WP_AUTO_UPDATE_CORE',false); define('DISABLE_WP_CRON',true); define('WP_MEMORY_LIMIT','256M'); if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS']='on'; }",
+        "DYNA_WOO_SLOT": "e"
+      },
+      "secrets": [
+        {
+          "source": "db_e",
+          "target": "db_password"
+        }
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/data/wp-e:/var/www/html",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/disable-external.php:/var/www/html/wp-content/mu-plugins/dyna-owned-no-mail.php:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/vendor/woocommerce.zip:/fixture/woocommerce.zip:ro",
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/bootstrap.php:/fixture/bootstrap.php:ro"
+      ],
+      "networks": [
+        "owned"
+      ],
+      "mem_limit": "512m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    },
+    "tls": {
+      "image": "${NGINX_IMAGE:?Actual arm64 manifest lock required}",
+      "platform": "linux/arm64",
+      "ports": [
+        "127.0.0.1:18443:18443",
+        "127.0.0.1:18444:18444",
+        "127.0.0.1:18445:18445",
+        "127.0.0.1:18446:18446",
+        "127.0.0.1:18447:18447"
+      ],
+      "volumes": [
+        "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/config/nginx.conf:/etc/nginx/nginx.conf:ro"
+      ],
+      "secrets": [
+        "tls_cert",
+        "tls_key"
+      ],
+      "depends_on": [
+        "wp-a",
+        "wp-b",
+        "wp-c",
+        "wp-d",
+        "wp-e"
+      ],
+      "networks": [
+        "owned",
+        "edge"
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/var/cache/nginx:size=32m",
+        "/var/run:size=8m"
+      ],
+      "mem_limit": "64m",
+      "cpus": 0.25,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    }
+  },
+  "networks": {
+    "owned": {
+      "internal": true
+    },
+    "edge": {
+      "internal": false
+    }
+  },
+  "secrets": {
+    "db_root": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_root"
+    },
+    "tls_cert": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/tls.pem"
+    },
+    "tls_key": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/tls.key"
+    },
+    "db_a": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_a"
+    },
+    "db_b": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_b"
+    },
+    "db_c": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_c"
+    },
+    "db_d": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_d"
+    },
+    "db_e": {
+      "file": "${DYNA_WOO_ROOT:?Run file-only prepare and resolve first}/secrets/db_e"
+    }
+  }
+}

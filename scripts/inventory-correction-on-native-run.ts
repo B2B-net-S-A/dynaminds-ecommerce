@@ -1,0 +1,49 @@
+/** Root public nonstrict WMS correction native gate after source adoption.
+ * No SQL policy/session manufacture, migration, provider, listener or worker. */
+import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {resolve} from 'node:path';
+import pg from 'pg';
+import type {FastifyInstance} from 'fastify';
+import {captureDatabase} from '../data/source-drafts/b2b-financial-return162-root-capture189';
+import {createInventoryOnPublicFixture} from '../data/source-drafts/inventory-correction-on-public-fixture';
+import {runInventoryCorrectionOnNative} from '../data/source-drafts/catalog-public-inventory-writer/inventory-correction-native';
+const base=resolve('data/qa-physical-parcel-wz-1791439394750'),directory=resolve(base,'inventory-on1');
+const hash=(b:Buffer|string)=>createHash('sha256').update(b).digest('hex'),self='scripts/inventory-correction-on-native-run.ts';
+type Ref={path:string;sha256:string};
+async function pinned(r:Ref){const b=await readFile(r.path);assert.equal(hash(b),r.sha256);return JSON.parse(b.toString());}
+async function sourceMap(){const map:Record<string,string>={};async function visit(d:string){for(const e of await readdir(d,{withFileTypes:true})){assert(!e.isSymbolicLink());const p=d+'/'+e.name;if(e.isDirectory())await visit(p);else if(e.isFile()&&/\.(ts|tsx|sql|css|json|html)$/.test(p))map[p]=hash(await readFile(p));}}await visit('server');await visit('web');for(const p of [self,'data/source-drafts/catalog-public-inventory-writer/inventory-correction-native.ts','data/source-drafts/catalog-public-inventory-writer/target-pins.json','data/source-drafts/inventory-correction-on-public-fixture.ts','data/source-drafts/b2b-financial-return162-root-capture189.ts','scripts/stocktake-adjustments-native164-preservation.ts','scripts/return-destinations-native162-restore-readback.ts','package.json','package-lock.json'])map[p]=hash(await readFile(p));return map;}
+let ready=false,failure:unknown,result:unknown,app:FastifyInstance|undefined,readonlyApp:FastifyInstance|undefined,pool:pg.Pool|undefined;
+let make:((database:string)=>pg.Client)|undefined,database='',original='';const closers:Array<{resource:string;status:string}>=[];const errors:unknown[]=[];
+let providers=0,installedFetch=false;const oldFetch=globalThis.fetch,denyFetch:typeof fetch=async()=>{providers++;throw Error('Providers forbidden in native inventory ON gate');};
+async function save(name:string,v:unknown):Promise<Ref>{assert(ready);const path=resolve(directory,name),b=Buffer.from(JSON.stringify(v,null,2)+'\n');await writeFile(path,b,{flag:'wx',mode:0o600});return{path,sha256:hash(b)};}
+async function exclusive(){assert(make);const c=make('postgres');try{await c.connect();assert.equal((await c.query("SELECT count(*)::int n FROM pg_stat_activity WHERE datname=ANY($1::text[]) AND backend_type='client backend'",[[database,original]])).rows[0].n,0);}finally{await c.end();}}
+async function capture(name=database){assert(make);const c=make(name);try{await c.connect();const s=await captureDatabase(c,false);for(const n of ['competitor_observation_guards','buyer_address_guards','operative_delivery_valid',...(name===database?['parcel_physical_wz_valid']:[])])s.guards[n]=(await c.query('SELECT public.'+n+'() ok')).rows[0].ok;assert(Object.values(s.guards).every(v=>v===true));return s;}finally{await c.end();}}
+try{
+ await mkdir(directory,{mode:0o700});ready=true;
+ const prep=await pinned({path:resolve(base,'preparation.private.json'),sha256:'583d54a7ef0adc6a044e956923c1c5aad09ba37c2cb589fd21042bead78f6ca3'}),input=await pinned(prep.input);database=input.database;original=prep.source;assert.equal(database,'dynaminds_test_1791439394750');
+ const u=new URL(input.environment.DATABASE_URL);assert.equal(u.hostname,'127.0.0.1');assert.equal(u.port,'55432');assert.equal(u.pathname,'/'+database);const cfgBytes=await readFile(input.configuration.path);assert.equal(hash(cfgBytes),input.configuration.sha256);const cfg=JSON.parse(cfgBytes.toString());make=name=>new pg.Client({host:'127.0.0.1',port:55432,user:'postgres',password:cfg.dbPassword,database:name});
+ const adoptionPath=resolve(base,'inventory-on-adoption1/result.json'),adoption=JSON.parse(await readFile(adoptionPath,'utf8'));assert.equal(adoption.status,'ROOT_PUBLIC_INVENTORY_ON_SOURCE_ADOPTED');for(const[p,h]of Object.entries(adoption.targets)as[string,string][])assert.equal(hash(await readFile(p)),h);
+ const cut=await sourceMap(),cutRef=await save('sources.private.json',cut);await exclusive();const before=await capture(),sourceBefore=await capture(original);assert.deepEqual(before,await pinned({path:resolve(base,'chrome-wz-copy1/after.private.json'),sha256:'c49c5b82090d3fd142b55110265e18703e13694fc24655b42ae2e94685bb3380'}));
+ const custody=await pinned({path:resolve(base,'held-iam-custody1/result.private.json'),sha256:'433cd61f0bd7470706ffe4aa6c7715adf597cc26476ac9f92200c184350a609d'});assert.deepEqual(sourceBefore,await pinned(custody.source_after));
+ assert.equal(Object.keys(before.graph.rows).length,566);assert.equal(before.graph.rows.migrations.length,168);assert.equal(Object.keys(before.guards).length,24);
+ const beforeRef=await save('before.private.json',before),sourceBeforeRef=await save('source-before.private.json',sourceBefore);
+ Object.assign(process.env,input.environment,{DYNA_TEST:'true',DYNA_WORKER_DISABLED:'true',DYNA_IMAGE_DIR:input.images,DYNA_PG_TOOLS:input.pg_tools,APP_REVISION:'local-public-inventory-on090'});globalThis.fetch=denyFetch;installedFetch=true;
+ pool=(await import('../server/db')).pool;const {buildApp}=await import('../server/app'),transport=async()=>{providers++;throw Error('Providers forbidden in native inventory ON gate');};app=await buildApp({logging:false,backgroundWorkersEnabled:false,integrationTransport:transport});readonlyApp=await buildApp({readOnly:true,previewPort:4196,logging:false,backgroundWorkersEnabled:false,integrationTransport:transport});
+ for(const a of [app,readonlyApp])a.addHook('onError',async(_req,_reply,e)=>{errors.push({name:e.name,message:e.message,code:(e as any).code,where:(e as any).where,stack:e.stack});});
+ const fixture=await createInventoryOnPublicFixture({app,save:(name,value)=>save('fixture-'+name,value),remoteAddress:'127.169.1.1'});
+ const fixtureAfter=await capture(),fixtureAfterRef=await save('after-fixture.private.json',fixtureAfter);
+ const acceptance=await runInventoryCorrectionOnNative({app,readonlyApp,fixtures:[fixture],capture:()=>capture(),save});
+ const after=await capture(),sourceAfter=await capture(original);assert.deepEqual(sourceAfter,sourceBefore);for(const[t,old]of Object.entries(before.graph.rows)){const current=new Set(after.graph.rows[t].map(x=>hash(JSON.stringify(x))));for(const r of old)assert(current.has(hash(JSON.stringify(r))),'Every old foreign/global row literal '+t);}
+ for(const k of ['metadata','exact_metadata'])assert.deepEqual(after.graph[k as keyof typeof after.graph],before.graph[k as keyof typeof before.graph]);for(const k of ['guards','primary_keys','views'])assert.deepEqual(after[k as keyof typeof after],before[k as keyof typeof before]);
+ for(const old of before.sequences){const fresh=after.sequences.find(x=>x.name===old.name);assert(fresh);const table=old.name==='purchasing_stock_changes_id_seq'?'purchasing_stock_changes':old.name==='wms_cost_layers_fifo_sequence_seq'?'wms_cost_layers':null;if(table){const count=after.graph.rows[table].length-before.graph.rows[table].length;assert(count>0);assert.deepEqual(fresh.options,old.options);assert.equal(BigInt(fresh.last_value),BigInt(old.last_value)+(old.is_called?BigInt(count):BigInt(count-1)));assert.equal(fresh.is_called,true);}else assert.deepEqual(fresh,old);}assert.equal(after.sequences.length,before.sequences.length);
+ assert.deepEqual(await sourceMap(),cut);assert.equal(hash(await readFile(input.configuration.path)),input.configuration.sha256);assert.equal(providers,0);
+ result={status:'ROOT_PUBLIC_NONSTRICT_INVENTORY_ON_NATIVE_PASS',database,tables:566,migrations:168,guards:24,adoption:{path:adoptionPath,sha256:hash(await readFile(adoptionPath))},sources:cutRef,before:beforeRef,after_fixture:fixtureAfterRef,after:await save('after.private.json',after),source_before:sourceBeforeRef,source_after:await save('source-after.private.json',sourceAfter),acceptance,strict_native_pw_rw_proved:false,global_public_stock_control_activation_proved:false,off_manual_correction_proved:false,held_iam_and_ttl_proved:false,provider_calls:providers,seed_migrate_workers_listeners:false};
+}catch(e){failure=e;if(ready)try{await save('failure.private.json',{name:e instanceof Error?e.name:'Error',message:e instanceof Error?e.message:String(e),stack:e instanceof Error?e.stack:undefined});}catch{/* Always close resources even if diagnostic saving fails. */}}
+finally{
+ for(const[resource,close]of [['readonly-app',()=>readonlyApp?.close()],['app',()=>app?.close()],['pool',()=>pool?.end()]]as const){try{await close();closers.push({resource,status:'fulfilled'});}catch(e){failure??=e;closers.push({resource,status:'rejected'});}}
+ try{if(make)await exclusive();if(installedFetch)assert.equal(globalThis.fetch,denyFetch);assert.equal(providers,0);}catch(e){failure??=e;}if(installedFetch)globalThis.fetch=oldFetch;
+ if(ready)try{await save('native-errors.private.json',errors);await save('cleanup.private.json',{status:failure?'FAILED':'PASS',closers,provider_calls:providers,owned_clients_closed:!failure});}catch(e){failure??=e;}
+}
+if(failure){console.log(JSON.stringify({status:'ROOT_PUBLIC_NONSTRICT_INVENTORY_ON_NATIVE_FAILED',directory}));process.exitCode=1;}else console.log(JSON.stringify({status:'ROOT_PUBLIC_NONSTRICT_INVENTORY_ON_NATIVE_PASS',result:await save('result.private.json',result)}));

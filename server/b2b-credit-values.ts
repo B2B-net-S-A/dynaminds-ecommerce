@@ -1,0 +1,43 @@
+/** Pure numbered160 representation. No current PIM, authority, provider or config. */
+import {z} from 'zod';
+import {ensure} from './errors';
+import {b2bFa3Date,b2bFa3DraftSchema,validateB2bFa3Draft} from './fa3-draft-model';
+import {localInvoiceSeriesInput} from './local-invoice-values';
+import {b2bCorrectionHash,type B2bCorrectionCalculation} from './b2b-credit-arithmetic';
+const uuid=z.uuid().transform(v=>v.toLowerCase()),hash=z.string().regex(/^[a-f0-9]{64}$/);
+const signed=z.string().regex(/^(?:0|[1-9][0-9]*|-[1-9][0-9]*)$/).refine(v=>BigInt(v)>=-9223372036854775808n&&BigInt(v)<=9223372036854775807n);
+const amount=z.strictObject({net_minor:signed,vat_minor:signed,gross_minor:signed}),qtyAmount=amount.extend({quantity:signed}),triplet=z.strictObject({before:amount,after:amount,delta:amount});
+const vat=z.enum(['0 KR','5','8','23']);
+const calculation=z.strictObject({schema:z.literal('b2b-invoice-correction-calculation/v1'),state:z.literal('unnumbered_calculation'),currency:z.literal('PLN'),tax_method:z.literal('gross_line_half_up'),shipping_credit_scope:z.literal('native_refunded_shipping_value_only'),
+ original:z.strictObject({document_id:uuid,receipt_id:uuid,number:z.string(),scope_hash:hash,fiscal_snapshot_hash:hash,issued_basis_hash:hash}),
+ acceptance:z.strictObject({return_id:uuid,number:z.string(),receipt_sequence:z.number().int().min(1).max(1000),receipt_id:uuid,admission_id:uuid,receipt_snapshot_hash:hash,financial_hash:hash,received_at:z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)$/)}),
+ fiscal_snapshot:b2bFa3DraftSchema,previous_chain_hash:hash,
+ rows:z.array(z.strictObject({ordinal:z.number().int().min(0),line_id:uuid,source_item_id:uuid.nullable(),kind:z.enum(['item','shipping']),name:z.string(),unit:z.string(),vat_code:vat,zero_domestic_basis:z.string().nullable(),affected:z.boolean(),before:qtyAmount,after:qtyAmount,delta:qtyAmount})).min(1).max(101),
+ totals:triplet,vat_buckets:z.array(triplet.extend({vat_code:vat})).min(1).max(4)});
+export const b2bCreditPreviewInput=z.strictObject({client_key:uuid,original_document_id:uuid,return_id:uuid,issue_date:b2bFa3Date,reason:z.string().min(1).max(2000).refine(v=>!/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(v)),local_only:z.literal(true),confirmed_received_snapshot:z.literal(true)});
+export const b2bCreditIssueInput=z.strictObject({client_key:uuid,scope_hash:hash,confirmed:z.literal(true),local_only:z.literal(true)});
+export const b2bCreditPageQuery=z.strictObject({limit:z.coerce.number().int().min(1).max(50).default(50),cursor:z.string().min(1).max(2048).optional()});
+const snapshot=z.strictObject({schema:z.literal('b2b-local-correction/v1'),original_document_id:uuid,original_receipt_id:uuid,return_id:uuid,return_receipt_id:uuid,receipt_sequence:z.number().int().min(1).max(1000),series_id:uuid,series_definition:localInvoiceSeriesInput.omit({client_key:true}),series_command_hash:hash,issue_date:b2bFa3Date,reason:z.string().min(1).max(2000),calculation,calculation_hash:hash,local_only:z.literal(true),ksef_state:z.literal('not_submitted'),fiscalized:z.literal(false)});
+const issued=snapshot.extend({number:z.string().regex(/^KOR-B2B\/[A-Z0-9][A-Z0-9-]{0,11}\/(?:20[0-4][0-9]|2050)\/[0-9]{6}$/),year:z.number().int().min(2006).max(2050),sequence:z.number().int().min(1).max(999999),preview_id:uuid,scope_hash:hash});
+export type B2bCreditSnapshot=z.infer<typeof snapshot>;
+export type B2bCreditData=z.infer<typeof issued>;
+export type B2bCreditDocument={id:string;order_id:string;return_id:string;kind:'correction';mode:'b2b_correction';number:string;data:B2bCreditData;created_at:string};
+export type B2bCreditPreview={id:string;original_document_id:string;return_id:string;scope_hash:string;expires_at:string;snapshot:B2bCreditSnapshot;can_issue:boolean};
+export type B2bCreditReceipt={id:string;document_id:string;preview_id:string;original_document_id:string;original_receipt_id:string;return_id:string;return_receipt_id:string;receipt_sequence:number;previous_receipt_id:string|null;client_key:string;scope_hash:string;calculation_hash:string;year:number;sequence:number;number:string;issued_at:string};
+export type B2bCreditSource={original:{document:import('./b2b-invoice-values').B2bInvoiceDocument;receipt:import('./b2b-invoice-values').B2bInvoiceReceipt};accepted_returns:{return_id:string;number:string;receipt_sequence:number;received_at:string;refund_amount_minor:string;refunded_shipping_minor:string;receipt_id:string;credited_document_id:string|null;acceptance_kind?:'physical'|'financial_no_restock'}[];previous_credits:{document:B2bCreditDocument;receipt:B2bCreditReceipt}[];next_return_id:string|null;eligible:boolean;eligibility_reason:'no_accepted_returns'|'all_received_returns_credited'|null};
+const keys=['net_minor','vat_minor','gross_minor'] as const;
+function checkMoney(m:z.infer<typeof amount>,nonnegative:boolean){ensure(BigInt(m.net_minor)+BigInt(m.vat_minor)===BigInt(m.gross_minor)&&(!nonnegative||keys.every(k=>BigInt(m[k])>=0n)),503,'Niepełne frozen kwoty160');}
+export function validateB2bCreditSnapshot(input:unknown):B2bCreditSnapshot{
+ const s=snapshot.parse(input),c=s.calculation as B2bCorrectionCalculation,f=validateB2bFa3Draft(c.fiscal_snapshot);
+ ensure(s.calculation_hash===b2bCorrectionHash(c)&&s.original_document_id===c.original.document_id&&s.original_receipt_id===c.original.receipt_id&&s.return_id===c.acceptance.return_id&&s.return_receipt_id===c.acceptance.receipt_id&&s.receipt_sequence===c.acceptance.receipt_sequence&&s.issue_date>=c.acceptance.received_at.slice(0,10)&&c.rows.length===f.lines.length,503,'Niepełna immutable calculation lineage160');
+ const seller=s.series_definition.seller;ensure(seller.tax_id===f.seller.tax_id&&seller.name===f.seller.name&&seller.country===f.seller.address.country&&seller.street===f.seller.address.line1&&seller.postal_code+' '+seller.city===f.seller.address.line2,503,'Seria i frozen sprzedawca160 nie odpowiadają sobie');
+ c.rows.forEach((r,i)=>{const ln=f.lines[i];ensure(b2bCorrectionHash({ordinal:r.ordinal,line_id:r.line_id,source_item_id:r.source_item_id,kind:r.kind,name:r.name,unit:r.unit,vat_code:r.vat_code,zero_domestic_basis:r.zero_domestic_basis})===b2bCorrectionHash({ordinal:ln.ordinal,line_id:ln.line_id,source_item_id:ln.source_item_id,kind:ln.kind,name:ln.name,unit:ln.unit,vat_code:ln.vat_code,zero_domestic_basis:ln.zero_domestic_basis}),503,'Brak pełnego frozen wiersza160');
+  for(const m of[r.before,r.after]){checkMoney(m,true);const g=BigInt(m.gross_minor),rate=r.vat_code==='0 KR'?0n:BigInt(r.vat_code),d=100n+rate;ensure(BigInt(m.vat_minor)===(2n*g*rate+d)/(2n*d),503,'Inne halfup VAT160');}
+  checkMoney(r.delta,false);for(const k of[...keys,'quantity'] as const)ensure(BigInt(r.after[k])-BigInt(r.before[k])===BigInt(r.delta[k]),503,'Inna signed delta160');
+  ensure(BigInt(r.after.quantity)>=0n&&BigInt(r.before.quantity)>=BigInt(r.after.quantity)&&BigInt(r.before.quantity)<=BigInt(ln.quantity)&&BigInt(r.after.gross_minor)<=BigInt(r.before.gross_minor)&&BigInt(r.before.gross_minor)<=BigInt(ln.gross_minor),503,'Pozycja poza oryginałem160');
+  ensure(r.affected===(r.before.quantity!==r.after.quantity||r.before.gross_minor!==r.after.gross_minor)&&(!(r.kind==='shipping')||(r.before.quantity==='1'&&r.after.quantity==='1'&&r.delta.quantity==='0')),503,'Obcy zakres shipping/affected160');
+ });
+ const expectedVat=[...new Set(c.rows.map(r=>r.vat_code))].sort((a,b)=>(a==='0 KR'?0:Number(a))-(b==='0 KR'?0:Number(b)));ensure(b2bCorrectionHash(expectedVat)===b2bCorrectionHash(c.vat_buckets.map(v=>v.vat_code)),503,'Niepełne wszystkie VAT160');
+ for(const state of['before','after','delta'] as const)for(const k of keys){ensure(BigInt(c.totals[state][k])===c.rows.reduce((n,r)=>n+BigInt(r[state][k]),0n),503,'Inne fulltotals160');for(const v of c.vat_buckets)ensure(BigInt(v[state][k])===c.rows.filter(r=>r.vat_code===v.vat_code).reduce((n,r)=>n+BigInt(r[state][k]),0n),503,'Inne fullVAT160');}return s;
+}
+export function validateB2bCreditDocument(input:B2bCreditDocument){const s=issued.parse(input.data);const{number,year,sequence,preview_id,scope_hash,...base}=s;validateB2bCreditSnapshot(base);ensure(input.kind==='correction'&&input.mode==='b2b_correction'&&uuid.safeParse(input.id).success&&uuid.safeParse(input.order_id).success&&input.return_id===s.return_id&&input.order_id===s.calculation.fiscal_snapshot.source.order_id&&input.number===s.number&&year===Number(s.issue_date.slice(0,4))&&number===`KOR-B2B/${s.series_definition.prefix}/${year}/${String(sequence).padStart(6,'0')}`,503,'Inne issued160 document identity/number');return input;}

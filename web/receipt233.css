@@ -1,0 +1,46 @@
+/* Fiscal receipts (233): printer settings and the order receipt panel, in the FV-S (230) style. */
+.receipt233-panel { min-width: 0; display: grid; gap: 12px; color: var(--text, #172033); }
+.receipt233-panel.panel { padding: 24px; }
+.receipt233-panel h3, .receipt233-panel h4, .receipt233-panel p { margin: 0; }
+.receipt233-panel h3 { font-size: 16px; font-weight: 800; }
+.receipt233-panel h4 { font-size: 14px; font-weight: 700; }
+.receipt233-panel p { line-height: 1.6; overflow-wrap: anywhere; }
+.receipt233-panel .receipt233-fields { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+.receipt233-panel legend { padding: 0 0 6px; font-weight: 700; }
+.receipt233-panel label { min-width: 0; margin: 0; display: grid; gap: 6px; line-height: 1.5; }
+.receipt233-panel input:not([type='checkbox']), .receipt233-panel select { width: 100%; min-width: 0; min-height: 40px; box-sizing: border-box; padding: 8px 10px; border: 1px solid #94a3b8; border-radius: 6px; background: #fff; color: inherit; font: inherit; }
+.receipt233-panel td input:not([type='checkbox']) { min-width: 90px; }
+.receipt233-panel .receipt233-wide { grid-column: 1 / -1; }
+.receipt233-panel .receipt233-check { display: flex; flex-direction: row; align-items: flex-start; gap: 10px; }
+.receipt233-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.receipt233-panel .button, .receipt233-panel .text-button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.receipt233-panel .receipt233-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.receipt233-panel .receipt233-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.receipt233-panel .receipt233-list > li { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border, #dbe2ea); }
+.receipt233-panel .receipt233-problems { margin: 0; padding-left: 20px; color: var(--muted, #64748b); font-size: 13px; }
+.receipt233-panel .receipt233-pending { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid #fed7aa; border-radius: 6px; background: #fff7ed; }
+.receipt233-panel .receipt233-blockers ul { margin: 4px 0 0; padding-left: 20px; }
+.receipt233-panel .table-scroll { min-width: 0; overflow-x: auto; }
+.receipt233-panel table { width: 100%; border-collapse: collapse; }
+.receipt233-panel th, .receipt233-panel td { padding: 8px 10px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border, #dbe2ea); }
+.receipt233-panel th { font-size: 12px; font-weight: 700; }
+.receipt233-panel th.num, .receipt233-panel td.num { text-align: right; white-space: nowrap; }
+.receipt233-panel td:first-child { min-width: 160px; overflow-wrap: anywhere; }
+.receipt233-panel small { display: block; margin-top: 3px; color: var(--muted, #64748b); font-size: 12px; }
+.receipt233-panel [role='alert'] { padding: 10px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
+.receipt233-panel input:focus-visible, .receipt233-panel select:focus-visible, .receipt233-panel button:focus-visible, .receipt233-panel a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+@media (max-width: 680px) {
+  .receipt233-panel.panel { padding: 16px; }
+  .receipt233-panel .receipt233-fields { grid-template-columns: minmax(0, 1fr); }
+}
+.receipt233-panel .receipt233-ptu { display: grid; grid-template-columns: repeat(7, minmax(64px, 1fr)); gap: 8px; margin-top: 6px; }
+.receipt233-panel .receipt233-label { font-weight: 700; }
+.receipt233-panel .receipt233-receipt, .receipt233-panel .receipt233-daily { min-width: 0; display: grid; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border, #dbe2ea); }
+.receipt233-panel .receipt233-state { padding-left: 10px; border-left: 4px solid #94a3b8; }
+.receipt233-panel .receipt233-printed { border-left-color: #15803d; }
+.receipt233-panel .receipt233-failed { border-left-color: #b91c1c; }
+.receipt233-panel .receipt233-sent, .receipt233-panel .receipt233-queued { border-left-color: #c2410c; }
+.receipt233-panel .receipt233-daily h3 { font-size: 15px; }
+@media (max-width: 680px) { .receipt233-panel .receipt233-ptu { grid-template-columns: repeat(4, minmax(56px, 1fr)); } }
+.receipt233-panel .form-body > p { font-size: 14px; }
+.receipt233-panel .receipt233-busy { color: var(--muted, #64748b); }

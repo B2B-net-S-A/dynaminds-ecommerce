@@ -1,0 +1,2578 @@
+{
+  "schema": "dynaminds-base-api-courier-contracts/v1",
+  "as_of": "2026-10-17",
+  "family": "Courier shipments",
+  "method_count": 16,
+  "method_inventory_ref": "base-api-methods.v1.json",
+  "inventory_sha256": "7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992",
+  "contract_review_complete_for_index_family": true,
+  "courier_specific_contracts_complete": false,
+  "official_account_requests_performed": false,
+  "implementation_coverage_measured": false,
+  "acceptance_granted": false,
+  "scope_mutated": false,
+  "source_snapshot": {
+    "path": "base-api-courier-sources-20261017.json.gz",
+    "sha256": "b3dc3fee5e1ff738c5e97fc0828ebbc73ee5514070bfb2e262f2a3e90b8c515f",
+    "bytes": 161622,
+    "format": "gzip UTF-8 JSON; documents[].html_utf8 re-encodes to exact captured source bytes",
+    "individual_documents": 16
+  },
+  "shared_transport": {
+    "source_ref": "base-api-index-20261017.html.gz",
+    "source_sha256_uncompressed": "142d98570834624cf3889b1d7623410dd6f1470441481a55470f6945386cbe58",
+    "url": "https://api.baselinker.com/",
+    "endpoint": "https://api.baselinker.com/connector.php",
+    "http_method": "POST",
+    "body_encoding": "form-url-encoded",
+    "form_fields": {
+      "method": "method name",
+      "parameters": "JSON string"
+    },
+    "authentication": {
+      "required": true,
+      "recommended_header": "X-BLToken",
+      "legacy_form_token": "deprecated",
+      "principal": "Base user account",
+      "role_and_scope_contract": "not_documented_in_reviewed_method_pages"
+    },
+    "encoding": "UTF-8; percent-encode base64 plus as %2B in form transport",
+    "global_documented_limit": "100 requests per minute",
+    "limit_scope_and_algorithm": "not_documented",
+    "mutation_idempotency_key": "not_documented; no client-key or safe unknown-outcome replay contract is specified for shipment creation, manual insertion, deletion or pickup requests"
+  },
+  "requiredness_policy": {
+    "null": "No explicit required/optional guarantee on the individual page; do not invent requiredness from an example or parameter name.",
+    "false": "Explicit optional/default or omission behavior documented.",
+    "true": "Reserved for an explicit requirement; none promoted merely from an unmarked identifier."
+  },
+  "common_error": {
+    "status": {
+      "type": "varchar(30)",
+      "values": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    },
+    "on_ERROR": [
+      "error_message",
+      "error_code"
+    ],
+    "error_field_types": "not_documented",
+    "specific_error_codes": [],
+    "http_statuses": "not_documented",
+    "retry_after_and_429_body": "not_documented",
+    "permission_matrix": "not_documented"
+  },
+  "current_code_review": {
+    "reviewed_at": "2026-10-17T18:20:48.157Z",
+    "scope": "Read-only source/route searches and listed pinned anchors; no runtime, SQL, account or provider requests",
+    "searched_terms": [
+      "X-BLToken",
+      "connector.php",
+      "createPackage",
+      "createPackageManual",
+      "deleteCourierPackage",
+      "getCourierPackagesStatusHistory",
+      "getOrderPackages",
+      "getPackageDetails",
+      "getPricePackage",
+      "getCourierAccounts",
+      "getCourierFields",
+      "getCourierServices",
+      "getCouriersList",
+      "getCourierDocument",
+      "getLabel",
+      "getProtocol",
+      "getRequestParcelPickupFields",
+      "runRequestParcelPickup"
+    ],
+    "wire_dispatch": "not_located_in_reviewed_server_web_TypeScript_sources",
+    "anchors": [
+      {
+        "path": "server/shipping-routes.ts",
+        "sha256": "8601d307ce88e211e0a72364cc88ee9a84bc863c2897a0975206e10ea6945fec",
+        "symbol_or_anchor": "registerShippingRoutes/shipmentLabel",
+        "boundary": "preview/queue/buy/refresh/cancel/reconcile; configured inpost/dpd channels and order shipping plans"
+      },
+      {
+        "path": "server/shipping.ts",
+        "sha256": "a9c09c3a43914d461704088f879ff47015f0b87cba22cd4a870a0f2de7b16ec1",
+        "symbol_or_anchor": "shippingInput/previewShipping/processShipping/assertWholeOrderShippingInTx",
+        "boundary": "fixed input schema, one-parcel and whole-order admission; not arbitrary courier-form/multi-package wire parity"
+      },
+      {
+        "path": "server/dpd-shipping.ts",
+        "sha256": "30e90f76d945eb6e05520996d07ab6c6d1e0dc52a9346ecad171c6414ac20d0d",
+        "symbol_or_anchor": "dpdInput/registerDpdRoutes/cachedDpdLabel",
+        "boundary": "DPD-specific one-parcel create/reconcile/dispatch/cache; no blanket courier compatibility"
+      },
+      {
+        "path": "server/dpd-collections.ts",
+        "sha256": "53e822e5ebb882108039d05a028caa6282e11c38df106dbf5533c7635be06aec",
+        "symbol_or_anchor": "registerCollectionRoutes",
+        "boundary": "DPD collection/protocol workflow, availability and printable document; not generic Base pickup/document envelope"
+      },
+      {
+        "path": "server/dpd-pickup-schedules.ts",
+        "sha256": "68d18fa67384f6d24f4b6bf91a1cf402509d8019b6d318450baa7dcaea10b7d4",
+        "symbol_or_anchor": "registerDpdPickupScheduleRoutes",
+        "boundary": "DPD-specific schedules; not general dynamic pickup metadata"
+      },
+      {
+        "path": "server/tracking-routes.ts",
+        "sha256": "d96358cfc79ff43f2750b4a75cd426210b32e053ff64eb559adcedc02a90e921",
+        "symbol_or_anchor": "registerTrackingRoutes",
+        "boundary": "integration tracking monitor/refresh and shipment tracking-example; not Base batch history wire"
+      },
+      {
+        "path": "server/app.ts",
+        "sha256": "5e8c69022baf302b4a68d28091f9d2729c722425b1828e8babf5d061e44607b7",
+        "symbol_or_anchor": "GET /api/shipments/:id/label",
+        "boundary": "ordinary label delivery route, not Base connector.php JSON method"
+      },
+      {
+        "path": "server/shipment-label-cache-routes.ts",
+        "sha256": "26d1980180b98723e8e52b2be5b11f9ee4ee94c50b2dd2342cdb23977f064264",
+        "symbol_or_anchor": "registerShipmentLabelCacheRoutes",
+        "boundary": "local cache/content/PDF acquisition/reconciliation routes"
+      },
+      {
+        "path": "server/shipment-label-print-routes.ts",
+        "sha256": "e0badfeb6d08ca142874afc8ef694801462404a323a109756d25003f75f885e7",
+        "symbol_or_anchor": "registerShipmentLabelPrintRoutes",
+        "boundary": "ordinary print previews/content/PDF/queue, not Base label method"
+      }
+    ]
+  },
+  "current_code_mappings": {
+    "shipment_workflow": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/shipping-routes.ts",
+        "server/shipping.ts",
+        "server/dpd-shipping.ts"
+      ],
+      "route_candidates": [
+        "POST /api/orders/:id/shipping/preview",
+        "POST /api/shipping-plans/:id/queue",
+        "POST /api/shipping-plans/:id/buy",
+        "POST /api/shipping-plans/:id/cancel",
+        "POST /api/orders/:id/dpd-shipping/preview",
+        "GET /api/orders/:id/shipping"
+      ],
+      "open": [
+        "Manual external shipment insertion matching createPackageManual not located in reviewed routes.",
+        "Existing cancel refuses ready-label/uncertain DPD cases; does not implement force_delete semantics.",
+        "UUID/order-plan history differs from Base integer package IDs and packages[] response.",
+        "Multi-package/subpackage parity remains open; current reviewed shipment writers enforce one parcel."
+      ]
+    },
+    "rating": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/shipping-routes.ts",
+        "server/shipping.ts"
+      ],
+      "route_candidates": [
+        "POST /api/orders/:id/shipping/preview",
+        "POST /api/shipping-plans/:id/refresh",
+        "POST /api/shipping-plans/:id/buy"
+      ],
+      "open": [
+        "Own quote/buy lifecycle and provider-specific offer shape do not establish getPricePackage prices/header/notices wire.",
+        "DPD refresh explicitly unavailable in this route."
+      ]
+    },
+    "courier_discovery": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/shipping-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/shipping/channels"
+      ],
+      "open": [
+        "Configured inpost/dpd channels are not the full courier catalogue.",
+        "Base courier/account ID mapping, account discovery ordering and permissions remain unverified."
+      ]
+    },
+    "dynamic_form": {
+      "state": "fixed_provider_input_only_dynamic_base_contract_not_located",
+      "anchors": [
+        "server/shipping.ts",
+        "server/dpd-shipping.ts"
+      ],
+      "route_candidates": [],
+      "open": [
+        "Dynamic fields/package_fields/show_field/function discovery, exact service dependencies and per-courier requiredness remain open."
+      ]
+    },
+    "tracking": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/tracking-routes.ts",
+        "server/shipping-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/integrations/:id/tracking",
+        "POST /api/shipments/:id/tracking"
+      ],
+      "open": [
+        "Own provider tracking status model is not Base integer enums0..13 or packages_history keyed batch wire.",
+        "Complete history/ordering/retention across couriers requires separate proof."
+      ]
+    },
+    "documents": {
+      "state": "adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/app.ts",
+        "server/shipping-routes.ts",
+        "server/dpd-collections.ts",
+        "server/shipment-label-cache-routes.ts",
+        "server/shipment-label-print-routes.ts"
+      ],
+      "route_candidates": [
+        "GET /api/shipments/:id/label",
+        "GET /api/dpd-collections/:id/document",
+        "GET /api/print-jobs/label-cache/:id/pdf",
+        "GET /api/print-jobs/label-previews/:id/pdf"
+      ],
+      "open": [
+        "Binary/HTML/PDF routes and cache are not extension+base64 wire envelopes.",
+        "Generic manifest/protocol/customs_document, supported extensions and all couriers remain open."
+      ]
+    },
+    "pickups": {
+      "state": "dpd_specific_adjacent_routes_not_wire_compatible",
+      "anchors": [
+        "server/dpd-collections.ts",
+        "server/dpd-pickup-schedules.ts"
+      ],
+      "route_candidates": [
+        "GET /api/integrations/:id/dpd-availability",
+        "POST /api/integrations/:id/dpd-collections",
+        "POST /api/dpd-collections/:id/queue",
+        "GET /api/integrations/:id/dpd-pickup-schedule"
+      ],
+      "open": [
+        "Generic dynamic getRequestParcelPickupFields and Base runRequestParcelPickup wire are not established.",
+        "Courier-supported pickup mutation, unknown ACK, duplicate prevention, cancellation/changes need provider-specific acceptance."
+      ]
+    }
+  },
+  "open_contract_issues": [
+    {
+      "id": "COURIER-DOC-001",
+      "methods": [
+        "createPackage",
+        "getCourierFields"
+      ],
+      "issue": "packages_fields appears in create prose while the actual output key is package_fields; examples alternate length/height/width and size_length/size_height/size_width.",
+      "decision": "Use discovered IDs for the actual courier; do not hard-code aliases."
+    },
+    {
+      "id": "COURIER-DOC-002",
+      "methods": [
+        "getCourierFields",
+        "getPricePackage"
+      ],
+      "issue": "decimal_places/options/default appear only in package_fields example; decimal_places is referenced by quotation prose without a complete metadata definition.",
+      "decision": "Retain conditional numeric rules; mark full metadata schema/requiredness open."
+    },
+    {
+      "id": "COURIER-DOC-003",
+      "methods": [
+        "getCourierServices"
+      ],
+      "issue": "fields prose describes field_id keys while example uses id/value objects; services declared array but shown as keyed object.",
+      "decision": "Do not silently select a universal representation."
+    },
+    {
+      "id": "COURIER-DOC-004",
+      "methods": [
+        "getOrderPackages",
+        "getCourierPackagesStatusHistory"
+      ],
+      "issue": "Tracking enum coverage differs0..11 versus0..13, and history key/date/ordering semantics are only partly specified.",
+      "decision": "Keep distinct enums, keyed shape and unknown date/ordering contract explicit."
+    },
+    {
+      "id": "COURIER-DOC-005",
+      "methods": [
+        "getCourierDocument",
+        "getProtocol",
+        "getLabel",
+        "deleteCourierPackage",
+        "runRequestParcelPickup"
+      ],
+      "issue": "Selector alternative rules differ; document method marks both lists optional without an explicit at-least-one constraint.",
+      "decision": "Preserve per-method rules and unknown simultaneous-selector precedence."
+    },
+    {
+      "id": "COURIER-DOC-006",
+      "methods": [
+        "createPackageManual"
+      ],
+      "issue": "Example input and output shipment numbers differ.",
+      "decision": "No inferred renumbering semantics; identity readback needs observation."
+    },
+    {
+      "id": "COURIER-DOC-007",
+      "methods": [
+        "getPackageDetails"
+      ],
+      "issue": "additional_fields is declared array while described and exemplified as an object/map.",
+      "decision": "Record declared and demonstrated shape; retain dynamic fields."
+    },
+    {
+      "id": "COURIER-DOC-008",
+      "methods": [
+        "createPackage",
+        "getPricePackage"
+      ],
+      "issue": "create examples mix numeric strings/numbers; quotation explicitly mandates numbers and Unix-second integers.",
+      "decision": "Keep method-specific serialization; do not universalize quote requirements."
+    }
+  ],
+  "open_courier_specific_dependencies": [
+    "Each actual courier/account/region version needs field IDs, supported types, options, show_field graph, dynamic services and package_fields snapshots.",
+    "multi_packages and actual maximum parcel count, dimensions, weight, decimal precision, package types and account constraints require specific metadata/official clarification.",
+    "Metadata does not define a general required flag or all provider validation rules; do not infer these from examples.",
+    "Pickup support/windows, document types/formats, remote cancellation/force-delete divergence and tracking retention vary by courier.",
+    "No documented client idempotency, mutation reconciliation, partial failure matrix, HTTP error mapping or Retry-After contract; unknown outcomes remain unresolved until authorized observation."
+  ],
+  "methods": [
+    {
+      "id": "BASE-API-createPackage",
+      "method": "createPackage",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=createPackage",
+        "final_url": "https://api.baselinker.com/index.php?method=createPackage",
+        "retrieved_at": "2026-10-17T18:05:47.118981+00:00",
+        "http_status": 200,
+        "bytes": 52864,
+        "sha256": "df02b94c7d772d5963f6b28ff9807953f3e6aca9cffbe0f95f49cd86590201da",
+        "snapshot_document_method": "createPackage"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Tworzy przesyłkę u wybranego kuriera. Formularz i paczki pochodzą z aktualnych metadanych kuriera; odpowiedź rozróżnia przesyłkę główną i listę wszystkich paczek.",
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "ID zamówienia",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 2,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default": "first_available_account",
+            "source_table_row": 3,
+            "meaning_pl": "ID konta kuriera",
+            "omission": "select_first_account",
+            "default_status": "explicitly_documented"
+          },
+          {
+            "name": "fields",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "formularz przesyłki lub odbioru",
+            "multi_checkbox_encoding": "repeat_id_in_separate_id_value_objects",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fields[].id",
+            "documented_type": "varchar(50)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 5,
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fields[].value",
+            "documented_type": "text",
+            "required": true,
+            "requiredness_source": "explicit_required_for_documented_field_types",
+            "source_table_row": 6,
+            "required_when": "included form field type is checkbox/select/text/date",
+            "date_encoding": "unix_time_unit_not_explicit",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "packages",
+            "documented_type": "array",
+            "required": true,
+            "requiredness_source": "explicit_weight_of_at_least_one_package_required",
+            "source_table_row": 7,
+            "meaning_pl": "paczki przesyłki",
+            "constraints": [
+              "at_least_one_package_has_weight",
+              "dynamic_keys_from_getCourierFields.package_fields",
+              "cm_and_kg"
+            ],
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "package_id",
+            "documented_type": "int",
+            "source_table_row": 2
+          },
+          {
+            "path": "package_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 3
+          },
+          {
+            "path": "courier_inner_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 4
+          },
+          {
+            "path": "packages",
+            "documented_type": "array",
+            "source_table_row": 5
+          },
+          {
+            "path": "packages[].package_id",
+            "documented_type": "int",
+            "source_table_row": 6
+          },
+          {
+            "path": "packages[].package_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 7
+          },
+          {
+            "path": "packages[].courier_inner_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 8
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "fields to lista obiektów id/value; każda zaznaczona opcja checkbox wielokrotnego wyboru jest osobnym elementem z powtórzonym id.",
+        "fields[].value jest wymagane dla opisanych typów checkbox/select/text/date; date oznacza Unix time.",
+        "packages wymaga wagi przynajmniej jednej paczki; klucze i typy pochodzą z getCourierFields.package_fields. Wymiary w cm, waga w kg.",
+        "Obsługa wielu paczek zależy od multi_packages; limit liczby paczek nie został podany.",
+        "Dokumentacja jednocześnie pokazuje weight jako tekst w małym przykładzie i jako liczbę w pełnym; nie przenosimy reguły numbers-only z getPricePackage na createPackage bez potwierdzenia."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "shipment_workflow",
+      "proposed_acceptance": [
+        "Ordinary UI/API maps tenant-owned order/courier/account and stable external ID without claiming Base wire parity.",
+        "Create/manual→list→detail use exact documented field names; multi-package top-level/all-parcels relationship is preserved.",
+        "Account/courier unavailable and mismatched alternative identifiers refuse honestly; uncertain create/delete is not blindly repeated.",
+        "For an actually supported multi_packages courier, create two parcels and verify top-level and packages[] identities against both provider parcels; retain dynamic field IDs."
+      ]
+    },
+    {
+      "id": "BASE-API-createPackageManual",
+      "method": "createPackageManual",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=createPackageManual",
+        "final_url": "https://api.baselinker.com/index.php?method=createPackageManual",
+        "retrieved_at": "2026-10-17T18:05:48.225806+00:00",
+        "http_status": 200,
+        "bytes": 49867,
+        "sha256": "049a2395c9736ca3ecad7dcf2af533c7d53b80ca1ddd0a591f254c54b74491b4",
+        "snapshot_document_method": "createPackageManual"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Dopisuje do zamówienia numer przesyłki utworzonej poza Base; samo dopisanie nie tworzy przesyłki w API kuriera.",
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "ID zamówienia",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 2,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_number",
+            "documented_type": "varchar(40)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 3,
+            "meaning_pl": "numer przewozowy",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "pickup_date",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "data nadania",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "return_shipment",
+            "documented_type": "bool",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default": false,
+            "source_table_row": 5,
+            "meaning_pl": "oznaczenie przesyłki zwrotnej",
+            "default_status": "explicitly_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "package_id",
+            "documented_type": "int",
+            "source_table_row": 2
+          },
+          {
+            "path": "package_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 3
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "pickup_date jest Unix time; brak reguły oznaczenia zamówienia jako wysłane lub zmiany jego statusu.",
+        "courier_code może być kodem z getCouriersList albo własną nazwą kuriera.",
+        "Przykładowy numer odpowiedzi różni się od wysłanego; nie traktujemy tego jako reguły zmiany numeru."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "shipment_workflow",
+      "proposed_acceptance": [
+        "Ordinary UI/API maps tenant-owned order/courier/account and stable external ID without claiming Base wire parity.",
+        "Create/manual→list→detail use exact documented field names; multi-package top-level/all-parcels relationship is preserved.",
+        "Account/courier unavailable and mismatched alternative identifiers refuse honestly; uncertain create/delete is not blindly repeated.",
+        "Insert external number with explicit pickup_date and return_shipment=true; read package_type/is_return without invoking a paid provider create."
+      ]
+    },
+    {
+      "id": "BASE-API-deleteCourierPackage",
+      "method": "deleteCourierPackage",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=deleteCourierPackage",
+        "final_url": "https://api.baselinker.com/index.php?method=deleteCourierPackage",
+        "retrieved_at": "2026-10-17T18:05:47.653897+00:00",
+        "http_status": 200,
+        "bytes": 49415,
+        "sha256": "afe1f3871992d58c734cae2afcd10b344b8c3636fe1be12943061a171735f0f6",
+        "snapshot_document_method": "deleteCourierPackage"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Usuwa przesyłkę z Base i, jeśli dany kurier to umożliwia, z jego systemu. Opcja force_delete dopuszcza lokalne usunięcie mimo błędu API kuriera.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 2,
+            "meaning_pl": "ID przesyłki",
+            "required_when": "package_number absent",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_number",
+            "documented_type": "varchar(40)",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 3,
+            "meaning_pl": "numer przewozowy",
+            "required_when": "package_id absent",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "force_delete",
+            "documented_type": "bool",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default": false,
+            "source_table_row": 4,
+            "meaning_pl": "lokalne wymuszenie usunięcia mimo błędu kuriera",
+            "default_status": "explicitly_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "package_id",
+              "package_number"
+            ],
+            "simultaneous_conflicting_values": "not_documented"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Co najmniej jedno z package_id/package_number: każde pole opisano jako opcjonalne, gdy podano drugie.",
+        "Nie opisano pierwszeństwa ani odmowy przy sprzecznych równocześnie przekazanych identyfikatorach.",
+        "force_delete nie gwarantuje anulowania u kuriera; brak dokumentacji skutków kosztowych, ponownego usunięcia i nieznanej odpowiedzi."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "shipment_workflow",
+      "proposed_acceptance": [
+        "Ordinary UI/API maps tenant-owned order/courier/account and stable external ID without claiming Base wire parity.",
+        "Create/manual→list→detail use exact documented field names; multi-package top-level/all-parcels relationship is preserved.",
+        "Account/courier unavailable and mismatched alternative identifiers refuse honestly; uncertain create/delete is not blindly repeated.",
+        "Separate confirmed remote cancellation from force_delete local-only removal after provider refusal; reconcile unknown removal without inventing remote success."
+      ]
+    },
+    {
+      "id": "BASE-API-getCourierPackagesStatusHistory",
+      "method": "getCourierPackagesStatusHistory",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCourierPackagesStatusHistory",
+        "final_url": "https://api.baselinker.com/index.php?method=getCourierPackagesStatusHistory",
+        "retrieved_at": "2026-10-17T18:05:47.199981+00:00",
+        "http_status": 200,
+        "bytes": 50639,
+        "sha256": "ee4b7d98de02781c9339eb19f4e26228342a863bd11d7f78b62cd6925d507128",
+        "snapshot_document_method": "getCourierPackagesStatusHistory"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Odczytuje historię statusów wskazanych przesyłek; najwyżej100 identyfikatorów na wywołanie.",
+      "input": {
+        "parameters": [
+          {
+            "name": "package_ids",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "lista ID przesyłek",
+            "max_items": 100,
+            "default_status": "not_documented",
+            "item_type": "not_explicitly_declared"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "packages_history",
+            "documented_type": "array",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_package_id_with_event_array"
+          },
+          {
+            "path": "packages_history{package_id}[].tracking_status_date",
+            "documented_type": "int",
+            "source_table_row": 3
+          },
+          {
+            "path": "packages_history{package_id}[].courier_status_code",
+            "documented_type": "varchar(100)",
+            "source_table_row": 4
+          },
+          {
+            "path": "packages_history{package_id}[].tracking_status",
+            "documented_type": "int",
+            "source_table_row": 5,
+            "documented_values": {
+              "0": "unknown",
+              "1": "label_created",
+              "2": "shipped",
+              "3": "not_delivered",
+              "4": "out_for_delivery",
+              "5": "delivered",
+              "6": "return",
+              "7": "aviso",
+              "8": "waiting_at_point",
+              "9": "lost",
+              "10": "canceled",
+              "11": "on_the_way",
+              "12": "exception",
+              "13": "transferred_abroad"
+            }
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Limit100 jest limitem partii wejściowej, a nie rozmiarem strony historii.",
+        "packages_history opisano jako array, lecz kluczem jest package ID; przykład jest obiektem {ID:[zdarzenia]}.",
+        "tracking_status obejmuje0..13; datę opisano tylko jako int/status date, bez jawnej jednostki i strefy. Nie dopowiadamy ich na podstawie przykładu.",
+        "Brak opisanej kolejności, deduplikacji, okna retencji, limitu zdarzeń i paginacji."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented",
+        "input_batch_limit": 100,
+        "input_batch_limit_is_not_pagination": true
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "tracking",
+      "proposed_acceptance": [
+        "Batch100 and over-limit101 behavior, unknown IDs, event ordering and repeat read are verified with documented versus observed boundaries.",
+        "Status vocabulary is method-specific; courier codes and dates are retained without undocumented conversion.",
+        "Verify the keyed package-ID event arrays, preservation of courier_status_code and both status12/13 values; do not turn input batch100 into a history page limit."
+      ]
+    },
+    {
+      "id": "BASE-API-getOrderPackages",
+      "method": "getOrderPackages",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getOrderPackages",
+        "final_url": "https://api.baselinker.com/index.php?method=getOrderPackages",
+        "retrieved_at": "2026-10-17T18:05:47.616292+00:00",
+        "http_status": 200,
+        "bytes": 51140,
+        "sha256": "f536fad9d370b0c6b018a5c6f298886d16f1d312869ebd4ce4f843c6c947d695",
+        "snapshot_document_method": "getOrderPackages"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca przesyłki przypisane do zamówienia wraz z danymi kuriera, konta i bieżącym trackingiem.",
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "ID zamówienia",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "packages",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "packages[].package_id",
+            "documented_type": "int",
+            "source_table_row": 3
+          },
+          {
+            "path": "packages[].courier_package_nr",
+            "documented_type": "varchar(40)",
+            "source_table_row": 4
+          },
+          {
+            "path": "packages[].courier_inner_number",
+            "documented_type": "varchar(40)",
+            "source_table_row": 5
+          },
+          {
+            "path": "packages[].courier_code",
+            "documented_type": "varchar(20)",
+            "source_table_row": 6
+          },
+          {
+            "path": "packages[].courier_other_name",
+            "documented_type": "varchar(20)",
+            "source_table_row": 7
+          },
+          {
+            "path": "packages[].account_id",
+            "documented_type": "int",
+            "source_table_row": 8
+          },
+          {
+            "path": "packages[].tracking_status_date",
+            "documented_type": "int",
+            "source_table_row": 9
+          },
+          {
+            "path": "packages[].tracking_delivery_days",
+            "documented_type": "int",
+            "source_table_row": 10
+          },
+          {
+            "path": "packages[].tracking_status",
+            "documented_type": "int",
+            "source_table_row": 11,
+            "documented_values": {
+              "0": "unknown",
+              "1": "label_created",
+              "2": "shipped",
+              "3": "not_delivered",
+              "4": "out_for_delivery",
+              "5": "delivered",
+              "6": "return",
+              "7": "aviso",
+              "8": "waiting_at_point",
+              "9": "lost",
+              "10": "canceled",
+              "11": "on_the_way"
+            }
+          },
+          {
+            "path": "packages[].package_type",
+            "documented_type": "int",
+            "source_table_row": 12,
+            "documented_values": {
+              "0": "standard",
+              "1": "return",
+              "2": "sent_at_point",
+              "3": "return_sent_at_point"
+            }
+          },
+          {
+            "path": "packages[].tracking_url",
+            "documented_type": "varchar(255)",
+            "source_table_row": 13
+          },
+          {
+            "path": "packages[].is_return",
+            "documented_type": "bool",
+            "source_table_row": 14
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Numer ma nazwę courier_package_nr; createPackage/createPackageManual zwracają package_number.",
+        "tracking_status ma na tej stronie słownik0..11, podczas gdy historia dokumentuje także12 i13.",
+        "tracking_delivery_days liczy dni między wysłaniem i dostarczeniem z pominięciem weekendów; święta i strefa granic dnia nieopisane.",
+        "package_type:0 standard,1 zwrot,2 nadanie w punkcie,3 zwrot nadany w punkcie. Istnieje również osobne is_return."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "shipment_workflow",
+      "proposed_acceptance": [
+        "Ordinary UI/API maps tenant-owned order/courier/account and stable external ID without claiming Base wire parity.",
+        "Create/manual→list→detail use exact documented field names; multi-package top-level/all-parcels relationship is preserved.",
+        "Account/courier unavailable and mismatched alternative identifiers refuse honestly; uncertain create/delete is not blindly repeated.",
+        "Verify courier_package_nr, account/courier_other_name, package_type0..3 and is_return; retain unknown newer tracking statuses instead of silently dropping them."
+      ]
+    },
+    {
+      "id": "BASE-API-getPackageDetails",
+      "method": "getPackageDetails",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getPackageDetails",
+        "final_url": "https://api.baselinker.com/index.php?method=getPackageDetails",
+        "retrieved_at": "2026-10-17T18:05:47.601555+00:00",
+        "http_status": 200,
+        "bytes": 52622,
+        "sha256": "1c576e08200455c51b5885c9ad2f6a811d4cd91ca6c417f5c6c7d3d0916fe7c7",
+        "snapshot_document_method": "getPackageDetails"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca parametry przesyłki i wszystkich jej podpaczek, jeśli jest ich więcej, oraz dodatkowe dane specyficzne dla kuriera.",
+      "input": {
+        "parameters": [
+          {
+            "name": "package_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "ID przesyłki",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "package_details",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "package_details[].weight",
+            "documented_type": "float",
+            "source_table_row": 3
+          },
+          {
+            "path": "package_details[].weight_unit",
+            "documented_type": "text",
+            "source_table_row": 4,
+            "documented_values": [
+              "kg",
+              "g",
+              "lb",
+              "oz",
+              ""
+            ]
+          },
+          {
+            "path": "package_details[].length",
+            "documented_type": "float",
+            "source_table_row": 5
+          },
+          {
+            "path": "package_details[].width",
+            "documented_type": "float",
+            "source_table_row": 6
+          },
+          {
+            "path": "package_details[].height",
+            "documented_type": "float",
+            "source_table_row": 7
+          },
+          {
+            "path": "package_details[].size_unit",
+            "documented_type": "text",
+            "source_table_row": 8,
+            "documented_values": [
+              "cm",
+              "in",
+              ""
+            ]
+          },
+          {
+            "path": "package_details[].size_template",
+            "documented_type": "varchar(255)",
+            "source_table_row": 9
+          },
+          {
+            "path": "package_details[].is_custom",
+            "documented_type": "bool",
+            "source_table_row": 10
+          },
+          {
+            "path": "package_details[].cod_value",
+            "documented_type": "float",
+            "source_table_row": 11
+          },
+          {
+            "path": "package_details[].cod_currency",
+            "documented_type": "varchar(3)",
+            "source_table_row": 12
+          },
+          {
+            "path": "package_details[].insurance_value",
+            "documented_type": "float",
+            "source_table_row": 13
+          },
+          {
+            "path": "package_details[].insurance_currency",
+            "documented_type": "varchar(3)",
+            "source_table_row": 14
+          },
+          {
+            "path": "package_details[].cost_value",
+            "documented_type": "float",
+            "source_table_row": 15
+          },
+          {
+            "path": "package_details[].cost_currency",
+            "documented_type": "varchar(3)",
+            "source_table_row": 16
+          },
+          {
+            "path": "package_details[].type",
+            "documented_type": "text",
+            "source_table_row": 17,
+            "documented_values": [
+              "package",
+              "dox",
+              "pallet",
+              ""
+            ]
+          },
+          {
+            "path": "package_details[].pickup_date",
+            "documented_type": "int",
+            "source_table_row": 18
+          },
+          {
+            "path": "package_details[].service",
+            "documented_type": "varchar(255)",
+            "source_table_row": 19
+          },
+          {
+            "path": "package_details[].additional_services",
+            "documented_type": "array",
+            "source_table_row": 20
+          },
+          {
+            "path": "package_details[].courier_packaging_type",
+            "documented_type": "varchar(256)",
+            "source_table_row": 21
+          },
+          {
+            "path": "additional_fields",
+            "documented_type": "array",
+            "source_table_row": 22,
+            "shape": "object_keyed_by_courier_field_id"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "weight_unit:kg/g/lb/oz/pusty tekst; size_unit:cm/in/pusty tekst; nie zakładamy zawsze kg/cm w odczycie.",
+        "type:package/dox/pallet/pusty tekst; trzy niezależne wartości pieniężne COD/insurance/cost mają osobne waluty.",
+        "additional_fields opisano jako array/mapa kluczy; przykład jest obiektem. shipment_notice informuje o częściowo wysłanych produktach w formacie SKU shipped/ordered.",
+        "Nie podano identyfikatorów relacji parent/subpackage w package_details ani kompletnego zestawu additional_services."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "shipment_workflow",
+      "proposed_acceptance": [
+        "Ordinary UI/API maps tenant-owned order/courier/account and stable external ID without claiming Base wire parity.",
+        "Create/manual→list→detail use exact documented field names; multi-package top-level/all-parcels relationship is preserved.",
+        "Account/courier unavailable and mismatched alternative identifiers refuse honestly; uncertain create/delete is not blindly repeated.",
+        "Read all subpackages and each weight/size unit, distinct COD/insurance/cost currencies and additional_fields map; empty units remain empty."
+      ]
+    },
+    {
+      "id": "BASE-API-getPricePackage",
+      "method": "getPricePackage",
+      "family": "Courier shipments",
+      "group": "Packages",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getPricePackage",
+        "final_url": "https://api.baselinker.com/index.php?method=getPricePackage",
+        "retrieved_at": "2026-10-17T18:05:47.935350+00:00",
+        "http_status": 200,
+        "bytes": 52962,
+        "sha256": "d98f3a0b6c37aa796b684e4f3251c105e0383fdfa9d666f6e48b652af4a9d666",
+        "snapshot_document_method": "getPricePackage"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca dostępne wyceny; metoda dostępna tylko w wybranych integracjach. Typy liczb i zależne pola paczki są określone odrębnie od createPackage.",
+      "input": {
+        "parameters": [
+          {
+            "name": "order_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "ID zamówienia",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 2,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "default": "first_available_account",
+            "source_table_row": 3,
+            "meaning_pl": "ID konta kuriera",
+            "omission": "select_first_account",
+            "default_status": "explicitly_documented"
+          },
+          {
+            "name": "fields",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "formularz przesyłki lub odbioru",
+            "numeric_values": "JSON_number_not_string",
+            "date_encoding": "unix_seconds_integer",
+            "auto_when_supported": [
+              "cod",
+              "insurance",
+              "value_price"
+            ],
+            "multi_checkbox_encoding": "repeat_id_in_separate_id_value_objects",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "packages",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "explicit_condition_on_dynamic_metadata",
+            "source_table_row": 5,
+            "meaning_pl": "paczki przesyłki",
+            "required_when": "getCourierFields returns package_fields",
+            "constraints": [
+              "first_package_weight_when_metadata_contains_weight",
+              "JSON_numbers_for_numeric_fields",
+              "decimal_places_from_metadata",
+              "cm_and_kg"
+            ],
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "prices",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "prices[].name",
+            "documented_type": "text",
+            "source_table_row": 3
+          },
+          {
+            "path": "prices[].price",
+            "documented_type": "float",
+            "source_table_row": 4
+          },
+          {
+            "path": "prices[].currency",
+            "documented_type": "text",
+            "source_table_row": 5
+          },
+          {
+            "path": "prices[].info",
+            "documented_type": "text",
+            "source_table_row": 6
+          },
+          {
+            "path": "prices[].selected",
+            "documented_type": "bool",
+            "source_table_row": 7,
+            "conditional_presence": "only_quotation_matching_requested_service"
+          },
+          {
+            "path": "header",
+            "documented_type": "text",
+            "source_table_row": 8,
+            "conditional_presence": "only_when_available"
+          },
+          {
+            "path": "notices",
+            "documented_type": "array",
+            "source_table_row": 9,
+            "conditional_presence": "only_when_available"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "fields: liczby muszą być JSON numbers, daty Unix timestamp w sekundach; każda opcja checkbox ma osobny element.",
+        "auto jest dopuszczone dla cod/insurance/value_price tylko gdy konkretny kurier je obsługuje.",
+        "packages jest wymagane wyłącznie gdy metadane zwracają package_fields; jeśli zawierają weight, pierwsza paczka musi mieć wagę.",
+        "Liczby parametrów paczek muszą być JSON numbers i respektować decimal_places. Wymiary w cm, masa w kg.",
+        "prices[].selected pojawia się tylko przy dopasowanej ofercie; header i notices tylko gdy dostępne. Wartości cen netto/brutto, ważność i gwarancja ceny pozostają nieokreślone; przykładowy header nie jest globalną regułą podatkową."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "rating",
+      "proposed_acceptance": [
+        "Dynamic metadata dependency is satisfied before request; numeric JSON/date/decimal_places rules and cm/kg are verified.",
+        "Multiple quotes, optional selected/header/notices and missing/expired price are represented without assuming tax or guaranteed cost.",
+        "Verify JSON numbers, decimal_places, first-package weight condition and courier-supported auto fields; absence of selected/header/notices is legal."
+      ]
+    },
+    {
+      "id": "BASE-API-getCourierAccounts",
+      "method": "getCourierAccounts",
+      "family": "Courier shipments",
+      "group": "Courier info",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCourierAccounts",
+        "final_url": "https://api.baselinker.com/index.php?method=getCourierAccounts",
+        "retrieved_at": "2026-10-17T18:05:48.115623+00:00",
+        "http_status": 200,
+        "bytes": 49112,
+        "sha256": "93d2f33d958e7479ea438ae96dd927a21946055e57f816c349e3961a962ca45a",
+        "snapshot_document_method": "getCourierAccounts"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca konta połączone z wybranym kurierem.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "accounts",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "accounts[].id",
+            "documented_type": "int",
+            "source_table_row": 3
+          },
+          {
+            "path": "accounts[].name",
+            "documented_type": "text",
+            "source_table_row": 4
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Nie podano stabilności kolejności, sposobu wyboru pierwszego konta ani zakresu uprawnień kont."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "account_permissions_and_collection_completeness_not_documented"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "courier_discovery",
+      "proposed_acceptance": [
+        "Available courier codes and configured accounts remain distinct; empty lists and account permissions are tested.",
+        "No stable first-account ordering is fabricated from documentation examples.",
+        "Verify multiple accounts and stable own-account identity; do not infer first-account ordering from one response or names."
+      ]
+    },
+    {
+      "id": "BASE-API-getCourierFields",
+      "method": "getCourierFields",
+      "family": "Courier shipments",
+      "group": "Courier info",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCourierFields",
+        "final_url": "https://api.baselinker.com/index.php?method=getCourierFields",
+        "retrieved_at": "2026-10-17T18:05:48.174627+00:00",
+        "http_status": 200,
+        "bytes": 53833,
+        "sha256": "997afc06173de990576e1fdd393f840ecd49afc461559b935bbc81425f4fd806",
+        "snapshot_document_method": "getCourierFields"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca metadane formularza przesyłki, warunki pokazywania pól, informację o wielu paczkach i osobne metadane parametrów paczki.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "multi_packages",
+            "documented_type": "bool",
+            "source_table_row": 2
+          },
+          {
+            "path": "fields",
+            "documented_type": "array",
+            "source_table_row": 3
+          },
+          {
+            "path": "fields[].id",
+            "documented_type": "varchar(50)",
+            "source_table_row": 4
+          },
+          {
+            "path": "fields[].name",
+            "documented_type": "varchar(50)",
+            "source_table_row": 5
+          },
+          {
+            "path": "fields[].type",
+            "documented_type": "varchar(10)",
+            "source_table_row": 6,
+            "documented_values": [
+              "select",
+              "checkbox",
+              "text",
+              "date"
+            ]
+          },
+          {
+            "path": "fields[].desc",
+            "documented_type": "text",
+            "source_table_row": 7
+          },
+          {
+            "path": "fields[].options",
+            "documented_type": "array",
+            "source_table_row": 8,
+            "shape": "object_keyed_by_option_id",
+            "conditional_presence": "select_or_checkbox"
+          },
+          {
+            "path": "fields[].show_field",
+            "documented_type": "array",
+            "source_table_row": 9,
+            "shape": "object_keyed_by_option_id_with_field_id_array"
+          },
+          {
+            "path": "fields[].value",
+            "documented_type": "varchar(50)",
+            "source_table_row": 10
+          },
+          {
+            "path": "fields[].function",
+            "documented_type": "varchar(20)",
+            "source_table_row": 11,
+            "when_nonempty": "call_getCourierServices_for_current_order_and_shipment_context"
+          },
+          {
+            "path": "package_fields",
+            "documented_type": "array",
+            "source_table_row": 12
+          },
+          {
+            "path": "package_fields[].id",
+            "documented_type": "varchar(50)",
+            "source_table_row": 13
+          },
+          {
+            "path": "package_fields[].name",
+            "documented_type": "varchar(50)",
+            "source_table_row": 14
+          },
+          {
+            "path": "package_fields[].type",
+            "documented_type": "varchar(10)",
+            "source_table_row": 15,
+            "documented_values": [
+              "select",
+              "checkbox",
+              "text",
+              "float",
+              "int"
+            ]
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "example_only_package_metadata": [
+          "decimal_places",
+          "options",
+          "default"
+        ],
+        "example_only_package_metadata_are_not_full_formal_schema": true
+      },
+      "documented_notes_pl": [
+        "fields[].type:select/checkbox/text/date; package_fields[].type:select/checkbox/text/float/int.",
+        "options jest mapą optionID→nazwa, show_field mapą optionID→lista dodatkowych fieldID.",
+        "Niepuste fields[].function wymaga getCourierServices z kontekstem zamówienia i przesyłki; stałe opcje nie wymagają tego kroku.",
+        "Tabela package_fields opisuje tylko id/name/type. decimal_places, options i default pojawiają się w przykładzie; getPricePackage odwołuje się do decimal_places, ale jego typ i pełna wymagalność w metadanych nie są zdefiniowane.",
+        "fields[].value ma deklarowany varchar(50), lecz przykład daty jest liczbą. Metadane nie zawierają formalnej flagi required ani pełnego schematu walidacji per kurier."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "dynamic_form",
+      "proposed_acceptance": [
+        "Provider metadata maps options/show_field/function and type-specific values without inventing required flags.",
+        "Dependent services refresh from current order/account/form/package input; examples do not freeze global field IDs.",
+        "Verify select/checkbox options and show_field dependencies, dynamic function marker, metadata type distinctions and unknown requiredness."
+      ]
+    },
+    {
+      "id": "BASE-API-getCourierServices",
+      "method": "getCourierServices",
+      "family": "Courier shipments",
+      "group": "Courier info",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCourierServices",
+        "final_url": "https://api.baselinker.com/index.php?method=getCourierServices",
+        "retrieved_at": "2026-10-17T18:05:48.951025+00:00",
+        "http_status": 200,
+        "bytes": 50598,
+        "sha256": "ff2567ca6baed3cfadfc39239012d1457c0394b6e41202ef50ed50774f4789cb",
+        "snapshot_document_method": "getCourierServices"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca dynamiczne usługi zależne od zamówienia i parametrów przesyłki. Dokumentacja ogranicza zastosowanie do BrokerSystem, Wysyłam z Allegro i ErliPRO.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "order_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 2,
+            "meaning_pl": "ID zamówienia",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 3,
+            "meaning_pl": "ID konta kuriera",
+            "blank": "first_available_account",
+            "blank_representation": "not_documented",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fields",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "formularz przesyłki lub odbioru",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "packages",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 5,
+            "meaning_pl": "paczki przesyłki",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "services",
+            "documented_type": "array",
+            "source_table_row": 2,
+            "shape": "object_keyed_by_service_id"
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Dopuszczone konteksty według opisu:BrokerSystem, Wysyłam z Allegro, ErliPRO; kodów wszystkich tych integracji strona nie wylicza.",
+        "Proza fields sugeruje klucze field_id, ale przykład i odwołanie createPackage wskazują listę id/value; konflikt pozostaje otwarty.",
+        "services opisano jako array/mapę serviceID→nazwa, a przykład jest obiektem; ceny w nazwach usług nie zastępują pól wyceny.",
+        "Puste account_id wybiera pierwsze konto; konkretna reprezentacja pustej wartości i pominięcia jest nieokreślona."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "dynamic_form",
+      "proposed_acceptance": [
+        "Provider metadata maps options/show_field/function and type-specific values without inventing required flags.",
+        "Dependent services refresh from current order/account/form/package input; examples do not freeze global field IDs.",
+        "Change an order/account/package dependency and verify refreshed services for a documented supported integration; do not call this method for fixed-option couriers as a fabricated requirement."
+      ]
+    },
+    {
+      "id": "BASE-API-getCouriersList",
+      "method": "getCouriersList",
+      "family": "Courier shipments",
+      "group": "Courier info",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCouriersList",
+        "final_url": "https://api.baselinker.com/index.php?method=getCouriersList",
+        "retrieved_at": "2026-10-17T18:05:49.097193+00:00",
+        "http_status": 200,
+        "bytes": 49716,
+        "sha256": "f3a634d41b5b1a101713db0a17c676000b86787e93bcdb14d451179193521c21",
+        "snapshot_document_method": "getCouriersList"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca kody i nazwy dostępnych kurierów.",
+      "input": {
+        "parameters": [],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "couriers",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "couriers[].code",
+            "documented_type": "varchar(20)",
+            "source_table_row": 3
+          },
+          {
+            "path": "couriers[].name",
+            "documented_type": "varchar(30)",
+            "source_table_row": 4
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Brak parametrów w tabeli wejścia; przykład {}. Nazwy i kody w przykładzie nie są zamrożoną listą wszystkich kurierów."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "account_permissions_and_collection_completeness_not_documented"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "courier_discovery",
+      "proposed_acceptance": [
+        "Available courier codes and configured accounts remain distinct; empty lists and account permissions are tested.",
+        "No stable first-account ordering is fabricated from documentation examples.",
+        "Verify code/name pairs and empty/changed catalogue without treating the documentation sample as an exhaustive provider roster."
+      ]
+    },
+    {
+      "id": "BASE-API-getCourierDocument",
+      "method": "getCourierDocument",
+      "family": "Courier shipments",
+      "group": "Label & protocol",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getCourierDocument",
+        "final_url": "https://api.baselinker.com/index.php?method=getCourierDocument",
+        "retrieved_at": "2026-10-17T18:05:48.658156+00:00",
+        "http_status": 200,
+        "bytes": 49844,
+        "sha256": "bd5c23fdea17d23a5b29eb54cd4a93fa77324776f00bd07e6af797c1c2028408",
+        "snapshot_document_method": "getCourierDocument"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Pobiera dokument przesyłki wybranego rodzaju, zakodowany base64.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "document_type",
+            "documented_type": "text",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 2,
+            "meaning_pl": "rodzaj dokumentu",
+            "documented_values": [
+              "manifest",
+              "protocol",
+              "label",
+              "customs_document"
+            ],
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 3,
+            "meaning_pl": "ID konta kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_ids",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "source_table_row": 4,
+            "meaning_pl": "lista ID przesyłek",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_numbers",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_optional",
+            "source_table_row": 5,
+            "meaning_pl": "lista numerów przewozowych",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "extension",
+            "documented_type": "varchar(4)",
+            "source_table_row": 2,
+            "example_formats": [
+              "pdf",
+              "zpl",
+              "epl",
+              "html"
+            ],
+            "format_list_exhaustive": false
+          },
+          {
+            "path": "document",
+            "documented_type": "text",
+            "source_table_row": 3,
+            "encoding": "base64"
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "binary_limits": "not_documented"
+      },
+      "documented_notes_pl": [
+        "document_type:manifest/protocol/label/customs_document.",
+        "package_ids i package_numbers są oba oznaczone optional; nie określono tu warunku co najmniej jednej listy ani ich wzajemnej relacji.",
+        "Nie opisano domyślnego konta, zakresu czasowego dokumentu, MIME, wielkości i obsługiwanych typów per kurier."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "documents",
+      "proposed_acceptance": [
+        "Correct own shipment/account resolves document type; Base JSON+base64 envelope and each actually supported format are verified separately from local PDF routes.",
+        "Alternative ID/list selectors, unavailable document, malformed base64 and lost acknowledgement receive explicit outcomes.",
+        "Resolve document_type independently for manifest/protocol/label/customs_document and represent unsupported courier/type honestly; preserve document+extension base64 wire."
+      ]
+    },
+    {
+      "id": "BASE-API-getLabel",
+      "method": "getLabel",
+      "family": "Courier shipments",
+      "group": "Label & protocol",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getLabel",
+        "final_url": "https://api.baselinker.com/index.php?method=getLabel",
+        "retrieved_at": "2026-10-17T18:05:48.911259+00:00",
+        "http_status": 200,
+        "bytes": 49373,
+        "sha256": "18b30ed3dbcfb580c5b19e9b9fd7c2215397e2a9dfa911e081b08f6ebf8fe2fe",
+        "snapshot_document_method": "getLabel"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Pobiera etykietę dla przesyłki wskazanej ID albo numerem; dane binarne są kodowane base64.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_id",
+            "documented_type": "int",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 2,
+            "meaning_pl": "ID przesyłki",
+            "required_when": "package_number absent",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_number",
+            "documented_type": "varchar(40)",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 3,
+            "meaning_pl": "numer przewozowy",
+            "required_when": "package_id absent",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "package_id",
+              "package_number"
+            ],
+            "simultaneous_conflicting_values": "not_documented"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "extension",
+            "documented_type": "varchar(4)",
+            "source_table_row": 2,
+            "documented_values": [
+              "pdf",
+              "html",
+              "gif",
+              "png",
+              "epl",
+              "zpl",
+              "dpl"
+            ]
+          },
+          {
+            "path": "label",
+            "documented_type": "text",
+            "source_table_row": 3,
+            "encoding": "base64"
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "binary_limits": "not_documented"
+      },
+      "documented_notes_pl": [
+        "Co najmniej jedno z package_id/package_number; relacja równocześnie przekazanych sprzecznych wartości nieopisana.",
+        "Rozszerzenia wymienione na stronie:pdf/html/gif/png/epl/zpl/dpl; nie jest to dowód obsługi każdego formatu przez każdego kuriera.",
+        "Brak parametru account_id i wyboru formatu; nie dopisujemy ich do kontraktu tej metody."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "documents",
+      "proposed_acceptance": [
+        "Correct own shipment/account resolves document type; Base JSON+base64 envelope and each actually supported format are verified separately from local PDF routes.",
+        "Alternative ID/list selectors, unavailable document, malformed base64 and lost acknowledgement receive explicit outcomes.",
+        "Read the same own shipment by ID and number, verify actual format/base64, and refuse mismatched/foreign selectors without assuming every courier supports all listed extensions."
+      ]
+    },
+    {
+      "id": "BASE-API-getProtocol",
+      "method": "getProtocol",
+      "family": "Courier shipments",
+      "group": "Label & protocol",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getProtocol",
+        "final_url": "https://api.baselinker.com/index.php?method=getProtocol",
+        "retrieved_at": "2026-10-17T18:05:49.137299+00:00",
+        "http_status": 200,
+        "bytes": 49683,
+        "sha256": "2624861bbbcd8d80527ff7547a56460417c9fe4ce35009993b5dcfe928bd6f49",
+        "snapshot_document_method": "getProtocol"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Pobiera protokół zbiorczy dla wybranych przesyłek, jeśli dany kurier go udostępnia.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_ids",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 2,
+            "meaning_pl": "lista ID przesyłek",
+            "required_when": "package_numbers absent",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_numbers",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 3,
+            "meaning_pl": "lista numerów przewozowych",
+            "required_when": "package_ids absent",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "ID konta kuriera",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "package_ids",
+              "package_numbers"
+            ],
+            "simultaneous_conflicting_values": "not_documented"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "extension",
+            "documented_type": "varchar(4)",
+            "source_table_row": 2,
+            "documented_values": [
+              "pdf",
+              "html"
+            ]
+          },
+          {
+            "path": "protocol",
+            "documented_type": "text",
+            "source_table_row": 3,
+            "encoding": "base64"
+          }
+        ],
+        "error_fields_ref": "common_error",
+        "binary_limits": "not_documented"
+      },
+      "documented_notes_pl": [
+        "Co najmniej jedna z list package_ids/package_numbers; elementy i zgodność obu list nie zostały sformalizowane.",
+        "extension według opisu pdf/html. Brak deklarowanej obsługi każdego kuriera, limitu paczek i reguł częściowego powodzenia.",
+        "Przykład nie przekazuje account_id, choć tabela go nie oznacza optional; wymagalność pozostaje nieokreślona."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "documents",
+      "proposed_acceptance": [
+        "Correct own shipment/account resolves document type; Base JSON+base64 envelope and each actually supported format are verified separately from local PDF routes.",
+        "Alternative ID/list selectors, unavailable document, malformed base64 and lost acknowledgement receive explicit outcomes.",
+        "Resolve selected parcel lists and actual courier/account support; verify protocol+extension and no fabricated complete success for an unsupported or partially missing batch."
+      ]
+    },
+    {
+      "id": "BASE-API-getRequestParcelPickupFields",
+      "method": "getRequestParcelPickupFields",
+      "family": "Courier shipments",
+      "group": "Parcel pickups",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=getRequestParcelPickupFields",
+        "final_url": "https://api.baselinker.com/index.php?method=getRequestParcelPickupFields",
+        "retrieved_at": "2026-10-17T18:05:50.251257+00:00",
+        "http_status": 200,
+        "bytes": 49833,
+        "sha256": "b4250c3e38bffc7beda537138da5030fdeeaed95ff152330b943122633804e7a",
+        "snapshot_document_method": "getRequestParcelPickupFields"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zwraca metadane dodatkowych pól potrzebnych do zamówienia odbioru paczek.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented"
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "fields",
+            "documented_type": "array",
+            "source_table_row": 2
+          },
+          {
+            "path": "fields[].id",
+            "documented_type": "varchar(50)",
+            "source_table_row": 3
+          },
+          {
+            "path": "fields[].name",
+            "documented_type": "varchar(50)",
+            "source_table_row": 4
+          },
+          {
+            "path": "fields[].type",
+            "documented_type": "varchar(10)",
+            "source_table_row": 5,
+            "documented_values": [
+              "select",
+              "checkbox",
+              "text",
+              "date"
+            ]
+          },
+          {
+            "path": "fields[].desc",
+            "documented_type": "text",
+            "source_table_row": 6
+          },
+          {
+            "path": "fields[].options",
+            "documented_type": "array",
+            "source_table_row": 7,
+            "shape": "object_keyed_by_option_id",
+            "conditional_presence": "select_or_checkbox"
+          },
+          {
+            "path": "fields[].value",
+            "documented_type": "varchar(50)",
+            "source_table_row": 8
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "fields[].type:select/checkbox/text/date; options mapuje identyfikator opcji na nazwę; value to wartość domyślna.",
+        "Metadane zależą od kuriera i nie określają formalnej flagi required, okien odbioru ani kompletnego zbioru pól."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "not_applicable_as_new_shipment_mutation",
+      "current_code_mapping_ref": "pickups",
+      "proposed_acceptance": [
+        "Discover actual courier pickup fields before sending a request for existing own shipments.",
+        "Validate both ID-list variants and account boundaries; uncertain request is reconciled rather than automatically duplicated.",
+        "Read current courier-specific pickup form metadata and distinguish missing options/default values from known defaults; do not invent a general required flag."
+      ]
+    },
+    {
+      "id": "BASE-API-runRequestParcelPickup",
+      "method": "runRequestParcelPickup",
+      "family": "Courier shipments",
+      "group": "Parcel pickups",
+      "source": {
+        "url": "https://api.baselinker.com/index.php?method=runRequestParcelPickup",
+        "final_url": "https://api.baselinker.com/index.php?method=runRequestParcelPickup",
+        "retrieved_at": "2026-10-17T18:05:49.439297+00:00",
+        "http_status": 200,
+        "bytes": 50364,
+        "sha256": "8e71f639e140441a20c0a85e4cdaad6f7d9bce9ab902a0760e187a13fa14e0c3",
+        "snapshot_document_method": "runRequestParcelPickup"
+      },
+      "contract_reviewed": true,
+      "operational_contract_fully_resolved": false,
+      "implementation_verified": false,
+      "acceptance_granted": false,
+      "semantics_pl": "Zamawia odbiór wcześniej utworzonych przesyłek w API kuriera, jeśli kurier to obsługuje.",
+      "input": {
+        "parameters": [
+          {
+            "name": "courier_code",
+            "documented_type": "varchar(20)",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 1,
+            "meaning_pl": "kod kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_ids",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 2,
+            "meaning_pl": "lista ID przesyłek",
+            "required_when": "package_numbers absent",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "package_numbers",
+            "documented_type": "array",
+            "required": false,
+            "requiredness_source": "explicit_alternative_identifier",
+            "source_table_row": 3,
+            "meaning_pl": "lista numerów przewozowych",
+            "required_when": "package_ids absent",
+            "item_type": "not_explicitly_declared",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "account_id",
+            "documented_type": "int",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 4,
+            "meaning_pl": "ID konta kuriera",
+            "default_status": "not_documented"
+          },
+          {
+            "name": "fields",
+            "documented_type": "array",
+            "required": null,
+            "requiredness_source": "not_explicitly_marked",
+            "source_table_row": 5,
+            "meaning_pl": "formularz przesyłki lub odbioru",
+            "multi_checkbox_encoding": "repeat_id_in_separate_id_value_objects",
+            "default_status": "not_documented"
+          }
+        ],
+        "unknown_parameter_handling": "not_documented",
+        "null_handling": "not_documented",
+        "empty_value_handling": "not_documented_except_explicit_notes",
+        "validation_order": "not_documented",
+        "cross_field_constraints": [
+          {
+            "kind": "at_least_one_alternative",
+            "parameters": [
+              "package_ids",
+              "package_numbers"
+            ],
+            "simultaneous_conflicting_values": "not_documented"
+          }
+        ]
+      },
+      "output": {
+        "format": "JSON",
+        "fields": [
+          {
+            "path": "status",
+            "documented_type": "varchar(30)",
+            "source_table_row": 1,
+            "documented_values": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          {
+            "path": "pickup_number",
+            "documented_type": "varchar(50)",
+            "source_table_row": 2
+          }
+        ],
+        "error_fields_ref": "common_error"
+      },
+      "documented_notes_pl": [
+        "Co najmniej jedna z package_ids/package_numbers; account_id odsyła do getCourierAccounts bez opisanego domyślnego konta.",
+        "fields pochodzi z getRequestParcelPickupFields; przykład listy id/value nie jest pełnym schematem pól każdego kuriera.",
+        "Dokumentacja nie opisuje klucza idempotencji, możliwości anulowania/zmiany odbioru, częściowej akceptacji i rozstrzygania utraconej odpowiedzi."
+      ],
+      "pagination": {
+        "kind": "no_pagination_parameters_documented",
+        "result_cap": null,
+        "completeness_guarantee": "not_documented"
+      },
+      "errors": {
+        "common_ref": "common_error",
+        "method_specific_codes": [],
+        "http_status_mapping": "not_documented",
+        "permission_matrix": "not_documented",
+        "retry_after": "not_documented"
+      },
+      "courier_specific_dependencies_open": [
+        "capability_and_exact_wire_values_require_provider_account_or_official_clarification"
+      ],
+      "mutation_idempotency": "no_documented_client_idempotency_or_unknown_outcome_reconciliation",
+      "current_code_mapping_ref": "pickups",
+      "proposed_acceptance": [
+        "Discover actual courier pickup fields before sending a request for existing own shipments.",
+        "Validate both ID-list variants and account boundaries; uncertain request is reconciled rather than automatically duplicated.",
+        "Request pickup only for existing own shipments using discovered fields; preserve pickup_number and reconcile lost acknowledgement without duplicate pickup or invented cancellation."
+      ]
+    }
+  ]
+}

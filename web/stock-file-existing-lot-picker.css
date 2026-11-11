@@ -1,0 +1,55 @@
+.stock-file-lot-picker {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border, #dce2eb);
+  border-radius: 10px;
+  color: var(--text, #17213a);
+}
+.stock-file-lot-picker-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.stock-file-lot-picker p {
+  margin: 10px 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.stock-file-lot-picker label {
+  display: block;
+  margin-bottom: 6px;
+}
+.stock-file-lot-picker select {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  font: inherit;
+  color: inherit;
+  background: var(--panel, #fff);
+  border: 1px solid var(--border, #cfd6e5);
+  border-radius: 7px;
+}
+.stock-file-lot-picker select:focus-visible {
+  outline: 2px solid #657bd1;
+  outline-offset: 2px;
+}
+.stock-file-lot-picker-help {
+  color: var(--muted, #63708a);
+  font-size: 13px;
+}
+.stock-file-lot-picker-error {
+  color: #a32929;
+}
+@media (max-width: 600px) {
+  .stock-file-lot-picker-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .stock-file-lot-picker-toolbar button {
+    width: 100%;
+  }
+}

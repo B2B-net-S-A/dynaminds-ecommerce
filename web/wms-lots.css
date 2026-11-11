@@ -1,0 +1,243 @@
+.wms-lots {
+  display: block;
+  min-width: 0;
+  padding: 20px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--border, #e0e5ef);
+  border-radius: 14px;
+  margin: 18px 0;
+  color: var(--text, #17213a);
+}
+.wms-lots header,
+.wms-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.wms-lots h2 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.wms-lots h3 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+.wms-lots h4 {
+  margin: 16px 0 8px;
+}
+.wms-help {
+  color: var(--muted, #63708a);
+  line-height: 1.6;
+}
+.wms-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.wms-tabs button[aria-pressed='true'] {
+  background: #e9eeff;
+  border-color: #657bd1;
+  color: #253d92;
+}
+.wms-card {
+  border: 1px solid var(--border, #e0e5ef);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 14px 0;
+  min-width: 0;
+}
+.wms-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.wms-lots label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.wms-lots input,
+.wms-lots select,
+.wms-lots textarea {
+  display: block;
+  width: 100%;
+  font: inherit;
+  margin-top: 7px;
+  border: 1px solid #cfd6e5;
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--panel, #fff);
+  color: inherit;
+}
+.wms-lots textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+.wms-full {
+  grid-column: 1/-1;
+}
+.wms-lots fieldset {
+  min-width: 0;
+  border: 1px solid #dce2ee;
+  border-radius: 10px;
+  padding: 14px;
+}
+.wms-lots legend {
+  font-weight: 700;
+  padding: 0 6px;
+}
+.wms-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 9px;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+.wms-check input {
+  width: auto !important;
+  margin: 3px 0 0 !important;
+  flex: none;
+}
+.wms-scroll {
+  width: 100%;
+  overflow: auto;
+  overscroll-behavior-inline: contain;
+  margin: 12px 0;
+}
+.wms-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 850px;
+  font-size: 14px;
+}
+.wms-table th,
+.wms-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e6ebf4;
+  vertical-align: top;
+}
+.wms-table th {
+  background: #f5f7fc;
+  white-space: nowrap;
+}
+.wms-table small,
+.wms-table td > span {
+  display: block;
+  margin-top: 5px;
+}
+.wms-table input,
+.wms-table select {
+  min-width: 120px;
+}
+.wms-table .wms-text {
+  min-width: 190px;
+}
+.wms-table code {
+  overflow-wrap: anywhere;
+}
+.wms-error {
+  padding: 12px;
+  background: #fff0f0;
+  border: 1px solid #f0b5b5;
+  color: #952a2a;
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+.wms-warning {
+  padding: 14px;
+  background: #fff8e8;
+  border: 1px solid #efdb9f;
+  color: #705222;
+  border-radius: 8px;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+.wms-success {
+  padding: 14px;
+  background: #eaf6ed;
+  border: 1px solid #afd4b7;
+  color: #255e32;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+.wms-technical {
+  font-size: 13px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.wms-technical pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 320px;
+  overflow: auto;
+}
+.wms-technical summary {
+  cursor: pointer;
+}
+.wms-lots .button {
+  white-space: normal;
+}
+.wms-history {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.wms-history button {
+  text-align: left;
+  line-height: 1.6;
+}
+.wms-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px;
+  background: #f5f7fc;
+  border-radius: 8px;
+}
+.wms-summary strong {
+  display: block;
+}
+.wms-empty {
+  padding: 16px;
+  border: 1px dashed #d3dbea;
+  color: #63708a;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+@media (min-width: 1180px) {
+  .wms-form.wms-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .wms-lots {
+    padding: 12px;
+  }
+  .wms-card {
+    padding: 12px;
+  }
+  .wms-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wms-tabs .button {
+    flex: 1;
+  }
+  .wms-actions {
+    align-items: stretch;
+  }
+  .wms-actions .button {
+    flex: 1;
+  }
+  .wms-summary {
+    gap: 12px;
+  }
+  .wms-table {
+    min-width: 760px;
+  }
+}

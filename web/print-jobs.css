@@ -1,0 +1,63 @@
+.print-jobs-panel.panel {
+  min-width: 0;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+  overflow-wrap: anywhere;
+  color: var(--text, #172033);
+}
+.print-jobs-panel h2 { margin: 0; font-size: 16px; font-weight: 800; }
+.print-jobs-panel h3 { margin: 0 0 4px; font-size: 14px; }
+.print-jobs-panel p { margin: 0; line-height: 1.6; }
+.print-jobs-panel summary { cursor: pointer; font-weight: 600; padding: 10px 0; }
+.print-jobs-panel fieldset,
+.print-jobs-panel .print-jobs-review,
+.print-jobs-panel > article {
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--border, #dbe2ea);
+  border-radius: 10px;
+}
+.print-jobs-panel fieldset legend { padding: 0 6px; font-weight: 700; }
+.print-jobs-panel .print-jobs-review { background: #f8fafc; }
+.print-jobs-panel .print-jobs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.print-jobs-panel label { display: grid; gap: 7px; min-width: 0; line-height: 1.5; }
+.print-jobs-panel input:not([type='checkbox']),
+.print-jobs-panel select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 9px 11px;
+  border: 1px solid #94a3b8;
+  border-radius: 7px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+.print-jobs-panel label:has(> input[type='checkbox']) { display: flex; align-items: flex-start; gap: 10px; }
+.print-jobs-panel input[type='checkbox'] { width: 17px; height: 17px; flex: 0 0 17px; padding: 0; margin: 3px 0 0; }
+.print-jobs-panel .button { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.5; }
+.print-jobs-panel input:focus-visible,
+.print-jobs-panel select:focus-visible,
+.print-jobs-panel .button:focus-visible,
+.print-jobs-panel summary:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.print-jobs-panel .print-jobs-pdf-preview { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; background: #fff; }
+.print-jobs-panel pre { margin: 0; padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 450px; overflow: auto; border: 1px solid var(--border, #dbe2ea); border-radius: 8px; background: #fff; }
+.print-jobs-panel .print-jobs-pending { display: grid; gap: 12px; padding: 16px; border: 1px solid #fed7aa; border-radius: 8px; background: #fff7ed; }
+.print-jobs-panel .print-jobs-history { display: grid; gap: 10px; padding-top: 8px; }
+.print-jobs-panel .print-jobs-history button { text-align: left; }
+.print-jobs-panel .error,
+.print-jobs-panel [role='status'] { padding: 12px 14px; border-radius: 8px; }
+.print-jobs-panel .error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
+.print-jobs-panel [role='status'] { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
+@media (max-width: 600px) {
+  .print-jobs-panel.panel { padding: 16px; }
+  .print-jobs-panel .print-jobs-grid { grid-template-columns: minmax(0, 1fr); }
+  .print-jobs-panel fieldset,
+  .print-jobs-panel .print-jobs-review,
+  .print-jobs-panel > article { padding: 14px; }
+}

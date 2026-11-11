@@ -1,0 +1,15 @@
+.sar-panel { display: grid; gap: 12px; min-width: 0; }
+.sar-panel p { margin: 4px 0; overflow-wrap: anywhere; }
+.sar-panel .button { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.sar-filters, .sar-pages, .sar-export { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.sar-panel label { display: flex; flex-direction: column; gap: 5px; min-width: 140px; max-width: 100%; }
+.sar-panel input, .sar-panel select { max-width: 100%; }
+.sar-panel label.sar-check { flex-direction: row; align-items: center; min-width: 0; }
+.sar-check input { flex: 0 0 auto; }
+.sar-scroll { overflow-x: auto; max-width: 100%; min-width: 0; }
+.sar-scroll table { min-width: 780px; width: 100%; border-collapse: collapse; text-align: left; }
+.sar-scroll th, .sar-scroll td { padding: 8px; border-bottom: 1px solid #d5dbe5; vertical-align: top; }
+.sar-scroll small { display: block; overflow-wrap: anywhere; font-size: 11px; }
+.sar-detail { display: grid; gap: 10px; min-width: 0; padding: 12px; border: 1px solid #d5dbe5; border-radius: 10px; }
+.sar-panel .button:focus-visible, .sar-panel input:focus-visible, .sar-panel select:focus-visible { outline: 2px solid #276bc0; outline-offset: 2px; }
+@media (max-width: 520px) { .sar-filters, .sar-export { flex-direction: column; align-items: stretch; } .sar-panel label { min-width: 0; } .sar-detail { padding: 8px; } }

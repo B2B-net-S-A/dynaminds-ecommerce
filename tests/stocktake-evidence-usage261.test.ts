@@ -1,0 +1,403 @@
+/** Migration 261_stocktake_evidence_usage (prepared as 277, registered after 260_automation_runs_queued_job;
+ * docs/parity/STOCKTAKE-USAGE-P277-20261029.md "Integracja jako 261"); object names carry no number.
+ * 1. stocktake_adjustment_budget() (149) reads one counter row and the plan instead of counting and summing
+ *    pg_column_size over the nine 149 tables of the tenant on every adjustment transaction;
+ * 2. the shared scan budget reads stocktake_scan_usage instead of summing the two scan tables on every scan.
+ *
+ * The DB part runs only against an own PG04 clone (DATABASE_URL pathname /dynaminds_m261_YYYYMMDD_NN) of the restored
+ * template migrated to HEAD by the real migrate(), which applies 261 and its ledger row (the prepared run applied 277 by
+ * hand; that step is dropped). Planted counters and rows are rolled back, except the HTTP check, which restores what it
+ * changes. */
+import { after, before, test } from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { createHash, randomUUID } from 'node:crypto';
+import type { PoolClient } from 'pg';
+import { RELEASE_MIGRATIONS } from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/migration-manifest.mjs';
+import { STOCKTAKE_ADJUSTMENT_LIMITS } from '../server/stocktake-adjustments-schema';
+import * as limitsModule from '../server/stocktake-limits';
+import { STOCKTAKE_PLAN_LIMITS, stocktakeScanBudgetInTx } from '../server/stocktake-limits';
+
+assert.equal(process.env.DYNA_TEST, 'true');
+const file = new URL('../server/261_stocktake_evidence_usage.sql', import.meta.url);
+const read = (p: string) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
+const sql = () => readFileSync(file, 'utf8');
+const code = (s: string) => s.replace(/--.*$/gm, '');
+const MiB = 1024 * 1024, GiB = 1024 * MiB;
+const adjustmentPlanLimits = () => (limitsModule as Record<string, any>).STOCKTAKE_ADJUSTMENT_PLAN_LIMITS;
+/** The body of one CREATE [OR REPLACE] FUNCTION … AS $$ … $$ statement. */
+function fn(source: string, name: string) {
+  const m = new RegExp(`CREATE (?:OR REPLACE )?FUNCTION ${name}\\(\\)([^$]*)\\$\\$([\\s\\S]*?)\\$\\$;`).exec(source);
+  assert(m, 'function ' + name);
+  return { header: m[1], body: m[2] };
+}
+
+test('261 follows 260 in the release list and pins the exact SQL bytes', () => {
+  const i = RELEASE_MIGRATIONS.findIndex((m: any) => m.number === 261), row: any = RELEASE_MIGRATIONS[i];
+  const b = readFileSync(file);
+  assert(row, 'manifest row 261');
+  assert.equal(row.name, '261_stocktake_evidence_usage');
+  assert.equal(row.file, '261_stocktake_evidence_usage.sql');
+  assert.equal(row.native_id, 'stocktake_evidence_usage261');
+  assert.equal(row.cold.contract, 'stocktake-evidence-usage261');
+  assert.equal(row.cold.project, 'projectCompiledStocktakeEvidenceUsage261Catalogue');
+  assert.equal(row.bytes, b.length);
+  assert.equal(row.sha256, createHash('sha256').update(b).digest('hex'));
+  assert.equal(row.bytes, 15265);
+  assert.equal(row.sha256, '8637a541e4022ceee631e4e191e894bee1d441c6c7ee91b6f5c4f5757d83203d');
+  assert.equal(RELEASE_MIGRATIONS[i - 1].name, '260_automation_runs_queued_job');
+  assert.equal(RELEASE_MIGRATIONS[i + 1]?.name, '262_revoke_public_temporary', '262 follows 261');
+  assert.equal(RELEASE_MIGRATIONS.some((m: any) => m.number === 277 || /^277_/.test(m.file)), false, 'the placeholder number is gone');
+  assert.doesNotMatch(read('server/db.ts'), /stocktake_evidence_usage/, 'db.ts takes 261 from the manifest, not a literal pair');
+});
+
+test('261: the file is the registered migration and keeps the 149 identity of stocktake_adjustment_budget()', () => {
+  assert(existsSync(file), 'server/261_stocktake_evidence_usage.sql exists');
+  assert.match(sql().split('\n')[0], /^-- Migration 261_stocktake_evidence_usage \(prepared as 277, registered after 260_automation_runs_queued_job;/);
+  const old = fn(read('server/149_stocktake_adjustments.sql'), 'stocktake_adjustment_budget');
+  const next = fn(sql(), 'stocktake_adjustment_budget');
+  assert.equal(next.header, old.header, 'same return type, language, SECURITY INVOKER and search_path');
+  assert.match(code(sql()), /CREATE OR REPLACE FUNCTION stocktake_adjustment_budget\(\)/);
+  // Bounded: no count(*), no sum and no reference to any of the nine 149 tables in the new body.
+  assert.doesNotMatch(next.body, /count\(|sum\(|pg_column_size|EXECUTE/i);
+  for (const n of ['series', 'series_commands', 'counters', 'previews', 'preview_rows', 'admissions', 'receipts', 'documents', 'document_rows'])
+    assert.doesNotMatch(next.body, new RegExp(`stocktake_adjustment_${n}\\b`), n);
+  for (const message of ["'Limit dowodów spisu' USING ERRCODE='54000'", "'Limit bajtów dowodów spisu' USING ERRCODE='54000'"]) {
+    assert(old.body.includes(message), message);
+    assert(next.body.includes(message), message);
+  }
+});
+
+test('261: the manifest is regenerated by the 149 statement and every stocktake_adjustment_% function stays private', () => {
+  const s = read('server/149_stocktake_adjustments.sql');
+  const regen = /DO \$\$ DECLARE expected jsonb;BEGIN\n expected:=public\.stocktake_adjustment_metadata\(\);\n EXECUTE format\('CREATE FUNCTION public\.stocktake_adjustment_manifest\(\)[^\n]*\nEND \$\$;/.exec(s)?.[0];
+  const revoke = /DO \$\$ DECLARE p record;BEGIN FOR p IN SELECT oid::regprocedure signature FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname LIKE 'stocktake_adjustment_%' LOOP\n EXECUTE format\('REVOKE ALL ON FUNCTION %s FROM PUBLIC,dyna_app',p\.signature\);END LOOP;END \$\$;/.exec(s)?.[0];
+  assert(regen && revoke, '149 blocks');
+  const body = sql();
+  assert(body.includes(regen.replace('CREATE FUNCTION public.stocktake_adjustment_manifest', 'CREATE OR REPLACE FUNCTION public.stocktake_adjustment_manifest')), 'regenerated like 149 (OR REPLACE keeps OID and ACL)');
+  assert(body.includes(revoke), 'the 149 REVOKE loop');
+  // Regeneration comes after every object the manifest seals.
+  const at = body.indexOf('expected:=public.stocktake_adjustment_metadata()');
+  for (const marker of ['CREATE OR REPLACE FUNCTION stocktake_adjustment_budget()', 'CREATE FUNCTION stocktake_adjustment_usage_track()', 'CREATE FUNCTION stocktake_adjustment_usage_track_update()', 'stocktake_adjustment_usage_insert AFTER INSERT', 'stocktake_adjustment_usage_update AFTER UPDATE'])
+    assert(body.indexOf(marker) >= 0 && body.indexOf(marker) < at, marker);
+  assert(body.indexOf(revoke) > at);
+  // No change to any table, column, constraint, index, policy or grant of 149, 029 or 094.
+  assert.doesNotMatch(code(body), /ALTER TABLE (?:public\.)?(?:stocktake_adjustment_(?!usage\b)\w+|stocktake_scan_receipts|stocktake_measurements|stocktakes)\b/);
+  assert.doesNotMatch(code(body), /\bDROP\b|GRANT [A-Z, ]+ ON (?:public\.)?stocktake_adjustment_|CREATE INDEX/);
+});
+
+test('adjustment caps per plan: SQL literals are STOCKTAKE_ADJUSTMENT_PLAN_LIMITS; starter/business keep the 149 values', () => {
+  const p = adjustmentPlanLimits();
+  assert(p, 'server/stocktake-limits.ts exports STOCKTAKE_ADJUSTMENT_PLAN_LIMITS');
+  for (const plan of ['starter', 'business']) {
+    assert.equal(p[plan].previews, STOCKTAKE_ADJUSTMENT_LIMITS.previews);
+    assert.equal(p[plan].receipts, STOCKTAKE_ADJUSTMENT_LIMITS.receipts);
+    assert.equal(p[plan].series, STOCKTAKE_ADJUSTMENT_LIMITS.series);
+    assert.equal(p[plan].evidence_bytes, STOCKTAKE_ADJUSTMENT_LIMITS.tenant_evidence_bytes);
+  }
+  const e = p.enterprise;
+  // One receipt per posted stocktake (UNIQUE per source); enterprise heads are 100x business, so are these.
+  assert.equal(e.previews / STOCKTAKE_ADJUSTMENT_LIMITS.previews, STOCKTAKE_PLAN_LIMITS.enterprise.heads / STOCKTAKE_PLAN_LIMITS.business.heads);
+  assert.equal(e.receipts, e.previews);
+  assert(e.receipts >= STOCKTAKE_PLAN_LIMITS.enterprise.heads, 'never binds before the WMS head cap');
+  assert(e.evidence_bytes / e.receipts >= STOCKTAKE_ADJUSTMENT_LIMITS.tenant_evidence_bytes / STOCKTAKE_ADJUSTMENT_LIMITS.receipts, 'no less room per settlement than business');
+  assert.equal(e.series, 100);
+  const body = fn(sql(), 'stocktake_adjustment_budget').body;
+  assert.match(body, new RegExp(`records bigint:=${STOCKTAKE_ADJUSTMENT_LIMITS.previews};bytes bigint:=${STOCKTAKE_ADJUSTMENT_LIMITS.tenant_evidence_bytes};`));
+  assert.match(body, new RegExp(`plan='enterprise'\\) THEN records:=${e.receipts};bytes:=${e.evidence_bytes};END IF;`));
+  assert.match(body, /coalesce\(u\.series,0\)>100 OR coalesce\(u\.previews,0\)>records OR coalesce\(u\.receipts,0\)>records OR coalesce\(u\.series_commands,0\)>5000/);
+});
+
+/** Fake transaction for the scan budget: plan, the 235 WMS counter, optional 277 scan counter. */
+function fakeScan(plan: string, counter: { receipts: number; bytes: bigint } | null, perStocktake = 0) {
+  const seen: string[] = [];
+  const c = {
+    async query(text: string, params: unknown[] = []) {
+      seen.push(text);
+      if (/SELECT plan FROM tenants/.test(text)) return { rows: [{ plan }] };
+      if (/to_regclass\('public\.stocktake_scan_usage'\)/.test(text)) return { rows: [{ counter: counter !== null }] };
+      if (/FROM public\.stocktake_scan_usage/.test(text)) return { rows: [{ receipts: String(counter!.receipts), bytes: String(counter!.bytes) }] };
+      if (/to_regclass\('public\.wms_evidence_usage'\)/.test(text)) return { rows: [{ counter: true, stocktakes: true }] };
+      if (/wms_evidence_usage_settle/.test(text)) return { rows: [] };
+      if (/FROM wms_evidence_usage/.test(text)) return { rows: [{ previews: '0', operations: '0', layers: '0', bytes: '0' }] };
+      if (/SELECT plan|FROM tenants/.test(text)) return { rows: [{ plan }] };
+      const m = /FROM \(SELECT 1 FROM stocktake_scan_receipts .*LIMIT \$(\d+)\) x/.exec(text);
+      if (m) return { rows: [{ n: String(/stocktake_id/.test(text) ? perStocktake : 0) }] };
+      if (/octet_length\(to_jsonb/.test(text)) return { rows: [{ bytes: '0' }] };
+      throw new Error('unexpected query ' + text + ' ' + JSON.stringify(params));
+    },
+  } as unknown as PoolClient;
+  return { c, seen };
+}
+const outcome = (p: Promise<unknown>) => p.then(() => 'admitted', (e: any) => `${e.status} ${e.message}`);
+
+test('scan budget with the 277 counter: no exact sum and no tenant-wide receipt count, caps per plan from the counter', async () => {
+  const fresh = randomUUID();
+  const at = (plan: string, receipts: number, bytes: bigint) => fakeScan(plan, { receipts, bytes });
+  const ok = at('business', 1_000_000, BigInt(128 * MiB));
+  assert.equal(await outcome(stocktakeScanBudgetInTx(ok.c, 'quantity', fresh)), 'admitted');
+  assert(!ok.seen.some((q) => /octet_length\(to_jsonb/.test(q)), 'no exact sum of the scan tables');
+  assert(!ok.seen.some((q) => /SELECT 1 FROM stocktake_scan_receipts WHERE tenant_id=[^)]*LIMIT/.test(q) && !/stocktake_id/.test(q)), 'no tenant-wide receipt count');
+  assert(ok.seen.some((q) => /SELECT 1 FROM stocktake_scan_receipts .*stocktake_id/.test(q)), 'the per-stocktake bounded count stays');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('business', 1_000_001, 0n).c, 'quantity', fresh)), '429 Wyczerpano trwały limit skanów');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('enterprise', 1_000_001, 0n).c, 'quantity', fresh)), 'admitted');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('enterprise', 2_000_001, 0n).c, 'quantity', fresh)), '429 Wyczerpano trwały limit skanów');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('starter', 1, BigInt(128 * MiB) + 1n).c, 'quantity', fresh)), '429 Wyczerpano wspólny budżet dowodów skanowania');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('enterprise', 1, BigInt(128 * MiB) + 1n).c, 'quantity', fresh)), 'admitted');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(at('enterprise', 1, BigInt(96 * GiB) + 1n).c, 'quantity', fresh)), '429 Wyczerpano wspólny budżet dowodów skanowania');
+  assert.equal(await outcome(stocktakeScanBudgetInTx(fakeScan('enterprise', { receipts: 1, bytes: 0n }, 100_001).c, 'quantity', fresh)), '429 Wyczerpano trwały limit skanów');
+});
+
+test('scan budget without the counter keeps the exact scan and the bounded tenant count (fallback)', async () => {
+  const f = fakeScan('business', null);
+  assert.equal(await outcome(stocktakeScanBudgetInTx(f.c, 'wms', randomUUID())), 'admitted');
+  assert(f.seen.some((q) => /octet_length\(to_jsonb\(t\)::text\)\),0\) n FROM stocktake_scan_receipts t/.test(q) && /FROM stocktake_measurements t/.test(q)), 'exact sum');
+  assert(f.seen.some((q) => /SELECT 1 FROM stocktake_scan_receipts WHERE tenant_id=\S+ LIMIT \$1\) x/.test(q)), 'bounded tenant count');
+  assert(!f.seen.some((q) => /FROM public\.stocktake_scan_usage/.test(q)));
+});
+
+// ---- PG04 own clone ----
+const database = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL) : null;
+const onClone = database?.hostname === '127.0.0.1' && database.port === '57084' && /^\/dynaminds_m26[123]_\d{8}_\d{2}$/.test(database.pathname);
+const db = { skip: onClone ? false : 'needs DATABASE_URL of an own dynaminds_m261_YYYYMMDD_NN clone migrated to HEAD' };
+let app: any;
+before(async () => {
+  if (!onClone) return;
+  const { migrate, pool } = await import('../server/db');
+  await migrate();
+  // The real migrate() applies 261 and its ledger row; nothing is applied by hand.
+  assert.deepEqual((await pool.query("SELECT to_regclass('public.stocktake_scan_usage') IS NOT NULL s,to_regclass('public.stocktake_adjustment_usage') IS NOT NULL a,EXISTS(SELECT FROM migrations WHERE name='261_stocktake_evidence_usage') ledger")).rows[0],
+    { s: true, a: true, ledger: true }, '261 applied by migrate()');
+  const { seed } = await import('./fixtures');
+  await seed();
+  const { buildApp } = await import('../server/app');
+  app = await buildApp({ integrationTransport: async () => { throw Error('277 tests must not call providers'); } });
+});
+after(async () => {
+  if (!onClone) return;
+  try { await app?.close(); } finally { await (await import('../server/db')).pool.end(); }
+});
+async function rolledBack(work: (c: PoolClient) => Promise<void>) {
+  const { pool } = await import('../server/db');
+  const c = await pool.connect();
+  try { await c.query('BEGIN'); await c.query('SET LOCAL statement_timeout=0'); await work(c); }
+  finally { await c.query('ROLLBACK'); c.release(); }
+}
+const guards = ['ordinary187_valid', 'buyer_address_guards', 'order_merge_delivery209_valid', 'return_credit206_guards', 'ordinary188_structure_valid',
+  'return_credit211_metadata_valid', 'large_import173_valid', 'fa3_draft_guards', 'pim_dictionary_valid', 'local_invoice_guards', 'warehouse_wz_issuer_guards',
+  'email_inbound_guards', 'catalog_stock_control_guards', 'financial_return_guards', 'stocktake_adjustment_guards', 'warehouse_inventory_policy_guards',
+  'catalog_stock_count_guards', 'catalog_stock_return_guards'];
+
+test('clone with 261: the 18 guards are true and the regenerated manifest equals the metadata', db, async () => {
+  await rolledBack(async (c) => {
+    await c.query("SET LOCAL jit=off"); await c.query("SET LOCAL timezone='UTC'"); await c.query("SET LOCAL statement_timeout='60s'");
+    for (const g of guards) assert.equal((await c.query(`SELECT public.${g}() v`)).rows[0].v, true, g);
+    assert.equal((await c.query('SELECT public.stocktake_adjustment_metadata()=public.stocktake_adjustment_manifest() v')).rows[0].v, true);
+    const m = (await c.query("SELECT public.stocktake_adjustment_manifest() m")).rows[0].m;
+    const triggers = m.triggers.filter((t: any) => /^stocktake_adjustment_usage_/.test(t.name)).map((t: any) => t.table + ':' + t.name);
+    assert.equal(triggers.length, 11, 'nine INSERT and two UPDATE usage triggers are sealed: ' + triggers.join(','));
+    const fns = m.functions.map((f: any) => f.signature);
+    for (const s of ['stocktake_adjustment_budget()', 'stocktake_adjustment_usage_track()', 'stocktake_adjustment_usage_track_update()']) assert(fns.includes(s), s);
+  });
+});
+
+test('clone with 261: identity and privileges of the changed and new objects', db, async () => {
+  await rolledBack(async (c) => {
+    const budget = (await c.query(`SELECT p.prosecdef,p.proconfig,pg_get_userbyid(p.proowner)=pg_get_userbyid(c.relowner) same_owner,
+      NOT EXISTS(SELECT 1 FROM aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x WHERE x.grantee<>p.proowner OR x.is_grantable) private
+      FROM pg_proc p,pg_class c WHERE p.oid='public.stocktake_adjustment_budget()'::regprocedure AND c.oid='public.stocktake_adjustment_series'::regclass`)).rows[0];
+    assert.deepEqual(budget, { prosecdef: false, proconfig: ['search_path=pg_catalog, public'], same_owner: true, private: true }, 'no EXECUTE for PUBLIC or dyna_app');
+    const fns = (await c.query(`SELECT proname,prosecdef,proconfig,has_function_privilege('dyna_app',oid,'EXECUTE') app FROM pg_proc
+      WHERE pronamespace='public'::regnamespace AND (proname LIKE 'stocktake\\_adjustment\\_usage%' OR proname LIKE 'stocktake\\_scan\\_usage%') ORDER BY 1`)).rows;
+    assert.deepEqual(fns.map((f) => f.proname), ['stocktake_adjustment_usage_track', 'stocktake_adjustment_usage_track_update', 'stocktake_scan_usage_add', 'stocktake_scan_usage_track', 'stocktake_scan_usage_track_delete', 'stocktake_scan_usage_track_update']);
+    for (const f of fns) {
+      assert.equal(f.prosecdef, true, f.proname); assert.deepEqual(f.proconfig, ['search_path=pg_catalog, public'], f.proname);
+      assert.equal(f.app, false, f.proname + ' is not callable by dyna_app');
+    }
+    const tables = (await c.query(`SELECT relname,relrowsecurity,relforcerowsecurity,has_table_privilege('dyna_app',oid,'SELECT') sel,
+      has_table_privilege('dyna_app',oid,'INSERT,UPDATE,DELETE,TRUNCATE') write FROM pg_class WHERE oid IN('public.stocktake_adjustment_usage'::regclass,'public.stocktake_scan_usage'::regclass) ORDER BY 1`)).rows;
+    assert.deepEqual(tables, [
+      { relname: 'stocktake_adjustment_usage', relrowsecurity: true, relforcerowsecurity: true, sel: false, write: false },
+      { relname: 'stocktake_scan_usage', relrowsecurity: true, relforcerowsecurity: true, sel: true, write: false },
+    ]);
+  });
+});
+
+/** Recomputation for one tenant. `bytes`: every stored row measured as the 277 triggers measure it (read back by key in
+ * a scalar subquery over the table). `bytes149`: the old budget's sum over a scan, which reads some small rows (<127 B)
+ * 3 bytes shorter depending on the tuple form, so it may be lower by at most 3 bytes per row. */
+const keys: Record<string, string[]> = { counters: ['tenant_id', 'series_id', 'year'], preview_rows: ['tenant_id', 'preview_id', 'ordinal'], document_rows: ['tenant_id', 'document_id', 'ordinal'] };
+async function exactAdjustment(c: PoolClient, tenant: string) {
+  const parts = ['series', 'series_commands', 'counters', 'previews', 'preview_rows', 'admissions', 'receipts', 'documents', 'document_rows'].map((n) => {
+    const k = keys[n] ?? ['tenant_id', 'id'];
+    return `SELECT '${n}' t,count(*) n,coalesce(sum(pg_column_size(r)),0) b149,
+      coalesce(sum((SELECT pg_column_size(s) FROM public.stocktake_adjustment_${n} s WHERE (${k.map((x) => 's.' + x)})=(${k.map((x) => 'r.' + x)}))),0) b
+      FROM public.stocktake_adjustment_${n} r WHERE tenant_id=$1`;
+  });
+  const rows = (await c.query(`SELECT t,n::text,b::text,b149::text FROM (${parts.join(' UNION ALL ')}) x`, [tenant])).rows;
+  const n = (t: string) => rows.find((r) => r.t === t).n;
+  return { counts: { series: n('series'), series_commands: n('series_commands'), previews: n('previews'), receipts: n('receipts'),
+    bytes: String(rows.reduce((s, r) => s + BigInt(r.b), 0n)) }, bytes149: rows.reduce((s, r) => s + BigInt(r.b149), 0n),
+    rows: rows.reduce((s, r) => s + BigInt(r.n), 0n) };
+}
+const usageRow = async (c: PoolClient, tenant: string) => (await c.query(
+  'SELECT series::text,series_commands::text,previews::text,receipts::text,bytes::text FROM public.stocktake_adjustment_usage WHERE tenant_id=$1', [tenant])).rows[0];
+
+test('clone with 261: real ON and OFF PW/RW posts keep the adjustment counter equal to the stored size of every row (the 149 sum within 3 B per row)', db, async () => {
+  const { pool } = await import('../server/db');
+  const { stocktakeAdjustmentFixture, countedAdjustmentSource } = await import('./stocktake-adjustments-fixture');
+  for (const on of [false, true]) {
+    const f = await stocktakeAdjustmentFixture(app, on);
+    const series: Record<string, any> = {};
+    for (const kind of ['PW', 'RW']) {
+      const body = { client_key: randomUUID(), kind, name: 'Usage ' + kind, prefix: kind + randomUUID().replaceAll('-', '').slice(0, 10).toUpperCase() };
+      series[kind] = (await f.ok('/stocktake-adjustments/series', 'POST', body, 201)).series;
+      await f.ok('/stocktake-adjustments/series', 'POST', body); // exact replay: no new row
+    }
+    const source = await countedAdjustmentSource(f, 'mixed');
+    const body = { client_key: randomUUID(), source_kind: source.source_kind, stocktake_id: source.id, version: source.version,
+      ...(on ? { review_id: source.review_id, scope_hash: source.scope_hash } : { review_hash: source.review_hash }), pw_series_id: series.PW.id, rw_series_id: series.RW.id };
+    const p = (await f.ok('/stocktake-adjustments/previews', 'POST', body, 201)).preview;
+    await f.ok('/stocktake-adjustments/previews', 'POST', body);
+    const posted = await f.ok('/stocktake-adjustments/previews/' + p.id + '/post', 'POST', { client_key: randomUUID(), scope_hash: p.scope_hash, confirmed: true }, 201);
+    assert.equal(posted.receipt.documents.length, 2);
+    const c = await pool.connect();
+    try {
+      const { counts: exact, bytes149, rows } = await exactAdjustment(c, f.tenant), counted = await usageRow(c, f.tenant);
+      assert.deepEqual(counted, exact, (on ? 'ON' : 'OFF') + ' counter = exact');
+      const drift = BigInt(counted.bytes) - bytes149;
+      assert(drift >= 0n && drift <= 3n * rows, `old 149 sum ${bytes149} within 3 B per row of the counter ${counted.bytes}`);
+      assert.deepEqual({ series: exact.series, series_commands: exact.series_commands, previews: exact.previews, receipts: exact.receipts },
+        { series: '2', series_commands: '2', previews: '1', receipts: '1' });
+    } finally { c.release(); }
+  }
+});
+
+test('clone with 261: the budget is plan-dependent and reads only the counter', db, async () => {
+  await rolledBack(async (c) => {
+    const tenant = (await c.query("SELECT id FROM tenants ORDER BY id LIMIT 1")).rows[0].id;
+    await c.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
+    const ask = async (plan: string, values: Record<string, bigint | number>) => {
+      await c.query('SAVEPOINT b');
+      try {
+        await c.query('UPDATE tenants SET plan=$2 WHERE id=$1', [tenant, plan]);
+        await c.query('DELETE FROM public.stocktake_adjustment_usage WHERE tenant_id=$1', [tenant]);
+        await c.query('INSERT INTO public.stocktake_adjustment_usage(tenant_id,series,series_commands,previews,receipts,bytes) VALUES($1,$2,$3,$4,$5,$6)',
+          [tenant, values.series ?? 0, values.series_commands ?? 0, values.previews ?? 0, values.receipts ?? 0, String(values.bytes ?? 0)]);
+        await c.query('SELECT public.stocktake_adjustment_budget()');
+        return 'admitted';
+      } catch (e: any) { return `${e.code} ${e.message}`; } finally { await c.query('ROLLBACK TO SAVEPOINT b'); }
+    };
+    const count = '54000 Limit dowodów spisu', bytes = '54000 Limit bajtów dowodów spisu';
+    for (const plan of ['starter', 'business']) {
+      assert.equal(await ask(plan, { previews: 5000, receipts: 5000, series: 100, series_commands: 5000, bytes: 128 * MiB }), 'admitted', plan);
+      assert.equal(await ask(plan, { previews: 5001 }), count, plan);
+      assert.equal(await ask(plan, { receipts: 5001 }), count, plan);
+      assert.equal(await ask(plan, { bytes: 128 * MiB + 1 }), bytes, plan);
+    }
+    assert.equal(await ask('enterprise', { previews: 500_000, receipts: 500_000, series: 100, bytes: 16 * GiB }), 'admitted');
+    assert.equal(await ask('enterprise', { previews: 500_001 }), count);
+    assert.equal(await ask('enterprise', { receipts: 500_001 }), count);
+    assert.equal(await ask('enterprise', { series: 101 }), count);
+    assert.equal(await ask('enterprise', { series_commands: 5001 }), count);
+    assert.equal(await ask('enterprise', { bytes: 16 * GiB + 1 }), bytes);
+    // No counter row (a tenant without any adjustment evidence) is an empty budget.
+    await c.query('DELETE FROM public.stocktake_adjustment_usage WHERE tenant_id=$1', [tenant]);
+    await c.query('SELECT public.stocktake_adjustment_budget()');
+  });
+});
+
+test('clone with 261: a business tenant over the preview cap gets 413 on a read; enterprise reads it', db, async () => {
+  const { pool } = await import('../server/db');
+  const { stocktakeAdjustmentFixture } = await import('./stocktake-adjustments-fixture');
+  const f = await stocktakeAdjustmentFixture(app, false);
+  try {
+    await pool.query("INSERT INTO public.stocktake_adjustment_usage(tenant_id,previews) VALUES($1,5001) ON CONFLICT(tenant_id) DO UPDATE SET previews=5001", [f.tenant]);
+    await pool.query("UPDATE tenants SET plan='business' WHERE id=$1", [f.tenant]);
+    const refused = await f.request('/stocktake-adjustments/options');
+    assert.equal(refused.statusCode, 413);
+    assert.equal(refused.json().detail, 'Limit dowodów rozliczenia spisu');
+    await pool.query("UPDATE tenants SET plan='enterprise' WHERE id=$1", [f.tenant]);
+    assert.equal((await f.request('/stocktake-adjustments/options')).statusCode, 200);
+  } finally {
+    await pool.query("DELETE FROM public.stocktake_adjustment_usage WHERE tenant_id=$1", [f.tenant]);
+    await pool.query("UPDATE tenants SET plan='enterprise' WHERE id=$1", [f.tenant]);
+  }
+});
+
+const exactScan = async (c: PoolClient, tenant: string) => (await c.query(
+  `SELECT (SELECT count(*) FROM stocktake_scan_receipts WHERE tenant_id=$1)::text receipts,
+   ((SELECT coalesce(sum(octet_length(to_jsonb(t)::text)),0) FROM stocktake_scan_receipts t WHERE tenant_id=$1)
+   +(SELECT coalesce(sum(octet_length(to_jsonb(t)::text)),0) FROM stocktake_measurements t WHERE tenant_id=$1))::text bytes`, [tenant])).rows[0];
+const scanCounter = async (c: PoolClient, tenant: string) => (await c.query(
+  'SELECT coalesce(sum(receipts),0)::text receipts,coalesce(sum(bytes),0)::text bytes FROM public.stocktake_scan_usage WHERE tenant_id=$1', [tenant])).rows[0];
+const hex = "repeat('a',64)";
+
+test('clone with 261: scan counter = exact sum after inserts, updates and deletes for two tenants; the check reads it', db, async () => {
+  await rolledBack(async (c) => {
+    const ts = (await c.query(`SELECT t.id,(SELECT w.id FROM warehouses w WHERE w.tenant_id=t.id ORDER BY w.id LIMIT 1) wh,
+      (SELECT m.user_id FROM memberships m WHERE m.tenant_id=t.id ORDER BY m.user_id LIMIT 1) usr FROM tenants t
+      WHERE EXISTS(SELECT 1 FROM warehouses w WHERE w.tenant_id=t.id) AND EXISTS(SELECT 1 FROM memberships m WHERE m.tenant_id=t.id) ORDER BY t.id LIMIT 2`)).rows;
+    assert.equal(ts.length, 2);
+    const before = await Promise.all(ts.map((t) => scanCounter(c, t.id)));
+    for (const [i, t] of ts.entries()) assert.deepEqual(before[i], await exactScan(c, t.id), 'backfilled ' + i);
+    // Synthetic rows: guards and FKs off, only the 277 usage triggers on (owner, rolled back).
+    for (const table of ['stocktake_scan_receipts', 'stocktake_measurements', 'stocktakes']) await c.query(`ALTER TABLE ${table} DISABLE TRIGGER ALL`);
+    await c.query('ALTER TABLE stocktake_scan_receipts ENABLE TRIGGER stocktake_scan_usage_insert');
+    for (const tg of ['insert', 'update', 'delete']) await c.query(`ALTER TABLE stocktake_measurements ENABLE TRIGGER stocktake_scan_usage_${tg}`);
+    for (const [i, t] of ts.entries()) {
+      const st = randomUUID();
+      await c.query(`INSERT INTO stocktakes(id,tenant_id,warehouse_id,name,location_prefix,blind,created_by,client_key,input_hash,state)
+        VALUES($1,$2,$3,'usage 277','',false,$4,gen_random_uuid(),${hex},'counting')`, [st, t.id, t.wh, t.usr]);
+      await c.query(`INSERT INTO stocktake_measurements(id,tenant_id,stocktake_id,actor_id,actor_name,client_key,input_hash,inputs,result,note)
+        SELECT gen_random_uuid(),$1,$2,$3,'Ąść '||g,gen_random_uuid(),${hex},jsonb_build_array(g),jsonb_build_object('version',g),repeat('ż',g) FROM generate_series(1,$4) g`, [t.id, st, t.usr, 5 + i]);
+      await c.query(`INSERT INTO stocktake_scan_receipts(id,tenant_id,engine,quantity_stocktake_id,quantity_line_id,quantity_measurement_id,product_id,location,actor_id,source,client_key,request_hash,request,kind,generation_id,code,source_snapshot,matched_by,basis_hash,counted,before_line_version,after_line_version,stocktake_version,result,created_at)
+        SELECT r.id,$1,'quantity',$2,gen_random_uuid(),gen_random_uuid(),gen_random_uuid(),'A-01',$3,'api',gen_random_uuid(),${hex},jsonb_build_object('n',g),'start',r.id,'SKU-'||g,'{}','["sku"]',${hex},0,1,2,1,'{}',clock_timestamp()
+        FROM generate_series(1,$4) g CROSS JOIN LATERAL (SELECT gen_random_uuid() id WHERE g IS NOT NULL) r`, [t.id, st, t.usr, 7 + i]);
+      await c.query("UPDATE stocktake_measurements SET note=note||repeat('x',100),result=result||'{\"more\":true}' WHERE tenant_id=$1 AND stocktake_id=$2 AND (result->>'version')::int<=2", [t.id, st]);
+      await c.query("DELETE FROM stocktake_measurements WHERE tenant_id=$1 AND stocktake_id=$2 AND (result->>'version')::int=3", [t.id, st]);
+    }
+    for (const t of ts) assert.deepEqual(await scanCounter(c, t.id), await exactScan(c, t.id), 'counter = exact ' + t.id);
+    for (const table of ['stocktake_scan_receipts', 'stocktake_measurements', 'stocktakes']) await c.query(`ALTER TABLE ${table} ENABLE TRIGGER ALL`);
+    // The check reads the counter: a counter at 1M+1 receipts / 128 MiB+1 refuses business although the rows are few.
+    const t = ts[0];
+    const ask = async (plan: string, receipts: number, bytes: bigint) => {
+      await c.query('SAVEPOINT s');
+      try {
+        await c.query('RESET ROLE');
+        await c.query('UPDATE tenants SET plan=$2 WHERE id=$1', [t.id, plan]);
+        await c.query('UPDATE stocktake_scan_usage SET receipts=0,bytes=0 WHERE tenant_id=$1', [t.id]);
+        await c.query('UPDATE stocktake_scan_usage SET receipts=$2,bytes=$3 WHERE tenant_id=$1 AND slot=0', [t.id, receipts, String(bytes)]);
+        await c.query('SET LOCAL ROLE dyna_app');
+        await c.query("SELECT set_config('app.tenant_id',$1,true)", [t.id]);
+        return await outcome(stocktakeScanBudgetInTx(c, 'quantity', randomUUID()));
+      } finally { await c.query('ROLLBACK TO SAVEPOINT s'); }
+    };
+    assert.equal(await ask('business', 1_000_000, 0n), 'admitted');
+    assert.equal(await ask('business', 1_000_001, 0n), '429 Wyczerpano trwały limit skanów');
+    assert.equal(await ask('enterprise', 1_000_001, 0n), 'admitted');
+    assert.equal(await ask('business', 1, BigInt(128 * MiB) + 1n), '429 Wyczerpano wspólny budżet dowodów skanowania');
+    assert.equal(await ask('enterprise', 1, BigInt(128 * MiB) + 1n), 'admitted');
+  });
+});
+
+test('261: the SECURITY DEFINER scan functions name the counter by schema (pg_temp is not in their search_path)', () => {
+  const s = code(sql());
+  for (const name of ['stocktake_scan_usage_add', 'stocktake_scan_usage_track', 'stocktake_scan_usage_track_update', 'stocktake_scan_usage_track_delete']) {
+    const body = new RegExp(`CREATE FUNCTION ${name}\\([^)]*\\)[^$]*\\$\\$([\\s\\S]*?)\\$\\$;`).exec(s)?.[1];
+    assert(body, name);
+    assert.doesNotMatch(body, /(?<![.\w])stocktake_scan_usage(?:_add)?\b/, name + ': unqualified counter or add()');
+  }
+  assert.match(s, /DO \$\$ BEGIN IF NOT public\.stocktake_adjustment_guards\(\) THEN/, 'the manifest is sealed only over an intact 149');
+});
+
+test('clone with 261: a session temp table named stocktake_scan_usage cannot stand in for the counter', db, async () => {
+  await rolledBack(async (c) => {
+    const tenant = (await c.query('SELECT id FROM tenants ORDER BY id LIMIT 1')).rows[0].id;
+    const before = await scanCounter(c, tenant);
+    await c.query('CREATE TEMP TABLE stocktake_scan_usage(tenant_id uuid,slot smallint,receipts bigint DEFAULT 0,bytes bigint DEFAULT 0) ON COMMIT DROP');
+    await c.query('SELECT public.stocktake_scan_usage_add($1,1,10)', [tenant]);
+    assert.deepEqual(await scanCounter(c, tenant), { receipts: String(Number(before.receipts) + 1), bytes: String(BigInt(before.bytes) + 10n) });
+    assert.equal((await c.query('SELECT count(*)::int n FROM pg_temp.stocktake_scan_usage')).rows[0].n, 0);
+  });
+});

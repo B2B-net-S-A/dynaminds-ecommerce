@@ -1,0 +1,227 @@
+.stock-file-import {
+  margin-block: 20px;
+  padding: 20px;
+  min-width: 0;
+  max-width: 100%;
+}
+.stock-file-import h2,
+.stock-file-import h3,
+.stock-file-import h4 {
+  margin-top: 0;
+}
+.stock-file-import p,
+.stock-file-import li,
+.stock-file-import summary {
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+.stock-file-import .sfi-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-block: 12px;
+}
+.stock-file-import .sfi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-block: 12px;
+}
+.stock-file-import label:not(.sfi-check) {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+.stock-file-import input:not([type='checkbox']),
+.stock-file-import select,
+.stock-file-import textarea {
+  width: 100%;
+  min-width: 0;
+}
+.stock-file-import textarea,
+.stock-file-import pre {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+.stock-file-import textarea {
+  resize: vertical;
+}
+.stock-file-import pre {
+  overflow-x: auto;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.stock-file-import fieldset {
+  min-width: 0;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  margin-block: 16px;
+  padding: 16px;
+}
+.stock-file-import legend {
+  padding-inline: 6px;
+  font-weight: 600;
+}
+.stock-file-import .sfi-check {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-block: 12px;
+  line-height: 1.55;
+}
+.stock-file-import .sfi-check input[type='checkbox'] {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 4px;
+}
+.stock-file-import .sfi-hint,
+.stock-file-import .sfi-error,
+.stock-file-import .sfi-status,
+.stock-file-import .sfi-pending {
+  padding: 12px;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.stock-file-import .sfi-hint {
+  color: #475569;
+  background: #f8fafc;
+}
+.stock-file-import .sfi-error {
+  color: #991b1b;
+  background: #fef2f2;
+}
+.stock-file-import .sfi-status {
+  color: #166534;
+  background: #f0fdf4;
+}
+.stock-file-import .sfi-pending {
+  color: #854d0e;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+.stock-file-import .sfi-choices,
+.stock-file-import .sfi-summaries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.stock-file-import .sfi-row {
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  padding: 14px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.stock-file-import .sfi-invalid {
+  border-color: #fca5a5;
+}
+.stock-file-import .sfi-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.stock-file-import table {
+  width: 100%;
+  min-width: 720px;
+  table-layout: fixed;
+}
+.stock-file-import th,
+.stock-file-import td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 10px 8px;
+  vertical-align: top;
+}
+.stock-file-import small {
+  display: block;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.stock-file-import .sfi-state {
+  display: grid;
+  gap: 6px;
+}
+.stock-file-import .sfi-distribution-editor {
+  border: 0;
+  padding-inline: 0;
+}
+.stock-file-import .sfi-distribution {
+  min-width: 0;
+  border: 1px solid var(--border, #dbe3ed);
+  border-radius: 8px;
+  padding: 16px;
+  margin-block: 14px;
+  background: #fff;
+}
+.stock-file-import .sfi-position-editor {
+  border-block-start: 1px solid var(--border, #dbe3ed);
+  padding-block: 14px;
+}
+.stock-file-import .sfi-lot-product-helper {
+  min-width: 0;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-block: 12px;
+}
+.stock-file-import .sfi-lot-product-helper .catalog-picker {
+  min-width: 0;
+  max-width: 100%;
+}
+.stock-file-import .sfi-lot-product-helper > button {
+  margin-top: 10px;
+}
+.stock-file-import .sfi-advanced {
+  margin-block: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.stock-file-import .sfi-advanced summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.stock-file-import .sfi-history {
+  display: grid;
+  gap: 8px;
+  margin-block: 12px;
+}
+.stock-file-import .sfi-history button {
+  text-align: left;
+  white-space: normal;
+}
+.stock-file-import .sfi-raw {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.stock-file-import .sfi-raw dt {
+  font-weight: 600;
+}
+.stock-file-import .sfi-raw dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+@media (max-width: 800px) {
+  .stock-file-import .sfi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .stock-file-import {
+    padding: 14px;
+  }
+  .stock-file-import .sfi-grid,
+  .stock-file-import .sfi-summaries,
+  .stock-file-import .sfi-choices,
+  .stock-file-import .sfi-raw {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stock-file-import fieldset {
+    padding: 12px;
+  }
+}

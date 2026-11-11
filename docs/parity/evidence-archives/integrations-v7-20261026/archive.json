@@ -1,0 +1,193 @@
+{
+  "schema": "dynaminds-parity-evidence-archive/v1",
+  "entries": [
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/app.ts",
+        "sha256": "e89940375a9942aa2cf9b014c5a941aaa799baa13ad1412024e97c1244925074",
+        "bytes": 101981
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/e89940375a9942aa2cf9b014c5a941aaa799baa13ad1412024e97c1244925074.bin",
+        "sha256": "e89940375a9942aa2cf9b014c5a941aaa799baa13ad1412024e97c1244925074",
+        "bytes": 101981
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "806583bc347e013a26b73c692d93f85b1ee38ffb"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/db.ts",
+        "sha256": "bca15986835a52fd7a72ddf57ab5fc25dd61bc564318c49bf177fa43cb25611d",
+        "bytes": 38709
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/bca15986835a52fd7a72ddf57ab5fc25dd61bc564318c49bf177fa43cb25611d.bin",
+        "sha256": "bca15986835a52fd7a72ddf57ab5fc25dd61bc564318c49bf177fa43cb25611d",
+        "bytes": 38709
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "41c5291842bed5098e32e3eaeef8bc92b10df0a8"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/domain.ts",
+        "sha256": "fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476",
+        "bytes": 47587
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476.bin",
+        "sha256": "fae7b853a3ca8dc2328058356dbb4c2e52d462a7c2a8f29a2b75aa767ec1e476",
+        "bytes": 47587
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "4a1ae4936d8a0ae336cd814b76818435867b7307"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/mirakl-channel.ts",
+        "sha256": "0984a0b8d91fb3563f2ef1bca3c086639e4da91d334491c685483938ba67ad08",
+        "bytes": 10640
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/0984a0b8d91fb3563f2ef1bca3c086639e4da91d334491c685483938ba67ad08.bin",
+        "sha256": "0984a0b8d91fb3563f2ef1bca3c086639e4da91d334491c685483938ba67ad08",
+        "bytes": 10640
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "49c25c3456f558e3caaea8998b74a8cc640cf548"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/mirakl-read-routes.ts",
+        "sha256": "928df68dcb3ca174250796e185febf76adf158b4036c30cd426b37952fcf6aee",
+        "bytes": 7344
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/928df68dcb3ca174250796e185febf76adf158b4036c30cd426b37952fcf6aee.bin",
+        "sha256": "928df68dcb3ca174250796e185febf76adf158b4036c30cd426b37952fcf6aee",
+        "bytes": 7344
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "52eac98178f2b1be36741527436bd6a414cfa337"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/mirakl-session-authority.ts",
+        "sha256": "181d7cd2e125c605d8810351af710fa2e5c66a5fcddcc87d4bad71be4d3e04e3",
+        "bytes": 8476
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/181d7cd2e125c605d8810351af710fa2e5c66a5fcddcc87d4bad71be4d3e04e3.bin",
+        "sha256": "181d7cd2e125c605d8810351af710fa2e5c66a5fcddcc87d4bad71be4d3e04e3",
+        "bytes": 8476
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "f50b7f13cd61508c3cc3136a27605c6116123386"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/mirakl.ts",
+        "sha256": "7da8eada9d439b92a219dcdea1c7cb666d4622f78ed57d9203c23e196bf64611",
+        "bytes": 22321
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/7da8eada9d439b92a219dcdea1c7cb666d4622f78ed57d9203c23e196bf64611.bin",
+        "sha256": "7da8eada9d439b92a219dcdea1c7cb666d4622f78ed57d9203c23e196bf64611",
+        "bytes": 22321
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "c8d33695f32d342e4267efa46f9fcac09145d3bb"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/web/mirakl-reads.tsx",
+        "sha256": "81ce6314751b54202698ffaf385deee27bb8e6ee5871319ecb3c7b329ab413c5",
+        "bytes": 11205
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v2-20261018/81ce6314751b54202698ffaf385deee27bb8e6ee5871319ecb3c7b329ab413c5.bin",
+        "sha256": "81ce6314751b54202698ffaf385deee27bb8e6ee5871319ecb3c7b329ab413c5",
+        "bytes": 11205
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "11ab31bd45c5e6154d9c04685b632e6ba07cbb4c"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/ordinary-local-runtime.ts",
+        "sha256": "9f900fe402966df6d6864d2840a1f7ca6bc002e0ef64d8fc2e1a6ef105c43ce9",
+        "bytes": 20676
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v4-20261019/9f900fe402966df6d6864d2840a1f7ca6bc002e0ef64d8fc2e1a6ef105c43ce9.bin",
+        "bytes": 20676,
+        "sha256": "9f900fe402966df6d6864d2840a1f7ca6bc002e0ef64d8fc2e1a6ef105c43ce9"
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "103108883e4787c25187ec3c22b03944b939d81d"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/imports.ts",
+        "sha256": "08f02bb1f0efcfb08ba1502efa9747d8de8bc3201a55843a5c862e5cc49f08c7",
+        "bytes": 37802
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/mirakl-v5-20261019/new-retained/08f02bb1f0efcfb08ba1502efa9747d8de8bc3201a55843a5c862e5cc49f08c7.bin",
+        "sha256": "08f02bb1f0efcfb08ba1502efa9747d8de8bc3201a55843a5c862e5cc49f08c7",
+        "bytes": 37802
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "977041c4bc69eeb6af5b106a667eff087e2d6297"
+      }
+    },
+    {
+      "original_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/server/integrations.ts",
+        "sha256": "7cd0b22cc6a4d1115fc8322e48884786671fbe146c4adb9169bd05f1b91b8d9c",
+        "bytes": 72496
+      },
+      "retained_ref": {
+        "path": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base/docs/parity/evidence-archives/integrations-v7-20261026/new-retained/7cd0b22cc6a4d1115fc8322e48884786671fbe146c4adb9169bd05f1b91b8d9c.bin",
+        "sha256": "7cd0b22cc6a4d1115fc8322e48884786671fbe146c4adb9169bd05f1b91b8d9c",
+        "bytes": 72496
+      },
+      "source": {
+        "kind": "git_blob",
+        "repository": "/Users/arturtwardowski/DYNA Ecomerce/development/full-base",
+        "object": "fb494304c5362dbd6fac73fefe5df21e887d5625"
+      }
+    }
+  ],
+  "acceptance_granted": false
+}

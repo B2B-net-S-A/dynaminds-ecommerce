@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture: authored by hand from the public DHL24 WebAPI2 documentation, not recorded from DHL. -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><SOAP-ENV:Fault><faultcode>103</faultcode><faultstring>Nieprawidłowy kod pocztowy odbiorcy: 99999 (PRIVATE-PEER-DETAIL)</faultstring></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>
