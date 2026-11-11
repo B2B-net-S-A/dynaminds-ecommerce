@@ -54,6 +54,7 @@ test('order warehouse change', async (t) => {
       const m = await mount({ order, busy: false, loadWarehouses: async () => W, onMove: async (id) => { sent.push(id); return saved; } });
       const button = m.el.querySelector('button');
       assert.match(button.textContent, /Zmień magazyn/);
+      assert.ok(button.hasAttribute('data-keep-open'), 'opening the form keeps the ⋯ Więcej menu open (useMoreMenu)');
       await click(button);
       assert.match(m.el.textContent, /Obecny magazyn: Warszawa/);
       const select = m.el.querySelector('select');

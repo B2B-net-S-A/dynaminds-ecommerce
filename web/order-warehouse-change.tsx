@@ -44,7 +44,7 @@ export function OrderWarehouseChange({ order: o, busy, loadWarehouses, onMove }:
   }
   if (!open)
     return (
-      <button type="button" className="button" disabled={busy} onClick={() => void start()}>
+      <button type="button" className="button" data-keep-open disabled={busy} onClick={() => void start()}>
         <Warehouse size={16} /> Zmień magazyn
       </button>
     );
@@ -59,10 +59,11 @@ export function OrderWarehouseChange({ order: o, busy, loadWarehouses, onMove }:
       }}
     >
       <p className="muted">
-        Obecny magazyn: <strong>{current ?? '—'}</strong>. Rezerwacje wszystkich pozycji przejdą do nowego magazynu; przy braku
+        {all && <>Obecny magazyn: <strong>{current ?? '—'}</strong>. </>}Rezerwacje wszystkich pozycji przejdą do nowego magazynu; przy braku
         stanu nic się nie zmieni.
       </p>
       {error && <p role="alert">{error}</p>}
+      {!all && !error && <p className="muted">Wczytywanie magazynów…</p>}
       {all && !choices.length && <p className="muted">Firma nie ma innego magazynu.</p>}
       {choices.length > 0 && (
         <label>
