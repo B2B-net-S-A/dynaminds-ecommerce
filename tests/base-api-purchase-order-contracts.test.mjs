@@ -8,6 +8,7 @@ import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {readRetainedRevision} from '../tools/parity/base-api-retained-revisions.mjs';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const stagedRoot=fileURLToPath(new URL('../',import.meta.url));
 const sourceRoot=process.env.DYNA_DOC_SOURCE_ROOT??stagedRoot;
 const {JSDOM}=createRequire(path.join(sourceRoot,'package.json'))('jsdom');
@@ -17,6 +18,9 @@ const c=JSON.parse(bytes),read=n=>fs.readFileSync(path.join(sourceRoot,'docs/par
 const method=n=>{const m=c.methods.find(m=>m.method===n);assert(m,n);return m;};
 const field=(m,d,p)=>{const f=method(m)[d][d==='input'?'parameters':'fields'].find(f=>(f.name??f.path)===p);assert(f,m+':'+p);return f;};
 const names=['addInventoryPurchaseOrder','addInventoryPurchaseOrderFile','addInventoryPurchaseOrderItems','getInventoryPurchaseOrderFile','getInventoryPurchaseOrderItems','getInventoryPurchaseOrderLogs','getInventoryPurchaseOrderSeries','getInventoryPurchaseOrders','setInventoryPurchaseOrderStatus'];
+const skip=baseCaptureSkip(['docs/parity/'+c.source_snapshot.path],sourceRoot);
+if(skip)test('Purchase order contracts are re-checked against the archived Base.com documentation capture',{skip},()=>{});
+else{
 const source=JSON.parse(gunzipSync(read(c.source_snapshot.path),{maxOutputLength:2*1024*1024}));
 test('complete Purchase orders9 matches the independently frozen index, excluding Transfers6',()=>{
  assert.equal(sha(read(c.method_inventory_ref)),'7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992');
@@ -105,3 +109,4 @@ test('current registry links exactly nine normalized JSON records and retains se
  assert.equal(coverage.historical_snapshot.sha256,'e8f63888ec977a01ebba06ecbb297b2db83d1732fff430ff9c9a98fc4968ca45');assert.equal(registry.historical_source_coverage.sha256,coverage.historical_snapshot.sha256);
  assert.equal(sha(read(coverage.historical_snapshot.path)),'e8f63888ec977a01ebba06ecbb297b2db83d1732fff430ff9c9a98fc4968ca45');
 });
+}

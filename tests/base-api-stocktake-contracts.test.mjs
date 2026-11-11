@@ -5,8 +5,13 @@ import fs from 'node:fs';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const {JSDOM}=createRequire(import.meta.url)('jsdom'),root=new URL('../docs/parity/',import.meta.url),read=n=>fs.readFileSync(new URL(n,root)),sha=b=>createHash('sha256').update(b).digest('hex');
-const c=JSON.parse(read('base-api-stocktake-contracts.v1.json')),source=JSON.parse(gunzipSync(read(c.source_snapshot.path),{maxOutputLength:2*1024*1024})),index=JSON.parse(read(c.method_inventory_ref));
+const c=JSON.parse(read('base-api-stocktake-contracts.v1.json'));
+const skip=baseCaptureSkip(['docs/parity/'+c.source_snapshot.path]);
+if(skip)test('Stocktake contracts are re-checked against the archived Base.com documentation capture',{skip},()=>{});
+else{
+const source=JSON.parse(gunzipSync(read(c.source_snapshot.path),{maxOutputLength:2*1024*1024})),index=JSON.parse(read(c.method_inventory_ref));
 const method=n=>{const m=c.methods.find(m=>m.method===n);assert(m,n);return m;},field=(m,d,p)=>{const f=method(m)[d][d==='input'?'parameters':'fields'].find(f=>(f.name??f.path)===p);assert(f,m+':'+p);return f;};
 test('all six indexed Stocktakes methods use the existing full official12-page archive without inventing implementation',()=>{
  assert.equal(sha(read(c.method_inventory_ref)),c.inventory_sha256);assert.deepEqual(c.methods.map(m=>m.method),index.methods.filter(m=>m.family==='Product catalog'&&m.group==='Stocktakes').map(m=>m.method));assert.equal(c.method_count,c.methods.length);assert.equal(c.method_count,6);
@@ -51,3 +56,4 @@ test('normalization reuses source-bound conventions while all implementation/acc
  assert.equal(c.documentation_only,true);for(const k of['operational_contract_fully_resolved','official_account_requests_performed','implementation_coverage_measured','wire_acceptance','provider_account_acceptance','acceptance_granted','scope_mutated'])assert.equal(c[k],false);
  for(const m of c.methods)for(const k of['operational_contract_fully_resolved','implementation_verified','wire_acceptance','provider_account_acceptance','acceptance_granted'])assert.equal(m[k],false);
 });
+}
