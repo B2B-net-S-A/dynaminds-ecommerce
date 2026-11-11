@@ -203,6 +203,52 @@ test('the owner function checks on its own: tenant, member, status and stock, al
   assert.equal((await custody(o.id)).order.warehouse_id, from, 'every call above rolled back');
 });
 
+test('two moves in opposite directions over the same product wait for each other instead of deadlocking', async () => {
+  // order1 A→B and order2 B→A share the product. A third session holds stock(A); order2 queues on it first, then order1.
+  // With the old per-direction lock order order2 got A, then waited for B held by order1 → 40P01.
+  const one = await order(), two = await order(undefined, { warehouse_id: to });
+  const actor = await adminId();
+  const holder = await pool.connect(), first = await pool.connect(), second = await pool.connect();
+  const blocked = async (pid: number) => {
+    for (let i = 0; i < 600; i++) {
+      const w = (await pool.query('SELECT wait_event_type FROM pg_stat_activity WHERE pid=$1', [pid])).rows[0]?.wait_event_type;
+      if (w === 'Lock') return;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    assert.fail('session did not wait for the stock lock');
+  };
+  const begin = async (c: typeof holder) => {
+    await c.query('BEGIN');
+    await c.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
+    await c.query('SET LOCAL ROLE dyna_app');
+    await c.query("SET LOCAL statement_timeout='120s'");
+    await c.query("SET LOCAL lock_timeout='120s'");
+  };
+  try {
+    await holder.query('BEGIN');
+    await holder.query('SELECT 1 FROM stock WHERE warehouse_id=$1 AND product_id=$2 FOR UPDATE', [from, product]);
+    await begin(second);
+    await begin(first);
+    const pid2 = (await second.query('SELECT pg_backend_pid() p')).rows[0].p, pid1 = (await first.query('SELECT pg_backend_pid() p')).rows[0].p;
+    const move2 = second.query('SELECT order_warehouse269_transfer($1,$2,$3,$4)', [two.id, from, actor, 'manual']).then(() => 'ok', (e) => e.code);
+    await blocked(pid2);
+    const move1 = first.query('SELECT order_warehouse269_transfer($1,$2,$3,$4)', [one.id, to, actor, 'manual']).then(() => 'ok', (e) => e.code);
+    await blocked(pid1);
+    await holder.query('ROLLBACK');
+    assert.equal(await move2, 'ok');
+    await second.query('COMMIT');
+    assert.equal(await move1, 'ok', 'no deadlock (40P01)');
+    await first.query('COMMIT');
+  } finally {
+    for (const c of [holder, first, second]) {
+      await c.query('ROLLBACK').catch(() => undefined);
+      c.release();
+    }
+  }
+  assert.equal((await custody(one.id)).order.warehouse_id, to);
+  assert.equal((await custody(two.id)).order.warehouse_id, from);
+});
+
 test('the app role alone still cannot move a reservation row, delete location rows or read the transfer log', async () => {
   const o = await order();
   const moved = await asApp(['UPDATE reservations SET warehouse_id=$2 WHERE order_id=$1', [o.id, to]]);

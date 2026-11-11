@@ -34,7 +34,7 @@ test('reviewedMIG1 migrator and split-hook successors match all actual43 sources
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/developer-api.ts'),{path:'server/developer-api.ts',sha256:'0ebcef75ff081a07bdf5b65ab4e888d26fcad3647ef549d71ce49d0b0664552d',bytes:234015});
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/domain.ts'),{path:'server/domain.ts',sha256:'cff5ac7f6333e8ab47bd406abe05fc007e4cc4891d33434dd0e658a7a7126f2c',bytes:48283});
 
- assert.deepEqual(sourceRoster.find(e=>e.path==='server/order-warehouse-transfer.ts'),{"path":"server/order-warehouse-transfer.ts","sha256":"7a99b26f1ae95244639d3dcbf8d61974620d4f7bd41162330455c40c61bc3af9","bytes":5363},'Source269 order warehouse transfer');
+ assert.deepEqual(sourceRoster.find(e=>e.path==='server/order-warehouse-transfer.ts'),{"path":"server/order-warehouse-transfer.ts","sha256":"3cd05074d3dfc6c43578a136175b7e5c9bbcd5973a9bfa1819581d45b8e1274c","bytes":5618},'Source269 order warehouse transfer');
  assert.deepEqual(sourceRoster.find(e=>e.path==='server/warehouse-wz-issuer.ts'),{path:'server/warehouse-wz-issuer.ts',sha256:'a9d23da2b028d2a491536bc457f3adfc93d3edb81cb8619432f798a49eb9f2cd',bytes:10476});
 });
 // SourceDbLocks re-pinned db.ts: tenantTx checks the held session locks right before COMMIT (db-lock-holder.ts).

@@ -78,11 +78,10 @@ BEGIN
  IF EXISTS(SELECT 1 FROM public.order_pick_items p WHERE p.tenant_id=t AND p.order_id=p_order AND NOT EXISTS(
   SELECT 1 FROM public.reservations x WHERE(x.tenant_id,x.order_id,x.product_id)=(t,p_order,p.product_id) AND x.quantity=p.quantity)) THEN
   RAISE EXCEPTION 'Nie można zmienić magazynu, bo pozycje zamówienia nie są w pełni zarezerwowane; najpierw zarezerwuj stan';END IF;
- -- Stock rows locked in one order (new warehouse, then old; product order) before any write.
+ -- The stock rows of both warehouses are locked before any write, in one statement and one global order (warehouse,
+ -- product): two moves in opposite directions over the same product wait for each other instead of deadlocking.
  PERFORM 1 FROM public.stock x JOIN public.reservations y ON(y.tenant_id,y.product_id)=(x.tenant_id,x.product_id)
-  WHERE y.tenant_id=t AND y.order_id=p_order AND x.warehouse_id=p_warehouse ORDER BY x.product_id FOR UPDATE OF x;
- PERFORM 1 FROM public.stock x JOIN public.reservations y ON(y.tenant_id,y.product_id,y.warehouse_id)=(x.tenant_id,x.product_id,x.warehouse_id)
-  WHERE y.tenant_id=t AND y.order_id=p_order ORDER BY x.product_id FOR UPDATE OF x;
+  WHERE y.tenant_id=t AND y.order_id=p_order AND x.warehouse_id IN(o.warehouse_id,p_warehouse) ORDER BY x.warehouse_id,x.product_id FOR UPDATE OF x;
  FOR r IN SELECT y.product_id,y.quantity,p.sku FROM public.reservations y JOIN public.products p ON(p.tenant_id,p.id)=(y.tenant_id,y.product_id)
   WHERE y.tenant_id=t AND y.order_id=p_order ORDER BY y.product_id LOOP
   SELECT * INTO s FROM public.stock WHERE(tenant_id,warehouse_id,product_id)=(t,p_warehouse,r.product_id);

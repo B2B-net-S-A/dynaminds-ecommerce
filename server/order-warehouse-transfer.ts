@@ -81,6 +81,8 @@ export async function transferOrderWarehouseInTx(
     if (e?.code === 'P0001') throw new Problem(409, e.message);
     if (e?.code === 'P0002') throw new Problem(404, e.message);
     if (e?.code === '42501') throw new Problem(403, e.message);
+    // Another move or order holding the same stock rows: nothing was written; the caller may try again.
+    if (e?.code === '40P01' || e?.code === '40001') throw new Problem(409, 'Stan magazynu zmienił się w trakcie przenoszenia. Spróbuj ponownie.');
     throw e;
   }
   const detail = {
