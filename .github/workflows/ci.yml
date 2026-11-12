@@ -7,11 +7,13 @@ name: CI
 #                    limit 40 plików i budżet CI_DB_PR_BUDGET_MIN, 1–3 shardy.
 #   * merge_group  — to samo sito z szerszym limitem (120 plików, budżet CI_DB_QUEUE_BUDGET_MIN), do
 #                    CI_DB_MAX_SHARDS shardów po ≤ ~35–40 min (decyzja 11.11.2026: pełny zestaw trwa godziny).
-#   * schedule (co noc 01:17 UTC), workflow_dispatch — pełny zestaw db w CI_DB_MAX_SHARDS shardach;
-#                    czerwony nocny bieg otwiera issue (zielony je zamyka).
-# Zmiana w server/db.ts, migracjach, runnerze/manifeście migracji, package*.json, tsconfig.json,
-# skryptach CI albo tym pliku = pełny zestaw także na PR-ze i w kolejce (limit shardu 180 min; ruleset
-# musi mieć wydłużony limit czasu checków).
+#   * schedule (co noc 01:17 UTC), workflow_dispatch — pełny zestaw db w CI_DB_MAX_SHARDS shardach (limit
+#                    shardu 180 min); czerwony nocny bieg otwiera issue (zielony je zamyka, job „Nightly DB alert”).
+# Pełny zestaw biegnie TYLKO w nocy i na żądanie — nigdy na PR-ze ani w kolejce (decyzja 12.11.2026).
+# Zmiana w server/db.ts, migracjach server/*.sql albo runnerze/manifeście migracji dokłada do sita „pakiet
+# migracji” (testy ledgera, migracji, zgodności źródeł, cold, strażników i kontraktów; dla server/NNN_*.sql
+# też testy z NNN w nazwie), a package*.json, tsconfig.json, skrypty CI albo ten plik — zestaw dymny
+# (10 najszybszych plików db) i pakiet migracji. Oba mieszczą się w limicie plików i budżecie minut sita.
 # Każdy shard ma własny PostgreSQL 18.4 (service), losowe hasło i klucz tylko na runnerze, osobną bazę
 # na każdy plik (kopia szablonu zmigrowanego raz na shard). Ruleset wymaga kontekstu „DB tests” —
 # dostarcza go job zbiorczy, nie shardy (ich liczba się zmienia).
@@ -80,8 +82,8 @@ jobs:
           fi
           node -e 'const s=require("./plan/selection.json");require("fs").writeFileSync("plan/files.txt",s.files.join("\n")+(s.files.length?"\n":""))'
           mode=$(node -p 'require("./plan/selection.json").mode')
-          # Sito PR-a: 1–3 shardy; sito kolejki i pełny zestaw: do CI_DB_MAX_SHARDS.
-          if [ "$mode" = "full" ] || [ "$EVENT" != "pull_request" ]; then max=$CI_DB_MAX_SHARDS; target=$CI_DB_TARGET_MIN; else max=3; target=30; fi
+          # Sito PR-a: 1–3 shardy; sito kolejki i pełny zestaw (noc, ręczny bieg): do CI_DB_MAX_SHARDS.
+          if [ "$EVENT" != "pull_request" ]; then max=$CI_DB_MAX_SHARDS; target=$CI_DB_TARGET_MIN; else max=3; target=30; fi
           node scripts/ci/shard.mjs --plan --target-min "$target" --max "$max" --files-from plan/files.txt > plan/plan.json
           count=$(node -p 'require("./plan/plan.json").count')
           if [ "$count" -gt 0 ]; then
@@ -112,9 +114,10 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.count != '0' }}
     runs-on: ubuntu-latest
-    # Sito (PR, kolejka): plan celuje w ~35 min na shard, limit 60. Pełny zestaw: przed pierwszym pomiarem
-    # szacunek to ~155 min na shard przy 20 shardach (docs/ci/README.md, „Czasy shardów”), limit 180.
-    timeout-minutes: ${{ needs.plan.outputs.mode == 'full' && 180 || 60 }}
+    # Sito (PR, kolejka): plan celuje w ~35 min na shard, limit 60. Pełny zestaw (tylko noc i ręczny bieg):
+    # przed pierwszym pomiarem szacunek to ~155 min na shard przy 20 shardach (docs/ci/README.md,
+    # „Czasy shardów”), limit 180.
+    timeout-minutes: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 180 || 60 }}
     strategy:
       # Jeden padnięty shard nie ubija pozostałych — pełny obraz w jednym przebiegu.
       fail-fast: false

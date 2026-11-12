@@ -9,7 +9,7 @@ Repo docelowe: publiczne `B2B-net-S-A/dynaminds-ecommerce`, standardowe runnery 
 | Plik | Kiedy | Co robi |
 |---|---|---|
 | `.github/workflows/ci-gate.yml` („CI Gate”) | push na `main`, PR, kolejka merge'ów | Szybka bramka (cel ≤ ~5 min): gitleaks (drzewo + każdy commit PR-a/grupy), `tsc --noEmit`, lint źródeł (`tests/failure-job-kinds.test.ts`, `tests/sql-text-lint.test.ts`), wszystkie testy klasy `static` bez bazy w 3 równoległych częściach (podział po czasach), klasa `darwin` w jobie `Static tests (macOS zlib)` na `macos-15`, testy `web/*.test.mjs`. |
-| `.github/workflows/ci.yml` („CI”) | PR, kolejka merge'ów, co noc 01:17 UTC (`schedule`), ręcznie (`workflow_dispatch`) | Testy z bazą (klasa `db`). PR: sito — testy db najbliżej zmiany, do 40 plików i `CI_DB_PR_BUDGET_MIN` szacowanych minut, 1–3 shardy. Kolejka: to samo sito, do 120 plików i `CI_DB_QUEUE_BUDGET_MIN`, do `CI_DB_MAX_SHARDS` shardów po ≤ ~35–40 min. Noc i ręczny bieg: pełny zestaw w `CI_DB_MAX_SHARDS` shardach (limit 180 min na shard), czerwony nocny bieg otwiera issue „Nocny pełny bieg testów db nie przeszedł”, zielony je zamyka. Zmiana w `server/db.ts`, migracjach `server/*.sql`, runnerze/manifeście migracji, `package*.json`, `tsconfig.json`, `scripts/ci/` albo `ci.yml` uruchamia pełny zestaw także na PR-ze i w kolejce. Każdy shard: PostgreSQL `postgres:18.4-trixie` (service), losowe `dbPassword`/`encryptionKey` w `$RUNNER_TEMP`, osobna baza na plik. |
+| `.github/workflows/ci.yml` („CI”) | PR, kolejka merge'ów, co noc 01:17 UTC (`schedule`), ręcznie (`workflow_dispatch`) | Testy z bazą (klasa `db`). PR: sito — testy db najbliżej zmiany, do 40 plików i `CI_DB_PR_BUDGET_MIN` szacowanych minut, 1–3 shardy. Kolejka: to samo sito, do 120 plików i `CI_DB_QUEUE_BUDGET_MIN`, do `CI_DB_MAX_SHARDS` shardów po ≤ ~35–40 min. Noc i ręczny bieg: pełny zestaw w `CI_DB_MAX_SHARDS` shardach (limit 180 min na shard), czerwony nocny bieg otwiera issue „Nocny pełny bieg testów db nie przeszedł” (job „Nightly DB alert”), zielony je zamyka. Pełny zestaw biegnie tylko w nocy i na żądanie, nigdy na PR-ze ani w kolejce (decyzja 12.11.2026). Zmiana w `server/db.ts`, migracjach `server/*.sql` albo runnerze/manifeście migracji dokłada do sita pakiet migracji, a zmiana `package*.json`, `tsconfig.json`, `scripts/ci/` albo `ci.yml` — zestaw dymny i pakiet migracji (patrz „Pakiet migracji i zestaw dymny”). Każdy shard: PostgreSQL `postgres:18.4-trixie` (service), losowe `dbPassword`/`encryptionKey` w `$RUNNER_TEMP`, osobna baza na plik. |
 | `.github/workflows/auto-enqueue.yml` | zdarzenia PR-a | Gotowy PR (nie-draft, bez `wstrzymaj`, nie Dependabot) dostaje `gh pr merge --squash --auto`; `wstrzymaj` albo draft zdejmuje go z kolejki. |
 | `.github/workflows/uptime-probe.yml` | co godzinę (cron), ręcznie | `GET <DEMO_URL>/api/health` → HTTP 200 i `status: "ok"`. Awaria otwiera issue (albo komentuje otwarte), zielony bieg je zamyka. |
 | `.github/dependabot.yml` | co tydzień (pon. 06:00) | npm i github-actions; minor+patch zgrupowane w jeden PR. |
@@ -28,15 +28,33 @@ Nazwy jobów są stałe — ruleset wiąże się z nimi dosłownie:
   idą do rulesetu: ich liczba zmienia się z planem.
 
 Kolejka merge'ów musi być włączona dla `main` (wszystkie workflowy reagują na `merge_group`).
-W rulesecie ustaw limit czasu checków („Status check timeout” kolejki) na co najmniej 180 min: zwykła grupa
-kończy sito w ~35–40 min, ale PR zmieniający `server/db.ts`, migracje albo `package*.json` puszcza w kolejce
-pełny zestaw (szacunek ~155 min na shard przed pierwszym pomiarem), a domyślne 60 min wyrzuciłoby go z kolejki.
+W rulesecie ustaw limit czasu checków („Status check timeout” kolejki) na co najmniej 90 min: grupa kończy sito
+w ~35–40 min, shard ma limit 60 min, a do tego dochodzą plan, czekanie na wolne runnery i job zbiorczy.
+Pełny zestaw nie biegnie w kolejce (decyzja 12.11.2026), więc wydłużony limit 180 min nie jest już potrzebny.
 
-Dlaczego kolejka nie biegnie pełnym zestawem (decyzja 11.11.2026): pełny zestaw db to wg szacunku ~3 100 min
-pracy, czyli godziny nawet na 20 runnerach. Kolejka sprawdza testy najbliżej zmiany, a całość biegnie co noc;
-błąd spoza sita wychodzi najpóźniej następnego ranka jako issue.
+Dlaczego PR i kolejka nie biegną pełnym zestawem (decyzje 11.11.2026 i 12.11.2026): pełny zestaw db to wg
+szacunku ~3 100 min pracy, czyli godziny nawet na 20 runnerach. PR i kolejka sprawdzają testy najbliżej zmiany —
+także przy zmianie `server/db.ts`, migracji czy `package*.json` — a całość biegnie co noc i na żądanie
+(`workflow_dispatch`); błąd spoza sita wychodzi najpóźniej następnego ranka jako issue.
 `ci.yml` nie biegnie na `push: main` — kolejka testuje dokładnie to drzewo, które trafia na maina.
 Gdyby kolejkę wyłączyć, trzeba dodać `push: branches: [main]` w `ci.yml`.
+
+### Pakiet migracji i zestaw dymny
+
+Zmiany, które mogą zepsuć dowolny test, nie przełączają sita na pełny zestaw. Kolejność wyboru (pierwsze
+wchodzą, dopóki starczy `--limit` plików i `--budget-min` minut):
+
+1. zmienione pliki testów db,
+2. dla migracji `server/NNN_*.sql` (albo `…NNN.sql`): testy db z `NNN` w nazwie,
+3. zestaw dymny — tylko przy zmianie `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml`: 10 najszybszych
+   plików db (czas z `scripts/ci/test-durations.json`, bez pomiaru szacunek `estimateSec`),
+4. pakiet migracji — przy zmianie `server/db.ts`, `server/*.sql`, runnera/manifestu migracji i przy zmianach
+   z punktu 3: testy db z `migration`, `ledger`, `source-compatibility`, `cold`, `guard` w nazwie (ledger,
+   zgodność migracji i źródeł, strażnicy pieczęci), potem `*-contract*` (`MIGRATION_BUNDLE` w skrypcie),
+5. reszta powiązanych testów (graf importów, najbliższe najpierw).
+
+Pakiet ma dziś 28 plików db (~113 min szacunku): na PR-ze (40 plików / 75 min) wchodzi jego część, w kolejce
+(120 plików / 600 min) całość. Reszta i tak biegnie w nocy.
 
 ## Sekrety i zmienne
 
@@ -109,7 +127,7 @@ po naprawie wpis usuń. Lista jest dziś pusta: 14 testów z kwarantanny z 11.11
 |---|---|
 | `scripts/ci/classify-tests.mjs` | podsumowanie; `--list static\|db\|darwin\|special`; `--json`; `--why` (sygnał, który przesądził o db) |
 | `scripts/ci/shard.mjs` | podział listy na N shardów (LPT po czasach z `scripts/ci/test-durations.json`, bez czasów round-robin); `--plan --target-min M --max K` wylicza N |
-| `scripts/ci/select-pr-tests.mjs` | sito PR-a i kolejki z `git diff --name-only` (domyślnie `origin/main...HEAD`, albo `--range A..B`): zmienione testy db + testy importujące zmienione moduły albo nazwane od nich (graf importów wstecz, najbliższe najpierw; `--limit` plików, `--budget-min` szacowanych minut). Zmiana w `server/db.ts`, `server/*.sql`, runnerze/manifeście migracji, `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml` → pełny zestaw |
+| `scripts/ci/select-pr-tests.mjs` | sito PR-a i kolejki z `git diff --name-only` (domyślnie `origin/main...HEAD`, albo `--range A..B`): zmienione testy db + testy importujące zmienione moduły albo nazwane od nich (graf importów wstecz, najbliższe najpierw; `--limit` plików, `--budget-min` szacowanych minut). Zmiana w `server/db.ts`, `server/*.sql`, runnerze/manifeście migracji → najpierw pakiet migracji; `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml` → zestaw dymny i pakiet migracji. Nigdy pełny zestaw; testy: `tests/ci-select-pr-tests.test.mjs` |
 | `scripts/ci/run-tests.mjs` | uruchamia pliki po jednym procesie `tsx --test`, logi per plik, `summary.txt`, `failed.txt`, `durations.json`; `--kind db` zakłada i sprząta bazy |
 | `scripts/ci/migrate-database.ts` | `migrate()` na bazie-szablonie shardu |
 
@@ -131,7 +149,8 @@ Dopóki plik nie ma zmierzonego czasu, plan waży go szacunkiem z liczby testów
 wywołań test(…)`, `estimateSec` w `scripts/ci/shard.mjs`) — testy db to głównie duże pliki integracyjne,
 w których czas rośnie z liczbą testów. Szacunek dla 371 plików db (11.11.2026): ~3 100 min łącznie, czyli przy
 20 shardach ~160 min na shard. To zgrubna liczba z lokalnych biegów na obciążonej maszynie — pierwszy pełny
-bieg ją zweryfikuje. Do tego czasu shard ma limit 180 min, a plik 45 min (`CI_FILE_TIMEOUT_MIN`).
+bieg ją zweryfikuje. Do tego czasu shard pełnego zestawu (noc, ręczny bieg) ma limit 180 min, a plik 45 min
+(`CI_FILE_TIMEOUT_MIN`).
 
 Po pierwszym nocnym (albo ręcznym) pełnym biegu: wklej `db-test-durations`, sprawdź podsumowanie planu i ewentualnie podnieś
 `CI_DB_CONCURRENCY` (2–3 pliki naraz na runner, każdy na swojej bazie) albo `CI_DB_MAX_SHARDS`.

@@ -5,12 +5,18 @@
  *      or are named after it (server/x.ts → tests/x*.test.*); nearest first (fewest import hops, then name),
  *      at most --limit files and, with --budget-min, at most that many estimated minutes (measured seconds from
  *      scripts/ci/test-durations.json, else estimateSec() in shard.mjs).
- * Changes that can break any test (server/db.ts, migrations server/*.sql, the migration manifest, package*.json,
- * tsconfig, the CI scripts and ci.yml) select the full db set instead. Static and special files never appear
+ * Changes that can break any test never select the full db set here (decision 12.11.2026: the full set runs only
+ * nightly and on workflow_dispatch). Instead:
+ *   - server/db.ts, migrations server/*.sql, the migration runner/manifest → the "migration bundle" (MIGRATION_BUNDLE:
+ *     ledger, migration, source-compatibility, cold, guard and *-contract db tests; for server/NNN_*.sql also the
+ *     db tests whose name contains NNN) ahead of the related tests,
+ *   - package*.json, tsconfig.json, the CI scripts and ci.yml → a smoke set (the SMOKE_SIZE fastest db files) plus
+ *     the migration bundle ahead of the related tests.
+ * Both stay inside --limit / --budget-min like every other selection. Static and special files never appear
  * here: static ones run in "CI Gate" on every PR, special ones are not run in CI.
  *
  *   node scripts/ci/select-pr-tests.mjs [--base origin/main] [--range A..B] [--changed-from list.txt] [--limit 40] [--budget-min M]
- *   → JSON {"mode":"full"|"selected"|"none","reason":…,"changed":n,"files":[…]}
+ *   → JSON {"mode":"selected"|"none","reason":…,"changed":n,"bundle":n,"smoke":n,"files":[…]}
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -19,16 +25,23 @@ import { fileURLToPath } from 'node:url';
 import { ROOT, classify, localImports } from './classify-tests.mjs';
 import { estimateSec, loadDurations } from './shard.mjs';
 
-export const FULL_TRIGGERS = [
+/** Changes that touch the schema or its migration path: the migration bundle goes first. */
+export const MIGRATION_TRIGGERS = [
   [/^server\/db\.ts$/, 'server/db.ts'],
   [/^server\/[^/]+\.sql$/, 'migracja server/*.sql'],
   [/^server\/migration-[^/]+\.ts$/, 'runner migracji'],
   [/migration-manifest\.mjs$/, 'manifest migracji'],
+];
+/** Changes that can break any test without touching a module: smoke set + migration bundle. */
+export const SMOKE_TRIGGERS = [
   [/^package(?:-lock)?\.json$/, 'package*.json'],
   [/^tsconfig\.json$/, 'tsconfig.json'],
   [/^scripts\/ci\//, 'skrypty CI'],
   [/^\.github\/workflows\/ci\.yml$/, 'ci.yml'],
 ];
+/** Migration bundle (by test file name), in priority order: migration path and seal guards, then contracts. */
+export const MIGRATION_BUNDLE = [/migration|ledger|source-compatibility|cold|guard/, /-contract/];
+export const SMOKE_SIZE = 10;
 const SOURCE = /\.(?:ts|tsx|mts|mjs|js)$/;
 
 function gitLines(args) {
@@ -50,13 +63,25 @@ function reverseGraph() {
   return importers;
 }
 
+/** Number of a migration file: server/269_x.sql → "269", server/x-fragment169.sql → "169". */
+export function migrationNumber(file) {
+  const name = file.split('/').pop();
+  return (name.match(/^(\d{3,})_/) ?? name.match(/(\d{3,})\.sql$/))?.[1] ?? null;
+}
+
+const triggerOf = (triggers, changed) => {
+  for (const f of changed) {
+    const hit = triggers.find(([re]) => re.test(f));
+    if (hit) return `${f} (${hit[1]})`;
+  }
+  return null;
+};
+
 export function select(changed, { limit = 40, budgetMin = Infinity } = {}) {
   const cls = classify();
   const dbSet = new Set(cls.db);
-  for (const f of changed) {
-    const hit = FULL_TRIGGERS.find(([re]) => re.test(f));
-    if (hit) return { mode: 'full', reason: `zmiana: ${f} (${hit[1]})`, changed: changed.length, files: cls.db };
-  }
+  const durations = loadDurations();
+  const cost = (f) => durations[f] ?? estimateSec(f);
   const importers = reverseGraph();
   const distance = new Map();
   const queue = [];
@@ -75,27 +100,53 @@ export function select(changed, { limit = 40, budgetMin = Infinity } = {}) {
     const name = t.slice('tests/'.length);
     if (stems.some((st) => name.startsWith(st + '.') || name.startsWith(st + '-'))) distance.set(t, Math.min(distance.get(t) ?? 1, 1));
   }
-  const hits = [...distance.entries()].filter(([f]) => dbSet.has(f))
-    .sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : 1));
-  if (!hits.length) return { mode: 'none', reason: 'żaden test db nie zależy od zmienionych plików', changed: changed.length, files: [] };
-  // Nearest first until the file limit or the time budget (measured seconds, else estimateSec) is reached.
-  const durations = loadDurations();
+  const related = [...distance.entries()].filter(([f]) => dbSet.has(f))
+    .sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : 1)).map(([f]) => f);
+
+  // Priority: changed db tests, tests of the changed migration numbers, smoke set, migration bundle, related tests.
+  const migration = triggerOf(MIGRATION_TRIGGERS, changed);
+  const smokeHit = triggerOf(SMOKE_TRIGGERS, changed);
+  const ordered = [];
+  const bundle = new Set();
+  const smoke = new Set();
+  const push = (f, set) => { if (!ordered.includes(f)) { ordered.push(f); set?.add(f); } };
+  for (const f of related) if (distance.get(f) === 0) push(f);
+  if (migration || smokeHit) {
+    const byName = [...dbSet].sort();
+    const numbers = [...new Set(changed.filter((f) => /^server\/[^/]+\.sql$/.test(f)).map(migrationNumber).filter(Boolean))];
+    for (const n of numbers) {
+      const re = new RegExp(`(?<!\\d)${n}(?!\\d)`);
+      for (const f of byName) if (re.test(f.slice('tests/'.length))) push(f, bundle);
+    }
+    if (smokeHit) {
+      for (const f of [...dbSet].sort((a, b) => cost(a) - cost(b) || (a < b ? -1 : 1)).slice(0, SMOKE_SIZE)) push(f, smoke);
+    }
+    for (const re of MIGRATION_BUNDLE) for (const f of byName) if (re.test(f.slice('tests/'.length))) push(f, bundle);
+  }
+  for (const f of related) push(f);
+  if (!ordered.length) return { mode: 'none', reason: 'żaden test db nie zależy od zmienionych plików', changed: changed.length, files: [], bundle: 0, smoke: 0 };
+
+  // In priority order until the file limit or the time budget (measured seconds, else estimateSec) is reached.
   const picked = [];
   let seconds = 0;
-  for (const [f] of hits) {
+  for (const f of ordered) {
     if (picked.length >= limit) break;
-    const cost = durations[f] ?? estimateSec(f);
-    if (picked.length && seconds + cost > budgetMin * 60) break;
+    if (picked.length && seconds + cost(f) > budgetMin * 60) break;
     picked.push(f);
-    seconds += cost;
+    seconds += cost(f);
   }
   const files = picked.sort();
   const byDepth = {};
-  for (const [, d] of hits) byDepth[d] = (byDepth[d] ?? 0) + 1;
-  const reason = hits.length > files.length
-    ? `${hits.length} powiązanych testów db, wybrano ${files.length} najbliższych (limit ${limit} plików / ${budgetMin === Infinity ? 'bez budżetu' : budgetMin + ' min'}; reszta w nocnym pełnym biegu)`
-    : `${hits.length} powiązanych testów db`;
-  return { mode: 'selected', reason, changed: changed.length, byDepth, files };
+  for (const f of related) byDepth[distance.get(f)] = (byDepth[distance.get(f)] ?? 0) + 1;
+  const pickedBundle = files.filter((f) => bundle.has(f)).length;
+  const pickedSmoke = files.filter((f) => smoke.has(f)).length;
+  const parts = [];
+  if (migration || smokeHit) parts.push(`zmiana: ${migration ?? smokeHit} → pakiet migracji ${pickedBundle}/${bundle.size}${smokeHit ? `, dymny ${pickedSmoke}/${smoke.size}` : ''}`);
+  parts.push(`${related.length} powiązanych testów db`);
+  const reason = ordered.length > files.length
+    ? `${parts.join('; ')}; wybrano ${files.length} z ${ordered.length} (limit ${limit} plików / ${budgetMin === Infinity ? 'bez budżetu' : budgetMin + ' min'}; reszta w nocnym pełnym biegu)`
+    : parts.join('; ');
+  return { mode: 'selected', reason, changed: changed.length, bundle: pickedBundle, smoke: pickedSmoke, byDepth, files };
 }
 
 function main(argv) {
