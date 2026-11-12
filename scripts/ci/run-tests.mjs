@@ -7,7 +7,10 @@
  *
  * --kind db: one database per file, named dynaminds_test_<13 digits> (the name guards in tests accept it),
  * copied from a template that is migrated once per run (CREATE DATABASE … TEMPLATE). Files listed under
- * "freshDatabase" in scripts/ci/test-classes.json get an empty database and migrate themselves.
+ * "freshDatabase" in scripts/ci/test-classes.json, or calling bootstrap151169() (tests/catalog-stock-control169-fixture.ts
+ * asserts an empty database), get an empty database and migrate themselves.
+ * Guard answers are reused while their inputs are unchanged (scripts/ci/guard-cache.mjs, preloaded via NODE_OPTIONS);
+ * files listed under "noGuardCache", or reading pg_stat_xact_* / track_functions themselves, run without it.
  * Requires DYNA_LOCAL_CONFIG_PATH (dbPassword) and DYNA_TEST_PG_PORT; PostgreSQL on 127.0.0.1.
  *
  * Exit code 1 when any file fails or times out. Never touches a database it did not create.
@@ -15,6 +18,7 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, createWriteStream } from 'node:fs';
 import { basename, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { ROOT, loadConfig } from './classify-tests.mjs';
 
 const args = process.argv.slice(2);
@@ -49,7 +53,22 @@ if (kind === 'db') {
   admin = new pg.Client({ host: '127.0.0.1', port: Number(port), user: 'postgres', password, database: 'postgres' });
   await admin.connect();
 }
-const fresh = new Set(Object.keys(loadConfig().freshDatabase ?? {}));
+const config = loadConfig();
+const source = (file) => { try { return readFileSync(join(ROOT, file), 'utf8'); } catch { return ''; } };
+const freshListed = new Set(Object.keys(config.freshDatabase ?? {}));
+const fresh = { has: (file) => freshListed.has(file) || /\bbootstrap151169\(\)/.test(source(file)) };
+const noGuardCacheListed = new Set(Object.keys(config.noGuardCache ?? {}));
+const guardCacheFor = (file) => !noGuardCacheListed.has(file) && !/pg_stat_xact|pg_stat_user_functions|track_functions/.test(source(file));
+const guardCacheEnv = (file) => guardCacheFor(file) ? {
+  NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${pathToFileURL(join(ROOT, 'scripts/ci/guard-cache.mjs')).href}`.trim(),
+  DYNA_CI_GUARD_CACHE: '1',
+  DYNA_CI_GUARD_CACHE_STATS: join(out, basename(file) + '.guard-cache.jsonl'),
+} : {};
+const guardCacheSummary = (file) => {
+  let rows; try { rows = readFileSync(join(out, basename(file) + '.guard-cache.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)); } catch { return ''; }
+  const t = rows.reduce((a, r) => ({ hits: a.hits + r.hits, misses: a.misses + r.misses, bypassed: a.bypassed + r.bypassed, uncacheable: a.uncacheable + r.uncacheable, savedMs: a.savedMs + r.savedMs }), { hits: 0, misses: 0, bypassed: 0, uncacheable: 0, savedMs: 0 });
+  return ` guards=${t.hits}hit/${t.misses}miss/${t.bypassed}bypass/${t.uncacheable}uncacheable~${Math.round(t.savedMs / 1000)}s-saved`;
+};
 const dbUrl = (name) => `postgres://postgres:${encodeURIComponent(password)}@127.0.0.1:${port}/${name}`;
 let nameSeq = Date.now();
 const nextName = () => `dynaminds_test_${String(nameSeq++).padStart(13, '0')}`;
@@ -120,13 +139,13 @@ async function worker() {
     let database;
     if (kind === 'db') {
       database = await createDatabase(file);
-      env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true' };
+      env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true', ...guardCacheEnv(file) };
     }
     const r = await run(file, env, logPath);
     if (database) await admin.query(`DROP DATABASE IF EXISTS ${database} WITH (FORCE)`).catch((e) => console.error(`DROP ${database}: ${e.message}`));
     durations[file] = r.seconds;
     const counts = (readFileSync(logPath, 'utf8').match(/^# (?:pass|fail) \d+/gm) ?? []).join(' ');
-    const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s`;
+    const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s${kind === 'db' ? guardCacheSummary(file) : ''}`;
     console.log(line);
     appendFileSync(summary, line + '\n');
     if (r.code !== 0) failed.push(file);

@@ -1,0 +1,159 @@
+/** CI-only preload (NODE_OPTIONS=--import, set by scripts/ci/run-tests.mjs for --kind db): reuses the answer of a
+ * schema guard — `SELECT x_valid() ok`, `SELECT a_guards() AND a_installed() ok, …`, zero-argument functions only —
+ * while nothing the guard depends on has changed. Production never loads this file; the server code is unchanged.
+ *
+ * Why: without the startup gate every tenantTx and every buildApp runs the full guards again (server/db.ts
+ * preflightUngatedTenantSchema, ~70 availability probes in server/app.ts). One guard takes 2.5–5.5 s on a migrated
+ * empty database (local measurement 12.11.2026), so an empty tenantTx took 13.7 s and buildApp 27 s, per call.
+ *
+ * Soundness: the first call runs the real guard on the caller's own connection and transaction and records what it
+ * read and wrote (pg_stat_xact_user_tables before and after, in one implicit or the caller's transaction).
+ * The answer is reused only when, on the caller's connection and snapshot, all of these are the same (a guard's
+ * answer is a function of them; zero-argument guards check structure, not time or randomness):
+ *  - every pg_catalog table (count and hash of ctid+xmin of all rows; pg_roles content instead of pg_authid),
+ *  - every row version (ctid+xmin) of every table the guard read,
+ *  - session settings (every non-default pg_settings value except timeouts), custom placeholders, current_user, session_user,
+ *    database, own TEMP schema, advisory locks and strong relation locks of the database,
+ *  - the backend pid / the transaction's xid, when the guard read a table with a pid / xid column.
+ * Not cached: a guard that read a TEMP table, wrote a row, took an xid, changed a setting, lock or the catalogue, or
+ * raised; a built-in function (now(), …); a session without superuser
+ * (inside tenantTx after SET ROLE dyna_app); any query with parameters or another shape. A wrong reuse would show as a
+ * failing test (a refusal that does not come), never as a hidden pass in production code.
+ * Files that inspect pg_stat_xact_* or count guard calls opt out (run-tests.mjs: noGuardCache, auto-detected).
+ *
+ * DYNA_CI_GUARD_CACHE_STATS=<file> appends one JSON line per process: hits, misses, bypassed, uncacheable, ms.
+ */
+import { createRequire } from 'node:module';
+import { appendFileSync } from 'node:fs';
+
+if (process.env.DYNA_TEST === 'true' && process.env.DYNA_CI_GUARD_CACHE === '1') install();
+
+// A zero-argument call, or a row count of one table (nested-capability.ts asks both in one statement).
+const CALL = String.raw`(?:(?:public\.)?[a-z_][a-z0-9_]*\(\)|\(SELECT count\(\*\)(?:::integer)? FROM (?:public\.)?[a-z_][a-z0-9_]*\))`;
+const ITEM = String.raw`${CALL}(?:\s+AND\s+${CALL})*(?:\s+(?:AS\s+)?[a-z_][a-z0-9_]*)?`;
+export const GUARD_QUERY = new RegExp(String.raw`^\s*SELECT\s+${ITEM}(?:\s*,\s*${ITEM})*\s*;?\s*$`, 'i');
+// Not part of the answer of a guard: limits only change whether a slow guard would time out.
+const IGNORED_SETTINGS = ['statement_timeout', 'lock_timeout', 'idle_in_transaction_session_timeout',
+  'idle_session_timeout', 'transaction_timeout', 'application_name'];
+// Restricted to superusers or not about schema state (statistics, large object data).
+const SKIPPED_CATALOGS = ['pg_authid', 'pg_statistic', 'pg_statistic_ext_data', 'pg_largeobject', 'pg_user_mapping'];
+
+function install() {
+  let pg;
+  try { pg = createRequire(process.cwd() + '/')('pg'); } catch { return; }
+  const proto = pg.Client.prototype;
+  if (proto.__dynaGuardCache) return;
+  const original = proto.query;
+  const stats = { pid: process.pid, hits: 0, misses: 0, bypassed: 0, uncacheable: 0, guardMs: 0, savedMs: 0, bypassedBy: {} };
+  const entries = new Map(); // text\0key -> up to 8 variants {result, rel:[{oid,name}], relBasis, pid?, xid?, ms}
+  const refused = new Set(); // text: shape never cacheable (volatile call or TEMP read)
+  let catalogSql;
+  const customNames = new Map(); // catalog hash -> custom GUC names the database's functions read or set
+
+  const q = (client, text, values) => original.call(client, text, values);
+  const one = async (client, text, values) => (await q(client, text, values)).rows[0];
+  const clone = (r) => ({ command: r.command, rowCount: r.rowCount, oid: r.oid, fields: r.fields, rows: r.rows.map((x) => ({ ...x })) });
+
+  async function keyOf(client) {
+    catalogSql ??= (await q(client, `SELECT c.oid::regclass::text n FROM pg_class c WHERE c.relnamespace='pg_catalog'::regnamespace
+      AND c.relkind='r' AND NOT c.relname=ANY($1) ORDER BY 1`, [SKIPPED_CATALOGS])).rows
+      .map(({ n }) => `SELECT '${n}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${n}`)
+      .concat(`SELECT 'pg_roles' r,count(*)::text,md5(coalesce(string_agg(x::text,',' ORDER BY x.oid),'')) FROM pg_roles x`)
+      .join(' UNION ALL ');
+    const k = await one(client, `SELECT current_user::text cu,session_user::text su,current_database() db,
+      coalesce(pg_my_temp_schema()::oid::text,'0') tmp,pg_backend_pid() pid,pg_current_xact_id_if_assigned()::text xid,
+      (SELECT md5(string_agg(name||'='||coalesce(setting,''),',' ORDER BY name)) FROM pg_settings WHERE NOT name=ANY($1) AND (source<>'default' OR setting IS DISTINCT FROM boot_val)) s,
+      (SELECT md5(coalesce(string_agg(x,',' ORDER BY x),'')) FROM (SELECT concat_ws(':',locktype,classid,objid,objsubid,relation,mode,granted,pid=pg_backend_pid()) x
+        FROM pg_locks WHERE (database IS NULL OR database=(SELECT oid FROM pg_database WHERE datname=current_database()))
+        AND (locktype='advisory' OR (locktype='relation' AND mode IN('ShareLock','ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')))) y) l,
+      (SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) FROM (${catalogSql}) t) c
+      ${process.env.DYNA_CI_GUARD_CACHE_DEBUG ? `,(SELECT json_object_agg(r,n||':'||h) FROM (${catalogSql}) t) dbg` : ''}`, [IGNORED_SETTINGS]);
+    // Placeholders (app.tenant_id set by tenantTx, …) are not in pg_settings; their names come from function sources.
+    if (!customNames.has(k.c)) customNames.set(k.c, (await one(client, `SELECT array_agg(DISTINCT lower(m[1]) ORDER BY lower(m[1])) n
+      FROM pg_proc p, regexp_matches(p.prosrc, '(?:current_setting|set_config)\\(\\s*''{1,2}([a-z_][a-z0-9_$]*\\.[a-z0-9_$.]+)''', 'gi') m
+      WHERE p.pronamespace NOT IN ('pg_catalog'::regnamespace,'information_schema'::regnamespace)`)).n ?? []);
+    k.s += ':' + (await one(client, `SELECT md5(coalesce(string_agg(n||'='||coalesce(current_setting(n,true),'<null>'),',' ORDER BY n),'')) g
+      FROM unnest($1::text[]) n`, [[...new Set(['app.tenant_id', ...customNames.get(k.c)])]])).g;
+    return k;
+  }
+  const relBasis = async (client, rel) => rel.length ? (await one(client, `SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) b FROM (${
+    rel.map(({ oid, name }) => `SELECT '${oid}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${name}`).join(' UNION ALL ')}) t`)).b : '';
+
+  async function cached(client, text) {
+    const why = refused.has(text) ? 'refused' : (await one(client, "SELECT current_setting('is_superuser') su")).su !== 'on' ? 'role' : '';
+    if (why) {
+      stats.bypassed++;
+      const name = why + ':' + text.replace(/^\s*SELECT\s+/i, '').slice(0, 60);
+      stats.bypassedBy[name] = (stats.bypassedBy[name] ?? 0) + 1;
+      return q(client, text);
+    }
+    const k = await keyOf(client);
+    const id = [text, k.cu, k.su, k.db, k.tmp, k.s, k.l, k.c].join('\0');
+    const bases = new Map(); // one row hash per table set (variants usually share it)
+    for (const e of entries.get(id) ?? []) {
+      if ((e.pid !== undefined && e.pid !== k.pid) || (e.xid !== undefined && e.xid !== k.xid)) continue;
+      const set = e.rel.map((r) => r.oid).join();
+      if (!bases.has(set)) bases.set(set, await relBasis(client, e.rel));
+      if (bases.get(set) !== e.relBasis) continue;
+      stats.hits++; stats.savedMs += e.ms;
+      return clone(e.result);
+    }
+    stats.misses++;
+    if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) for (const [eid, es] of entries) for (const e of es) if (eid.startsWith(text + '\0')) {
+      const parts = eid.split('\0'), now = id.split('\0');
+      console.error('guard-cache miss', text, parts.map((p, i) => p === now[i] ? '=' : 'DIFF').join(''), e.pid, k.pid, e.xid, k.xid,
+        Object.keys(k.dbg).filter((t) => e.dbg?.[t] !== k.dbg[t]).map((t) => t + ' ' + e.dbg?.[t] + ' -> ' + k.dbg[t]).join('; '));
+    }
+    const snap = `SELECT (SELECT coalesce(json_agg(json_build_array(relid,seq_scan,coalesce(idx_scan,0))),'[]') FROM pg_stat_xact_user_tables) t,
+      (SELECT coalesce(json_agg(json_build_array(relid,n_tup_ins,n_tup_upd,n_tup_del)),'[]') FROM pg_stat_xact_user_tables) w`;
+    const started = Date.now();
+    const out = await q(client, `SELECT 1;${snap};${text.trim().replace(/;$/, '')};${snap}`);
+    const ms = Date.now() - started;
+    stats.guardMs += ms;
+    const [, before, result, after] = out;
+    const delta = (b, a, read) => {
+      const m = new Map(b.rows[0][read].map(([id, ...v]) => [id, v.join()]));
+      return a.rows[0][read].filter(([id, ...v]) => m.get(id) !== v.join()).map(([id]) => id);
+    };
+    const tables = delta(before, after, 't'), written = delta(before, after, 'w');
+    const named = [...text.matchAll(/([a-z_][a-z0-9_.]*)\(\)/gi)].map((m) => m[1] + '()').filter((f) => f !== 'count()');
+    const meta = await one(client, `SELECT
+      (SELECT bool_and(p.oid IS NOT NULL AND p.pronamespace<>'pg_catalog'::regnamespace)
+          FROM unnest($2::text[]) f LEFT JOIN pg_proc p ON p.oid=to_regprocedure(f)) stable,
+      (SELECT coalesce(bool_or(relpersistence='t'),false) FROM pg_class WHERE oid=ANY($1::oid[])) temp,
+      (SELECT coalesce(json_agg(json_build_object('oid',c.oid::text,'name',format('%I.%I',n.nspname,c.relname)) ORDER BY c.oid),'[]') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.oid=ANY($1::oid[])) rel,
+      EXISTS(SELECT FROM pg_attribute WHERE attrelid=ANY($1::oid[]) AND attnum>0 AND NOT attisdropped AND attname ~ 'pid') pid,
+      EXISTS(SELECT FROM pg_attribute WHERE attrelid=ANY($1::oid[]) AND attnum>0 AND NOT attisdropped AND attname ~ 'xid') xid`,
+    [tables, named]);
+    // Many read-only guards are declared VOLATILE (the plpgsql default), so the test is what the call did: no row
+    // written, no xid taken, the same settings, locks, catalogue and TEMP schema afterwards.
+    const k2 = await keyOf(client);
+    const id2 = [text, k2.cu, k2.su, k2.db, k2.tmp, k2.s, k2.l, k2.c].join('\0');
+    if (!meta.stable || meta.temp || written.length || id2 !== id || k2.xid !== k.xid) {
+      if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) console.error('guard-cache uncacheable', text, { stable: meta.stable, temp: meta.temp, written, sameKey: id2 === id, xid: [k.xid, k2.xid] });
+      stats.uncacheable++;
+      // A built-in call, a write or a new xid is the guard itself; a moved key or a TEMP read may be this call only.
+      if (!meta.stable || written.length || k2.xid !== k.xid) refused.add(text);
+      return result;
+    }
+    const variant = { result: clone(result), rel: meta.rel, relBasis: await relBasis(client, meta.rel), ms,
+      pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined, dbg: k2.dbg };
+    entries.set(id2, [variant, ...(entries.get(id2) ?? [])].slice(0, 8));
+    return result;
+  }
+
+  proto.query = function (config, values, callback) {
+    if (typeof values === 'function') { callback = values; values = undefined; }
+    if (typeof config !== 'string' || (values !== undefined && !(Array.isArray(values) && values.length === 0)) || !GUARD_QUERY.test(config))
+      return original.call(this, config, values, callback);
+    const p = cached(this, config);
+    if (!callback) return p;
+    p.then((r) => callback(null, r), (e) => callback(e));
+    return undefined;
+  };
+  Object.defineProperty(proto, '__dynaGuardCache', { value: true });
+  const file = process.env.DYNA_CI_GUARD_CACHE_STATS;
+  if (file) process.on('exit', () => {
+    if (stats.hits + stats.misses + stats.bypassed) try { appendFileSync(file, JSON.stringify(stats) + '\n'); } catch {}
+  });
+}

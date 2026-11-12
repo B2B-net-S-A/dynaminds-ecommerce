@@ -17,5 +17,6 @@
   "static": {
     "tests/return-credit207-ordinary-api-acceptance.test.mjs": "testuje sam walidator profilu (port 4100 w helperze to dane testu, nie wymaganie); 23/23 zielone bez bazy 11.11.2026"
   },
-  "freshDatabase": {}
+  "freshDatabase": {},
+  "noGuardCache": {}
 }
