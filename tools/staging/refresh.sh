@@ -154,7 +154,7 @@ if ! mkdir "$LOCK_DIR" 2>/dev/null; then
   if kill -0 "$(cat "$LOCK_DIR/pid" 2>/dev/null)" 2>/dev/null; then
     finish 6 "trwa inny bieg odświeżenia (pid $(cat "$LOCK_DIR/pid"))"
   fi
-  rm -rf "$LOCK_DIR"; mkdir "$LOCK_DIR" || finish 2 "nie można założyć blokady $LOCK_DIR"
+  rm -rf "$LOCK_DIR"; mkdir "$LOCK_DIR" 2>/dev/null || finish 6 "inny bieg założył blokadę $LOCK_DIR w tej samej chwili"
 fi
 LOCK="$LOCK_DIR"; echo $$ > "$LOCK/pid"
 
