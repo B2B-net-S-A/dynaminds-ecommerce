@@ -73,6 +73,7 @@ jobs:
       - name: Build the release
         working-directory: src
         run: |
+          mkdir -p "$RUNNER_TEMP/rb"   # release-build.mjs creates --out itself but not its parent
           node tools/scale/release-build.mjs --out "$RUNNER_TEMP/rb/out" --base-contract "$RUNNER_TEMP/n29/source-contract" \
             --base-contract-sha "$N29_SHA" | tail -5
           test -f "$RUNNER_TEMP/rb/out/release-build.json"
