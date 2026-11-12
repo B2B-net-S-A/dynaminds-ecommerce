@@ -75,5 +75,23 @@ Testy bez Dockera i bez demo: `node --test tests/staging-refresh.test.mjs`.
 | kod 4 | `tools/demo/demo.sh guards` pokazuje, który strażnik jest `false`. To błąd danych albo migracji w `main`: issue z wynikiem strażnika, bez danych z bazy. |
 | kod 5 | `powod` i log pokazują, które konto nie weszło. Po `demo.sh seed` hasła są nowe, a stara kopia kont prywatnych może nie pasować. |
 | kod 6 | poprzedni bieg jeszcze trwa albo został przerwany: blokada `$DEMO_ROOT/staging-refresh.lock` z martwym pid jest zdejmowana sama. |
+| Woo nie czyta (błąd TLS albo pinu CA) | certyfikat lokalnego sklepu wygasł albo pin w demo jest stary: sekcja „Certyfikat lokalnego sklepu Woo” niżej. |
 
 Brak świeżego śladu rano oznacza, że launchd nie wystartował (laptop wyłączony, Docker zamknięty): bieg ręcznie.
+
+## Certyfikat lokalnego sklepu Woo
+
+Demo na :4300 czyta lokalny sklep WooCommerce (`tools/local/official-woo`, `https://localhost:18447`) przez
+przypięte CA: sha256 w `$DEMO_ROOT/private/woo/selection.json`, kopia CA obok. CA i certyfikat `localhost`
+tego stosu odnowiono 12.11.2026 na 825 dni (do 13.02.2029). Przed tą datą albo gdy odczyt Woo pada błędem TLS:
+
+```bash
+openssl x509 -in <root Woo>/secrets/ca.pem -noout -enddate
+node tools/local/official-woo/operator.mjs renew-tls <root Woo> 825
+tools/demo/demo.sh woo-ca
+```
+
+`renew-tls` wystawia nowe CA z tym samym kluczem i nowy certyfikat, stare pliki zostawia jako `*.superseded-NN`,
+przepisuje pin w `woo-store-bindings.private.json` i restartuje tylko brzeg TLS. `woo-ca` kopiuje nowe CA do demo,
+podmienia pin w selekcji (ten sam kanał i klucz importera) i restartuje demo. Migawka bazy demo zostaje bez zmian,
+bo kanał w bazie nie przechowuje CA. Szczegóły, przerwane odnowienie i cofnięcie: `tools/local/official-woo/README.md`.
