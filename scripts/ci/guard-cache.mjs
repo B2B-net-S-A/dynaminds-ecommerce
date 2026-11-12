@@ -10,10 +10,11 @@
  * read and wrote (pg_stat_xact_user_tables before and after, in one implicit or the caller's transaction).
  * The answer is reused only when, on the caller's connection and snapshot, all of these are the same (a guard's
  * answer is a function of them; zero-argument guards check structure, not time or randomness):
- *  - every pg_catalog table (count and hash of ctid+xmin of all rows; pg_roles content instead of pg_authid),
+ *  - every pg_catalog table (count and hash of ctid+xmin of all rows; pg_roles content instead of pg_authid; shared
+ *    catalogues by the content of this database's rows, so that the next file's copy of the template matches),
  *  - every row version (ctid+xmin) of every table the guard read,
  *  - session settings (every non-default pg_settings value except timeouts), custom placeholders, current_user, session_user,
- *    database, own TEMP schema, advisory locks and strong relation locks of the database,
+ *    own TEMP schema, advisory locks and strong relation locks of the database,
  *  - the backend pid / the transaction's xid, when the guard read a table with a pid / xid column.
  * Not cached: a guard that read a TEMP table, wrote a row, took an xid, changed a setting, lock or the catalogue, or
  * raised; a built-in function (now(), …); a session without superuser
@@ -21,10 +22,11 @@
  * failing test (a refusal that does not come), never as a hidden pass in production code.
  * Files that inspect pg_stat_xact_* or count guard calls opt out (run-tests.mjs: noGuardCache, auto-detected).
  *
- * DYNA_CI_GUARD_CACHE_STATS=<file> appends one JSON line per process: hits, misses, bypassed, uncacheable, ms.
+ * DYNA_CI_GUARD_CACHE_FILE=<file> keeps answers for the next files of the shard (each gets a copy of the same template).
+ * DYNA_CI_GUARD_CACHE_STATS=<file> appends one JSON line per process: hits, misses (by cause), bypassed, uncacheable, ms.
  */
 import { createRequire } from 'node:module';
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 
 if (process.env.DYNA_TEST === 'true' && process.env.DYNA_CI_GUARD_CACHE === '1') install();
 
@@ -38,15 +40,36 @@ const IGNORED_SETTINGS = ['statement_timeout', 'lock_timeout', 'idle_in_transact
 // Restricted to superusers or not about schema state (statistics, large object data).
 const SKIPPED_CATALOGS = ['pg_authid', 'pg_statistic', 'pg_statistic_ext_data', 'pg_largeobject', 'pg_user_mapping'];
 
+// Shared catalogues hold rows of every database: only this database's rows count, by content, so each copy of the
+// shard's template (CREATE DATABASE … TEMPLATE) has the same key as the previous file's copy (DYNA_CI_GUARD_CACHE_FILE).
+const SHARED_BY_CONTENT = {
+  pg_database: `SELECT 'pg_database' r,'1' n,md5(row(datdba,encoding,datistemplate,datallowconn,datconnlimit,datcollate,datctype,datacl)::text) h
+    FROM pg_database WHERE datname=current_database()`,
+  pg_db_role_setting: `SELECT 'pg_db_role_setting' r,count(*)::text n,md5(coalesce(string_agg(x,',' ORDER BY x),'')) h FROM (SELECT concat_ws(':',setdatabase<>0,setrole,setconfig) x
+    FROM pg_db_role_setting WHERE setdatabase IN (0,(SELECT oid FROM pg_database WHERE datname=current_database()))) y`,
+  pg_shdepend: `SELECT 'pg_shdepend' r,count(*)::text n,md5(coalesce(string_agg(x,',' ORDER BY x),'')) h FROM (SELECT concat_ws(':',dbid<>0,classid,objid,objsubid,refclassid,refobjid,deptype) x
+    FROM pg_shdepend WHERE dbid IN (0,(SELECT oid FROM pg_database WHERE datname=current_database()))) y`,
+  pg_shdescription: `SELECT 'pg_shdescription' r,count(*)::text n,md5(coalesce(string_agg(x::text,',' ORDER BY x::text),'')) h FROM pg_shdescription x`,
+  pg_shseclabel: `SELECT 'pg_shseclabel' r,count(*)::text n,md5(coalesce(string_agg(x::text,',' ORDER BY x::text),'')) h FROM pg_shseclabel x`,
+};
+
 function install() {
   let pg;
   try { pg = createRequire(process.cwd() + '/')('pg'); } catch { return; }
   const proto = pg.Client.prototype;
   if (proto.__dynaGuardCache) return;
   const original = proto.query;
-  const stats = { pid: process.pid, hits: 0, misses: 0, bypassed: 0, uncacheable: 0, guardMs: 0, savedMs: 0, bypassedBy: {} };
+  const stats = { pid: process.pid, hits: 0, sharedHits: 0, misses: 0, bypassed: 0, uncacheable: 0, guardMs: 0, savedMs: 0, bypassedBy: {}, missBy: {} };
   const entries = new Map(); // text\0key -> up to 8 variants {result, rel:[{oid,name}], relBasis, pid?, xid?, ms}
-  const refused = new Set(); // text: shape never cacheable (volatile call or TEMP read)
+  const refused = new Set(); // text: never cacheable (built-in call, write, new xid)
+  // Answers of earlier files of the same shard (run-tests.mjs): same template, so the same catalogue and rows.
+  const shared = process.env.DYNA_CI_GUARD_CACHE_FILE;
+  if (shared) try {
+    for (const line of readFileSync(shared, 'utf8').split('\n')) if (line) {
+      const { id, variant } = JSON.parse(line);
+      entries.set(id, [...(entries.get(id) ?? []), { ...variant, shared: true }].slice(0, 8));
+    }
+  } catch {}
   let catalogSql;
   const customNames = new Map(); // catalog hash -> custom GUC names the database's functions read or set
 
@@ -57,17 +80,17 @@ function install() {
   async function keyOf(client) {
     catalogSql ??= (await q(client, `SELECT c.oid::regclass::text n FROM pg_class c WHERE c.relnamespace='pg_catalog'::regnamespace
       AND c.relkind='r' AND NOT c.relname=ANY($1) ORDER BY 1`, [SKIPPED_CATALOGS])).rows
-      .map(({ n }) => `SELECT '${n}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${n}`)
+      .map(({ n }) => SHARED_BY_CONTENT[n] ?? `SELECT '${n}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${n}`)
       .concat(`SELECT 'pg_roles' r,count(*)::text,md5(coalesce(string_agg(x::text,',' ORDER BY x.oid),'')) FROM pg_roles x`)
       .join(' UNION ALL ');
-    const k = await one(client, `SELECT current_user::text cu,session_user::text su,current_database() db,
+    const k = await one(client, `SELECT current_user::text cu,session_user::text su,
       coalesce(pg_my_temp_schema()::oid::text,'0') tmp,pg_backend_pid() pid,pg_current_xact_id_if_assigned()::text xid,
       (SELECT md5(string_agg(name||'='||coalesce(setting,''),',' ORDER BY name)) FROM pg_settings WHERE NOT name=ANY($1) AND (source<>'default' OR setting IS DISTINCT FROM boot_val)) s,
       (SELECT md5(coalesce(string_agg(x,',' ORDER BY x),'')) FROM (SELECT concat_ws(':',locktype,classid,objid,objsubid,relation,mode,granted,pid=pg_backend_pid()) x
         FROM pg_locks WHERE (database IS NULL OR database=(SELECT oid FROM pg_database WHERE datname=current_database()))
         AND (locktype='advisory' OR (locktype='relation' AND mode IN('ShareLock','ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')))) y) l,
       (SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) FROM (${catalogSql}) t) c
-      ${process.env.DYNA_CI_GUARD_CACHE_DEBUG ? `,(SELECT json_object_agg(r,n||':'||h) FROM (${catalogSql}) t) dbg` : ''}`, [IGNORED_SETTINGS]);
+`, [IGNORED_SETTINGS]);
     // Placeholders (app.tenant_id set by tenantTx, …) are not in pg_settings; their names come from function sources.
     if (!customNames.has(k.c)) customNames.set(k.c, (await one(client, `SELECT array_agg(DISTINCT lower(m[1]) ORDER BY lower(m[1])) n
       FROM pg_proc p, regexp_matches(p.prosrc, '(?:current_setting|set_config)\\(\\s*''{1,2}([a-z_][a-z0-9_$]*\\.[a-z0-9_$.]+)''', 'gi') m
@@ -76,8 +99,28 @@ function install() {
       FROM unnest($1::text[]) n`, [[...new Set(['app.tenant_id', ...customNames.get(k.c)])]])).g;
     return k;
   }
-  const relBasis = async (client, rel) => rel.length ? (await one(client, `SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) b FROM (${
-    rel.map(({ oid, name }) => `SELECT '${oid}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${name}`).join(' UNION ALL ')}) t`)).b : '';
+  // {table oid: "count:hash"} as one JSON text (sorted keys), so a miss can name the table that changed.
+  const relBasis = async (client, rel) => rel.length ? (await one(client, `SELECT json_object_agg(r,n||':'||h ORDER BY r)::text b FROM (${
+    rel.map(({ oid, name }) => `SELECT '${oid}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${name}`).join(' UNION ALL ')}) t`)).b : '{}';
+  const KEY_PARTS = ['text', 'current_user', 'session_user', 'temp_schema', 'settings', 'locks', 'catalog'];
+  const countMiss = (cause) => { stats.missBy[cause] = (stats.missBy[cause] ?? 0) + 1; };
+  function missCause(text, id, k, bases) {
+    const now = id.split('\0');
+    let best;
+    for (const [eid, es] of entries) {
+      if (!eid.startsWith(text + '\0')) continue;
+      const diff = eid.split('\0').map((p, i) => p === now[i] ? '' : KEY_PARTS[i]).filter(Boolean);
+      for (const e of es) {
+        let cause = diff.length ? 'key:' + diff.join('+') : e.pid !== undefined && e.pid !== k.pid ? 'pid' : e.xid !== undefined && e.xid !== k.xid ? 'xid' : '';
+        if (!cause) {
+          const was = JSON.parse(e.relBasis), is = JSON.parse(bases.get(e.rel.map((r) => r.oid).join()) ?? '{}');
+          cause = 'rows:' + e.rel.filter((r) => was[r.oid] !== is[r.oid]).map((r) => r.name.replace(/^public\./, '')).join('+');
+        }
+        if (!best || cause.length < best.length) best = cause;
+      }
+    }
+    return best ?? 'first';
+  }
 
   async function cached(client, text) {
     const why = refused.has(text) ? 'refused' : (await one(client, "SELECT current_setting('is_superuser') su")).su !== 'on' ? 'role' : '';
@@ -88,22 +131,20 @@ function install() {
       return q(client, text);
     }
     const k = await keyOf(client);
-    const id = [text, k.cu, k.su, k.db, k.tmp, k.s, k.l, k.c].join('\0');
+    const id = [text, k.cu, k.su, k.tmp, k.s, k.l, k.c].join('\0');
     const bases = new Map(); // one row hash per table set (variants usually share it)
     for (const e of entries.get(id) ?? []) {
       if ((e.pid !== undefined && e.pid !== k.pid) || (e.xid !== undefined && e.xid !== k.xid)) continue;
       const set = e.rel.map((r) => r.oid).join();
       if (!bases.has(set)) bases.set(set, await relBasis(client, e.rel));
       if (bases.get(set) !== e.relBasis) continue;
-      stats.hits++; stats.savedMs += e.ms;
+      stats.hits++; stats.savedMs += e.ms; if (e.shared) stats.sharedHits++;
       return clone(e.result);
     }
     stats.misses++;
-    if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) for (const [eid, es] of entries) for (const e of es) if (eid.startsWith(text + '\0')) {
-      const parts = eid.split('\0'), now = id.split('\0');
-      console.error('guard-cache miss', text, parts.map((p, i) => p === now[i] ? '=' : 'DIFF').join(''), e.pid, k.pid, e.xid, k.xid,
-        Object.keys(k.dbg).filter((t) => e.dbg?.[t] !== k.dbg[t]).map((t) => t + ' ' + e.dbg?.[t] + ' -> ' + k.dbg[t]).join('; '));
-    }
+    const cause = missCause(text, id, k, bases);
+    countMiss(cause);
+    if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) console.error('guard-cache miss', text.slice(0, 80), cause);
     const snap = `SELECT (SELECT coalesce(json_agg(json_build_array(relid,seq_scan,coalesce(idx_scan,0))),'[]') FROM pg_stat_xact_user_tables) t,
       (SELECT coalesce(json_agg(json_build_array(relid,n_tup_ins,n_tup_upd,n_tup_del)),'[]') FROM pg_stat_xact_user_tables) w`;
     const started = Date.now();
@@ -128,7 +169,7 @@ function install() {
     // Many read-only guards are declared VOLATILE (the plpgsql default), so the test is what the call did: no row
     // written, no xid taken, the same settings, locks, catalogue and TEMP schema afterwards.
     const k2 = await keyOf(client);
-    const id2 = [text, k2.cu, k2.su, k2.db, k2.tmp, k2.s, k2.l, k2.c].join('\0');
+    const id2 = [text, k2.cu, k2.su, k2.tmp, k2.s, k2.l, k2.c].join('\0');
     if (!meta.stable || meta.temp || written.length || id2 !== id || k2.xid !== k.xid) {
       if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) console.error('guard-cache uncacheable', text, { stable: meta.stable, temp: meta.temp, written, sameKey: id2 === id, xid: [k.xid, k2.xid] });
       stats.uncacheable++;
@@ -137,8 +178,9 @@ function install() {
       return result;
     }
     const variant = { result: clone(result), rel: meta.rel, relBasis: await relBasis(client, meta.rel), ms,
-      pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined, dbg: k2.dbg };
+      pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined };
     entries.set(id2, [variant, ...(entries.get(id2) ?? [])].slice(0, 8));
+    if (shared && variant.pid === undefined && variant.xid === undefined) try { appendFileSync(shared, JSON.stringify({ id: id2, variant }) + '\n'); } catch {}
     return result;
   }
 

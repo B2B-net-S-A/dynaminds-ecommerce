@@ -3,6 +3,10 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const url = new URL(process.env.DATABASE_URL ?? '');
@@ -12,6 +16,8 @@ process.env.DYNA_CI_GUARD_CACHE = '1';
 const { GUARD_QUERY } = await import('../scripts/ci/guard-cache.mjs');
 assert.equal((pg.Client.prototype as any).__dynaGuardCache, true, 'preload installed');
 
+// Roles are cluster-wide: one per database copy, dropped afterwards.
+const reader = 'ci_guard_probe_' + url.pathname.slice('/dynaminds_test_'.length);
 const owner = new pg.Client({ connectionString: process.env.DATABASE_URL });
 const other = new pg.Client({ connectionString: process.env.DATABASE_URL });
 let runs: string[] = [];
@@ -23,8 +29,7 @@ async function call(c: pg.Client, text = 'SELECT ci_guard_probe_valid() ok') {
 }
 before(async () => {
   await owner.connect(); await other.connect(); watch(owner); watch(other);
-  await owner.query(`DROP ROLE IF EXISTS ci_guard_probe_reader`);
-  await owner.query(`CREATE ROLE ci_guard_probe_reader`);
+  await owner.query(`CREATE ROLE ${reader}`);
   await owner.query(`CREATE TABLE ci_guard_probe(id int PRIMARY KEY, good boolean NOT NULL)`);
   await owner.query(`CREATE TABLE ci_guard_probe_pid(backend_pid int)`);
   await owner.query(`INSERT INTO ci_guard_probe VALUES (1, true)`);
@@ -40,10 +45,12 @@ before(async () => {
     BEGIN RAISE NOTICE 'probe-ran:e'; RAISE EXCEPTION 'probe refused' USING ERRCODE = 'P0001'; END $$`);
   await owner.query(`CREATE FUNCTION ci_guard_probe_pid_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
     BEGIN RAISE NOTICE 'probe-ran:p'; RETURN EXISTS(SELECT FROM ci_guard_probe_pid WHERE backend_pid = pg_backend_pid()); END $$`);
-  await owner.query(`GRANT EXECUTE ON FUNCTION ci_guard_probe_valid() TO ci_guard_probe_reader`);
-  await owner.query(`GRANT SELECT ON ci_guard_probe TO ci_guard_probe_reader`);
+  await owner.query(`GRANT EXECUTE ON FUNCTION ci_guard_probe_valid() TO ${reader}`);
+  await owner.query(`GRANT SELECT ON ci_guard_probe TO ${reader}`);
 });
 after(async () => {
+  await owner.query(`DROP OWNED BY ${reader}`);
+  await owner.query(`DROP ROLE ${reader}`);
   for (const c of [owner, other]) await c.end();
 });
 
@@ -111,7 +118,7 @@ test('session settings, custom placeholders, advisory locks and the role are par
   await owner.query('SELECT pg_advisory_lock(982376)');
   assert.deepEqual(await call(owner), { ok: true, ran: true });
   await owner.query('SELECT pg_advisory_unlock(982376)');
-  await owner.query('SET ROLE ci_guard_probe_reader');
+  await owner.query(`SET ROLE ${reader}`);
   assert.deepEqual(await call(owner), { ok: true, ran: true });
   assert.deepEqual(await call(owner), { ok: true, ran: true }, 'no superuser: never cached');
   await owner.query('RESET ROLE');
@@ -145,6 +152,24 @@ test('a row count beside the guard follows inserts into its table', async () => 
   assert.equal((await owner.query(text)).rows[0].n, first.rows[0].n);
   await owner.query('INSERT INTO ci_guard_probe_log VALUES (now())');
   assert.equal((await owner.query(text)).rows[0].n, first.rows[0].n + 1);
+});
+
+test('a later process with the same cache file (the next test file of a shard) reuses the answer', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ci-guard-cache-'));
+  const child = () => JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e', `
+    import pg from 'pg';
+    const c = new pg.Client({ connectionString: process.env.DATABASE_URL }); await c.connect();
+    let ran = false; c.on('notice', (n) => { if (n.message.startsWith('probe-ran:')) ran = true; });
+    const ok = (await c.query('SELECT ci_guard_probe_valid() ok')).rows[0].ok; await c.end();
+    console.log(JSON.stringify({ ok, ran }));`], {
+    cwd: new URL('..', import.meta.url),
+    env: { ...process.env, DYNA_CI_GUARD_CACHE_FILE: join(dir, 'cache.jsonl'), DYNA_CI_GUARD_CACHE_STATS: '' },
+    encoding: 'utf8',
+  }).trim().split('\n').at(-1)!);
+  try {
+    assert.deepEqual(child(), { ok: true, ran: true });
+    assert.deepEqual(child(), { ok: true, ran: false });
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test('the pool callback form returns the cached answer', async () => {

@@ -63,11 +63,15 @@ const guardCacheEnv = (file) => guardCacheFor(file) ? {
   NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${pathToFileURL(join(ROOT, 'scripts/ci/guard-cache.mjs')).href}`.trim(),
   DYNA_CI_GUARD_CACHE: '1',
   DYNA_CI_GUARD_CACHE_STATS: join(out, basename(file) + '.guard-cache.jsonl'),
+  DYNA_CI_GUARD_CACHE_FILE: join(out, fresh.has(file) ? '_guard-cache-fresh.jsonl' : '_guard-cache-template.jsonl'),
 } : {};
 const guardCacheSummary = (file) => {
   let rows; try { rows = readFileSync(join(out, basename(file) + '.guard-cache.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)); } catch { return ''; }
-  const t = rows.reduce((a, r) => ({ hits: a.hits + r.hits, misses: a.misses + r.misses, bypassed: a.bypassed + r.bypassed, uncacheable: a.uncacheable + r.uncacheable, savedMs: a.savedMs + r.savedMs }), { hits: 0, misses: 0, bypassed: 0, uncacheable: 0, savedMs: 0 });
-  return ` guards=${t.hits}hit/${t.misses}miss/${t.bypassed}bypass/${t.uncacheable}uncacheable~${Math.round(t.savedMs / 1000)}s-saved`;
+  const t = rows.reduce((a, r) => ({ hits: a.hits + r.hits, shared: a.shared + (r.sharedHits ?? 0), misses: a.misses + r.misses, bypassed: a.bypassed + r.bypassed, uncacheable: a.uncacheable + r.uncacheable, guardMs: a.guardMs + r.guardMs }), { hits: 0, shared: 0, misses: 0, bypassed: 0, uncacheable: 0, guardMs: 0 });
+  const causes = {};
+  for (const r of rows) for (const [c, n] of Object.entries(r.missBy ?? {})) causes[c] = (causes[c] ?? 0) + n;
+  const top = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `${c}=${n}`).join(',');
+  return ` guards=${t.hits}hit(${t.shared}shared)/${t.misses}miss(${Math.round(t.guardMs / 1000)}s:${top})/${t.bypassed}bypass/${t.uncacheable}uncacheable`;
 };
 const dbUrl = (name) => `postgres://postgres:${encodeURIComponent(password)}@127.0.0.1:${port}/${name}`;
 let nameSeq = Date.now();
@@ -79,11 +83,14 @@ function run(file, env, logPath, asTest = true) {
     const started = Date.now();
     const child = spawn(process.execPath, asTest ? [TSX, '--test', '--test-concurrency=1', file] : [TSX, file], {
       cwd: ROOT, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'],
+      // Own process group: tsx and node --test start children that hold the pipes; killing only the direct child
+      // left them running (ebay-offers ran 92 min past the 45 min limit, run 43205055600).
+      detached: true,
     });
     child.stdout.pipe(log, { end: false });
     child.stderr.pipe(log, { end: false });
     let timedOut = false;
-    const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, timeoutMin * 60_000);
+    const timer = setTimeout(() => { timedOut = true; try { process.kill(-child.pid, 'SIGKILL'); } catch { child.kill('SIGKILL'); } }, timeoutMin * 60_000);
     child.on('close', (code) => {
       clearTimeout(timer);
       log.end(timedOut ? `\n# CI: przekroczony limit ${timeoutMin} min — proces zabity\n` : '');
