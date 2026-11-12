@@ -8,10 +8,14 @@ import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {readRetainedRevision} from '../tools/parity/base-api-retained-revisions.mjs';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),sourceRoot=process.env.DYNA_DOC_SOURCE_ROOT??root;
 const {JSDOM}=createRequire(path.join(sourceRoot,'package.json'))('jsdom'),sha=b=>createHash('sha256').update(b).digest('hex');
 const read=n=>fs.readFileSync(path.join(sourceRoot,'docs/parity',n)),c=JSON.parse(fs.readFileSync(path.join(root,'docs/parity/base-api-pickpack-contracts.v1.json')));
 const methods=['addPickPackCart','addPickPackOrdersToCart','deletePickPackCart','deletePickPackCartOrders','deletePickPackOrderFromCart','getPickPackCartOrders','getPickPackCarts','getPickPackOrderCart'];
+const skip=baseCaptureSkip(['docs/parity/'+c.source_snapshot.path],sourceRoot);
+if(skip)test('PickPack contracts are re-checked against the archived Base.com documentation capture',{skip},()=>{});
+else{
 const packed=read(c.source_snapshot.path),raw=gunzipSync(packed,{maxOutputLength:1048576}),source=JSON.parse(raw),norm=v=>v.replace(/\s+/g,' ').trim();
 const method=n=>{const m=c.methods.find(m=>m.method===n);assert(m,n);return m;};
 const field=(n,d,p)=>{const f=method(n)[d][d==='input'?'parameters':'fields'].find(f=>(f.name??f.path)===p);assert(f,n+':'+p);return f;};
@@ -93,3 +97,4 @@ test('registry resolves all204 primary contracts, preserves23 secondary sections
   const s=source.documents[i];assert.equal(row.source.bundle_document_pointer,'/documents/'+i);assert.equal(row.source.html_pointer,'/documents/'+i+'/html_utf8');assert.equal(row.source.bundle_sha256,c.source_snapshot.sha256);assert.equal(row.source.html_sha256,s.sha256);assert.equal(row.source.html_bytes,s.bytes);assert.equal(row.source.retrieved_at,s.retrieved_at);assert.equal(row.source.url,s.url);assert.equal(row.source.final_url,s.final_url);
  }
 });
+}
