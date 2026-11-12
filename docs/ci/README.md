@@ -120,7 +120,8 @@ Wpis ręczny wygrywa z regułami. Ścieżka musi istnieć — po usunięciu test
 i sprawdź `node scripts/ci/classify-tests.mjs`. Jeśli test sam asertuje port/nazwę bazy/zmienną,
 klasyfikator wykryje go bez wpisu. **Kwarantanna** jest dla testu, który pada na mainie z powodu
 niezwiązanego z CI: wpis w `quarantine` z commitem i objawem, a naprawa idzie osobnym zadaniem —
-po naprawie wpis usuń. Lista jest dziś pusta: 14 testów z kwarantanny z 11.11.2026 naprawiono w tej gałęzi.
+po naprawie wpis usuń. Od 12.11.2026 w kwarantannie jest 153 plików db czerwonych w pełnym biegu 43322230795
+(decyzja Artura: kwarantanna i naprawa w osobnych sesjach); przy każdym wpisie plik:linia i objaw pierwszego padu.
 
 ## Skrypty
 
