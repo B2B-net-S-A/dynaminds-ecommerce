@@ -1,8 +1,9 @@
-/** Exact independently compiled269 inverse (own additions: the owner-private log table order_warehouse269_transfers with every record of its own (columns, constraints, PK and order indexes, row types, tenant policy) and the owner function order_warehouse269_transfer(uuid,uuid,uuid,text); no changed record, no removal) and the complete267..217 predecessor, each older changed record read back through its successor inverses. Metadata only; no installation or business authority. */
+/** Exact independently compiled269 inverse (own additions: the owner-private log table order_warehouse269_transfers with every record of its own (columns, constraints, PK and order indexes, row types, tenant policy) and the owner function order_warehouse269_transfer(uuid,uuid,uuid,text); no changed record, no removal) and the complete268..217 predecessor, each older changed record read back through its successor inverses. Metadata only; no installation or business authority. */
 import assert from 'node:assert/strict';
 import {validateRecoverySchema} from './packing189-catalogue-reader.mjs';
 import {canonical212,digest212,freeze212} from './local-woo-read212-source-contract.mjs';
 import {ORDER_WAREHOUSE_TRANSFER269_SOURCE_CONTRACT as E} from './order-warehouse-transfer269-source-contract.mjs';
+import {CANCELLED_LABEL_RELABEL268_SOURCE_CONTRACT as E268} from './cancelled-label-relabel268-source-contract.mjs';
 import {STATUS_CATEGORIES_AUTOMATION_EDITORS267_SOURCE_CONTRACT as E267} from './status-categories-automation-editors267-source-contract.mjs';
 import {ACCOUNTANT_ORDER_SETTINGS266_SOURCE_CONTRACT as E266} from './accountant-order-settings266-source-contract.mjs';
 import {WMS_ORDER_LINE_RESIZE265_SOURCE_CONTRACT as E265} from './wms-order-line-resize265-source-contract.mjs';
@@ -59,11 +60,11 @@ const same=(a,b)=>JSON.stringify(canonical212(a))===JSON.stringify(canonical212(
 const countKeys={relation:'relations',column:'columns',constraint:'constraints',index:'indexes',policy:'policies',trigger:'triggers',function:'functions',type:'types',sequence:'sequences'};
 const additions=new Map(E.additions.map(r=>[identity(r),r])),changes=new Map(E.changes.map(r=>[identity(r.after),r]));
 assert.equal(E.additions.length,38,'269 adds the 38 records of its log table and its function');assert.deepEqual(E.changes,[],'269 changes no existing record');
-// 269 adds its log table and function and changes nothing; older changed records are read back through each successor inverse: 267 (none), 266 (the 124 payment_allocation_access), 265 (the 108 wms_row_guard), 264 (none), 263 (none), 262 (none), 261 (the two 149 bodies stocktake_adjustment_budget/_manifest), 260 (none), 259 (none), 258 (wz_issuer239_verdict), 257 (the Source209 snapshot), 256 (none), 255 (none), 254 (none), 253 (none), 252 (none), 251 (none), 250 (the 235 settle), 249 (none), 248 (none), 247 (none), 246 (seven force_row_security flags), 245, 244, 243 and 242 (none), 241 (three functions), 240 (two functions), 239, 238, 237, 236 and 235 (none), 234 (two functions), 233, 232 and 231 (the 229 CHECK).
-const inverses=[E267.changes,E266.changes,E265.changes,E264.changes,E263.changes,E262.changes,E261.changes,E260.changes,E259.changes,E258.changes,E257.changes,E256.changes,E255.changes,E254.changes,E253.changes,E252.changes,E251.changes,E250.changes,E249.changes,E248.changes,E247.changes,E246.changes,E245.changes,E244.changes,E243.changes,E242.changes,E241.changes,E240.changes,E239.changes,E238.changes,E237.changes,E236.changes,E235.changes,E234.changes,E233.changes,E232.changes,E231.changes].map(list=>new Map(list.map(r=>[identity(r.after),r])));
+// 269 adds its log table and function and changes nothing; older changed records are read back through each successor inverse: 268 (order_shipments_guard, the 234 body), 267 (none), 266 (the 124 payment_allocation_access), 265 (the 108 wms_row_guard), 264 (none), 263 (none), 262 (none), 261 (the two 149 bodies stocktake_adjustment_budget/_manifest), 260 (none), 259 (none), 258 (wz_issuer239_verdict), 257 (the Source209 snapshot), 256 (none), 255 (none), 254 (none), 253 (none), 252 (none), 251 (none), 250 (the 235 settle), 249 (none), 248 (none), 247 (none), 246 (seven force_row_security flags), 245, 244, 243 and 242 (none), 241 (three functions), 240 (two functions), 239, 238, 237, 236 and 235 (none), 234 (two functions), 233, 232 and 231 (the 229 CHECK).
+const inverses=[E268.changes,E267.changes,E266.changes,E265.changes,E264.changes,E263.changes,E262.changes,E261.changes,E260.changes,E259.changes,E258.changes,E257.changes,E256.changes,E255.changes,E254.changes,E253.changes,E252.changes,E251.changes,E250.changes,E249.changes,E248.changes,E247.changes,E246.changes,E245.changes,E244.changes,E243.changes,E242.changes,E241.changes,E240.changes,E239.changes,E238.changes,E237.changes,E236.changes,E235.changes,E234.changes,E233.changes,E232.changes,E231.changes].map(list=>new Map(list.map(r=>[identity(r.after),r])));
 function footprint(r){
  // The plain name prefix order_warehouse269_ right after a dot, colon or quote: the log table, its columns, constraints,
- // indexes, row types and policy, and the function. Nothing on 267 carries it.
+ // indexes, row types and policy, and the function. Nothing on 268 carries it.
  const family=/(?:^|[.:"])_?order_warehouse269_/;
  return family.test(r.key)||['constraint','constraint_relation','table','function'].some(k=>typeof r.value[k]==='string'&&family.test(r.value[k]));
 }
@@ -73,66 +74,67 @@ export function projectCompiledOrderWarehouseTransfer269Catalogue(input){
  // 269 is active when one of its own records is present (it changes no existing record).
  const active=original.records.some(r=>footprint(r)||additions.has(identity(r)))||E.changes.some(c=>rows.has(identity(c.after))&&same(rows.get(identity(c.after)),c.after));
  if(!active)return freeze212({catalogue:original,active:false,removed_records:0,changed_records:0,mode:'SOURCE269_ABSENT_PREDECESSOR_IDENTITY',authority:false});
- // The record as it stood right after migration 267 (269 removes its additions), then each older successor inverse.
+ // The record as it stood right after migration 268 (269 removes its additions), then each older successor inverse.
  const prior=new Map(original.records.filter(r=>!additions.has(identity(r))).map(r=>[identity(r),changes.get(identity(r))?.before??r]));
  const view=(k,depth)=>{let r=prior.get(k);for(let i=0;i<depth;i++){const x=inverses[i].get(k);if(x&&same(r,x.after))r=x.before;}return r;};
  for(const[key,expected]of additions)assert(same(rows.get(key),expected),'269 exact complete addition descriptor:'+key);
  for(const[key,change]of changes)assert(same(rows.get(key),change.after),'269 exact complete changed descriptor:'+key);
  for(const r of original.records)if(footprint(r))assert(additions.has(identity(r)),'269 unexpected footprint');
- for(const expected of [...E267.additions,...E267.changes.map(c=>c.after)])assert(same(view(identity(expected),0),expected),'269 requires complete267 predecessor:'+identity(expected));
- for(const expected of [...E266.additions,...E266.changes.map(c=>c.after)])assert(same(view(identity(expected),1),expected),'269 requires complete266 predecessor:'+identity(expected));
- for(const expected of [...E265.additions,...E265.changes.map(c=>c.after)])assert(same(view(identity(expected),2),expected),'269 requires complete265 predecessor:'+identity(expected));
- for(const expected of [...E264.additions,...E264.changes.map(c=>c.after)])assert(same(view(identity(expected),3),expected),'269 requires complete264 predecessor:'+identity(expected));
- for(const expected of [...E263.additions,...E263.changes.map(c=>c.after)])assert(same(view(identity(expected),4),expected),'269 requires complete263 predecessor:'+identity(expected));
- for(const expected of [...E262.additions,...E262.changes.map(c=>c.after)])assert(same(view(identity(expected),5),expected),'269 requires complete262 predecessor:'+identity(expected));
- for(const expected of [...E261.additions,...E261.changes.map(c=>c.after)])assert(same(view(identity(expected),6),expected),'269 requires complete261 predecessor:'+identity(expected));
- for(const expected of [...E260.additions,...E260.changes.map(c=>c.after)])assert(same(view(identity(expected),7),expected),'269 requires complete260 predecessor:'+identity(expected));
- for(const expected of [...E259.additions,...E259.changes.map(c=>c.after)])assert(same(view(identity(expected),8),expected),'269 requires complete259 predecessor:'+identity(expected));
- for(const expected of [...E258.additions,...E258.changes.map(c=>c.after)])assert(same(view(identity(expected),9),expected),'269 requires complete258 predecessor:'+identity(expected));
- for(const expected of [...E257.additions,...E257.changes.map(c=>c.after)])assert(same(view(identity(expected),10),expected),'269 requires complete257 predecessor:'+identity(expected));
- for(const expected of [...E256.additions,...E256.changes.map(c=>c.after)])assert(same(view(identity(expected),11),expected),'269 requires complete256 predecessor:'+identity(expected));
- for(const expected of [...E255.additions,...E255.changes.map(c=>c.after)])assert(same(view(identity(expected),12),expected),'269 requires complete255 predecessor:'+identity(expected));
- for(const expected of [...E254.additions,...E254.changes.map(c=>c.after)])assert(same(view(identity(expected),13),expected),'269 requires complete254 predecessor:'+identity(expected));
- for(const expected of [...E253.additions,...E253.changes.map(c=>c.after)])assert(same(view(identity(expected),14),expected),'269 requires complete253 predecessor:'+identity(expected));
- for(const expected of [...E252.additions,...E252.changes.map(c=>c.after)])assert(same(view(identity(expected),15),expected),'269 requires complete252 predecessor:'+identity(expected));
- for(const expected of [...E251.additions,...E251.changes.map(c=>c.after)])assert(same(view(identity(expected),16),expected),'269 requires complete251 predecessor:'+identity(expected));
- for(const expected of [...E250.additions,...E250.changes.map(c=>c.after)])assert(same(view(identity(expected),17),expected),'269 requires complete250 predecessor:'+identity(expected));
- for(const expected of [...E249.additions,...E249.changes.map(c=>c.after)])assert(same(view(identity(expected),18),expected),'269 requires complete249 predecessor:'+identity(expected));
- for(const expected of [...E248.additions,...E248.changes.map(c=>c.after)])assert(same(view(identity(expected),19),expected),'269 requires complete248 predecessor:'+identity(expected));
- for(const expected of [...E247.additions,...E247.changes.map(c=>c.after)])assert(same(view(identity(expected),20),expected),'269 requires complete247 predecessor:'+identity(expected));
- for(const expected of [...E246.additions,...E246.changes.map(c=>c.after)])assert(same(view(identity(expected),21),expected),'269 requires complete246 predecessor:'+identity(expected));
- for(const expected of [...E245.additions,...E245.changes.map(c=>c.after)])assert(same(view(identity(expected),22),expected),'269 requires complete245 predecessor:'+identity(expected));
- for(const expected of [...E244.additions,...E244.changes.map(c=>c.after)])assert(same(view(identity(expected),23),expected),'269 requires complete244 predecessor:'+identity(expected));
- for(const expected of [...E243.additions,...E243.changes.map(c=>c.after)])assert(same(view(identity(expected),24),expected),'269 requires complete243 predecessor:'+identity(expected));
- for(const expected of [...E242.additions,...E242.changes.map(c=>c.after)])assert(same(view(identity(expected),25),expected),'269 requires complete242 predecessor:'+identity(expected));
- for(const expected of [...E241.additions,...E241.changes.map(c=>c.after)])assert(same(view(identity(expected),26),expected),'269 requires complete241 predecessor:'+identity(expected));
- for(const expected of [...E240.additions,...E240.changes.map(c=>c.after)])assert(same(view(identity(expected),27),expected),'269 requires complete240 predecessor:'+identity(expected));
- for(const expected of [...E239.additions,...E239.changes.map(c=>c.after)])assert(same(view(identity(expected),28),expected),'269 requires complete239 predecessor:'+identity(expected));
- for(const expected of [...E238.additions,...E238.changes.map(c=>c.after)])assert(same(view(identity(expected),29),expected),'269 requires complete238 predecessor:'+identity(expected));
- for(const expected of [...E237.additions,...E237.changes.map(c=>c.after)])assert(same(view(identity(expected),30),expected),'269 requires complete237 predecessor:'+identity(expected));
- for(const expected of [...E236.additions,...E236.changes.map(c=>c.after)])assert(same(view(identity(expected),31),expected),'269 requires complete236 predecessor:'+identity(expected));
- for(const expected of [...E235.additions,...E235.changes.map(c=>c.after)])assert(same(view(identity(expected),32),expected),'269 requires complete235 predecessor:'+identity(expected));
- for(const expected of [...E234.additions,...E234.changes.map(c=>c.after)])assert(same(view(identity(expected),33),expected),'269 requires complete234 predecessor:'+identity(expected));
- for(const expected of [...E233.additions,...E233.changes.map(c=>c.after)])assert(same(view(identity(expected),34),expected),'269 requires complete233 predecessor:'+identity(expected));
- for(const expected of [...E232.additions,...E232.changes.map(c=>c.after)])assert(same(view(identity(expected),35),expected),'269 requires complete232 predecessor:'+identity(expected));
- for(const expected of E231.changes.map(c=>c.after))assert(same(view(identity(expected),36),expected),'269 requires complete231 predecessor:'+identity(expected));
- for(const expected of E230.additions)assert(same(view(identity(expected),37),expected),'269 requires complete230 predecessor:'+identity(expected));
- for(const expected of E229.additions)assert(same(view(identity(expected),37),expected),'269 requires complete229 predecessor:'+identity(expected));
- for(const expected of E228.additions)assert(same(view(identity(expected),37),expected),'269 requires complete228 predecessor:'+identity(expected));
- for(const expected of E227.additions)assert(same(view(identity(expected),37),expected),'269 requires complete227 predecessor:'+identity(expected));
- for(const expected of E226.additions)assert(same(view(identity(expected),37),expected),'269 requires complete226 predecessor:'+identity(expected));
- for(const expected of E225.additions)assert(same(view(identity(expected),37),expected),'269 requires complete225 predecessor:'+identity(expected));
- for(const expected of E224.additions)assert(same(view(identity(expected),37),expected),'269 requires complete224 predecessor:'+identity(expected));
- for(const expected of E223.additions)assert(same(view(identity(expected),37),expected),'269 requires complete223 predecessor:'+identity(expected));
- for(const expected of E222.additions)assert(same(view(identity(expected),37),expected),'269 requires complete222 predecessor:'+identity(expected));
- for(const expected of E221.additions)assert(same(view(identity(expected),37),expected),'269 requires complete221 predecessor:'+identity(expected));
- for(const expected of E220.additions)assert(same(view(identity(expected),37),expected),'269 requires complete220 predecessor:'+identity(expected));
- for(const expected of E219.additions)assert(same(view(identity(expected),37),expected),'269 requires complete219 predecessor:'+identity(expected));
- for(const expected of E218.additions)assert(same(view(identity(expected),37),expected),'269 requires complete218 predecessor:'+identity(expected));
- for(const expected of [...E217.additions,...E217.changes.map(c=>c.after)])assert(same(view(identity(expected),37),expected),'269 requires complete217 predecessor:'+identity(expected));
+ for(const expected of [...E268.additions,...E268.changes.map(c=>c.after)])assert(same(view(identity(expected),0),expected),'269 requires complete268 predecessor:'+identity(expected));
+ for(const expected of [...E267.additions,...E267.changes.map(c=>c.after)])assert(same(view(identity(expected),1),expected),'269 requires complete267 predecessor:'+identity(expected));
+ for(const expected of [...E266.additions,...E266.changes.map(c=>c.after)])assert(same(view(identity(expected),2),expected),'269 requires complete266 predecessor:'+identity(expected));
+ for(const expected of [...E265.additions,...E265.changes.map(c=>c.after)])assert(same(view(identity(expected),3),expected),'269 requires complete265 predecessor:'+identity(expected));
+ for(const expected of [...E264.additions,...E264.changes.map(c=>c.after)])assert(same(view(identity(expected),4),expected),'269 requires complete264 predecessor:'+identity(expected));
+ for(const expected of [...E263.additions,...E263.changes.map(c=>c.after)])assert(same(view(identity(expected),5),expected),'269 requires complete263 predecessor:'+identity(expected));
+ for(const expected of [...E262.additions,...E262.changes.map(c=>c.after)])assert(same(view(identity(expected),6),expected),'269 requires complete262 predecessor:'+identity(expected));
+ for(const expected of [...E261.additions,...E261.changes.map(c=>c.after)])assert(same(view(identity(expected),7),expected),'269 requires complete261 predecessor:'+identity(expected));
+ for(const expected of [...E260.additions,...E260.changes.map(c=>c.after)])assert(same(view(identity(expected),8),expected),'269 requires complete260 predecessor:'+identity(expected));
+ for(const expected of [...E259.additions,...E259.changes.map(c=>c.after)])assert(same(view(identity(expected),9),expected),'269 requires complete259 predecessor:'+identity(expected));
+ for(const expected of [...E258.additions,...E258.changes.map(c=>c.after)])assert(same(view(identity(expected),10),expected),'269 requires complete258 predecessor:'+identity(expected));
+ for(const expected of [...E257.additions,...E257.changes.map(c=>c.after)])assert(same(view(identity(expected),11),expected),'269 requires complete257 predecessor:'+identity(expected));
+ for(const expected of [...E256.additions,...E256.changes.map(c=>c.after)])assert(same(view(identity(expected),12),expected),'269 requires complete256 predecessor:'+identity(expected));
+ for(const expected of [...E255.additions,...E255.changes.map(c=>c.after)])assert(same(view(identity(expected),13),expected),'269 requires complete255 predecessor:'+identity(expected));
+ for(const expected of [...E254.additions,...E254.changes.map(c=>c.after)])assert(same(view(identity(expected),14),expected),'269 requires complete254 predecessor:'+identity(expected));
+ for(const expected of [...E253.additions,...E253.changes.map(c=>c.after)])assert(same(view(identity(expected),15),expected),'269 requires complete253 predecessor:'+identity(expected));
+ for(const expected of [...E252.additions,...E252.changes.map(c=>c.after)])assert(same(view(identity(expected),16),expected),'269 requires complete252 predecessor:'+identity(expected));
+ for(const expected of [...E251.additions,...E251.changes.map(c=>c.after)])assert(same(view(identity(expected),17),expected),'269 requires complete251 predecessor:'+identity(expected));
+ for(const expected of [...E250.additions,...E250.changes.map(c=>c.after)])assert(same(view(identity(expected),18),expected),'269 requires complete250 predecessor:'+identity(expected));
+ for(const expected of [...E249.additions,...E249.changes.map(c=>c.after)])assert(same(view(identity(expected),19),expected),'269 requires complete249 predecessor:'+identity(expected));
+ for(const expected of [...E248.additions,...E248.changes.map(c=>c.after)])assert(same(view(identity(expected),20),expected),'269 requires complete248 predecessor:'+identity(expected));
+ for(const expected of [...E247.additions,...E247.changes.map(c=>c.after)])assert(same(view(identity(expected),21),expected),'269 requires complete247 predecessor:'+identity(expected));
+ for(const expected of [...E246.additions,...E246.changes.map(c=>c.after)])assert(same(view(identity(expected),22),expected),'269 requires complete246 predecessor:'+identity(expected));
+ for(const expected of [...E245.additions,...E245.changes.map(c=>c.after)])assert(same(view(identity(expected),23),expected),'269 requires complete245 predecessor:'+identity(expected));
+ for(const expected of [...E244.additions,...E244.changes.map(c=>c.after)])assert(same(view(identity(expected),24),expected),'269 requires complete244 predecessor:'+identity(expected));
+ for(const expected of [...E243.additions,...E243.changes.map(c=>c.after)])assert(same(view(identity(expected),25),expected),'269 requires complete243 predecessor:'+identity(expected));
+ for(const expected of [...E242.additions,...E242.changes.map(c=>c.after)])assert(same(view(identity(expected),26),expected),'269 requires complete242 predecessor:'+identity(expected));
+ for(const expected of [...E241.additions,...E241.changes.map(c=>c.after)])assert(same(view(identity(expected),27),expected),'269 requires complete241 predecessor:'+identity(expected));
+ for(const expected of [...E240.additions,...E240.changes.map(c=>c.after)])assert(same(view(identity(expected),28),expected),'269 requires complete240 predecessor:'+identity(expected));
+ for(const expected of [...E239.additions,...E239.changes.map(c=>c.after)])assert(same(view(identity(expected),29),expected),'269 requires complete239 predecessor:'+identity(expected));
+ for(const expected of [...E238.additions,...E238.changes.map(c=>c.after)])assert(same(view(identity(expected),30),expected),'269 requires complete238 predecessor:'+identity(expected));
+ for(const expected of [...E237.additions,...E237.changes.map(c=>c.after)])assert(same(view(identity(expected),31),expected),'269 requires complete237 predecessor:'+identity(expected));
+ for(const expected of [...E236.additions,...E236.changes.map(c=>c.after)])assert(same(view(identity(expected),32),expected),'269 requires complete236 predecessor:'+identity(expected));
+ for(const expected of [...E235.additions,...E235.changes.map(c=>c.after)])assert(same(view(identity(expected),33),expected),'269 requires complete235 predecessor:'+identity(expected));
+ for(const expected of [...E234.additions,...E234.changes.map(c=>c.after)])assert(same(view(identity(expected),34),expected),'269 requires complete234 predecessor:'+identity(expected));
+ for(const expected of [...E233.additions,...E233.changes.map(c=>c.after)])assert(same(view(identity(expected),35),expected),'269 requires complete233 predecessor:'+identity(expected));
+ for(const expected of [...E232.additions,...E232.changes.map(c=>c.after)])assert(same(view(identity(expected),36),expected),'269 requires complete232 predecessor:'+identity(expected));
+ for(const expected of E231.changes.map(c=>c.after))assert(same(view(identity(expected),37),expected),'269 requires complete231 predecessor:'+identity(expected));
+ for(const expected of E230.additions)assert(same(view(identity(expected),38),expected),'269 requires complete230 predecessor:'+identity(expected));
+ for(const expected of E229.additions)assert(same(view(identity(expected),38),expected),'269 requires complete229 predecessor:'+identity(expected));
+ for(const expected of E228.additions)assert(same(view(identity(expected),38),expected),'269 requires complete228 predecessor:'+identity(expected));
+ for(const expected of E227.additions)assert(same(view(identity(expected),38),expected),'269 requires complete227 predecessor:'+identity(expected));
+ for(const expected of E226.additions)assert(same(view(identity(expected),38),expected),'269 requires complete226 predecessor:'+identity(expected));
+ for(const expected of E225.additions)assert(same(view(identity(expected),38),expected),'269 requires complete225 predecessor:'+identity(expected));
+ for(const expected of E224.additions)assert(same(view(identity(expected),38),expected),'269 requires complete224 predecessor:'+identity(expected));
+ for(const expected of E223.additions)assert(same(view(identity(expected),38),expected),'269 requires complete223 predecessor:'+identity(expected));
+ for(const expected of E222.additions)assert(same(view(identity(expected),38),expected),'269 requires complete222 predecessor:'+identity(expected));
+ for(const expected of E221.additions)assert(same(view(identity(expected),38),expected),'269 requires complete221 predecessor:'+identity(expected));
+ for(const expected of E220.additions)assert(same(view(identity(expected),38),expected),'269 requires complete220 predecessor:'+identity(expected));
+ for(const expected of E219.additions)assert(same(view(identity(expected),38),expected),'269 requires complete219 predecessor:'+identity(expected));
+ for(const expected of E218.additions)assert(same(view(identity(expected),38),expected),'269 requires complete218 predecessor:'+identity(expected));
+ for(const expected of [...E217.additions,...E217.changes.map(c=>c.after)])assert(same(view(identity(expected),38),expected),'269 requires complete217 predecessor:'+identity(expected));
  const records=original.records.filter(r=>!additions.has(identity(r))).map(r=>changes.get(identity(r))?.before??r),counts={...original.counts};
  for(const r of E.additions){assert(Object.hasOwn(countKeys,r.kind));assert(counts[countKeys[r.kind]]>0);counts[countKeys[r.kind]]--;}
  const body={schema:original.schema,postgres_major:original.postgres_major,scope:[...original.scope],sql_sha256:original.sql_sha256,counts,records};
  const catalogue=validateRecoverySchema({...body,sha256:digest212(body)});
- return freeze212({catalogue,active:true,removed_records:E.additions.length,changed_records:E.changes.length,mode:'SOURCE_COMPILED_EXACT269_TO267',source_compilation_proven:true,native_certification:false,application_activation:false,business_acceptance:false,authority:false});
+ return freeze212({catalogue,active:true,removed_records:E.additions.length,changed_records:E.changes.length,mode:'SOURCE_COMPILED_EXACT269_TO268',source_compilation_proven:true,native_certification:false,application_activation:false,business_acceptance:false,authority:false});
 }

@@ -155,7 +155,7 @@ Dotyczy lokalnej instalacji; Main (port 4100, `app/data/postgres`) zmienia tylko
    `DYNA_MIGRATION_BACKUP_DIR` i wypisuje `pre-migration-backup`, (c) stosuje oczekujące migracje w jednej
    transakcji. Odmowa w (a) albo (b) nic nie zmienia w bazie.
 4. **Weryfikacja** po starcie:
-   - ledger: `SELECT count(*), max(name) FROM migrations` = liczba programu wydania (dziś 258, ostatnia `269_order_warehouse_transfer`);
+   - ledger: `SELECT count(*), max(name) FROM migrations` = liczba programu wydania (dziś 259, ostatnia `269_order_warehouse_transfer`);
    - strażnicy, wszystkie `true`: `ordinary187_valid`, `buyer_address_guards`, `order_merge_delivery209_valid`,
      `return_credit206_guards`, `ordinary188_structure_valid`, `return_credit211_metadata_valid`, `large_import173_valid`,
      `fa3_draft_guards`, `pim_dictionary_valid`, `local_invoice_guards` (`SELECT public.<nazwa>()` w transakcji READ ONLY);
