@@ -15,11 +15,14 @@ export async function validateRecoveredPimIfAvailableInTx(c:Reader):Promise<Reco
  return{available:true,...await validateRecoveredPim(c)};
 }
 /** Run before exposing a readonly app. It borrows one owner connection outside
- * any tenant transaction and releases it on every acquired-client path. */
+ * any tenant transaction and releases it on every acquired-client path. Like the construction
+ * preflight (db.ts preflightOrdinaryConstructionPim, app.ts preflightUngatedConstructionPim) the full
+ * validators get 120 s; SET LOCAL ends with this transaction, the pooled session keeps 8 s. */
 export async function validateRecoveredPimBeforeReadonly(owner:Pick<Pool,'connect'>):Promise<RecoveredPimCounts>{
  const c=await owner.connect();let discard=false;
  try{
   await c.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+  await c.query("SET LOCAL statement_timeout='120s'");
   await c.query("SET LOCAL TimeZone='UTC'");
   const result=await validateRecoveredPimIfAvailableInTx(c);
   await c.query('COMMIT');
