@@ -19,6 +19,7 @@ import {GUARD_VERDICTS248_SOURCE_CONTRACT} from '../shared/large-import-dependen
 import {STOCKTAKE_EVIDENCE_USAGE261_SOURCE_CONTRACT} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/stocktake-evidence-usage261-source-contract.mjs';
 import {ACCOUNTANT_ORDER_SETTINGS266_SOURCE_CONTRACT} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/accountant-order-settings266-source-contract.mjs';
 import {STATUS_CATEGORIES_AUTOMATION_EDITORS267_SOURCE_CONTRACT} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/status-categories-automation-editors267-source-contract.mjs';
+import {ORDER_WAREHOUSE_TRANSFER269_SOURCE_CONTRACT} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/order-warehouse-transfer269-source-contract.mjs';
 import {derivePackingColdIdentity,readPackingCatalogue,validateRecoverySchema} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-catalogue-reader.mjs';
 import {PACKING189_CONTRACT} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-cold-contract.mjs';
 import {observePackingColdCatalogue,comparePackingCompiledExpectation} from '../shared/large-import-dependencies/pim-large-import173-business-traversal-ui/packing189-cold-inspection.mjs';
@@ -45,13 +46,13 @@ export async function normalizeOrdinaryLegacyOwnerAcls(owner){
   const expected=new Map(PACKING189_CONTRACT.dependency_compilation.object_hashes),targets=[],replacements=new Map();
   // Every release contract whose added relation/schema keeps an explicit owner-only ACL (pg_dump omits it as the
   // default): 211 tables, 219-224 ID sequences, 236-261 verdict/usage tables,
-  // 266 accountant invitation/membership tables, 267 automation editors. tests/ordinary-legacy-schema-contracts.test.mjs
+  // 266 accountant invitation/membership tables, 267 automation editors, 269 order warehouse transfers. tests/ordinary-legacy-schema-contracts.test.mjs
   // derives the required set from migration-manifest.mjs and refuses a new migration missing here.
   for(const contract of [RETURN_CREDIT207_SOURCE_CONTRACT,RETURN_CREDIT208_SOURCE_CONTRACT,ORDER_MERGE_DELIVERY209_SOURCE_CONTRACT,
    RETURN_CREDIT211_SOURCE_CONTRACT,CRM219_SOURCE_CONTRACT,BASE_WIRE220_SOURCE_CONTRACT,BASE_WIRE221_SOURCE_CONTRACT,
    RETURN_REASONS223_SOURCE_CONTRACT,BASE_WIRE_CATEGORIES224_SOURCE_CONTRACT,BUYER_AVAILABLE236_SOURCE_CONTRACT,AUTH_SECURITY237_SOURCE_CONTRACT,
    WZ_ISSUER239_SOURCE_CONTRACT,CUSTOM_EVENTS_CHECKSUMS244_SOURCE_CONTRACT,GUARD_VERDICTS248_SOURCE_CONTRACT,STOCKTAKE_EVIDENCE_USAGE261_SOURCE_CONTRACT,
-   ACCOUNTANT_ORDER_SETTINGS266_SOURCE_CONTRACT,STATUS_CATEGORIES_AUTOMATION_EDITORS267_SOURCE_CONTRACT])
+   ACCOUNTANT_ORDER_SETTINGS266_SOURCE_CONTRACT,STATUS_CATEGORIES_AUTOMATION_EDITORS267_SOURCE_CONTRACT,ORDER_WAREHOUSE_TRANSFER269_SOURCE_CONTRACT])
    for(const record of contract.additions)if(record.kind==='relation'||record.kind==='schema'){
     const key=sha(record.kind+'\0'+record.key),value=sha(JSON.stringify(canonical(record)));
     assert(!expected.has(key)||expected.get(key)===value,'legacy-owner-acl-source-expectation-conflict');expected.set(key,value);

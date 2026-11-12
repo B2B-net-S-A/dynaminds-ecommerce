@@ -63,7 +63,8 @@ export function useMoreMenu() {
     };
     const outside = (e: MouseEvent) => { if (el.open && !el.contains(e.target as Node)) el.open = false; };
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape' && el.open) el.open = false; };
-    const picked = (e: MouseEvent) => { if ((e.target as HTMLElement).closest('.order-more-menu button')) el.open = false; };
+    // A button that opens an inline form inside the menu (data-keep-open, e.g. Zmień magazyn) keeps it open.
+    const picked = (e: MouseEvent) => { if ((e.target as HTMLElement).closest('.order-more-menu button:not([data-keep-open])')) el.open = false; };
     el.addEventListener('toggle', place);
     el.addEventListener('click', picked);
     document.addEventListener('mousedown', outside);
