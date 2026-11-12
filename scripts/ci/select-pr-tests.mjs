@@ -66,7 +66,7 @@ function reverseGraph() {
 /** Number of a migration file: server/269_x.sql → "269", server/x-fragment169.sql → "169". */
 export function migrationNumber(file) {
   const name = file.split('/').pop();
-  return (name.match(/^(\d{3})_/) ?? name.match(/(\d{3})\.sql$/))?.[1] ?? null;
+  return (name.match(/^(\d{3,})_/) ?? name.match(/(\d{3,})\.sql$/))?.[1] ?? null;
 }
 
 const triggerOf = (triggers, changed) => {
@@ -124,7 +124,7 @@ export function select(changed, { limit = 40, budgetMin = Infinity } = {}) {
     for (const re of MIGRATION_BUNDLE) for (const f of byName) if (re.test(f.slice('tests/'.length))) push(f, bundle);
   }
   for (const f of related) push(f);
-  if (!ordered.length) return { mode: 'none', reason: 'żaden test db nie zależy od zmienionych plików', changed: changed.length, files: [] };
+  if (!ordered.length) return { mode: 'none', reason: 'żaden test db nie zależy od zmienionych plików', changed: changed.length, files: [], bundle: 0, smoke: 0 };
 
   // In priority order until the file limit or the time budget (measured seconds, else estimateSec) is reached.
   const picked = [];
