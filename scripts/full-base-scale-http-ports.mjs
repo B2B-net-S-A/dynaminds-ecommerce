@@ -46,9 +46,14 @@ export const SCALE_HTTP_PORT_LIMITATIONS=Object.freeze([
 // the DEMO label when that setting is on. New routes only otherwise (filter-options, status-counts, channel-data,
 // demo-label, order sections). payments.ts: two exports. wms-lots.ts: order-line resize and an optional product
 // filter on release (unchanged without it). Not re-measured by a live scale run.
+// Public snapshot re-pins app.ts and domain.ts (11.11.2026): one comment line each, a client name replaced by
+// "uwaga klienta" before publication; code unchanged (was 566a0705…a69cb2, c6fe9e41…3d8b5).
+// Re-pins app.ts (12.11.2026): without the startup gate buildApp runs preflightPim/preflightNestedPim in one READ ONLY
+// transaction with SET LOCAL statement_timeout='120s' instead of on the pool's 8 s session; no HTTP route or port
+// changes (was 24b0277c…87473b). Not re-measured by a live scale run.
 export const SCALE_HTTP_PORT_SOURCE_PINS=Object.freeze({
- "server/app.ts": "566a0705e6d4338c9244d99ba8b9584f5e928c7373b79dc6d9c161f45ca69cb2",
- "server/domain.ts": "c6fe9e41bf1f76d84f8daebd4e786cc5b0686a93d050d0ebd148fd113293d8b5",
+ "server/app.ts": "964d085260b4b9b58a8f7d6d41745b83dc1eb5c412e3c4da3092e3f5c29e0edf",
+ "server/domain.ts": "accaef7c209ef97953ff461ee409ebbf9427a5558c3d4f56813f29c43cc1c2a8",
  "server/catalog-routes.ts": "626a78aaa0e141792979c1030b7df3895df39ba1a0a87a612360bb0ec2976b1d",
  "server/catalog.ts": "7fe1988a3e4a5c178181ac89cb124c5bd7418007f00bc475fb88ff26d0eb2c61",
  "server/order-status-input.ts": "efafe589485baeba5da294d305d40979a57af99597d025bb5fab6fc8330115e6",
