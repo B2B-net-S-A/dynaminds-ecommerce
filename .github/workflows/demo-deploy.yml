@@ -37,6 +37,9 @@ jobs:
        github.event.workflow_run.event == 'push')
     runs-on: macos-15
     timeout-minutes: 30
+    # The deploy key lives in the "demo" environment, whose deployment branch policy allows only main: the repository
+    # is public, so no other ref (and no workflow started from a fork) can read it.
+    environment: demo
     outputs:
       sha: ${{ steps.pick.outputs.sha }}
       changed: ${{ steps.publish.outputs.changed }}
