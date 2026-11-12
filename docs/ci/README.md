@@ -8,7 +8,7 @@ Repo docelowe: publiczne `B2B-net-S-A/dynaminds-ecommerce`, standardowe runnery 
 
 | Plik | Kiedy | Co robi |
 |---|---|---|
-| `.github/workflows/ci-gate.yml` („CI Gate”) | push na `main`, PR, kolejka merge'ów | Szybka bramka (cel ≤ ~5 min): gitleaks (drzewo + każdy commit PR-a/grupy), `tsc --noEmit`, lint źródeł (`tests/failure-job-kinds.test.ts`, `tests/sql-text-lint.test.ts`), wszystkie testy klasy `static` bez bazy w 3 równoległych częściach (podział po czasach), testy `web/*.test.mjs`. |
+| `.github/workflows/ci-gate.yml` („CI Gate”) | push na `main`, PR, kolejka merge'ów | Szybka bramka (cel ≤ ~5 min): gitleaks (drzewo + każdy commit PR-a/grupy), `tsc --noEmit`, lint źródeł (`tests/failure-job-kinds.test.ts`, `tests/sql-text-lint.test.ts`), wszystkie testy klasy `static` bez bazy w 3 równoległych częściach (podział po czasach), klasa `darwin` w jobie `Static tests (macOS zlib)` na `macos-15`, testy `web/*.test.mjs`. |
 | `.github/workflows/ci.yml` („CI”) | PR, kolejka merge'ów, co noc 01:17 UTC (`schedule`), ręcznie (`workflow_dispatch`) | Testy z bazą (klasa `db`). PR: sito — testy db najbliżej zmiany, do 40 plików i `CI_DB_PR_BUDGET_MIN` szacowanych minut, 1–3 shardy. Kolejka: to samo sito, do 120 plików i `CI_DB_QUEUE_BUDGET_MIN`, do `CI_DB_MAX_SHARDS` shardów po ≤ ~35–40 min. Noc i ręczny bieg: pełny zestaw w `CI_DB_MAX_SHARDS` shardach (limit 180 min na shard), czerwony nocny bieg otwiera issue „Nocny pełny bieg testów db nie przeszedł”, zielony je zamyka. Zmiana w `server/db.ts`, migracjach `server/*.sql`, runnerze/manifeście migracji, `package*.json`, `tsconfig.json`, `scripts/ci/` albo `ci.yml` uruchamia pełny zestaw także na PR-ze i w kolejce. Każdy shard: PostgreSQL `postgres:18.4-trixie` (service), losowe `dbPassword`/`encryptionKey` w `$RUNNER_TEMP`, osobna baza na plik. |
 | `.github/workflows/auto-enqueue.yml` | zdarzenia PR-a | Gotowy PR (nie-draft, bez `wstrzymaj`, nie Dependabot) dostaje `gh pr merge --squash --auto`; `wstrzymaj` albo draft zdejmuje go z kolejki. |
 | `.github/workflows/uptime-probe.yml` | co godzinę (cron), ręcznie | `GET <DEMO_URL>/api/health` → HTTP 200 i `status: "ok"`. Awaria otwiera issue (albo komentuje otwarte), zielony bieg je zamyka. |
@@ -22,7 +22,7 @@ Nazwy jobów są stałe — ruleset wiąże się z nimi dosłownie:
 
 - `Gitleaks secret scan`
 - `Typecheck`
-- `Lint + static tests` — job zbiorczy w `ci-gate.yml`; części `Static tests (part N/3)` nie idą do rulesetu.
+- `Lint + static tests` — job zbiorczy w `ci-gate.yml` (zależy od `Static tests (part N/3)` i `Static tests (macOS zlib)`); części nie idą do rulesetu.
 - `Web tests`
 - `DB tests` — job zbiorczy w `ci.yml`. Shardy (`DB tests (shard N)`) i plan (`DB tests (plan)`) **nie**
   idą do rulesetu: ich liczba zmienia się z planem.
@@ -62,7 +62,7 @@ Zmienne repo (opcjonalne, Settings → Secrets and variables → Actions → Var
 
 ## Klasy testów
 
-`node scripts/ci/classify-tests.mjs` dzieli `tests/*.test.*` (pliki śledzone przez gita) na trzy klasy:
+`node scripts/ci/classify-tests.mjs` dzieli `tests/*.test.*` (pliki śledzone przez gita) na cztery klasy:
 
 - **static** — bez bazy. Plik nie ma żadnego sygnału bazy: nazwa `*.database.test.*`, import `server/db`,
   `DATABASE_URL`, pakiet `pg`, `migrate()`, `scripts/test.ts`, ani import helpera z `tests/`, który go ma.
@@ -72,6 +72,9 @@ Zmienne repo (opcjonalne, Settings → Secrets and variables → Actions → Var
   Baza to kopia szablonu zmigrowanego raz na shard (`CREATE DATABASE … TEMPLATE`, ~3 s zamiast ~1–2 min
   `migrate()` na plik); po kopii CI odtwarza ACL bazy z migracji 262 (TEMPLATE go nie kopiuje).
   Plik, który musi sam migrować pustą bazę, wpisz do `freshDatabase`.
+- **darwin** — static, ale przypina bajty, które powstają tylko na macOS: sumy wyniku `gzipSync` (zlib na
+  Linuksie wpisuje w nagłówek gzip bajt OS 3 zamiast 19, strumień deflate jest ten sam). Tylko ręcznie, wpis
+  `darwin` w konfiguracji; biegną w jobie `Static tests (macOS zlib)` na `macos-15`, części Linux ich nie dostają.
 - **special** — pomijane w CI, z powodem w podsumowaniu każdego biegu. Automatycznie: plik wymaga klastra
   na innym porcie niż 55432 (asercja portu, np. klony PG04 na 57084), bazy o konkretnej nazwie (asercja
   `pathname` adresu bazy, np. `dynaminds_m236_…`), albo prywatnej zmiennej (`assert(process.env.X…)`
@@ -85,6 +88,7 @@ Zmienne repo (opcjonalne, Settings → Secrets and variables → Actions → Var
   "ciDatabasePort": 55432,
   "special":      { "tests/x.test.ts": "powód: czego wymaga" },
   "quarantine":   { "tests/y.test.ts": "pada na main od <commit>: <objaw>" },
+  "darwin":       { "tests/u.test.mjs": "przypina bajty z macOS: co i gdzie" },
   "db":           { "tests/z.test.ts": "wymuś db mimo braku sygnału" },
   "static":       { "tests/w.test.ts": "wymuś static" },
   "freshDatabase":{ "tests/v.test.ts": "migruje pustą bazę sam" }
@@ -103,7 +107,7 @@ po naprawie wpis usuń. Lista jest dziś pusta: 14 testów z kwarantanny z 11.11
 
 | Skrypt | Do czego |
 |---|---|
-| `scripts/ci/classify-tests.mjs` | podsumowanie; `--list static\|db\|special`; `--json`; `--why` (sygnał, który przesądził o db) |
+| `scripts/ci/classify-tests.mjs` | podsumowanie; `--list static\|db\|darwin\|special`; `--json`; `--why` (sygnał, który przesądził o db) |
 | `scripts/ci/shard.mjs` | podział listy na N shardów (LPT po czasach z `scripts/ci/test-durations.json`, bez czasów round-robin); `--plan --target-min M --max K` wylicza N |
 | `scripts/ci/select-pr-tests.mjs` | sito PR-a i kolejki z `git diff --name-only` (domyślnie `origin/main...HEAD`, albo `--range A..B`): zmienione testy db + testy importujące zmienione moduły albo nazwane od nich (graf importów wstecz, najbliższe najpierw; `--limit` plików, `--budget-min` szacowanych minut). Zmiana w `server/db.ts`, `server/*.sql`, runnerze/manifeście migracji, `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml` → pełny zestaw |
 | `scripts/ci/run-tests.mjs` | uruchamia pliki po jednym procesie `tsx --test`, logi per plik, `summary.txt`, `failed.txt`, `durations.json`; `--kind db` zakłada i sprząta bazy |

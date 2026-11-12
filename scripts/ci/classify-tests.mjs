@@ -4,12 +4,14 @@
  *   db      — ordinary disposable database per file (fresh name dynaminds_test_<13 digits>, port CI_DB_PORT),
  *   special — needs an environment public CI does not have (PG04 clone, dedicated cluster port, private env),
  *             or is quarantined (fails on main, "quarantine" in the config); skipped in CI and listed with
- *             a reason in every run.
+ *             a reason in every run,
+ *   darwin  — static, but pins bytes only macOS produces (e.g. gzipSync output digests); runs in the
+ *             "Static tests (macOS zlib)" job on macOS instead of the Linux parts ("darwin" in the config only).
  * Deterministic: reads only the file text and scripts/ci/test-classes.json (manual overrides win).
  *
  *   node scripts/ci/classify-tests.mjs                 summary (counts + special list)
- *   node scripts/ci/classify-tests.mjs --list db       one path per line
- *   node scripts/ci/classify-tests.mjs --json          {static, db, special:[{file,reason}]}
+ *   node scripts/ci/classify-tests.mjs --list db       one path per line (static|db|darwin|special)
+ *   node scripts/ci/classify-tests.mjs --json          {static, db, darwin, special:[{file,reason}]}
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
@@ -22,7 +24,7 @@ const TEST_FILE = /^tests\/[^/]+\.test\.(?:ts|tsx|mts|mjs)$/;
 
 export function loadConfig(root = ROOT) {
   const config = JSON.parse(readFileSync(join(root, CONFIG), 'utf8'));
-  for (const key of ['special', 'quarantine', 'db', 'static', 'freshDatabase']) {
+  for (const key of ['special', 'quarantine', 'darwin', 'db', 'static', 'freshDatabase']) {
     for (const file of Object.keys(config[key] ?? {})) {
       if (!TEST_FILE.test(file)) throw new Error(`${CONFIG}: ${key} "${file}" nie jest plikiem tests/*.test.*`);
       if (!existsSync(join(root, file))) throw new Error(`${CONFIG}: ${key} "${file}" nie istnieje — usuń wpis`);
@@ -170,12 +172,13 @@ export function classify(root = ROOT) {
     return null;
   };
 
-  const result = { static: [], db: [], special: [] };
+  const result = { static: [], db: [], darwin: [], special: [] };
   const reasons = {};
   for (const file of files) {
     if (config.special?.[file]) { result.special.push({ file, reason: config.special[file] }); continue; }
     // Quarantine: a test that fails on main for a reason unrelated to CI; skipped like special until fixed.
     if (config.quarantine?.[file]) { result.special.push({ file, reason: 'kwarantanna — ' + config.quarantine[file] }); continue; }
+    if (config.darwin?.[file]) { result.darwin.push(file); reasons[file] = 'macOS: ' + config.darwin[file]; continue; }
     if (config.static?.[file]) { result.static.push(file); reasons[file] = 'ręcznie: ' + config.static[file]; continue; }
     const text = read(file);
     let env = requiredEnvironment(text, ciPort);
@@ -200,21 +203,23 @@ function main(argv) {
   const listIdx = argv.indexOf('--list');
   if (listIdx >= 0) {
     const kind = argv[listIdx + 1];
-    if (!['static', 'db', 'special'].includes(kind)) throw new Error('--list static|db|special');
+    if (!['static', 'db', 'darwin', 'special'].includes(kind)) throw new Error('--list static|db|darwin|special');
     const rows = kind === 'special' ? r.special.map((s) => s.file) : r[kind];
     if (rows.length) process.stdout.write(rows.join('\n') + '\n');
     return;
   }
   if (argv.includes('--json')) {
-    process.stdout.write(JSON.stringify({ static: r.static, db: r.db, special: r.special }, null, 1) + '\n');
+    process.stdout.write(JSON.stringify({ static: r.static, db: r.db, darwin: r.darwin, special: r.special }, null, 1) + '\n');
     return;
   }
   if (argv.includes('--why')) {
     for (const [f, why] of Object.entries(r.reasons)) process.stdout.write(`${f}\t${why}\n`);
     return;
   }
-  const total = r.static.length + r.db.length + r.special.length;
-  console.log(`Pliki testów: ${total} — static ${r.static.length}, db ${r.db.length}, special ${r.special.length}`);
+  const total = r.static.length + r.db.length + r.darwin.length + r.special.length;
+  console.log(`Pliki testów: ${total} — static ${r.static.length}, db ${r.db.length}, darwin ${r.darwin.length}, special ${r.special.length}`);
+  console.log('Tylko na macOS (darwin, job „Static tests (macOS zlib)”):');
+  for (const f of r.darwin) console.log(`  ${f} — ${r.reasons[f].slice('macOS: '.length)}`);
   console.log('Pomijane w CI (special):');
   for (const s of r.special) console.log(`  ${s.file} — ${s.reason}`);
 }
