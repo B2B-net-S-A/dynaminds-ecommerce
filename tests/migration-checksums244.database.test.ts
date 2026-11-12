@@ -24,14 +24,14 @@ test('244 applied with the register; backfill once, then silent; a changed check
   assert.deepEqual(start, { absent: true, last: '243_ksef_purchase', ledger: start.ledger }, 'clone at 243 without the register');
   await migrate();
   const first = await state();
-  assert.equal(first.ledger, start.ledger + 24, '244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266 and 267 are the migrations applied');
+  assert.equal(first.ledger, start.ledger + 25, '244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267 and 268 are the migrations applied');
   assert.equal(first.n, first.ledger + 4, 'one row per applied migration plus the four companion files');
   const origins = (await pool.query("SELECT origin,count(*)::int n,min(name) first,max(name) last FROM migration_checksums GROUP BY origin ORDER BY origin")).rows;
   assert.deepEqual(origins, [
-    { origin: 'applied', n: 24, first: '244_custom_events_checksums', last: '267_status_categories_automation_editors' },
-    { origin: 'baseline', n: first.n - 24, first: '001_foundation', last: '243_ksef_purchase' },
-  ], 'the rows of 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266 and 267 are applied, those of 001-243 baseline');
-  const rows = (await pool.query("SELECT name,file,sha256,origin FROM migration_checksums WHERE name IN ('001_foundation','243_ksef_purchase','244_custom_events_checksums','245_s5_comm','246_b2b_trade_credit_directory','247_sales_dimensions_repricing','248_guard_verdicts','249_catalog_ai','250_wms_evidence_settle_unlocked','251_b2b_network_lifecycle','252_mirakl_operations','253_mirakl_webhook_retention','254_carrier_returns','255_stock_verdict','256_return_receipt_verdicts','257_order_merge_snapshot_index_paths','258_wz_issuer_refresh','259_jobs_running_lease','260_automation_runs_queued_job','261_stocktake_evidence_usage','262_revoke_public_temporary','263_manual_off_verdict','264_order_status_labels','265_wms_order_line_resize','266_accountant_order_settings','267_status_categories_automation_editors','198_original_keeper_resource_context') ORDER BY name,file")).rows;
+    { origin: 'applied', n: 25, first: '244_custom_events_checksums', last: '268_cancelled_label_relabel' },
+    { origin: 'baseline', n: first.n - 25, first: '001_foundation', last: '243_ksef_purchase' },
+  ], 'the rows of 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267 and 268 are applied, those of 001-243 baseline');
+  const rows = (await pool.query("SELECT name,file,sha256,origin FROM migration_checksums WHERE name IN ('001_foundation','243_ksef_purchase','244_custom_events_checksums','245_s5_comm','246_b2b_trade_credit_directory','247_sales_dimensions_repricing','248_guard_verdicts','249_catalog_ai','250_wms_evidence_settle_unlocked','251_b2b_network_lifecycle','252_mirakl_operations','253_mirakl_webhook_retention','254_carrier_returns','255_stock_verdict','256_return_receipt_verdicts','257_order_merge_snapshot_index_paths','258_wz_issuer_refresh','259_jobs_running_lease','260_automation_runs_queued_job','261_stocktake_evidence_usage','262_revoke_public_temporary','263_manual_off_verdict','264_order_status_labels','265_wms_order_line_resize','266_accountant_order_settings','267_status_categories_automation_editors','268_cancelled_label_relabel','198_original_keeper_resource_context') ORDER BY name,file")).rows;
   const sha = (f: string) => createHash('sha256').update(readFileSync(new URL('../server/' + f, import.meta.url))).digest('hex');
   assert.deepEqual(rows, [
     { name: '001_foundation', file: 'schema.sql', sha256: sha('schema.sql'), origin: 'baseline' },
@@ -62,6 +62,7 @@ test('244 applied with the register; backfill once, then silent; a changed check
     { name: '265_wms_order_line_resize', file: '265_wms_order_line_resize.sql', sha256: sha('265_wms_order_line_resize.sql'), origin: 'applied' },
     { name: '266_accountant_order_settings', file: '266_accountant_order_settings.sql', sha256: sha('266_accountant_order_settings.sql'), origin: 'applied' },
     { name: '267_status_categories_automation_editors', file: '267_status_categories_automation_editors.sql', sha256: sha('267_status_categories_automation_editors.sql'), origin: 'applied' },
+    { name: '268_cancelled_label_relabel', file: '268_cancelled_label_relabel.sql', sha256: sha('268_cancelled_label_relabel.sql'), origin: 'applied' },
   ]);
   await migrate();
   assert.deepEqual(await state(), first, 'second start writes nothing');

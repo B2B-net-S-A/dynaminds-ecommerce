@@ -10,7 +10,10 @@
     "tests/resource-format210.test.mjs": "gzipSync(level 9) z przypiętą sumą sha w tools/build/resource-format210.mjs (resource210); na Linuksie zlib wpisuje w nagłówek gzip bajt OS 3 zamiast 19 (macOS), strumień deflate identyczny (12.11.2026)",
     "tests/resource187-identity-alias.test.mjs": "gzipSync(level 9) z przypiętą sumą sha w tools/build/resource-io.mjs (resource209); na Linuksie zlib wpisuje w nagłówek gzip bajt OS 3 zamiast 19 (macOS), strumień deflate identyczny (12.11.2026)"
   },
-  "db": {},
+  "db": {
+    "tests/relabel-after-cancel-simulation.database.test.ts": "baza przez tests/relabel-after-cancel-fixture.ts (migrate(), seed, buildApp); plik nie importuje server/db wprost",
+    "tests/relabel-after-cancel-carriers.database.test.ts": "baza przez tests/relabel-after-cancel-fixture.ts (migrate(), seed, buildApp); plik nie importuje server/db wprost"
+  },
   "static": {
     "tests/return-credit207-ordinary-api-acceptance.test.mjs": "testuje sam walidator profilu (port 4100 w helperze to dane testu, nie wymaganie); 23/23 zielone bez bazy 11.11.2026"
   },

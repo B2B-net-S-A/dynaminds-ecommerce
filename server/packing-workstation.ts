@@ -310,7 +310,8 @@ async function physical(c: PoolClient, o: any) {
 }
 async function noShipping(c: PoolClient, id: string) {
   ensure(
-    !(await c.query('SELECT 1 FROM shipments WHERE order_id=$1', [id])).rowCount,
+    // A label cancelled before hand-over is no shipment: the order is measured again for its new label.
+    !(await c.query("SELECT 1 FROM shipments WHERE order_id=$1 AND (status<>'canceled' OR dispatched_at IS NOT NULL)", [id])).rowCount,
     409,
     'Nowy pomiar jest niedostępny po utworzeniu przesyłki',
   );

@@ -1,4 +1,5 @@
 import {OrdinaryConnectorJobControl,type ConnectorJobContext} from './ordinary-connector-job';
+import { liveShipments } from './order-relabel';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Truck, Printer } from 'lucide-react';
 import { api, date, money } from './api';
@@ -137,7 +138,7 @@ export function DpdShippingPanel({
             </p>
             <button
               className="button"
-              disabled={busy || active || Boolean(order.shipments.length)}
+              disabled={busy || active || Boolean(liveShipments(order.shipments).length)}
               onClick={() => {
                 const m = parcelSeed.measurements;
                 setPacking(parcelSeed);
@@ -166,7 +167,7 @@ export function DpdShippingPanel({
           Odbiór kuriera i protokoły znajdziesz w Integracjach → DPD. Automatyczny tracking
           skonfigurujesz w Integracjach → DPD → Automatyczny tracking.
         </p>
-        {write && order.status === 'packed' && !active && !order.shipments.length && (
+        {write && order.status === 'packed' && !active && !liveShipments(order.shipments).length && (
           <div className="shipping-actions">
             <button
               className="button primary"

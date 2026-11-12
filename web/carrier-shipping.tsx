@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { liveShipments } from './order-relabel';
 import { Truck, Printer } from 'lucide-react';
 import { api, date, money } from './api';
 import { orderRecipientName, orderPickupPoint } from '../shared/order-invoice-party';
@@ -127,7 +128,7 @@ export function CarrierShippingPanel({ provider, order, write, admin, onChanged 
           Jedna paczka krajowa. Cena według umowy z przewoźnikiem. Etykieta PDF jest zapisywana przy utworzeniu
           przesyłki; utworzenie etykiety nie rozchoduje towaru. Pobranie trafia na wskazany rachunek (NRB).
         </p>
-        {write && order.status === 'packed' && !active && !order.shipments.length && (
+        {write && order.status === 'packed' && !active && !liveShipments(order.shipments).length && (
           <div className="shipping-actions">
             <button className="button primary" disabled={busy || !channels.length} onClick={() => setForm(!form)}>
               {form ? 'Zamknij formularz ' + c.short : 'Przygotuj przesyłkę ' + c.short}

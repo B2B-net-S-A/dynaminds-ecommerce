@@ -21,7 +21,7 @@ import { assertOrderMergeActiveInTx, orderMergeClaimInTx } from './order-merge-g
 import { productSkuSchema } from './product-sku-schema';
 import { manualOrderLines,manualOrderLinesIssue,prepareManualOrderLines } from './manual-order-lines-values';
 import { assertNoOrderParcelPlanInTx } from './order-parcel-guards';
-import { assertNoShipmentForNewLabelInTx } from './shipment-cancelled';
+import { newLabelTargetInTx, replacedLabelsInTx, writeLabelShipmentInTx } from './shipment-cancelled';
 import { productSkuAvailable } from './product-sku';
 import { lockWarehouseInventoryPoliciesInTx } from './warehouse-inventory-policies';
 import { enlistDispatchActorInTx } from './dispatch-transaction';
@@ -239,6 +239,8 @@ async function hydrateOrder(c:PoolClient,id:string,createInstallation?:CreatedOr
     })),
     events: events.rows,
     shipments: shipments.rows,
+    // Labels cancelled with "Anuluj etykietę" and replaced by a new label (migration 268).
+    replaced_labels: await replacedLabelsInTx(c, id),
     documents: documents.rows,
     returns: await returnOverview(c, id),
     payment: await paymentBalance(c, id),
@@ -1101,15 +1103,14 @@ export async function createDemoLabel(c: PoolClient, a: Actor, id: string) {
     409,
     'Najpierw uzgodnij lub anuluj przygotowaną przesyłkę',
   );
-  await assertNoShipmentForNewLabelInTx(c, id, 'Zamówienie ma już etykietę');
+  // After "Anuluj etykietę" the new label takes over the cancelled row (migration 268).
+  const target = await newLabelTargetInTx(c, id, 'Zamówienie ma już etykietę');
   const codExpected = await fulfillmentPayment(c, o);
-  const shipmentId = randomUUID();
-  await c.query(
-    'INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,cod_expected) VALUES($1,$2,$3,$4,$5,$6,$7)',
-    [shipmentId, a.tenantId, id, DEMO_CARRIER, `DEMO-${randomBytes(6).toString('hex').toUpperCase()}`, 'demo', codExpected],
-  );
+  const shipmentId = await writeLabelShipmentInTx(c, target, randomUUID(), {
+    tenantId: a.tenantId, orderId: id, carrier: DEMO_CARRIER, trackingNumber: `DEMO-${randomBytes(6).toString('hex').toUpperCase()}`, mode: 'demo', codExpected,
+  });
   await event(c, a.tenantId, id, 'shipment.label_created', { mode: 'demo', shipmentId });
-  await audit(c, a, 'shipment.demo_label', id);
+  await audit(c, a, 'shipment.demo_label', id, target ? { replaced_cancelled_label: shipmentId } : undefined);
   return getOrder(c, id);
 }
 /** Demo dispatch ("Przekaż kurierowi"): hands over the demo label from createDemoLabel, or, for an order
@@ -1120,12 +1121,11 @@ export async function shipDemo(c: PoolClient, a: Actor, id: string, onPhysical?:
   const head = (await c.query('SELECT warehouse_id FROM orders WHERE id=$1', [id])).rows[0];
   ensure(head, 404, 'Nie znaleziono zamówienia');
   const label = (await c.query(demoLabelSql, [id, DEMO_CARRIER])).rows[0];
-  // After a cancelled label the order cannot be shipped on it, nor get a second one (the sealed shipment guards
-  // count every shipment of an order; decision 10.11: keep the refusal).
+  // A cancelled label is never handed over; the order needs a new label first ("Nowa etykieta", migration 268).
   ensure(
     label || !(await c.query("SELECT 1 FROM shipments WHERE order_id=$1 AND status='canceled'", [id])).rowCount,
     409,
-    'Etykietę tego zamówienia anulowano; zamówienia nie można przekazać kurierowi na anulowanej etykiecie',
+    'Etykietę tego zamówienia anulowano; utwórz nową etykietę (Więcej → Nowa etykieta) i przekaż ją kurierowi',
   );
   const warehouseIds = [...new Set([head.warehouse_id as string, ...(await c.query<{warehouse_id:string}>(
     'SELECT DISTINCT warehouse_id FROM reservations WHERE order_id=$1 ORDER BY warehouse_id', [id],

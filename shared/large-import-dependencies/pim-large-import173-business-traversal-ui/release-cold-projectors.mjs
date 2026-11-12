@@ -57,3 +57,4 @@ export{projectCompiledOrderStatusLabels264Catalogue}from'./order-status-labels26
 export{projectCompiledWmsOrderLineResize265Catalogue}from'./wms-order-line-resize265-source-compatibility.mjs';
 export{projectCompiledAccountantOrderSettings266Catalogue}from'./accountant-order-settings266-source-compatibility.mjs';
 export{projectCompiledStatusCategoriesAutomationEditors267Catalogue}from'./status-categories-automation-editors267-source-compatibility.mjs';
+export{projectCompiledCancelledLabelRelabel268Catalogue}from'./cancelled-label-relabel268-source-compatibility.mjs';
