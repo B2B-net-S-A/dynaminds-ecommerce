@@ -51,9 +51,12 @@ export const SCALE_HTTP_PORT_LIMITATIONS=Object.freeze([
 // Re-pins app.ts (12.11.2026): without the startup gate buildApp runs preflightPim/preflightNestedPim in one READ ONLY
 // transaction with SET LOCAL statement_timeout='120s' instead of on the pool's 8 s session; no HTTP route or port
 // changes (was 24b0277c…87473b). Not re-measured by a live scale run.
+// Re-pins app.ts and domain.ts (12.11.2026, migration 268): the label download refuses a cancelled label, the DEMO
+// label takes over a cancelled row and the order detail adds replaced_labels; no scale HTTP route or port changes
+// (was 964d0852…0e0edf, accaef7c…c1c2a8). Not re-measured by a live scale run.
 export const SCALE_HTTP_PORT_SOURCE_PINS=Object.freeze({
- "server/app.ts": "964d085260b4b9b58a8f7d6d41745b83dc1eb5c412e3c4da3092e3f5c29e0edf",
- "server/domain.ts": "accaef7c209ef97953ff461ee409ebbf9427a5558c3d4f56813f29c43cc1c2a8",
+ "server/app.ts": "4d6d77f20ccc03186b67cda7805da52b5047778c77356ee03c7cabc3bab17bb4",
+ "server/domain.ts": "97c9165aba2352f24edbbd20bcecf76124eeceb2494dba80391d67b02de58b76",
  "server/catalog-routes.ts": "626a78aaa0e141792979c1030b7df3895df39ba1a0a87a612360bb0ec2976b1d",
  "server/catalog.ts": "7fe1988a3e4a5c178181ac89cb124c5bd7418007f00bc475fb88ff26d0eb2c61",
  "server/order-status-input.ts": "efafe589485baeba5da294d305d40979a57af99597d025bb5fab6fc8330115e6",
