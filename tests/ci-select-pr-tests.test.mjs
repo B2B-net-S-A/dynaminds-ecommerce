@@ -31,9 +31,10 @@ test('pakiet migracji ma pierwszeństwo przed resztą powiązanych (server/db.ts
   const r = select(['server/db.ts'], PR);
   assert.equal(r.mode, 'selected');
   assert.ok(r.bundle > 0, 'brak plików pakietu migracji');
-  // Bundle files come first: no bundle file may follow a non-bundle one (independent of the budget).
-  const firstOther = r.files.findIndex((f) => !inBundle(f));
-  assert.ok(firstOther === -1 || r.files.slice(firstOther).every((f) => !inBundle(f)), r.files.join(', '));
+  // Bundle files come first: a non-bundle file is picked only once the whole bundle is (the output is sorted by
+  // name, so the order of r.files says nothing; which files fit depends on the measured durations).
+  const whole = [...db].filter(inBundle);
+  assert.ok(r.files.every(inBundle) || whole.every((f) => r.files.includes(f)), r.files.join(', '));
   const wide = select(['server/db.ts'], { limit: 120, budgetMin: 600 });
   assert.ok(wide.files.length > r.files.length && wide.files.some((f) => !inBundle(f)));
 });

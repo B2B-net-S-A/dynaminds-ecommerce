@@ -33,7 +33,7 @@ w ~35–40 min, shard ma limit 60 min, a do tego dochodzą plan, czekanie na wol
 Pełny zestaw nie biegnie w kolejce (decyzja 12.11.2026), więc wydłużony limit 180 min nie jest już potrzebny.
 
 Dlaczego PR i kolejka nie biegną pełnym zestawem (decyzje 11.11.2026 i 12.11.2026): pełny zestaw db to wg
-szacunku ~3 100 min pracy, czyli godziny nawet na 20 runnerach. PR i kolejka sprawdzają testy najbliżej zmiany —
+szacunku ~3 100 min pracy (z cache strażników i dwoma plikami naraz: ~57 min na 20 shardach, „Czasy shardów”). PR i kolejka sprawdzają testy najbliżej zmiany —
 także przy zmianie `server/db.ts`, migracji czy `package*.json` — a całość biegnie co noc i na żądanie
 (`workflow_dispatch`); błąd spoza sita wychodzi najpóźniej następnego ranka jako issue.
 `ci.yml` nie biegnie na `push: main` — kolejka testuje dokładnie to drzewo, które trafia na maina.
@@ -75,7 +75,7 @@ Zmienne repo (opcjonalne, Settings → Secrets and variables → Actions → Var
 | `CI_DB_PR_BUDGET_MIN` | `75` | budżet szacowanych minut sita PR-a (3 shardy po ~30 min z narzutem) |
 | `CI_DB_QUEUE_BUDGET_MIN` | `600` | budżet szacowanych minut sita kolejki (20 shardów po ~35 min) |
 | `CI_DB_TARGET_MIN` | `35` | docelowy czas sharda z narzutem joba |
-| `CI_DB_CONCURRENCY` | `1` | ile plików db naraz w jednym shardzie (każdy na swojej bazie) |
+| `CI_DB_CONCURRENCY` | `2` | ile plików db naraz w jednym shardzie (każdy na swojej bazie; runner ma 4 vCPU) |
 | `CI_FILE_TIMEOUT_MIN` | `45` | limit na jeden plik testu db; po nim proces jest zabijany |
 
 ## Klasy testów
@@ -109,7 +109,8 @@ Zmienne repo (opcjonalne, Settings → Secrets and variables → Actions → Var
   "darwin":       { "tests/u.test.mjs": "przypina bajty z macOS: co i gdzie" },
   "db":           { "tests/z.test.ts": "wymuś db mimo braku sygnału" },
   "static":       { "tests/w.test.ts": "wymuś static" },
-  "freshDatabase":{ "tests/v.test.ts": "migruje pustą bazę sam" }
+  "freshDatabase":{ "tests/v.test.ts": "migruje pustą bazę sam" },
+  "noGuardCache": { "tests/t.test.ts": "liczy wywołania strażników: bez cache strażników" }
 }
 ```
 
@@ -130,6 +131,7 @@ po naprawie wpis usuń. Lista jest dziś pusta: 14 testów z kwarantanny z 11.11
 | `scripts/ci/select-pr-tests.mjs` | sito PR-a i kolejki z `git diff --name-only` (domyślnie `origin/main...HEAD`, albo `--range A..B`): zmienione testy db + testy importujące zmienione moduły albo nazwane od nich (graf importów wstecz, najbliższe najpierw; `--limit` plików, `--budget-min` szacowanych minut). Zmiana w `server/db.ts`, `server/*.sql`, runnerze/manifeście migracji → najpierw pakiet migracji; `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml` → zestaw dymny i pakiet migracji. Nigdy pełny zestaw; testy: `tests/ci-select-pr-tests.test.mjs` |
 | `scripts/ci/run-tests.mjs` | uruchamia pliki po jednym procesie `tsx --test`, logi per plik, `summary.txt`, `failed.txt`, `durations.json`; `--kind db` zakłada i sprząta bazy |
 | `scripts/ci/migrate-database.ts` | `migrate()` na bazie-szablonie shardu |
+| `scripts/ci/guard-cache.mjs` | cache odpowiedzi strażników schematu, ładowany tylko przez `run-tests.mjs --kind db` (niżej); testy: `tests/ci-guard-cache.database.test.ts` |
 
 Lokalnie (bez portu 55432 — tam stoi lokalna baza aplikacji):
 
@@ -140,20 +142,42 @@ DYNA_TEST_PG_PORT=57361 DYNA_LOCAL_CONFIG_PATH=<plik z dbPassword> \
   node scripts/ci/run-tests.mjs --kind db --out /tmp/ci-db tests/<plik>.test.ts
 ```
 
+## Cache strażników (tylko CI)
+
+Bez bramki startowej każdy `tenantTx` i każdy `buildApp` w teście woła od nowa natywnych strażników schematu
+(`server/db.ts` `preflightUngatedTenantSchema`, ~70 sond w `server/app.ts`); jeden strażnik to 2–5 s na
+zmigrowanej bazie. Bieg 43121830853 bez cache w 180 min skończył 83 z 367 plików. `run-tests.mjs --kind db`
+ładuje więc `scripts/ci/guard-cache.mjs` (`NODE_OPTIONS=--import`): zapytanie w kształcie strażnika
+(`SELECT f() alias[, …]`, funkcje bez argumentów) biegnie naprawdę raz, a potem jego odpowiedź wraca z cache,
+dopóki nie zmieni się nic, co strażnik czytał — cały `pg_catalog`, wiersze tabel czytanych przez strażnika,
+ustawienia sesji, placeholdery (`app.tenant_id`…), blokady własnej sesji (wszystkich sesji tylko dla funkcji,
+które próbują blokady albo czytają `pg_locks` bez filtra `pid=pg_backend_pid()`), pid/xid, gdy strażnik czytał
+taką kolumnę. Strażnik, który coś zapisał, wziął xid albo zmienił klucz, nie trafia do cache; sesja bez
+superusera (`dyna_app` w `tenantTx`) zawsze biegnie naprawdę. Kod serwera i produkcja są bez zmian.
+
+Odpowiedzi przechodzą na kolejne pliki shardu (`_guard-cache-template.jsonl`, każdy plik dostaje kopię tego
+samego szablonu). Linia podsumowania pliku pokazuje `guards=<trafienia>hit(<z pliku shardu>shared)/<chybienia>miss(<s>:<przyczyny>)/…`.
+Plik, który sam czyta `pg_stat_xact_*` albo `track_functions`, biegnie bez cache (wykrywane automatycznie);
+inny wyjątek wpisz do `noGuardCache`. Pliki wołające `bootstrap151169()` dostają pustą bazę (bez wpisu
+`freshDatabase`). Diagnostyka: `DYNA_CI_GUARD_CACHE_DEBUG=1` wypisuje przyczynę każdego chybienia.
+
 ## Czasy shardów
 
 `scripts/ci/test-durations.json` trzyma sekundy na plik. Wpisy testów static to lokalny pomiar z 11.11.2026
-(obciążona maszyna) — służą tylko jako względne wagi do podziału na 3 części.
+(obciążona maszyna) — służą tylko jako względne wagi do podziału na 3 części. Testy db: pomiar z pełnego biegu
+(plik bez pomiaru waży `estimateSec` w `scripts/ci/shard.mjs`: `60 s + 45 s × liczba wywołań test(…)`).
+Czasy są mierzone przy jednym pliku naraz; plan mnoży cel shardu przez `CI_DB_CONCURRENCY`, a przy kilku
+plikach naraz shard zaczyna od najdłuższego.
 
-Dopóki plik nie ma zmierzonego czasu, plan waży go szacunkiem z liczby testów (`60 s + 45 s × liczba
-wywołań test(…)`, `estimateSec` w `scripts/ci/shard.mjs`) — testy db to głównie duże pliki integracyjne,
-w których czas rośnie z liczbą testów. Szacunek dla 371 plików db (11.11.2026): ~3 100 min łącznie, czyli przy
-20 shardach ~160 min na shard. To zgrubna liczba z lokalnych biegów na obciążonej maszynie — pierwszy pełny
-bieg ją zweryfikuje. Do tego czasu shard pełnego zestawu (noc, ręczny bieg) ma limit 180 min, a plik 45 min
-(`CI_FILE_TIMEOUT_MIN`).
+| Bieg (12.11.2026) | Ustawienie | Wynik |
+|---|---|---|
+| 43121830853 | bez cache | 83 z 367 plików w 180 min |
+| 43262334505 | cache, 1 plik naraz | ~1 690 min plików łącznie, shardy 58–120 min |
+| 43286339319 | cache (blokady własnej sesji), 2 pliki naraz | cały bieg 57 min, shardy 29–57 min |
 
-Po pierwszym nocnym (albo ręcznym) pełnym biegu: wklej `db-test-durations`, sprawdź podsumowanie planu i ewentualnie podnieś
-`CI_DB_CONCURRENCY` (2–3 pliki naraz na runner, każdy na swojej bazie) albo `CI_DB_MAX_SHARDS`.
+Pełny zestaw: 20 shardów, limit shardu 180 min (zapas), limit pliku 45 min (`CI_FILE_TIMEOUT_MIN`; po nim
+cała grupa procesów pliku jest zabijana). Po zmianie czasów skopiuj artefakt `db-test-durations` do
+`scripts/ci/test-durations.json`.
 
 Szablon bazy po migracji dostaje `ANALYZE` (statystyki kopiują się do każdej bazy testu): bez nich natywni
 strażnicy wołani przy `buildApp` (np. `pim_dictionary_valid()`) liczyli się lokalnie 13–14 s, po `ANALYZE`
