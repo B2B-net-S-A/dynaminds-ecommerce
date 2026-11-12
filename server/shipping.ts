@@ -497,7 +497,8 @@ export async function assertWholeOrderShippingInTx(c: PoolClient, orderId: strin
   const capability=(await c.query('SELECT order_shipments_guards() ok,order_shipments_installed() installed')).rows[0];
   ensure(capability?.ok && capability?.installed,503,'Moduł wielu przesyłek jest niekompletny');
   // A label cancelled before hand-over is no shipment of the plan: the new label takes over its row (migration 268).
-  const rows = (await c.query('SELECT id FROM shipments WHERE order_id=$1 AND ($2::uuid IS NOT NULL OR dispatched_at IS NOT NULL OR status<>$3) ORDER BY id', [orderId, shipmentId, CANCELLED_SHIPMENT])).rows;
+  // The plan's own shipment always counts, whatever its status.
+  const rows = (await c.query('SELECT id FROM shipments WHERE order_id=$1 AND (id=$2::uuid OR dispatched_at IS NOT NULL OR status<>$3) ORDER BY id', [orderId, shipmentId, CANCELLED_SHIPMENT])).rows;
   ensure(shipmentId ? rows.length === 1 && rows[0].id === shipmentId : rows.length === 0,
     409, 'Wiele paczek wymaga osobnego przypisania towaru i pobrania; nie zlecaj ponownie całego zamówienia');
 }

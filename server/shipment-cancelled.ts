@@ -30,7 +30,8 @@ export const CANCELLED_PARCEL_REFUSAL = 'Etykietę tego zamówienia anulowano; a
 export async function newLabelTargetInTx(c: PoolClient, orderId: string, refusal: string): Promise<string | null> {
   const rows = (
     await c.query<{ id: string; status: string; dispatched_at: Date | null }>(
-      'SELECT id,status,dispatched_at FROM shipments WHERE order_id=$1 ORDER BY created_at,id FOR UPDATE',
+      // Explicit tenant as well as RLS: an owner connection without app.tenant_id finds no row instead of another tenant's.
+      "SELECT id,status,dispatched_at FROM shipments WHERE order_id=$1 AND tenant_id=nullif(current_setting('app.tenant_id',true),'')::uuid ORDER BY created_at,id FOR UPDATE",
       [orderId],
     )
   ).rows;
@@ -68,8 +69,8 @@ export async function writeLabelShipmentInTx(c: PoolClient, target: string | nul
     `UPDATE shipments SET carrier=$1,tracking_number=$2,mode=$3,status=$4,channel_id=$5,external_id=$6,cod_expected=$7,created_at=now(),
       tracking_data=NULL,tracking_at=NULL,tracking_revision=0,tracking_next_at=NULL,tracking_error=NULL,tracking_job_id=NULL,
       tracking_provider_created_at=NULL,tracking_demo_status=NULL
-     WHERE id=$8 AND order_id=$9 AND status=$10 AND dispatched_at IS NULL`,
-    [...values, target, s.orderId, CANCELLED_SHIPMENT],
+     WHERE id=$8 AND order_id=$9 AND status=$10 AND dispatched_at IS NULL AND tenant_id=$11`,
+    [...values, target, s.orderId, CANCELLED_SHIPMENT, s.tenantId],
   );
   ensure(r.rowCount === 1, 409, 'Anulowana etykieta zmieniła się; odśwież zamówienie');
   return target;
@@ -79,7 +80,7 @@ export async function writeLabelShipmentInTx(c: PoolClient, target: string | nul
 export async function replacedLabelsInTx(c: PoolClient, orderId: string) {
   return (
     await c.query<{ carrier: string; tracking_number: string; label_created_at: Date; replaced_at: Date; replaced_by: string }>(
-      'SELECT carrier,tracking_number,label_created_at,replaced_at,replaced_by FROM shipment268_replaced_labels WHERE order_id=$1 ORDER BY replaced_at,id',
+      "SELECT carrier,tracking_number,label_created_at,replaced_at,replaced_by FROM shipment268_replaced_labels WHERE order_id=$1 AND tenant_id=nullif(current_setting('app.tenant_id',true),'')::uuid ORDER BY replaced_at,id",
       [orderId],
     )
   ).rows;
