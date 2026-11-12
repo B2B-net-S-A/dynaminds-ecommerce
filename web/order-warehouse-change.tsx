@@ -55,7 +55,12 @@ export function OrderWarehouseChange({ order: o, busy, loadWarehouses, onMove }:
       onSubmit={async (e) => {
         e.preventDefault();
         if (!target) return;
-        if (await onMove(target)) setOpen(false);
+        setError('');
+        try {
+          if (await onMove(target)) setOpen(false);
+        } catch {
+          setError('Nie udało się zmienić magazynu. Spróbuj ponownie.');
+        }
       }}
     >
       <p className="muted">

@@ -73,6 +73,14 @@ test('order warehouse change', async (t) => {
       assert.equal(m.el.querySelector('form'), null);
       await m.unmount();
     });
+    await t.test('a failed request shows an error and keeps the form open', async () => {
+      const m = await mount({ order, busy: false, loadWarehouses: async () => W, onMove: async () => { throw new Error('network'); } });
+      await click(m.el.querySelector('button'));
+      await act(async () => m.el.querySelector('form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true })));
+      assert.match(m.el.querySelector('[role="alert"]')?.textContent ?? '', /Nie udało się zmienić magazynu/);
+      assert.ok(m.el.querySelector('form'), 'the form stays open after a failed request');
+      await m.unmount();
+    });
     await t.test('a company with one warehouse says so and cannot send', async () => {
       const m = await mount({ order, busy: false, loadWarehouses: async () => [W[0]], onMove: async () => true });
       await click(m.el.querySelector('button'));
