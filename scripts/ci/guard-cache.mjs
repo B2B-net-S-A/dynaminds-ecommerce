@@ -36,7 +36,7 @@ const ITEM = String.raw`${CALL}(?:\s+AND\s+${CALL})*(?:\s+(?:AS\s+)?[a-z_][a-z0-
 export const GUARD_QUERY = new RegExp(String.raw`^\s*SELECT\s+${ITEM}(?:\s*,\s*${ITEM})*\s*;?\s*$`, 'i');
 // Not part of the answer of a guard: limits only change whether a slow guard would time out.
 const IGNORED_SETTINGS = ['statement_timeout', 'lock_timeout', 'idle_in_transaction_session_timeout',
-  'idle_session_timeout', 'transaction_timeout', 'application_name'];
+  'idle_session_timeout', 'transaction_timeout', 'application_name', 'track_functions'];
 // Restricted to superusers or not about schema state (statistics, large object data).
 const SKIPPED_CATALOGS = ['pg_authid', 'pg_statistic', 'pg_statistic_ext_data', 'pg_largeobject', 'pg_user_mapping'];
 
@@ -77,32 +77,54 @@ function install() {
   const one = async (client, text, values) => (await q(client, text, values)).rows[0];
   const clone = (r) => ({ command: r.command, rowCount: r.rowCount, oid: r.oid, fields: r.fields, rows: r.rows.map((x) => ({ ...x })) });
 
-  async function keyOf(client) {
+  const memo = new Map(); // pg_current_snapshot() text (session without xid) -> catalogue hash / row hashes
+  const remember = (key, value) => { if (memo.size > 4000) memo.clear(); memo.set(key, value); return value; };
+  async function catalogOf(client) {
     catalogSql ??= (await q(client, `SELECT c.oid::regclass::text n FROM pg_class c WHERE c.relnamespace='pg_catalog'::regnamespace
       AND c.relkind='r' AND NOT c.relname=ANY($1) ORDER BY 1`, [SKIPPED_CATALOGS])).rows
       .map(({ n }) => SHARED_BY_CONTENT[n] ?? `SELECT '${n}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${n}`)
       .concat(`SELECT 'pg_roles' r,count(*)::text,md5(coalesce(string_agg(x::text,',' ORDER BY x.oid),'')) FROM pg_roles x`)
       .join(' UNION ALL ');
-    const k = await one(client, `SELECT current_user::text cu,session_user::text su,
+    return (await one(client, `SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) c FROM (${catalogSql}) t`)).c;
+  }
+  const placeholdersSql = `SELECT md5(coalesce(string_agg(n||'='||coalesce(current_setting(n,true),'<null>'),',' ORDER BY n),'')) FROM unnest($2::text[]) n`;
+  /** One round trip while nothing was committed since the last call (same snapshot, no own xid); else +1–2. */
+  async function keyOf(client, names = lastNames) {
+    const k = await one(client, `SELECT current_setting('is_superuser') sup,current_user::text cu,session_user::text su,
       coalesce(pg_my_temp_schema()::oid::text,'0') tmp,pg_backend_pid() pid,pg_current_xact_id_if_assigned()::text xid,
+      pg_current_snapshot()::text snap,
       (SELECT md5(string_agg(name||'='||coalesce(setting,''),',' ORDER BY name)) FROM pg_settings WHERE NOT name=ANY($1) AND (source<>'default' OR setting IS DISTINCT FROM boot_val)) s,
+      (${placeholdersSql}) g,
       (SELECT md5(coalesce(string_agg(x,',' ORDER BY x),'')) FROM (SELECT concat_ws(':',locktype,classid,objid,objsubid,relation,mode,granted,pid=pg_backend_pid()) x
         FROM pg_locks WHERE (database IS NULL OR database=(SELECT oid FROM pg_database WHERE datname=current_database()))
-        AND (locktype='advisory' OR (locktype='relation' AND mode IN('ShareLock','ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')))) y) l,
-      (SELECT md5(string_agg(r||':'||n||':'||h,',' ORDER BY r)) FROM (${catalogSql}) t) c
-`, [IGNORED_SETTINGS]);
+        AND (locktype='advisory' OR (locktype='relation' AND mode IN('ShareLock','ShareRowExclusiveLock','ExclusiveLock','AccessExclusiveLock')))) y) l`,
+    [IGNORED_SETTINGS, names]);
+    if (k.sup !== 'on') return k;
+    k.clean = k.xid === null;
+    k.c = (k.clean && memo.get('c' + k.snap)) || await catalogOf(client);
+    if (k.clean) remember('c' + k.snap, k.c);
     // Placeholders (app.tenant_id set by tenantTx, …) are not in pg_settings; their names come from function sources.
-    if (!customNames.has(k.c)) customNames.set(k.c, (await one(client, `SELECT array_agg(DISTINCT lower(m[1]) ORDER BY lower(m[1])) n
+    if (!customNames.has(k.c)) customNames.set(k.c, [...new Set(['app.tenant_id', ...((await one(client, `SELECT array_agg(DISTINCT lower(m[1]) ORDER BY lower(m[1])) n
       FROM pg_proc p, regexp_matches(p.prosrc, '(?:current_setting|set_config)\\(\\s*''{1,2}([a-z_][a-z0-9_$]*\\.[a-z0-9_$.]+)''', 'gi') m
-      WHERE p.pronamespace NOT IN ('pg_catalog'::regnamespace,'information_schema'::regnamespace)`)).n ?? []);
-    k.s += ':' + (await one(client, `SELECT md5(coalesce(string_agg(n||'='||coalesce(current_setting(n,true),'<null>'),',' ORDER BY n),'')) g
-      FROM unnest($1::text[]) n`, [[...new Set(['app.tenant_id', ...customNames.get(k.c)])]])).g;
+      WHERE p.pronamespace NOT IN ('pg_catalog'::regnamespace,'information_schema'::regnamespace)`)).n ?? [])])].sort());
+    const wanted = customNames.get(k.c);
+    if (wanted.join() !== names.join()) { lastNames = wanted; k.g = Object.values(await one(client, placeholdersSql.replace('$2', '$1'), [wanted]))[0]; }
     return k;
   }
+  let lastNames = ['app.tenant_id'];
+  const debugSettings = new Map();
   // {table oid: "count:hash"} as one JSON text (sorted keys), so a miss can name the table that changed.
-  const relBasis = async (client, rel) => rel.length ? (await one(client, `SELECT json_object_agg(r,n||':'||h ORDER BY r)::text b FROM (${
-    rel.map(({ oid, name }) => `SELECT '${oid}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${name}`).join(' UNION ALL ')}) t`)).b : '{}';
-  const KEY_PARTS = ['text', 'current_user', 'session_user', 'temp_schema', 'settings', 'locks', 'catalog'];
+  const relBasisSql = (rel) => `SELECT json_object_agg(r,n||':'||h ORDER BY r)::text b FROM (${
+    rel.map(({ oid, name }) => `SELECT '${oid}' r,count(*)::text n,coalesce(sum(hashtextextended(ctid::text||xmin::text,0)::numeric),0)::text h FROM ${name}`).join(' UNION ALL ')}) t`;
+  async function relBasis(client, rel, k) {
+    if (!rel.length) return '{}';
+    const key = 'r' + k.snap + '|' + rel.map((r) => r.oid).join();
+    const known = k.clean && memo.get(key);
+    if (known) return known;
+    const b = (await one(client, relBasisSql(rel))).b;
+    return k.clean ? remember(key, b) : b;
+  }
+  const KEY_PARTS = ['text', 'current_user', 'session_user', 'temp_schema', 'settings', 'catalog'];
   const countMiss = (cause) => { stats.missBy[cause] = (stats.missBy[cause] ?? 0) + 1; };
   function missCause(text, id, k, bases) {
     const now = id.split('\0');
@@ -111,7 +133,8 @@ function install() {
       if (!eid.startsWith(text + '\0')) continue;
       const diff = eid.split('\0').map((p, i) => p === now[i] ? '' : KEY_PARTS[i]).filter(Boolean);
       for (const e of es) {
-        let cause = diff.length ? 'key:' + diff.join('+') : e.pid !== undefined && e.pid !== k.pid ? 'pid' : e.xid !== undefined && e.xid !== k.xid ? 'xid' : '';
+        let cause = diff.length ? 'key:' + diff.join('+') : e.pid !== undefined && e.pid !== k.pid ? 'pid' : e.xid !== undefined && e.xid !== k.xid ? 'xid'
+          : e.locks !== undefined && e.locks !== k.l ? 'locks' : e.custom !== undefined && e.custom !== k.g ? 'placeholders' : '';
         if (!cause) {
           const was = JSON.parse(e.relBasis), is = JSON.parse(bases.get(e.rel.map((r) => r.oid).join()) ?? '{}');
           cause = 'rows:' + e.rel.filter((r) => was[r.oid] !== is[r.oid]).map((r) => r.name.replace(/^public\./, '')).join('+');
@@ -123,20 +146,21 @@ function install() {
   }
 
   async function cached(client, text) {
-    const why = refused.has(text) ? 'refused' : (await one(client, "SELECT current_setting('is_superuser') su")).su !== 'on' ? 'role' : '';
+    const k = refused.has(text) ? undefined : await keyOf(client);
+    const why = !k ? 'refused' : k.sup !== 'on' ? 'role' : '';
     if (why) {
       stats.bypassed++;
       const name = why + ':' + text.replace(/^\s*SELECT\s+/i, '').slice(0, 60);
       stats.bypassedBy[name] = (stats.bypassedBy[name] ?? 0) + 1;
       return q(client, text);
     }
-    const k = await keyOf(client);
-    const id = [text, k.cu, k.su, k.tmp, k.s, k.l, k.c].join('\0');
+    const id = [text, k.cu, k.su, k.tmp, k.s, k.c].join('\0');
     const bases = new Map(); // one row hash per table set (variants usually share it)
     for (const e of entries.get(id) ?? []) {
       if ((e.pid !== undefined && e.pid !== k.pid) || (e.xid !== undefined && e.xid !== k.xid)) continue;
+      if ((e.locks !== undefined && e.locks !== k.l) || (e.custom !== undefined && e.custom !== k.g)) continue;
       const set = e.rel.map((r) => r.oid).join();
-      if (!bases.has(set)) bases.set(set, await relBasis(client, e.rel));
+      if (!bases.has(set)) bases.set(set, await relBasis(client, e.rel, k));
       if (bases.get(set) !== e.relBasis) continue;
       stats.hits++; stats.savedMs += e.ms; if (e.shared) stats.sharedHits++;
       return clone(e.result);
@@ -144,11 +168,17 @@ function install() {
     stats.misses++;
     const cause = missCause(text, id, k, bases);
     countMiss(cause);
-    if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) console.error('guard-cache miss', text.slice(0, 80), cause);
+    if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) {
+      const now = (await one(client, `SELECT json_object_agg(name,setting) s FROM pg_settings WHERE NOT name=ANY($1) AND (source<>'default' OR setting IS DISTINCT FROM boot_val)`, [IGNORED_SETTINGS])).s;
+      const was = debugSettings.get(text) ?? {};
+      console.error('guard-cache miss', text.slice(0, 80), cause, cause.includes('settings') ? Object.keys({ ...was, ...now }).filter((n) => was[n] !== now[n]).map((n) => `${n}:${was[n]}->${now[n]}`).join(' ') : '');
+      debugSettings.set(text, now);
+    }
     const snap = `SELECT (SELECT coalesce(json_agg(json_build_array(relid,seq_scan,coalesce(idx_scan,0))),'[]') FROM pg_stat_xact_user_tables) t,
-      (SELECT coalesce(json_agg(json_build_array(relid,n_tup_ins,n_tup_upd,n_tup_del)),'[]') FROM pg_stat_xact_user_tables) w`;
+      (SELECT coalesce(json_agg(json_build_array(relid,n_tup_ins,n_tup_upd,n_tup_del)),'[]') FROM pg_stat_xact_user_tables) w,
+      (SELECT coalesce(json_agg(json_build_array(funcid,calls)),'[]') FROM pg_stat_xact_user_functions) f`;
     const started = Date.now();
-    const out = await q(client, `SELECT 1;${snap};${text.trim().replace(/;$/, '')};${snap}`);
+    const out = await q(client, `SELECT set_config('track_functions','all',true);${snap};${text.trim().replace(/;$/, '')};${snap}`);
     const ms = Date.now() - started;
     stats.guardMs += ms;
     const [, before, result, after] = out;
@@ -156,7 +186,7 @@ function install() {
       const m = new Map(b.rows[0][read].map(([id, ...v]) => [id, v.join()]));
       return a.rows[0][read].filter(([id, ...v]) => m.get(id) !== v.join()).map(([id]) => id);
     };
-    const tables = delta(before, after, 't'), written = delta(before, after, 'w');
+    const tables = delta(before, after, 't'), written = delta(before, after, 'w'), called = delta(before, after, 'f');
     const named = [...text.matchAll(/([a-z_][a-z0-9_.]*)\(\)/gi)].map((m) => m[1] + '()').filter((f) => f !== 'count()');
     const meta = await one(client, `SELECT
       (SELECT bool_and(p.oid IS NOT NULL AND p.pronamespace<>'pg_catalog'::regnamespace)
@@ -164,21 +194,26 @@ function install() {
       (SELECT coalesce(bool_or(relpersistence='t'),false) FROM pg_class WHERE oid=ANY($1::oid[])) temp,
       (SELECT coalesce(json_agg(json_build_object('oid',c.oid::text,'name',format('%I.%I',n.nspname,c.relname)) ORDER BY c.oid),'[]') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.oid=ANY($1::oid[])) rel,
       EXISTS(SELECT FROM pg_attribute WHERE attrelid=ANY($1::oid[]) AND attnum>0 AND NOT attisdropped AND attname ~ 'pid') pid,
-      EXISTS(SELECT FROM pg_attribute WHERE attrelid=ANY($1::oid[]) AND attnum>0 AND NOT attisdropped AND attname ~ 'xid') xid`,
-    [tables, named]);
+      EXISTS(SELECT FROM pg_attribute WHERE attrelid=ANY($1::oid[]) AND attnum>0 AND NOT attisdropped AND attname ~ 'xid') xid,
+      -- Locks and placeholders are part of the answer only for a guard whose called functions mention them at all
+      -- (literal copies of other definitions count too: over-inclusive, never under).
+      (SELECT coalesce(bool_or(prosrc ~* 'pg_locks|advisory|pg_blocking_pids'),false) FROM pg_proc WHERE oid=ANY($3::oid[])) locks,
+      (SELECT coalesce(bool_or(prosrc ~* 'current_setting|set_config'),false) FROM pg_proc WHERE oid=ANY($3::oid[])) custom`,
+    [tables, named, called]);
     // Many read-only guards are declared VOLATILE (the plpgsql default), so the test is what the call did: no row
     // written, no xid taken, the same settings, locks, catalogue and TEMP schema afterwards.
     const k2 = await keyOf(client);
-    const id2 = [text, k2.cu, k2.su, k2.tmp, k2.s, k2.l, k2.c].join('\0');
-    if (!meta.stable || meta.temp || written.length || id2 !== id || k2.xid !== k.xid) {
+    const id2 = [text, k2.cu, k2.su, k2.tmp, k2.s, k2.c].join('\0');
+    if (!meta.stable || meta.temp || written.length || id2 !== id || k2.xid !== k.xid || k2.l !== k.l || k2.g !== k.g) {
       if (process.env.DYNA_CI_GUARD_CACHE_DEBUG) console.error('guard-cache uncacheable', text, { stable: meta.stable, temp: meta.temp, written, sameKey: id2 === id, xid: [k.xid, k2.xid] });
       stats.uncacheable++;
       // A built-in call, a write or a new xid is the guard itself; a moved key or a TEMP read may be this call only.
       if (!meta.stable || written.length || k2.xid !== k.xid) refused.add(text);
       return result;
     }
-    const variant = { result: clone(result), rel: meta.rel, relBasis: await relBasis(client, meta.rel), ms,
-      pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined };
+    const variant = { result: clone(result), rel: meta.rel, relBasis: await relBasis(client, meta.rel, k2), ms,
+      pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined,
+      locks: meta.locks ? k2.l : undefined, custom: meta.custom ? k2.g : undefined };
     entries.set(id2, [variant, ...(entries.get(id2) ?? [])].slice(0, 8));
     if (shared && variant.pid === undefined && variant.xid === undefined) try { appendFileSync(shared, JSON.stringify({ id: id2, variant }) + '\n'); } catch {}
     return result;

@@ -43,6 +43,8 @@ before(async () => {
     BEGIN RAISE NOTICE 'probe-ran:w'; INSERT INTO ci_guard_probe_log VALUES (clock_timestamp()); RETURN true; END $$`);
   await owner.query(`CREATE FUNCTION ci_guard_probe_raises() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
     BEGIN RAISE NOTICE 'probe-ran:e'; RAISE EXCEPTION 'probe refused' USING ERRCODE = 'P0001'; END $$`);
+  await owner.query(`CREATE FUNCTION ci_guard_probe_fence_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
+    BEGIN RAISE NOTICE 'probe-ran:f'; RETURN NOT EXISTS(SELECT FROM pg_locks WHERE locktype='advisory' AND objid=982376); END $$`);
   await owner.query(`CREATE FUNCTION ci_guard_probe_pid_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
     BEGIN RAISE NOTICE 'probe-ran:p'; RETURN EXISTS(SELECT FROM ci_guard_probe_pid WHERE backend_pid = pg_backend_pid()); END $$`);
   await owner.query(`GRANT EXECUTE ON FUNCTION ci_guard_probe_valid() TO ${reader}`);
@@ -104,20 +106,24 @@ test('uncommitted changes of the own transaction are seen, and a rollback restor
   assert.deepEqual(await call(owner), { ok: true, ran: false });
 });
 
-test('session settings, custom placeholders, advisory locks and the role are part of the key', async () => {
+test('session settings and the role are part of the key; placeholders and locks only for a guard that reads them', async () => {
   await owner.query("SET search_path = public, pg_catalog");
   assert.deepEqual(await call(owner), { ok: true, ran: true });
   await owner.query('RESET search_path');
   await owner.query("SELECT set_config('app.tenant_id', '00000000-0000-0000-0000-000000000001', false)");
-  assert.deepEqual(await call(owner), { ok: true, ran: true }, 'app.tenant_id is always part of the key');
+  assert.deepEqual(await call(owner), { ok: true, ran: true }, 'the probe reads current_setting()');
   await owner.query("SELECT set_config('app.tenant_id', '', false)");
   await owner.query("SET ci.probe = 'off'");
   assert.deepEqual(await call(owner), { ok: false, ran: true });
   await owner.query('RESET ci.probe');
   assert.equal((await call(owner)).ok, true);
+  const fence = 'SELECT ci_guard_probe_fence_valid() ok';
+  assert.deepEqual(await call(owner, fence), { ok: true, ran: true });
   await owner.query('SELECT pg_advisory_lock(982376)');
-  assert.deepEqual(await call(owner), { ok: true, ran: true });
+  assert.deepEqual(await call(owner), { ok: true, ran: false }, 'the probe never looks at locks');
+  assert.deepEqual(await call(owner, fence), { ok: false, ran: true });
   await owner.query('SELECT pg_advisory_unlock(982376)');
+  assert.deepEqual(await call(owner, fence), { ok: true, ran: false });
   await owner.query(`SET ROLE ${reader}`);
   assert.deepEqual(await call(owner), { ok: true, ran: true });
   assert.deepEqual(await call(owner), { ok: true, ran: true }, 'no superuser: never cached');
