@@ -20,6 +20,7 @@ import { mkdirSync, readFileSync, writeFileSync, appendFileSync, createWriteStre
 import { basename, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ROOT, loadConfig } from './classify-tests.mjs';
+import { loadDurations } from './shard.mjs';
 
 const args = process.argv.slice(2);
 const opt = (name, dflt) => {
@@ -34,7 +35,10 @@ const out = opt('--out', 'ci-out/' + kind);
 const concurrency = Math.max(1, Number(opt('--concurrency', kind === 'db' ? '1' : '4')));
 const timeoutMin = Number(opt('--timeout-min', process.env.CI_FILE_TIMEOUT_MIN ?? (kind === 'db' ? '45' : '10')));
 const filesFrom = opt('--files-from', null);
-const files = [...args, ...(filesFrom ? readFileSync(filesFrom, 'utf8').split('\n') : [])].map((s) => s.trim()).filter(Boolean);
+const listed = [...args, ...(filesFrom ? readFileSync(filesFrom, 'utf8').split('\n') : [])].map((s) => s.trim()).filter(Boolean);
+// Several workers: longest measured file first, so the shard does not end with one long file running alone.
+const measured = concurrency > 1 ? loadDurations() : {};
+const files = concurrency > 1 ? [...listed].sort((a, b) => (measured[b] ?? 0) - (measured[a] ?? 0)) : listed;
 if (!['static', 'db'].includes(kind)) throw new Error('--kind static|db');
 mkdirSync(out, { recursive: true });
 if (!files.length) {

@@ -45,6 +45,9 @@ before(async () => {
     BEGIN RAISE NOTICE 'probe-ran:e'; RAISE EXCEPTION 'probe refused' USING ERRCODE = 'P0001'; END $$`);
   await owner.query(`CREATE FUNCTION ci_guard_probe_fence_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
     BEGIN RAISE NOTICE 'probe-ran:f'; RETURN NOT EXISTS(SELECT FROM pg_locks WHERE locktype='advisory' AND objid=982376); END $$`);
+  await owner.query(`CREATE FUNCTION ci_guard_probe_own_fence_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
+    BEGIN RAISE NOTICE 'probe-ran:o';
+    RETURN EXISTS(SELECT FROM pg_locks l WHERE l.locktype='advisory' AND l.pid=pg_backend_pid() AND l.objid=982377); END $$`);
   await owner.query(`CREATE FUNCTION ci_guard_probe_pid_valid() RETURNS boolean LANGUAGE plpgsql STABLE AS $$
     BEGIN RAISE NOTICE 'probe-ran:p'; RETURN EXISTS(SELECT FROM ci_guard_probe_pid WHERE backend_pid = pg_backend_pid()); END $$`);
   await owner.query(`GRANT EXECUTE ON FUNCTION ci_guard_probe_valid() TO ${reader}`);
@@ -128,6 +131,21 @@ test('session settings and the role are part of the key; placeholders and locks 
   assert.deepEqual(await call(owner), { ok: true, ran: true });
   assert.deepEqual(await call(owner), { ok: true, ran: true }, 'no superuser: never cached');
   await owner.query('RESET ROLE');
+});
+
+test('a guard reading only its own session locks ignores locks of other connections', async () => {
+  const own = 'SELECT ci_guard_probe_own_fence_valid() ok', fence = 'SELECT ci_guard_probe_fence_valid() ok';
+  assert.deepEqual(await call(owner, own), { ok: false, ran: true });
+  assert.deepEqual(await call(owner, fence), { ok: true, ran: false });
+  await other.query('SELECT pg_advisory_lock(982377)');
+  assert.deepEqual(await call(owner, own), { ok: false, ran: false }, 'another session’s lock is not read');
+  await other.query('SELECT pg_advisory_lock(982376)');
+  assert.deepEqual(await call(owner, fence), { ok: false, ran: true }, 'pg_locks without the own-pid filter sees every session');
+  await other.query('SELECT pg_advisory_unlock_all()');
+  await owner.query('SELECT pg_advisory_lock(982377)');
+  assert.deepEqual(await call(owner, own), { ok: true, ran: true });
+  await owner.query('SELECT pg_advisory_unlock(982377)');
+  assert.deepEqual(await call(owner, own), { ok: false, ran: false });
 });
 
 test('a read-only VOLATILE guard is cached; writing and raising guards always run, the error is the guard’s own', async () => {
