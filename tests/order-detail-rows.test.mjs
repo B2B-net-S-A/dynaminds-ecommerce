@@ -58,7 +58,7 @@ function harness({ exists = true, enabled = false, workflow = false, failQuery }
   } };
   const fn = (name, value) => async (...args) => { assert.equal(args[0], c); calls.push(name); return value; };
   const unexpected = name => async () => assert.fail('getOrder must not use the ' + name);
-  const getOrder = makeGetOrder({ orderDetailRows, ensure: (ok, status, message) => { if (!ok) throw Object.assign(Error(message), { status }); }, wmsLotsPolicyInTx: fn('wms-policy', { enabled }), effectiveDeliveryForOrderReadInTx: fn('delivery', { country: 'PL' }), effectiveDeliveryInTx: unexpected('legacy delivery read'), effectiveDeliveryForCreatedOrderInTx: unexpected('createOrder installation read'), localConfig: { encryptionKey: 'test-only' }, orderMergeClaimInTx: fn('merge', null), b2bDropshipOrderScopeInTx: fn('dropship', null), returnOverview: fn('returns', []), paymentBalance: fn('payment', { due: 0 }), orderWithStageInTx: async (cx, card) => { assert.equal(cx, c); calls.push('stage'); return { ...card, fulfilment_stage: 'packed', payment_state: 'paid' }; } });
+  const getOrder = makeGetOrder({ orderDetailRows, ensure: (ok, status, message) => { if (!ok) throw Object.assign(Error(message), { status }); }, wmsLotsPolicyInTx: fn('wms-policy', { enabled }), effectiveDeliveryForOrderReadInTx: fn('delivery', { country: 'PL' }), effectiveDeliveryInTx: unexpected('legacy delivery read'), effectiveDeliveryForCreatedOrderInTx: unexpected('createOrder installation read'), localConfig: { encryptionKey: 'test-only' }, orderMergeClaimInTx: fn('merge', null), b2bDropshipOrderScopeInTx: fn('dropship', null), returnOverview: fn('returns', []), replacedLabelsInTx: fn('replaced-labels', []), paymentBalance: fn('payment', { due: 0 }), orderWithStageInTx: async (cx, card) => { assert.equal(cx, c); calls.push('stage'); return { ...card, fulfilment_stage: 'packed', payment_state: 'paid' }; } });
   return { c, getOrder, sets, sql, calls, order };
 }
 
@@ -111,8 +111,8 @@ for (const enabled of [false, true]) for (const workflow of [false, true]) {
   test(`actual getOrder keeps DTO and later guards enabled=${enabled}, workflow=${workflow}`, async () => {
     const h = harness({ enabled, workflow });
     const out = await h.getOrder(h.c, id);
-    assert.deepEqual(out, { ...h.order, effective_delivery: { country: 'PL' }, merge_claim: null, dropshipping: null, ...(enabled ? { wms_lots_enabled: true } : {}), workflow_status: workflow ? { id, name: 'Nowe' } : null, invoice_committed: true, shipping_active: false, items: [{ sku: 'A', quantity: 3 }], picking_items: [{ product_id: product, locations: [{ product_id: product, location: 'A-01', quantity: 3 }] }], events: [{ kind: 'created' }], shipments: [{ mode: 'demo' }], documents: [{ kind: 'invoice' }], returns: [], payment: { due: 0 }, fulfilment_stage: 'packed', payment_state: 'paid' });
-    assert.deepEqual(h.calls, ['wms-policy', 'delivery', 'merge', 'dropship', 'returns', 'payment', 'stage']);
+    assert.deepEqual(out, { ...h.order, effective_delivery: { country: 'PL' }, merge_claim: null, dropshipping: null, ...(enabled ? { wms_lots_enabled: true } : {}), workflow_status: workflow ? { id, name: 'Nowe' } : null, invoice_committed: true, shipping_active: false, items: [{ sku: 'A', quantity: 3 }], picking_items: [{ product_id: product, locations: [{ product_id: product, location: 'A-01', quantity: 3 }] }], events: [{ kind: 'created' }], shipments: [{ mode: 'demo' }], replaced_labels: [], documents: [{ kind: 'invoice' }], returns: [], payment: { due: 0 }, fulfilment_stage: 'packed', payment_state: 'paid' });
+    assert.deepEqual(h.calls, ['wms-policy', 'delivery', 'merge', 'dropship', 'replaced-labels', 'returns', 'payment', 'stage']);
     assert.equal(h.sql.length, workflow ? 4 : 3);
     assert(out.created_at instanceof Date);
   });
