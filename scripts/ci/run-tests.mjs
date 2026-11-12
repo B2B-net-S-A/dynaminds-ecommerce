@@ -58,7 +58,8 @@ if (kind === 'db') {
   await admin.connect();
 }
 const config = loadConfig();
-const source = (file) => { try { return readFileSync(join(ROOT, file), 'utf8'); } catch { return ''; } };
+const sources = new Map();
+const source = (file) => { if (!sources.has(file)) { let text = ''; try { text = readFileSync(join(ROOT, file), 'utf8'); } catch {} sources.set(file, text); } return sources.get(file); };
 const freshListed = new Set(Object.keys(config.freshDatabase ?? {}));
 const fresh = { has: (file) => freshListed.has(file) || /\bbootstrap151169\(\)/.test(source(file)) };
 const noGuardCacheListed = new Set(Object.keys(config.noGuardCache ?? {}));

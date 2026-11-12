@@ -112,7 +112,7 @@ function install() {
       FROM pg_proc p, regexp_matches(p.prosrc, '(?:current_setting|set_config)\\(\\s*''{1,2}([a-z_][a-z0-9_$]*\\.[a-z0-9_$.]+)''', 'gi') m
       WHERE p.pronamespace NOT IN ('pg_catalog'::regnamespace,'information_schema'::regnamespace)`)).n ?? [])])].sort());
     const wanted = customNames.get(k.c);
-    if (wanted.join() !== names.join()) { lastNames = wanted; k.g = Object.values(await one(client, placeholdersSql.replace('$2', '$1'), [wanted]))[0]; }
+    if (wanted.join() !== names.join()) { lastNames = wanted; k.g = Object.values(await one(client, placeholdersSql.replace(/\$2/g, '$1'), [wanted]))[0]; }
     return k;
   }
   let lastNames = ['app.tenant_id'];
@@ -231,6 +231,8 @@ function install() {
       pid: meta.pid ? k2.pid : undefined, xid: meta.xid ? k2.xid : undefined,
       locks: meta.locks === 'all' ? k2.l : undefined, ownLocks: meta.locks === 'own' ? k2.lo : undefined, custom: meta.custom ? k2.g : undefined };
     entries.set(id2, [variant, ...(entries.get(id2) ?? [])].slice(0, 8));
+    // One write per line; a line longer than PIPE_BUF written while another file of the shard appends may tear,
+    // and the reader skips it (one more miss later, never a wrong answer).
     if (shared && variant.pid === undefined && variant.xid === undefined) try { appendFileSync(shared, JSON.stringify({ id: id2, variant }) + '\n'); } catch {}
     return result;
   }
