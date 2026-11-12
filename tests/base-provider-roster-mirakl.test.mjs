@@ -16,6 +16,12 @@ const priorPath='docs/parity/scope-inputs/v2/base-provider-roster.json';
 const prior=read(priorPath),current=read('docs/parity/base-provider-roster.json');
 const entryId='base.catalog.marketplace.mirakl';
 const RECORDED_AT='0917896cbf08c46202937fab2dc5293adc22e0b9';
+// The public repository starts from a single snapshot commit, so RECORDED_AT exists only in checkouts with the
+// private history. Without it the recorded-bytes check is skipped with this reason; the structural checks still run.
+const historySkip=(()=>{try{execFileSync('git',['-C',root,'cat-file','-e',RECORDED_AT+'^{commit}'],{stdio:'ignore'});return false;}catch{return 'commit '+RECORDED_AT.slice(0,7)+' (recorded mapping sources) is not in this checkout: the public repository has no history before its snapshot';}})();
+const recorded=p=>execFileSync('git',['-C',root,'cat-file','blob',RECORDED_AT+':'+p],{maxBuffer:64*1024*1024});
+// Recorded bytes from history when present; otherwise the checkout file, accepted only while it still equals the pin.
+const recordedOrTree=ref=>{if(!historySkip)return recorded(ref.path);const b=bytes(ref.path);assert.equal(sha(b),ref.sha256,'Recorded source changed in the checkout and history is unavailable: '+ref.path);return b;};
 const parsed=p=>{const value=parseSync(p,bytes(p).toString('utf8'),{lang:'ts'});assert.equal(value.errors.length,0);return value.program;};
 function nodes(source,predicate){const found=[];function visit(n){if(!n||typeof n!=='object')return;if(typeof n.type==='string'&&predicate(n))found.push(n);for(const value of Object.values(n))if(Array.isArray(value))value.forEach(visit);else if(value&&typeof value==='object')visit(value);}visit(source);return found;}
 function prop(n,key){const p=n.properties.find(x=>x.type==='Property'&&(x.key.name??x.key.value)===key);assert(p,'Missing source property '+key);return p.value;}
@@ -33,17 +39,20 @@ test('only the existing Mirakl family mapping changes; all captured entries/card
  assert.equal(scope.scope_complete,false);assert.equal(current.inventory_complete,false);assert.equal(current.coverage_complete,false);
 });
 
-test('mapping binds the captured exact family card to the real registered Seller reader and existing operation rows',()=>{
- const update=current.registry_mapping_supplements[0];assert.equal(current.registry_mapping_supplements.length,1);
- assert.equal(update.as_of,'2026-10-18');assert.equal(update.kind,'source_only_family_registry_mapping');
+test('mapping sources are exact at the commit that recorded them',{skip:historySkip},()=>{
  // The supplement pins its sources as recorded in its own commit (0917896, 2026-10-18). Those are
- // historical facts, so their exact bytes are verified in that commit, not in the later-edited checkout;
- // the inventory below is read from the same recorded bytes. Every structural check after that runs on
- // the current code, so the mapping must still hold today.
- const recorded=p=>execFileSync('git',['-C',root,'cat-file','blob',RECORDED_AT+':'+p],{maxBuffer:64*1024*1024});
+ // historical facts, so their exact bytes are verified in that commit, not in the later-edited checkout.
+ const update=current.registry_mapping_supplements[0];
  for(const ref of [update.catalogue_source,update.registry_source,...update.adapter_sources,update.operation_inventory_source]){
   const b=recorded(ref.path);assert.equal(b.length,ref.bytes);assert.equal(sha(b),ref.sha256,'Recorded mapping source differs: '+ref.path);
  }
+});
+
+test('mapping binds the captured exact family card to the real registered Seller reader and existing operation rows',()=>{
+ const update=current.registry_mapping_supplements[0];assert.equal(current.registry_mapping_supplements.length,1);
+ assert.equal(update.as_of,'2026-10-18');assert.equal(update.kind,'source_only_family_registry_mapping');
+ // The inventory is read from the recorded bytes (recordedOrTree). Every structural check after that runs on
+ // the current code, so the mapping must still hold today.
  const card=prior.catalog_cards.find(c=>c.ordinal===update.catalogue_card_ordinal);
  assert.equal(card.entry_id,entryId);assert.equal(card.catalog_id,'mirakl');assert.equal(card.name,'Mirakl');
  assert.deepEqual(card.urls,['https://base.com/pl-PL/integracje/mirakl/']);assert.equal(card.attributes['data-tags'],'Mirakl');
@@ -54,7 +63,7 @@ test('mapping binds the captured exact family card to the real registered Seller
  assert.equal(prop(provider,'name').value,'Mirakl Seller');
  assert.equal(prop(provider,'docs').value,'https://developer.mirakl.com/content/product/mmp/rest/seller');
  const implemented=prop(provider,'implemented').elements.map(x=>x.value),planned=prop(provider,'planned').elements.map(x=>x.value);
- const inventory=JSON.parse(recorded(update.operation_inventory_source.path)),rows=inventory.rows.filter(x=>x.provider==='mirakl');
+ const inventory=JSON.parse(recordedOrTree(update.operation_inventory_source)),rows=inventory.rows.filter(x=>x.provider==='mirakl');
  assert.deepEqual(update.operation_ids,rows.map(x=>x.id));assert.equal(rows.length,11);
  // Derived, not hand-listed: the registry declares implemented exactly the inventory's code-wired rows
  // (7 since L2 3b3abab, previously only the three reads) plus the rows the L4 result record (registry step v8,

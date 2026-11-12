@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {JSDOM} from 'jsdom';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),dir=root+'docs/parity/',sha=b=>createHash('sha256').update(b).digest('hex');
 const read=n=>JSON.parse(fs.readFileSync(dir+n));
 const docs=read('base-api-document-contracts.v1.json'),products=read('base-api-inventory-products-contracts.v1.json');
@@ -36,7 +37,7 @@ test('products nested fields retain map, unit-array, supplier and relationship i
  assert.deepEqual(products.methods.find(m=>m.method==='addInventoryProduct').input.embedded_documented_fields.map(f=>f.name),['ean_additional[].ean','ean_additional[].quantity']);
  assert.equal(products.field_inventory.embedded_output_prose_fields,30);
 });
-for(const contract of [docs,products])test(contract.schema+': exact captured HTML rows and independently walked prose',()=>{
+for(const contract of [docs,products])test(contract.schema+': exact captured HTML rows and independently walked prose',{skip:baseCaptureSkip(['docs/parity/'+contract.source_snapshot.path])},()=>{
  const bytes=fs.readFileSync(dir+contract.source_snapshot.path),capture=JSON.parse(gunzipSync(bytes));assert.equal(sha(bytes),contract.source_snapshot.sha256);assert.equal(capture.documents.length,contract.methods.length);
  for(const m of contract.methods){const s=capture.documents.find(x=>x.method===m.method);assert.equal(sha(Buffer.from(s.html_utf8)),m.source.sha256);assert.equal(Buffer.byteLength(s.html_utf8),m.source.bytes);const dom=new JSDOM(s.html_utf8),document=dom.window.document;try{
   for(const [direction,title,list]of[['input','Input parameters',m.input.parameters],['output','Output data',m.output.fields]]){const h=[...document.querySelectorAll('div.header')].find(x=>x.textContent.trim()===title);assert(h);const rows=h.nextElementSibling?.tagName==='TABLE'?[...h.nextElementSibling.querySelectorAll('tr')]:[];assert.equal(rows.length,list.length);for(const [i,row]of rows.entries()){const cells=[...row.children].filter(n=>n.nodeName==='TD'),a=cells.map(c=>c.textContent.replace(/\s+/g,' ').trim()),f=list[i],path=f.path??f.name;assert.equal(a.length,3);assert.equal(f.documented_type,a[1]);assert.equal(f.documented_description,a[2]);assert.equal(f.source_table_row,i+1);assert.equal(path.split('.').at(-1),a[0].replace(/^\| - /,''));const actual=[...(m.input.embedded_documented_fields??[]),...(m.output.embedded_documented_fields??[])].filter(f=>f.source_kind===direction+'_table_row_description'&&f.source_table_row===i+1);const expected=embeddedFromCell(cells[2]);assert.deepEqual(actual.map(f=>({name:(f.path??f.name).split('.').at(-1),type:f.documented_type,description:f.documented_description})),expected);}}

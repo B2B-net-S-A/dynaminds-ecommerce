@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const stagedRoot=fileURLToPath(new URL('../',import.meta.url)),sourceRoot=process.env.DYNA_DOC_SOURCE_ROOT??stagedRoot;
 const {JSDOM}=createRequire(path.join(sourceRoot,'package.json'))('jsdom'),sha=b=>createHash('sha256').update(b).digest('hex');
 const read=n=>fs.readFileSync(path.join(sourceRoot,'docs/parity',n));
@@ -14,6 +15,9 @@ const bytes=fs.readFileSync(stagedRoot+'docs/parity/base-api-transfer-contracts.
 const methods=['addInventoryTransfer','addInventoryTransferItems','getInventoryTransferItems','getInventoryTransferSeries','getInventoryTransfers','setInventoryTransferStatus'];
 const method=n=>{const m=c.methods.find(m=>m.method===n);assert(m,n);return m;};
 const field=(m,d,p)=>{const f=method(m)[d][d==='input'?'parameters':'fields'].find(f=>(f.name??f.path)===p);assert(f,m+':'+p);return f;};
+const skip=baseCaptureSkip(['docs/parity/'+c.source_snapshot.path],sourceRoot);
+if(skip)test('Transfer contracts are re-checked against the archived Base.com documentation capture',{skip},()=>{});
+else{
 const source=JSON.parse(gunzipSync(read(c.source_snapshot.path),{maxOutputLength:2*1024*1024}));
 test('Transfers is the complete frozen six-method group from the original15-page archive; Purchase orders9 is unchanged',()=>{
  assert.equal(sha(read(c.method_inventory_ref)),'7e6b10f8fd105973ec99926372fcc7ae3ec6a2496514d3d45d2cc59af4c7d992');
@@ -75,3 +79,4 @@ test('accepted v1 conventions are reused while role, replay, transition and stoc
  for(const k of['official_account_requests_performed','implementation_coverage_measured','acceptance_granted','scope_mutated','operational_contract_fully_resolved'])assert.equal(c[k],false);
  for(const m of c.methods){assert.equal(m.implementation_verified,false);assert.equal(m.acceptance_granted,false);assert.equal(m.operational_contract_fully_resolved,false);assert.equal(m.mutation_idempotency,'not_documented');assert.equal(m.errors.permission_matrix,'not_documented');assert.equal(m.input.null_handling,'not_documented');assert(m.open_contract_issues.length);}
 });
+}
