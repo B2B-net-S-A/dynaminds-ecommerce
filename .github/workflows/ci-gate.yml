@@ -8,7 +8,8 @@ name: CI Gate
 #   * Gitleaks secret scan — repo jest publiczne, sekret w historii jest nieodwracalny
 #   * Typecheck            — `tsc --noEmit` (to samo, co `npm run typecheck`)
 #   * Lint + static tests  — lint źródeł (tests/failure-job-kinds, tests/sql-text-lint) i wszystkie
-#                            testy z klasy `static` (scripts/ci/classify-tests.mjs), bez bazy
+#                            testy z klasy `static` (scripts/ci/classify-tests.mjs), bez bazy, oraz klasa
+#                            `darwin` (sumy bajtów z zlib macOS) w jobie na macOS
 #   * Web tests            — web/*.test.mjs (jsdom, bez serwera i bez bazy)
 # Testy z bazą (klasa `db`) są w ci.yml („DB tests”).
 
@@ -154,10 +155,53 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  # Klasa `darwin` (scripts/ci/test-classes.json): testy static przypinające sumy wyniku gzipSync, który
+  # na Linuksie ma inny bajt OS w nagłówku gzip. Biegną tu, na macOS, a części Linux ich nie dostają.
+  static-tests-macos:
+    name: Static tests (macOS zlib)
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: |
+          rm -f node_modules
+          npm ci --no-audit --no-fund
+      - name: Local config (random, runner only)
+        run: |
+          node -e 'const c=require("crypto");require("fs").writeFileSync(process.argv[1],JSON.stringify({dbPassword:c.randomBytes(24).toString("hex"),encryptionKey:c.randomBytes(32).toString("hex")}),{mode:0o600})' "$RUNNER_TEMP/dyna-local.json"
+          echo "DYNA_LOCAL_CONFIG_PATH=$RUNNER_TEMP/dyna-local.json" >> "$GITHUB_ENV"
+      - name: List darwin tests
+        run: |
+          set -euo pipefail
+          node scripts/ci/classify-tests.mjs --list darwin > "$RUNNER_TEMP/darwin.txt"
+          echo "Pliki darwin: $(wc -l < "$RUNNER_TEMP/darwin.txt" | tr -d ' ')"
+          cat "$RUNNER_TEMP/darwin.txt"
+      - name: Static tests (macOS zlib)
+        run: node scripts/ci/run-tests.mjs --kind static --concurrency 3 --out ci-out/darwin --files-from "$RUNNER_TEMP/darwin.txt"
+      - name: Summary
+        if: ${{ always() }}
+        run: |
+          if [ -s ci-out/darwin/failed.txt ]; then
+            { echo "### Padnięte testy static (macOS zlib)"; sed 's/^/- /' ci-out/darwin/failed.txt; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: static-tests-logs-macos
+          path: ci-out/darwin/
+          if-no-files-found: ignore
+          retention-days: 14
+
   static-tests-gate:
     # `if: always()` jest load-bearing: anulowana część zostawiłaby kontekst wiecznie oczekujący.
     name: Lint + static tests
-    needs: static-tests
+    needs: [static-tests, static-tests-macos]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -165,10 +209,14 @@ jobs:
       - name: Collect parts
         env:
           RESULT: ${{ needs.static-tests.result }}
+          MACOS_RESULT: ${{ needs.static-tests-macos.result }}
         run: |
-          echo "Części testów static (z lintem): $RESULT"
+          echo "Części testów static (z lintem): $RESULT; macOS zlib: $MACOS_RESULT"
           if [ "$RESULT" != "success" ]; then
             echo "::error::Lint albo co najmniej jedna część testów static nie przeszła (result=$RESULT)."; exit 1
+          fi
+          if [ "$MACOS_RESULT" != "success" ]; then
+            echo "::error::Testy static na macOS (klasa darwin) nie przeszły (result=$MACOS_RESULT)."; exit 1
           fi
 
   web-tests:

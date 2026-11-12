@@ -6,10 +6,15 @@ import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {JSDOM} from 'jsdom';
+import {baseCaptureSkip} from '../tools/parity/base-captures.mjs';
 const dir=fileURLToPath(new URL('../docs/parity/',import.meta.url));
 const load=n=>JSON.parse(fs.readFileSync(dir+n));
 const sha=b=>createHash('sha256').update(b).digest('hex');
-const v=load('base-api-order-configuration-contracts.v1.json'),packed=fs.readFileSync(dir+v.source_snapshot.path),cap=JSON.parse(gunzipSync(packed)),index=load(v.method_inventory_ref),method=n=>v.methods.find(m=>m.method===n),param=(m,n)=>method(m).input.parameters.find(f=>f.name===n),norm=s=>s.replace(/\s+/g,' ').trim();
+const v=load('base-api-order-configuration-contracts.v1.json');
+const skip=baseCaptureSkip(['docs/parity/'+v.source_snapshot.path]);
+if(skip)test('Order configuration contracts are re-checked against the archived Base.com documentation capture',{skip},()=>{});
+else{
+const packed=fs.readFileSync(dir+v.source_snapshot.path),cap=JSON.parse(gunzipSync(packed)),index=load(v.method_inventory_ref),method=n=>v.methods.find(m=>m.method===n),param=(m,n)=>method(m).input.parameters.find(f=>f.name===n),norm=s=>s.replace(/\s+/g,' ').trim();
 function prose(cell){const n=cell.cloneNode(true);for(const b of n.querySelectorAll('br'))b.replaceWith('\n');for(const b of n.querySelectorAll('li,p,div')){b.prepend('\n');b.append('\n');}return norm(n.textContent);}
 test('exact full Payments2 + Statuses8 classification; no invented fields group',()=>{
  assert.deepEqual(v.selected_index_groups,[{family:'Orders',group:'Payments'},{family:'Orders',group:'Statuses'}]);
@@ -56,3 +61,4 @@ test('requiredness, source mappings and all acceptance levels stay honest',()=>{
  for(const m of v.methods){assert.equal(m.implementation_verified,false);assert.equal(m.acceptance_granted,false);assert.equal(m.operational_contract_fully_resolved,false);assert(v.current_code_mappings[m.current_code_mapping_ref]);assert(m.proposed_acceptance.length>=2);assert.equal(m.errors.http_status_mapping,'not_documented');if(m.documented_destructive_effect)assert.equal(m.documented_destructive_effect.execution_performed,false);}
  assert.equal(v.current_code_mappings.status_groups.route_candidates.length,0);assert.equal(v.open_contract_issues.length,10);
 });
+}
