@@ -1,13 +1,15 @@
 /** File-only preparation/validation (prepare, resolve, preflight, budget, bindings). Never pulls images or installs
  * WordPress. Two explicit Docker commands after review: `keys` (one REST key through official WP-CLI inside the owned
- * CLI container) and `forward` (TCP forwarder inside a scale database container's network namespace). */
+ * CLI container), `forward` (TCP forwarder inside a scale database container's network namespace) and `renew-tls`
+ * (new CA and `localhost` certificate from the same keys, restart of the TLS edge only). */
 import assert from 'node:assert/strict';
 import fs, {constants} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {createHash, randomBytes} from 'node:crypto';
+import {createHash, randomBytes, X509Certificate} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import net from 'node:net';
+import tls from 'node:tls';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 /** `local-builds` beside `development/`: from the checkout `<ws>/development/full-base` and from its git worktrees
@@ -239,9 +241,84 @@ async function forward(root, container, slots) {
   execFileSync('docker', args, {stdio: ['ignore', 'ignore', 'pipe'], timeout: 60000});
   return {status: 'FORWARDER_STARTED', container: forwarderName(root, container), namespace: container, ports};
 }
+// ---- renewal of the TLS edge (prepare issues the CA and the `localhost` certificate for 14 days) ---------------------
+export const MAX_TLS_DAYS = 825;
+const CA_SUBJECT = '/CN=DYNAMINDS owned Woo local CA', TLS_FILES = ['ca.pem', 'ca.srl', 'tls.csr', 'tls.pem'];
+/** File-only part of `renew-tls`: a new self-signed CA from the SAME secrets/ca.key and subject, and a new `localhost`
+ * certificate from the same secrets/tls.key, both valid for `days`. The new files are checked before anything moves;
+ * the old ones stay beside as `<name>.superseded-NN`. The CA bytes and so its sha256 change: woo-store-bindings is
+ * rewritten with the new CA pin (key pins unchanged), and every copy of the CA (demo: seed-woo.mjs --refresh-ca)
+ * has to follow before the release is started again. */
+export async function renewTlsFiles(root, days, now = new Date()) {
+  assert(Number.isSafeInteger(days) && days >= 1 && days <= MAX_TLS_DAYS, `whole days 1..${MAX_TLS_DAYS} required`);
+  const secrets = root + '/secrets', bindingsFile = root + '/woo-store-bindings.private.json';
+  await pinned(bindingsFile, false); const old = JSON.parse(await fs.readFile(bindingsFile, 'utf8'));
+  const current = (await pinned(secrets + '/ca.pem', false)).pin;
+  assert(old.schema === 'dynaminds-official-woo-store-bindings/v1' && old.root === root && Array.isArray(old.stores) && old.stores.length >= 1
+    && old.stores.every(s => s.ca?.path === current.path), 'bindings of this root required');
+  if (!old.stores.every(s => s.ca.sha256 === current.sha256)) {
+    // A renewal killed between moving the files and rewriting bindings: name the generation to put back.
+    const generation = (await fs.readdir(secrets)).filter(f => /^ca\.pem\.superseded-\d{2}$/.test(f)).sort().pop();
+    const back = generation && sha(await fs.readFile(secrets + '/' + generation)) === old.stores[0].ca.sha256 && generation.slice('ca.pem.'.length);
+    assert.fail(back ? `interrupted renewal: bindings still pin the CA in ${generation}; put the ${back} files of ${TLS_FILES.join(', ')} back in secrets/ (or rewrite bindings) and run renew-tls again`
+      : 'bindings of this root pinning its current CA required');
+  }
+  for (const key of ['ca.key', 'tls.key']) await pinned(secrets + '/' + key, false);
+  let n = 1; const suffix = () => '.superseded-' + String(n).padStart(2, '0');
+  const taken = async () => (await Promise.all([...TLS_FILES.map(f => secrets + '/' + f), bindingsFile].map(f => fs.lstat(f + suffix()).then(() => true, e => { if (e.code !== 'ENOENT') throw e; return false; })))).some(Boolean);
+  while (await taken()) { n++; assert(n < 100, 'too many superseded TLS generations'); }
+  for (const f of TLS_FILES) await assert.rejects(fs.lstat(`${secrets}/${f}.renew`), {code: 'ENOENT'}, f + '.renew exists; inspect and remove it first');
+  const openssl = args => execFileSync('openssl', args, {cwd: root, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 1024 ** 2, timeout: 60000});
+  try {
+    openssl(['req', '-x509', '-new', '-key', 'secrets/ca.key', '-sha256', '-days', String(days), '-subj', CA_SUBJECT, '-addext', 'basicConstraints=critical,CA:TRUE', '-out', 'secrets/ca.pem.renew']);
+    openssl(['req', '-new', '-key', 'secrets/tls.key', '-subj', '/CN=localhost', '-out', 'secrets/tls.csr.renew']);
+    openssl(['x509', '-req', '-in', 'secrets/tls.csr.renew', '-CA', 'secrets/ca.pem.renew', '-CAkey', 'secrets/ca.key', '-CAserial', 'secrets/ca.srl.renew', '-CAcreateserial', '-days', String(days), '-sha256', '-extfile', 'config/tls.ext', '-out', 'secrets/tls.pem.renew']);
+    for (const f of TLS_FILES) await fs.chmod(`${secrets}/${f}.renew`, 0o600);
+    const ca = new X509Certificate(await fs.readFile(secrets + '/ca.pem.renew')), leaf = new X509Certificate(await fs.readFile(secrets + '/tls.pem.renew'));
+    const previous = new X509Certificate(await fs.readFile(secrets + '/ca.pem')), floor = now.getTime() + (days - 1) * 86400000;
+    assert(ca.ca && ca.subject === previous.subject && ca.publicKey.equals(previous.publicKey) && ca.verify(ca.publicKey), 'renewed CA must keep the subject and key of the current CA');
+    assert(!leaf.ca && leaf.checkIssued(ca) && leaf.verify(ca.publicKey) && leaf.checkHost('localhost') && leaf.checkIP('127.0.0.1'), 'renewed certificate must be the localhost edge issued by the renewed CA');
+    assert(Date.parse(ca.validTo) >= floor && Date.parse(leaf.validTo) >= floor, 'renewed validity shorter than requested');
+  } catch (e) { await Promise.all(TLS_FILES.map(f => fs.rm(`${secrets}/${f}.renew`, {force: true}))); throw e; }
+  for (const f of TLS_FILES) {
+    await fs.rename(`${secrets}/${f}`, `${secrets}/${f}${suffix()}`).catch(e => { if (e.code !== 'ENOENT') throw e; });
+    await fs.rename(`${secrets}/${f}.renew`, `${secrets}/${f}`);
+  }
+  const pin = (await pinned(secrets + '/ca.pem', false)).pin, renewed = {...old, stores: old.stores.map(s => ({...s, ca: pin}))};
+  await fs.rename(bindingsFile, bindingsFile + suffix());
+  await save(root, 'woo-store-bindings.private.json', json(renewed));
+  const leaf = new X509Certificate(await fs.readFile(secrets + '/tls.pem'));
+  return {previous_ca_sha256: current.sha256, ca_sha256: pin.sha256, not_after: new Date(leaf.validTo).toISOString(), superseded: suffix().slice(1),
+    stores: renewed.stores.map(s => s.origin), fingerprint256: leaf.fingerprint256};
+}
+/** TLS handshake against the owned edge with the renewed CA; succeeds only when the edge serves the renewed certificate. */
+function handshake(port, ca, fingerprint256, deadline, stop) {
+  return new Promise((resolve, reject) => {
+    const attempt = () => {
+      const socket = tls.connect({host: '127.0.0.1', port, servername: 'localhost', ca, minVersion: 'TLSv1.2', rejectUnauthorized: true}, () => {
+        const served = socket.getPeerCertificate().fingerprint256; socket.end();
+        served === fingerprint256 ? resolve(port) : retry(new Error(`edge ${port} still serves the old certificate`));
+      });
+      socket.setTimeout(5000, () => socket.destroy(new Error(`edge ${port} handshake timeout`)));
+      socket.once('error', retry);
+    };
+    const retry = e => stop.done || Date.now() > deadline ? reject(e) : setTimeout(attempt, 1000);
+    attempt();
+  });
+}
+/** `renew-tls`: renewTlsFiles, then a restart of only the owned TLS edge (bind-mounted files are read at container
+ * start) and a handshake on every bound port. Stores, databases, REST keys and forwarders are not touched. */
+async function renewTls(root, days) {
+  const args = await composeArgs(root), result = await renewTlsFiles(root, days);
+  execFileSync('docker', [...args, 'restart', 'tls'], {stdio: ['ignore', 'ignore', 'pipe'], timeout: 120000});
+  const ca = await fs.readFile(root + '/secrets/ca.pem'), deadline = Date.now() + 30000, stop = {done: false};
+  // The first failing port ends the check; the other ports stop retrying instead of reconnecting until the deadline.
+  const verified = await Promise.all(result.stores.map(o => handshake(Number(new URL(o).port), ca, result.fingerprint256, deadline, stop))).finally(() => { stop.done = true; });
+  return {status: 'TLS_RENEWED', ...result, edge_restarted: true, handshake_ports: verified};
+}
 export async function main(args) {
   process.umask(0o077); const [command, root, zip] = args;
-  const arity = {prepare: 3, resolve: 2, preflight: 2, budget: 2, bindings: 3, keys: 4, forward: 4};
+  const arity = {prepare: 3, resolve: 2, preflight: 2, budget: 2, bindings: 3, keys: 4, forward: 4, 'renew-tls': 3};
   assert(Object.hasOwn(arity, command)); assert.equal(args.length, arity[command]);
   if (command === 'prepare') await prepare(root, zip);
   else if (command === 'resolve') await resolve(root);
@@ -249,6 +326,7 @@ export async function main(args) {
   else if (command === 'bindings') { await rootPath(root); const b = await storeBindings(root, slotList(args[2])); await saveOnce(root, 'woo-store-bindings.private.json', json(b)); return {status: 'BINDINGS_SAVED', file: root + '/woo-store-bindings.private.json', sha256: sha(json(b)), stores: b.stores.map(s => s.origin)}; }
   else if (command === 'keys') { await rootPath(root); return keys(root, args[2], args[3]); }
   else if (command === 'forward') { await rootPath(root); return forward(root, args[2], slotList(args[3])); }
+  else if (command === 'renew-tls') { await rootPath(root); assert(/^[1-9]\d*$/.test(args[2]), 'whole days required'); return renewTls(root, Number(args[2])); }
   else { await rootPath(root); return budget(root, true); }
   return {status: command.toUpperCase() + '_FILE_ONLY_COMPLETE', Docker_started: false, WordPress_installed: false};
 }

@@ -6,6 +6,7 @@
 #   tools/demo/demo.sh status     containers, fakes, /api/health summary
 #   tools/demo/demo.sh reset      demo database back to its snapshot (CREATE DATABASE … TEMPLATE), images too; restarts the app
 #   tools/demo/demo.sh woo-order  one new order in the bound local WooCommerce store (imported within ~1–2 min)
+#   tools/demo/demo.sh woo-ca     after `operator.mjs renew-tls`: the demo copy of the store CA and its pin follow, restart
 #   tools/demo/demo.sh build      packaged release of HEAD (tools/scale/release-build.mjs) for the demo
 #   tools/demo/demo.sh seed       fresh demo database + curated demo company (tools/demo/seed.mjs), Woo channel, snapshot
 #   tools/demo/demo.sh guards     the 16 guards on the demo database (read only)
@@ -206,7 +207,8 @@ case "$cmd" in
     start
     ;;
   woo-order) node "$HERE/seed-woo.mjs" "$DEMO_ROOT" "http://127.0.0.1:$PORT" --order ;;
+  woo-ca) node "$HERE/seed-woo.mjs" "$DEMO_ROOT" "http://127.0.0.1:$PORT" --refresh-ca; stop; start ;;
   guards) seed_node tools/demo/guards.mjs ;;
   seed-node) seed_node "$@" ;;   # internal: run a node script in the namespace with the demo env
-  *) die "unknown command $cmd (start|stop|status|reset|woo-order|build|seed|guards)" ;;
+  *) die "unknown command $cmd (start|stop|status|reset|woo-order|woo-ca|build|seed|guards)" ;;
 esac

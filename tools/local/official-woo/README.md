@@ -48,7 +48,7 @@ Inny tag albo inny hash pluginu = stop i pytanie, bez podmiany wersji.
 - Sieci: `owned` jest wewnętrzna (WordPress, MariaDB, CLI, brzeg TLS). Brzeg TLS jest też
   w sieci `edge` (nie wewnętrznej). Bez niej Docker nie publikuje portu kontenera, który jest
   tylko w sieci wewnętrznej (sprawdzone 30.10: brzeg nie miał żadnego wiązania).
-- Brzeg TLS: własne CA (14 dni, `secrets/ca.pem`), certyfikat `localhost`/`127.0.0.1`,
+- Brzeg TLS: własne CA (`prepare` wystawia 14 dni, `secrets/ca.pem`; odnowienie: `renew-tls` niżej), certyfikat `localhost`/`127.0.0.1`,
   `Host` inny niż `localhost:<port>` dostaje 444. Bez przypiętego CA połączenie odpada.
 - Produkt: rejestr dopuszcza do pięciu sklepów i origins 18443–18447 od `9224af7`
   (`shared/local-woo-origins.ts`), z przypięciem CA i kluczy oraz zwykłym IAM. Ten katalog
@@ -132,6 +132,33 @@ po jednym pełnym biegu potrzebny jest nowy root (sterownik odmawia startu, gdy 
 1000 − 50; `woo.mjs` `orderCapacity`). Krótkie biegi próbne dokładają po ~60–80.
 Produkty sklepu mają SKU produktów DYNAMINDS (synchronizacja stanów porównuje SKU); produkt z tym
 SKU z wcześniejszego biegu jest używany ponownie i dostaje stan bieżącego biegu.
+
+## Odnowienie certyfikatu brzegu TLS (`renew-tls`)
+
+`prepare` wystawia CA i certyfikat `localhost` na 14 dni. Root, który żyje dłużej (sklep demo i stagingu na :4300),
+odnawia się przed `notAfter`, bez ruszania sklepów, baz, kluczy REST i forwarderów:
+
+```bash
+openssl x509 -in "$TASK_ROOT/secrets/ca.pem" -noout -enddate      # kiedy wygasa
+node "$TOOLS/operator.mjs" renew-tls "$TASK_ROOT" 825              # liczba dni, najwyżej 825
+```
+
+- Nowe CA ma ten sam klucz (`secrets/ca.key`) i ten sam podmiot, nowy certyfikat ten sam klucz `secrets/tls.key`.
+  Pliki są sprawdzane (łańcuch, `localhost`/`127.0.0.1`, ważność) przed podmianą. Stare zostają obok jako
+  `<plik>.superseded-NN`, razem z poprzednim `woo-store-bindings.private.json`.
+- Zmieniają się bajty CA, więc i jego sha256: `woo-store-bindings.private.json` dostaje nowy pin CA (piny kluczy
+  bez zmian). Restartuje się tylko kontener `tls`, potem handshake z nowym CA na każdym porcie z bindings.
+  Wynik: `TLS_RENEWED`, `ca_sha256`, `not_after`.
+- Każda kopia CA idzie za nowym pinem, zanim wydanie wystartuje ponownie. Demo: `tools/demo/demo.sh woo-ca`
+  (kopia CA i pin w `$DEMO_ROOT/private/woo/selection.json`, ten sam kanał, fixture i klucz importera, potem
+  `stop` + `start`). Kanał w bazie demo nie przechowuje CA, więc migawka `dynaminds_demo_snapshot` zostaje bez zmian.
+  Sterownik skali (`tools/scale/load/woo.mjs`) czyta bindings przy każdym biegu.
+- Do czasu wygaśnięcia starego CA działa jeszcze stary pin (ten sam klucz i podmiot), więc wydanie uruchomione
+  przed odnowieniem nie traci połączenia do restartu.
+- Cofnięcie: przywróć pliki `*.superseded-NN` w `secrets/` i bindings, potem restart `tls` i `demo.sh woo-ca`.
+- Przerwane odnowienie (proces zabity po podmianie plików, przed zapisem bindings): `renew-tls` odmawia z
+  `interrupted renewal` i nazwą generacji. Przywróć jej pliki `ca.pem`, `ca.srl`, `tls.csr`, `tls.pem` w `secrets/`
+  i uruchom `renew-tls` ponownie.
 
 ## Budżet
 
