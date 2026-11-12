@@ -80,8 +80,14 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  const text=(await read('server/catalog-stock-writer-coverage.ts')).toString('utf8'),roster=JSON.parse(text.match(/const SOURCE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]),native=JSON.parse(text.match(/const NATIVE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]);
  assert.equal(roster.length,43);assert.equal(native.length,3);const db=await read('server/db.ts'),current={path:'server/db.ts',sha256:hash(db),bytes:db.length};assert.deepEqual(roster.filter(row=>row.path==='server/db.ts'),[current]);assert.equal(text.split(JSON.stringify(current)).length,2);
  let historical=text;
+ // SourceUwagi3 re-pinned domain.ts and wms-lots.ts (Uwagi v3 lanes, migrations 265–268) after Source269 and added its
+ // comment; both go first and return to their SourceOrderNumber / SourceOpening pins.
+ const sourceUwagi3Comment="// SourceUwagi3 re-pins domain.ts and wms-lots.ts after review (Uwagi v3 lanes, migrations 265\u2013268, neutral publication comment;\n// with 268 a new DEMO label takes over the cancelled shipments row):\n// order card stage/sections, invoice data, DEMO label at packing and automation events; a WMS order line edit releases or\n// resizes only that product's reservation layers/locations (no stock row write); no new stock-writer call or gate bypass.\n";
+ assert.equal(historical.split(sourceUwagi3Comment).length,2);historical=historical.replace(sourceUwagi3Comment,'');
+ const uwagi3Back={'server/domain.ts':{path:'server/domain.ts',sha256:'cff5ac7f6333e8ab47bd406abe05fc007e4cc4891d33434dd0e658a7a7126f2c',bytes:48283},'server/wms-lots.ts':{path:'server/wms-lots.ts',sha256:'dc86556aec0b6e73e7452e03ec4168344b197781c7c098a7912b92862ef84116',bytes:97981}};
+ for(const[path,back]of Object.entries(uwagi3Back)){const now=roster.find(r=>r.path===path);assert.notDeepEqual(now,back);assert.equal(historical.split(JSON.stringify(now)).length,2);historical=historical.replace(JSON.stringify(now),JSON.stringify(back));}
  // Source269 added the pin of server/order-warehouse-transfer.ts (a new writer front, not a re-pin) and its comment;
- // both go first.
+ // both go next.
  const source269Pin=roster.find(r=>r.path==='server/order-warehouse-transfer.ts');assert(source269Pin);
  assert.equal(historical.split(','+JSON.stringify(source269Pin)).length,2);historical=historical.replace(','+JSON.stringify(source269Pin),'');
  const source269Comment="// Source269 adds server/order-warehouse-transfer.ts after review: \"Zmie\u0144 magazyn\" and the rule effect assign_warehouse admit the\n// order like a reservation edit (catalog lock, inventory policies of both warehouses, LINE_BLOCKERS, WMS lots off) and call\n// only the owner function order_warehouse269_transfer (269 SQL), whose one transaction returns stock.reserved and the location\n// rows in the old warehouse and reserves the same quantities (stock, reservations, free bins) in the new; no other stock write.\n";
@@ -95,12 +101,12 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  assert.equal(historical.split(sourceDbErrorsComment).length,2);historical=historical.replace(sourceDbErrorsComment,'');
  // SourceOrderNumber re-pinned domain.ts (createOrder redraws a taken order number under a savepoint) and added its
  // comment, which goes first; domain.ts returns to its Source246 pin.
- const source246Domain={path:'server/domain.ts',sha256:'4c81ee257911e5abfb3c56599a8519bd48180110957db24d603401d188b3e800',bytes:48209},domainOrderNumber=roster.find(r=>r.path==='server/domain.ts');
+ const source246Domain={path:'server/domain.ts',sha256:'4c81ee257911e5abfb3c56599a8519bd48180110957db24d603401d188b3e800',bytes:48209},domainOrderNumber=uwagi3Back['server/domain.ts'];
  assert.notDeepEqual(domainOrderNumber,source246Domain);assert.equal(historical.split(JSON.stringify(domainOrderNumber)).length,2);historical=historical.replace(JSON.stringify(domainOrderNumber),JSON.stringify(source246Domain));
  const sourceOrderNumberComment='// SourceOrderNumber re-pins domain.ts after review: createOrder runs its one orders INSERT through insertOrderWithNumberInTx,\n// which redraws a taken DE-<date>-<hex> number under a savepoint; no stock write, stock-writer call or gate bypass.\n';
  assert.equal(historical.split(sourceOrderNumberComment).length,2);historical=historical.replace(sourceOrderNumberComment,'');
  // SourceOpening re-pinned wms-lots.ts and added its comment, which goes first; wms-lots.ts returns to its Source250 pin.
- const source250WmsLots={path:'server/wms-lots.ts',sha256:'a74cc7d661bf552cb9cf08da2ce1ca66daad62b20ef3ca4b97aff2f11981ba5c',bytes:95861},wmsOpening=roster.find(r=>r.path==='server/wms-lots.ts');
+ const source250WmsLots={path:'server/wms-lots.ts',sha256:'a74cc7d661bf552cb9cf08da2ce1ca66daad62b20ef3ca4b97aff2f11981ba5c',bytes:95861},wmsOpening=uwagi3Back['server/wms-lots.ts'];
  assert.notDeepEqual(wmsOpening,source250WmsLots);assert.equal(historical.split(JSON.stringify(wmsOpening)).length,2);historical=historical.replace(JSON.stringify(wmsOpening),JSON.stringify(source250WmsLots));
  const sourceOpeningComment='// SourceOpening re-pins wms-lots.ts after review: the opening row cap is per plan (enterprise 200 000) and rows\n// without stock are locked and digested in SQL instead of loaded; no new stock write, stock-writer call or gate bypass.\n';
  assert.equal(historical.split(sourceOpeningComment).length,2);historical=historical.replace(sourceOpeningComment,'');
