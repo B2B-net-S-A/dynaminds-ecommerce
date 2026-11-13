@@ -1,9 +1,11 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { before, beforeEach, after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 import {
   calculateReplenishment,
   calculateReplenishmentForecast,
@@ -251,7 +253,7 @@ async function sale(items: Array<{ product_id: string; quantity: number }>) {
   );
 }
 async function dispatch(order: Row) {
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   const picks = (
     await pool.query(
       'SELECT p.sku,i.quantity FROM order_pick_items i JOIN products p ON (p.tenant_id,p.id)=(i.tenant_id,i.product_id) WHERE i.tenant_id=$1 AND i.order_id=$2 ORDER BY p.id',
@@ -261,7 +263,7 @@ async function dispatch(order: Row) {
   for (const p of picks)
     for (let n = 0; n < p.quantity; n++)
       await ok('/orders/' + order.id + '/scan', 'POST', { code: p.sku, location: 'A-01' });
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   return ok('/orders/' + order.id);
 }
@@ -270,7 +272,8 @@ async function journal(
   order: Row,
   values: Array<{ delta: number; kind: string; at: string }>,
 ) {
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     `INSERT INTO stock_movements(id,tenant_id,warehouse_id,product_id,order_id,delta,kind,created_at)
     SELECT gen_random_uuid(),$1::uuid,$2::uuid,$3::uuid,$4::uuid,x.delta,x.kind,x.at::timestamptz
     FROM jsonb_to_recordset($5::jsonb) x(delta integer,kind text,at text)`,
@@ -489,15 +492,18 @@ test('half-open grouped journal boundaries exclude manual/unsigned/other-warehou
     "INSERT INTO warehouses(id,tenant_id,name,code) VALUES($1,$2,'QA119 excluded warehouse',$3)",
     [wh2, tenant, randomUUID()],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand,reserved) VALUES($1,$2,$3,0,0)',
     [tenant, wh2, p.id],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     "INSERT INTO stock_movements(id,tenant_id,warehouse_id,product_id,order_id,delta,kind,created_at) VALUES(gen_random_uuid(),$1,$2,$3,$4,-91,'shipment',$5)",
     [tenant, wh2, p.id, order.id, from],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     "INSERT INTO stock_movements(id,tenant_id,warehouse_id,product_id,order_id,delta,kind,created_at) VALUES(gen_random_uuid(),$1,$2,$3,NULL,-92,'shipment',$4)",
     [tenant, warehouse, p.id, from],
   );

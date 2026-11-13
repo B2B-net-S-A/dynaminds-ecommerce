@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { pool } from '../server/db';
 import { returnAssistantFixture } from './return-assistant-fixture';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 
 /** Genuine OFF/ON commerce and issued RMA; catalog settings never seed stock directly. */
 export async function productCatalogFixture(app: FastifyInstance, on = false) {
@@ -34,7 +35,7 @@ export async function productCatalogFacts(tenant: string) {
       assert.match(name, /^[a-z_][a-z0-9_]*$/);
       result[name] = (await c.query(`SELECT to_jsonb(x) row FROM "${name}" x WHERE tenant_id=$1 ORDER BY 1`, [tenant])).rows;
     }
-    await c.query('COMMIT'); return result;
+    await c.query('COMMIT'); return withoutApiKeyLastUse(result);
   } finally { await c.query('ROLLBACK').catch(() => undefined); c.release(); }
 }
 export const productCatalogSettings = (f: any, extra: any = {}) => ({

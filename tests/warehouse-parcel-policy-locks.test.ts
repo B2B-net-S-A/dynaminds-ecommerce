@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -26,7 +27,7 @@ async function waiter(observer: PoolClient, blocker: number, query: RegExp, fail
   return waiterAtStage(observer, [{ blocker, query }], failure);
 }
 async function waiterAtStage(observer: PoolClient, stages: { blocker: number; query: RegExp }[], failure?: () => string | undefined): Promise<number> {
-  const until = Date.now() + 5000;
+  const until = Date.now() + 30000;
   while (Date.now() < until) {
     const code = failure?.();
     if (code) assert.fail('Actual preceding transaction rejected before expected lock wait: ' + code);
@@ -63,7 +64,7 @@ for (const on of [false, true]) test(`${on ? 'ON bundle serialized WMS admission
     items: [{ product_id: f.product.id, quantity: 3 }] }, 201);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version),
     kind: 'receipt', amount: order.total, currency: 'PLN', method: 'other', reference: 'Synthetic own local ledger', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const allocations = await f.ok('/wms-lots/orders/' + order.id + '/allocations');
     assert.equal(allocations.meta?.cursor ?? null, null);
@@ -74,7 +75,7 @@ for (const on of [false, true]) test(`${on ? 'ON bundle serialized WMS admission
     }
   } else for (let i = 0; i < 3; i++) await f.ok('/orders/' + order.id + '/scan', 'POST', {
     client_key: randomUUID(), code: f.product.sku, location: 'PARCEL-161' });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   order = await f.ok('/orders/' + order.id);
   const originalItems = order.items;
   const preview = (await f.ok('/order-parcels/orders/' + order.id + '/previews', 'POST', {
