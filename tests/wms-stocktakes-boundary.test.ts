@@ -115,6 +115,9 @@ test('10000 physical lot-bin lines paginate without omission; 10001 scope and 10
   // Direct fixture construction redistributes one existing layer and preserves exact quantity/journal.
   // This is a synthetic test setup, not proof of an API bin-move batch or SaaS capacity.
   await tenantTx(tenant, async (c) => {
+    // Fixture only: 10000 rows per statement pass per-row warehouse policy guards (~5-13 ms per row,
+    // 13.11.2026) and exceeded the ordinary 8 s statement_timeout on CI. The code under test keeps 8 s.
+    await c.query("SET LOCAL statement_timeout='120s'");
     const operation = randomUUID();
     await c.query(
       `INSERT INTO wms_operations(id,tenant_id,actor_id,client_key,request_hash,kind,source,policy_version,request,result)

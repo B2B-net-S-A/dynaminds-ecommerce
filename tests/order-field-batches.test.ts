@@ -157,12 +157,19 @@ after(async () => {
   await pool.end();
 });
 async function orders(n = 1) {
-  return (
-    await pool.query(
-      "INSERT INTO orders(id,tenant_id,number,customer_name,email,warehouse_id,total,portal_token) SELECT gen_random_uuid(),$1,'BATCH-'||g,'CSV customer','csv@example.test',$2,1000,gen_random_uuid()::text FROM generate_series(1,$3)g RETURNING id,number,version::float8 version",
-      [tenant, warehouse, n],
-    )
-  ).rows;
+  // Each order row runs the warehouse policy guards twice (~5 ms per row, 13.11.2026), so 5000 rows
+  // in one statement passed the 8 s statement_timeout. Batches of 250 keep every trigger.
+  const rows = [];
+  for (let from = 1; from <= n; from += 250)
+    rows.push(
+      ...(
+        await pool.query(
+          "INSERT INTO orders(id,tenant_id,number,customer_name,email,warehouse_id,total,portal_token) SELECT gen_random_uuid(),$1,'BATCH-'||g,'CSV customer','csv@example.test',$2,1000,gen_random_uuid()::text FROM generate_series($3::int,$4::int)g RETURNING id,number,version::float8 version",
+          [tenant, warehouse, from, Math.min(n, from + 249)],
+        )
+      ).rows,
+    );
+  return rows;
 }
 async function field(type = 'text', extra: any = {}) {
   return ok(
