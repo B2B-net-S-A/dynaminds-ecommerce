@@ -76,8 +76,12 @@ export async function writeLabelShipmentInTx(c: PoolClient, target: string | nul
   return target;
 }
 
-/** Labels that a new label replaced after "Anuluj etykietę" (migration 268), oldest first, for the order card. */
+/**
+ * Labels that a new label replaced after "Anuluj etykietę" (migration 268), oldest first, for the order card.
+ * A database before 268 (a restored older copy, a migration test) has no replaced labels.
+ */
 export async function replacedLabelsInTx(c: PoolClient, orderId: string) {
+  if (!(await c.query("SELECT to_regclass('public.shipment268_replaced_labels') present")).rows[0].present) return [];
   return (
     await c.query<{ carrier: string; tracking_number: string; label_created_at: Date; replaced_at: Date; replaced_by: string }>(
       "SELECT carrier,tracking_number,label_created_at,replaced_at,replaced_by FROM shipment268_replaced_labels WHERE order_id=$1 AND tenant_id=nullif(current_setting('app.tenant_id',true),'')::uuid ORDER BY replaced_at,id",

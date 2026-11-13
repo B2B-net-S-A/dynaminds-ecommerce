@@ -50,7 +50,6 @@ test('stock identity lookup preserves full-tenant inactive/bundle ambiguity, dis
   const tenant = randomUUID(),
     warehouse = randomUUID();
   const user = (await pool.query("SELECT id FROM users WHERE email='admin@demo.local'")).rows[0].id;
-  const otherBefore = await snapshot(DEMO_TENANT);
   await pool.query(
     "INSERT INTO tenants(id,name,plan) VALUES($1,'Own identity lookup safety','enterprise')",
     [tenant],
@@ -81,6 +80,9 @@ test('stock identity lookup preserves full-tenant inactive/bundle ambiguity, dis
   const switched = await req('/workspaces/switch', 'POST', { tenant_id: tenant });
   assert.equal(switched.statusCode, 200);
   cookie = String(switched.headers['set-cookie']).split(';')[0];
+  // Since 237 the fixture's own sign-in is recorded in the demo tenant's login history
+  // (auth237_login_events); the guarded effects are those of the stock work that follows.
+  const otherBefore = await snapshot(DEMO_TENANT);
   async function api(path: string, method: any = 'GET', payload?: any, status = 200): Promise<Row> {
     const response = await req(path, method, payload);
     assert.equal(response.statusCode, status, `${method} ${path}: ${response.body.slice(0, 500)}`);

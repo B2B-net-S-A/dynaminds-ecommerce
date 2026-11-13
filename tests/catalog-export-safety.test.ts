@@ -9,6 +9,7 @@ import { migrate, pool } from '../server/db';
 import { seed, SECOND_TENANT } from './fixtures';
 import { publicApiDocument } from '../server/developer-api';
 import { withHistoricalCatalogModules } from './catalog-export-historical-fixture';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 import {
   CATALOG_EXPORT_LIMITS,
   CATALOG_EXPORT_TEMP_DIR,
@@ -173,7 +174,7 @@ async function snapshot(excludeMembershipUsage = false) {
       )
     ).rows;
   }
-  return rows;
+  return withoutApiKeyLastUse(rows);
 }
 async function waitOnProductRead(holder: PoolClient) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid;

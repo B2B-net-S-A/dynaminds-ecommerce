@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool } from '../server/db';
 import { seed } from './fixtures';
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { sourceCatalogStockControl, previewCatalogStockControl, commitCatalogStockControl } from '../server/catalog-stock-control';
 import type { CatalogStockControlWarehouse } from '../server/catalog-stock-control-schema';
 import { bootstrap151169, install152169, fixture169, facts169, own169, raw169,
@@ -59,7 +60,7 @@ async function packed(on: boolean) {
   assert.equal(order.items.length, 2); assert.equal(new Set(order.items.map((x: Row) => x.id)).size, 2);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version),
     kind: 'receipt', amount: 4401, currency: 'PLN', method: 'other', reference: 'Own local declaration', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const page = await f.ok('/wms-lots/orders/' + order.id + '/allocations');
     assert.equal(page.meta.cursor, null); assert.equal(page.data.length, 3);
@@ -72,7 +73,7 @@ async function packed(on: boolean) {
   } else for (let n = 0; n < 3; n++) await f.ok('/orders/' + order.id + '/scan', 'POST', {
     client_key: randomUUID(), code: product.sku, location: 'A-01',
   });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   order = await f.ok('/orders/' + order.id);
   return { ...f, product, order };
 }
@@ -269,20 +270,20 @@ test('strict OFF legacy return_received completes outer order transition before 
   let f = await packed(false);
   await f.ok('/orders/' + f.order.id + '/ship-demo', 'POST', {});
   await activate(f);
-  await f.ok('/orders/' + f.order.id + '/status', 'PATCH', { status: 'return_initiated' });
+  await f.ok('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_initiated' }));
   f = { ...f, order: await f.ok('/orders/' + f.order.id) };
   const rma = await f.ok('/returns/' + one(f.order.returns.cases).id);
   assert.equal(rma.legacy, true); assert.equal(rma.state, 'requested');
   const actual: Fixture = { ...f, rma };
   const beforeRows = await facts169();
-  const result = await f.ok('/orders/' + f.order.id + '/status', 'PATCH', { status: 'return_received' });
+  const result = await f.ok('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' }));
   assert.equal(result.status, 'return_received');
   const accepted = await facts169(), graph = physicalGraph(beforeRows, accepted, actual, 3, 'legacy_status');
   assert.equal(graph.receipt.exchange_id, null); assert.equal(graph.receipt.parcel_receipt_return_id, null);
   assert.equal(one(own169(accepted, 'return_cases', f.tenant)).legacy, true);
   assert.equal(one(own169(accepted, 'return_cases', f.tenant)).refund_amount, 4401);
   assert.equal(one(own169(accepted, 'stock', f.tenant).filter(x => x.product_id === f.product.id && x.warehouse_id === f.warehouse.id)).reserved, 0);
-  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', { status: 'return_received' })).statusCode, 409);
+  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' }))).statusCode, 409);
   assert.deepEqual(await facts169(), accepted, 'Legacy same-status refusal adds no movement, credit, counter or transition event');
   assert.equal((await f.ok('/orders/' + f.order.id)).status, 'return_received');
   assert.deepEqual(await facts169(), accepted, 'Historical GET preserves accepted graph');
