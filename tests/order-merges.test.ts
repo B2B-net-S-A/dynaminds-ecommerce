@@ -601,7 +601,9 @@ test('an active merged owner can merge again with financial entries counted once
 
 test(
   'one hundred actual selected orders have complete pages and one hundred one is rejected without a partial merge',
-  { timeout: 120000 },
+  // Hang guard only: 100 orders created one by one over HTTP took 232 s locally on 13.11.2026
+  // (120 s cut it off on CI with two files at once).
+  { timeout: 600000 },
   async () => {
     const p = await product({ quantity: 200 }),
       orders: Row[] = [];

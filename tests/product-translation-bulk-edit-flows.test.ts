@@ -350,9 +350,11 @@ const applyProvider = (f: Awaited<ReturnType<typeof ready>>) =>
           texts: f.drafts.map((draft_id) => ({ draft_id, ...reviewed })),
         });
 
+// Hang guards only: on a fresh ungated test database these flows took 10-28 s each locally
+// (13.11.2026) and up to 17 s on CI, so 20 s cut the Shopify reconciliation off.
 test(
   'AI, DeepL single and batch replace manual provenance only through a fresh real apply; old applied replay never restores provider text',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     for (const source of ['AI', 'DeepL', 'DeepL batch'] as Provider[]) {
       let p = await product();
@@ -414,7 +416,7 @@ test(
 );
 test(
   'ready provider drafts lose their source CAS after manual writes and a mixed patch/remove/NOP preserves sales and all previous receipts',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     for (const source of ['AI', 'DeepL', 'DeepL batch'] as Provider[]) {
       let p = await product(),
@@ -605,7 +607,7 @@ async function work(plan: any) {
 }
 test(
   'manual receipt can preview Shopify but a later local write blocks an already queued fresh plan before any remote mutation',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await shopifyFixture(),
       plan = await publication(f);
@@ -633,7 +635,7 @@ test(
 );
 test(
   'lost Shopify response reconciles the immutable old manual spec after locale removal using GET only',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await shopifyFixture(),
       t = await translation(f.p),

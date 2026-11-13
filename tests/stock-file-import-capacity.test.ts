@@ -28,10 +28,12 @@ after(async () => {
   }
 });
 const sha = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+// Like sessions, auth237_api_key_state is access telemetry: touchApiKey (server/api-key-rotation.ts) stamps
+// the key's last use once a minute, and reading all 80 preview pages takes longer than that.
 async function snapshot(tenant: string): Promise<Row> {
   const names = (
     await pool.query(
-      "SELECT c.table_name FROM information_schema.columns c JOIN information_schema.tables t USING(table_schema,table_name) WHERE c.table_schema='public' AND c.column_name='tenant_id' AND t.table_type='BASE TABLE' AND c.table_name<>'sessions' ORDER BY 1",
+      "SELECT c.table_name FROM information_schema.columns c JOIN information_schema.tables t USING(table_schema,table_name) WHERE c.table_schema='public' AND c.column_name='tenant_id' AND t.table_type='BASE TABLE' AND c.table_name NOT IN('sessions','auth237_api_key_state') ORDER BY 1",
     )
   ).rows;
   const result: Row = {};
@@ -67,6 +69,9 @@ test('stock file public API executes and replays 500 source products across 8 wa
   const owner = await pool.connect();
   try {
     await owner.query('BEGIN');
+    // Fixture only: 4000 stock rows in one statement pass per-row warehouse policy guards (~13 ms per
+    // row, 13.11.2026) and exceeded the ordinary 8 s statement_timeout on CI. The API under test keeps 8 s.
+    await owner.query("SET LOCAL statement_timeout='120s'");
     await owner.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
     await owner.query('SELECT purchasing_source_admit()');
     await owner.query(

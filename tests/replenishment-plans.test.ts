@@ -728,7 +728,8 @@ test('one conflict blocks all draft effects; unknown cost blocks purchase but al
 
 test(
   'actual 500 rows are complete across pages and split deterministically into 200/200/100 draft lines',
-  { timeout: 120000 },
+  // Hang guard only: one HTTP policy per product (500 requests) took 280 s locally on 13.11.2026.
+  { timeout: 900000 },
   async () => {
     const ids = Array.from({ length: 500 }, () => randomUUID()).sort();
     await pool.query(
@@ -813,7 +814,8 @@ test(
 
 test(
   'actual 201 rows split into 200+1 with complete receipts, exact replay and stock-free NOP',
-  { timeout: 120000 },
+  // Hang guard only: 201 HTTP policies; 120 s cut it off locally on 13.11.2026 (500 of them took 280 s).
+  { timeout: 600000 },
   async () => {
     const ids = Array.from({ length: 201 }, () => randomUUID()).sort();
     await pool.query(

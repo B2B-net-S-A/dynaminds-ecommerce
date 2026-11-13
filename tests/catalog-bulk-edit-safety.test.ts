@@ -155,7 +155,9 @@ async function snapshot(tables = [...businessTables, ...evidenceTables]) {
 }
 async function waitOn(holder: PoolClient, kind: 'catalog' | 'product') {
   const holderId = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid;
-  const deadline = Date.now() + 2500;
+  // Deadline to reach the wait, not part of it: on an ungated test database the request runs schema
+  // validators first, and 2.5 s missed the wait once in three local runs on 13.11.2026.
+  const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
     const r = await pool.query(
       "SELECT pid,query FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))",
@@ -208,9 +210,11 @@ async function rule() {
   );
 }
 
+// Hang guards only: under local load (13.11.2026) a lock-wait test here took longer than 20 s and,
+// cancelled half-way, left the admin downgraded for the next test; 120 s matches the other db files.
 test(
   'preview waits on the real catalog lock; administrator downgrade commits first and creates no evidence',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       body = input([p]),
@@ -241,7 +245,7 @@ test(
 
 test(
   'execute waits on the actual product row before current-role authorization and leaves no partial writes',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const products = [await product(), await product()],
       p = await preview(input(products)),
@@ -272,7 +276,7 @@ test(
 
 test(
   'canonical JSON retries survive jsonb key order; actor and payload mismatches cannot reuse consent',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       body = input([p], { attributes: { Zebra: 'last', Alpha: 'first' }, category: 'Canonical' });
@@ -331,7 +335,7 @@ test(
 
 test(
   'one stale row rejects an otherwise writable batch atomically including audit and rule jobs',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const products = [await product(), await product(), await product()];
     await rule();
@@ -345,7 +349,7 @@ test(
 
 test(
   'changed future-rule configuration and full rule queue reject the complete batch without effects',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const products = [await product(), await product()],
       r = await rule(),
@@ -383,7 +387,7 @@ test(
 
 test(
   'unchanged replacement fields keep versions, audit and jobs unchanged even with an enabled future rule',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const p = await product();
     await rule();
@@ -406,7 +410,7 @@ test(
 
 test(
   'descriptive edits preserve stock, reserved orders, listings, variants and inactive historical bundle components',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const component = await product(),
       group = await product({ kind: 'group', quantity: 0 }),
@@ -472,7 +476,7 @@ test(
 
 test(
   'SQL evidence rejects terminal tampering and foreign product bindings and hides every table through RLS',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       plan = await preview(input([p]));
@@ -534,7 +538,7 @@ test(
 
 test(
   'selection refuses a mixed foreign scope; viewer cannot mutate and public keys need read plus write',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       foreign = (
@@ -599,7 +603,7 @@ test(
 
 test(
   'revoked, expired or scope-reduced API keys fail after the real product wait with no evidence or catalogue effects',
-  { timeout: 30000 },
+  { timeout: 120000 },
   async () => {
     for (const change of ['revoke', 'scope', 'expire']) {
       const p = await product(),
@@ -656,7 +660,9 @@ test(
 
 test(
   'bounded Unicode request returns 413 before preview creation and readonly or missing082 gates precede parsing',
-  { timeout: 30000 },
+  // Two extra buildApp calls, the second after table renames that change pg_catalog, so every schema
+  // guard runs uncached: 33 s locally on 13.11.2026 (30 s cut it off on CI). Hang guard only.
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       body = input([p], { description: '🧵'.repeat(200000) }),

@@ -874,7 +874,9 @@ test(
 );
 test(
   'viewer and incomplete scopes cannot approve; read-only and missing copies reject before JSON parse',
-  { timeout: 20000 },
+  // Builds read-only and missing-copy apps; renamed tables change pg_catalog, so every schema guard
+  // runs uncached: 34 s locally on 13.11.2026 (20 s cut it off on CI). Hang guard only.
+  { timeout: 120000 },
   async () => {
     const p = await product(),
       body = await matrix([p]),

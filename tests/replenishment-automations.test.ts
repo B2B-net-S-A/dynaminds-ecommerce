@@ -476,7 +476,8 @@ test('121 forecast uses existing engine and optional config stays frozen', async
 });
 test(
   '121 full 500 product scope, 501 rejection and one statement one run',
-  { timeout: 120000 },
+  // Hang guard only: one HTTP policy per product (500 requests); 120 s cut it off locally on 13.11.2026.
+  { timeout: 900000 },
   async () => {
     const ps = (
       await pool.query(
