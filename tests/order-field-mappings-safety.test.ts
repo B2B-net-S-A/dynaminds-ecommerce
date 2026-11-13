@@ -340,7 +340,9 @@ async function snapshot(tenant: string, all = false) {
   return evidence;
 }
 async function waitOn(pid: number, count = 1) {
-  const deadline = Date.now() + 5000;
+  // Deadline to reach the wait, not part of it: on an ungated test database the request runs schema
+  // validators first, and 5 s missed the wait once in three local runs on 13.11.2026.
+  const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
     const rows = (
       await pool.query(
@@ -369,6 +371,9 @@ async function withdraw(tenant: string, role = 'viewer') {
     c.release();
   }
 }
+// Hang guards only. On a fresh ungated test database every tenantTx runs the full schema validators;
+// 13.11.2026 locally these tests took 4-55 s each (CI with two files at once: up to 52 s), so the former
+// 15-20 s limits cut them off. 120 s keeps a hung lock wait visible well before the 45 min file limit.
 async function claim(execution: string) {
   const r = await pool.query(
     "UPDATE jobs SET state='running',lease_token=$2,locked_at=now(),attempts=attempts+1 WHERE kind='order.fields.mapping' AND payload->>'execution_id'=$1 RETURNING *",
@@ -380,7 +385,7 @@ async function claim(execution: string) {
 
 test(
   'mapped initial import waits on actual catalogue without membership lock; downgrade rejects even no-op plans without diagnostic writes',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     for (const missing of [false, true]) {
       const f = await fixture(missing ? 'skip' : 'error'),
@@ -417,7 +422,7 @@ test(
 
 test(
   'ordinary import is not retroactively opted into a profile; exact mapped replay preserves initial receipt and commerce',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       source = (await f.stage([f.raw()]))[0],
@@ -478,7 +483,7 @@ test(
 
 test(
   'profile approving admin may be withdrawn during catalogue wait while executing admin remains authorized',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       executor = (await pool.query("SELECT id FROM users WHERE email='other@demo.local'")).rows[0]
@@ -564,7 +569,7 @@ test(
 
 test(
   'queue waits on the last of 100 existing orders before grants and withdrawn admin admits no execution',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       sources = await f.importedSources(100),
@@ -596,7 +601,7 @@ test(
 
 test(
   'worker final grant after actual order wait rejects all 100 field and financial changes',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       sources = await f.importedSources(100),
@@ -675,7 +680,7 @@ test(
 
 test(
   'reconcile order wait does not lock inbound first: source-example staging may commit on held order',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       sources = await f.importedSources(),
@@ -720,7 +725,7 @@ test(
 
 test(
   'source-payment provider GET with and without approved auto apply never executes a mapping',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     for (const automatic of [false, true]) {
       const f = await fixture(),
@@ -816,7 +821,7 @@ test(
 
 test(
   'public mapping configuration and import require separate scopes; orders-write source label cannot opt into channel profile',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       profile = (
@@ -909,7 +914,7 @@ test(
 
 test(
   'SQL failure on the final selected order rolls back previous 99 local applications',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       sources = await f.importedSources(100),
@@ -961,7 +966,7 @@ test(
 
 test(
   'source A to B to A, connection change, profile revision and definition revision invalidate initial consent',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     for (const change of ['epoch', 'connection', 'profile', 'definition']) {
       const f = await fixture(),
@@ -1120,7 +1125,7 @@ test('direct SQL cannot cross tenant/profile/preview scope or rewrite source, re
 
 test(
   'Shopify OAuth shared admission observes a queued exclusive writer before acquiring any inbound lock',
-  { timeout: 15000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       source = (await f.stage([f.raw()]))[0],

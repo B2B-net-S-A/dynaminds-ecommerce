@@ -645,7 +645,9 @@ test(
 
 test(
   'older copies allow omitted legacy edits and return incomplete defaults while explicit logistics writes fail closed',
-  { timeout: 20000 },
+  // The renamed table changes pg_catalog, so the second buildApp runs every schema guard uncached:
+  // 40 s locally on 13.11.2026 (20 s cut it off on CI). Hang guard only.
+  { timeout: 120000 },
   async () => {
     const p = await product({ weight_grams: 100 });
     const order = await ok(

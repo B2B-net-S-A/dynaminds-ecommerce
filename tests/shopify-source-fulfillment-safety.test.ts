@@ -158,7 +158,9 @@ async function snapshot() {
 }
 async function waitOn(holder: PoolClient, pattern: RegExp) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid;
-  const until = Date.now() + 3500;
+  // Deadline to reach the wait, not part of it: on an ungated test database the request runs schema
+  // validators first, and 3.5 s missed the wait in 2 of 4 tests locally on 13.11.2026.
+  const until = Date.now() + 30000;
   while (Date.now() < until) {
     const waits = (
       await pool.query(
