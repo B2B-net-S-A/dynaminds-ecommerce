@@ -96,7 +96,7 @@ function graph(beforeRows: Facts, afterRows: Facts, scope: Scope, protocol: 'rma
     ['catalog_stock_control_series', 1],
     ['catalog_stock_control_effect_admissions', 1], ['catalog_stock_control_effects', 1],
     ['catalog_stock_control_effect_journals', 2], ['stock_movements', 1], ['stock_location_movements', 1],
-    ['purchasing_stock_changes', 2], ['order_events', 1], ['jobs', 1],
+    ['purchasing_stock_changes', 2], ['order_events', 1],
     ['audit_events', protocol === 'dropship_supplier' ? 2 : 1],
     [protocol === 'dropship_supplier' ? 'b2b_dropship_return_proofs' : 'b2b_return_local_proofs', 1],
   ]);
@@ -183,9 +183,8 @@ function graph(beforeRows: Facts, afterRows: Facts, scope: Scope, protocol: 'rma
   assert.deepEqual(journals.map(j => j.journal_id).sort(), [stockMovement.id, binMovement.id].sort());
   const event = one(appended(beforeRows, afterRows, 'order_events'));
   assert.equal(event.order_id, order_id); assert.equal(event.kind, 'return.received'); assert.equal(event.detail.return_id, return_id);
-  const job = one(appended(beforeRows, afterRows, 'jobs'));
-  assert.equal(job.kind, 'automation'); assert.equal(job.state, 'pending'); assert.equal(job.payload.eventId, event.id);
-  assert.equal(job.payload.orderId, order_id); assert.equal(job.payload.trigger, 'return.received'); assert.deepEqual(job.payload.rules, []);
+  // An empty frozen rule list queues no automation job (server/events.ts), so jobs stays literally unchanged.
+  assert.deepEqual(afterRows.jobs, beforeRows.jobs);
   const audits = appended(beforeRows, afterRows, 'audit_events');
   assert.equal(audits.filter(r => r.action === 'return.received' && r.entity_id === return_id).length, 1);
   return { receipt, doc, admission, audits };

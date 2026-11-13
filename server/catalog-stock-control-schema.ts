@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 export const CATALOG_STOCK_CONTROL_LIMITS = { warehouses:100, rows:10000, page:100, history:50, previews:2000, operations:2000, tenant_bytes:134217728, export_bytes:8388608, preview_ttl_seconds:900 } as const;
 export const catalogStockControlUuid=z.uuid().transform(v=>v.toLowerCase());
-export const catalogStockControlVersion=z.string().regex(/^(0|[1-9][0-9]{0,18})$/).refine(v=>BigInt(v)<9223372036854775807n);
+// abort: zod 4 runs the refine after a failed regex, and BigInt('1.0') throws instead of refusing.
+export const catalogStockControlVersion=z.string().regex(/^(0|[1-9][0-9]{0,18})$/,{abort:true}).refine(v=>BigInt(v)<9223372036854775807n);
 const versions=z.array(z.strictObject({warehouse_id:catalogStockControlUuid,version:catalogStockControlVersion})).max(100).refine(v=>new Set(v.map(x=>x.warehouse_id)).size===v.length);
 export const catalogStockControlPreviewInput=z.strictObject({client_key:catalogStockControlUuid,catalog_version:catalogStockControlVersion,policy_version:catalogStockControlVersion,warehouse_policy_versions:versions,series_versions:versions});
 export const catalogStockControlCommitInput=z.strictObject({client_key:catalogStockControlUuid,scope_hash:z.string().regex(/^[a-f0-9]{64}$/),confirmed:z.literal(true)});

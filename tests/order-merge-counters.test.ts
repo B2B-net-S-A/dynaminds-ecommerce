@@ -173,6 +173,17 @@ test('additive145 preserves every old full row, custody issuer OID/owner/ACL/dep
   assert.notEqual(issuerAfter, issuerBefore); assert(issuerAfter.includes('consumed_quantity') && issuerAfter.includes('released_quantity'));
 });
 
+// Merging itself needs the current schema (orderMergesAvailable asks for 209's delivery inheritance), so the
+// behaviour tests below run with every later migration installed over the genuine 144+145 rows.
+test('every later migration installs over the genuine 145 rows', async () => {
+  await app.close();
+  await pool.query("INSERT INTO migrations(name) VALUES('145_order_merge_counters')");
+  const { migrate } = await import('../server/db');
+  await migrate();
+  const { buildApp } = await import('../server/app');
+  app = await buildApp({ integrationTransport: async () => { transportCalls++; throw Error('No provider in merge counter test'); } });
+});
+
 for (const on of [false, true]) for (const mode of ['technical_merge', 'into_main_order']) {
   test(`145 ${on ? 'ON' : 'OFF'} ${mode}: exact counter/full-row proof, shared target aggregation and immutable replay`, async () => {
     const p = await product(); if (on) await opening(p);

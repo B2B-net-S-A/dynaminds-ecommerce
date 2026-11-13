@@ -27,11 +27,13 @@ test('152 migration retains every nonempty151 global physical/commercial/session
   assert.equal(raw169(migrationAfter,'migrations').filter(r=>r.name==='152_catalog_stock_control').length,1);
   physicalExact169(migrationBefore,migrationAfter);
   const newNames=Object.keys(migrationAfter).filter(n=>!Object.hasOwn(migrationBefore,n));
-  assert.equal(newNames.length,31);
-  assert.equal(newNames.filter(n=>n.startsWith('catalog_stock_control_')).length,13);
+  // The sealed 152 SQL: 14 control tables (with catalog_stock_control_xid_claims), 8 return, 10 count, 3 legacy group.
+  assert.equal(newNames.length,35);
+  assert.equal(newNames.filter(n=>n.startsWith('catalog_stock_control_')).length,14);
   assert.equal(newNames.filter(n=>n.startsWith('catalog_stock_return_')).length,8);
   assert.equal(newNames.filter(n=>n.startsWith('catalog_stock_count_')).length,10);
-  assert(newNames.every(n=>n.startsWith('catalog_stock_control_')||n.startsWith('catalog_stock_return_')||n.startsWith('catalog_stock_count_')));
+  assert.equal(newNames.filter(n=>n.startsWith('catalog_stock_legacy_group_')).length,3);
+  assert(newNames.every(n=>n.startsWith('catalog_stock_control_')||n.startsWith('catalog_stock_return_')||n.startsWith('catalog_stock_count_')||n.startsWith('catalog_stock_legacy_group_')));
   for(const n of newNames) assert.equal(migrationAfter[n].length,n.endsWith('_manifest')?1:0,'No BO for historic activity: '+n);
   assert(raw169(migrationBefore,'wms_cost_layers').some(l=>l.unit_cost_minor===null));
 });
