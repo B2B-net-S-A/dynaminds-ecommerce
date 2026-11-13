@@ -453,6 +453,7 @@ import type {BusinessQuotaRecoveryPort} from './large-import/business-quota-reco
 
 import {bindOrdinaryConnectorTransport} from './ordinary-connector-routing';
 import {statementCancelResponse} from './statement-cancel';
+import {INCOMPLETE_MODULE_DETAIL,incompleteModuleGuardError} from './guard-verdict-errors';
 import {DB_UNAVAILABLE_DETAIL,dbConnectionErrors,isDbConnectionLoss} from './db-connection-errors';
 import { CANCELLED_SHIPMENT, orderFulfilmentStageSql } from './order-stage';
 import { registerOrderEventRoutes } from './order-event-routes';
@@ -849,6 +850,12 @@ export async function buildApp({
       detail = canceled.detail;
       app.log.warn({ code: '57014', reason: canceled.reason, message: (err as Error).message,
         where: (err as { where?: unknown }).where, requestId: req.id }, 'Statement canceled');
+    } else if (incompleteModuleGuardError(err)) {
+      // A guard_verdict() that cannot run (a module it checks is missing or torn) refuses like a false verdict.
+      status = 503;
+      detail = INCOMPLETE_MODULE_DETAIL;
+      app.log.warn({ code: (err as { code?: unknown }).code, message: (err as Error).message,
+        where: (err as { where?: unknown }).where, requestId: req.id }, 'Schema guard cannot run');
     } else if (isDbConnectionLoss(err)) {
       // The session died under the request (database restart, terminated backend) or no connection could be
       // opened: its transaction did not commit, the pool replaces the client and the client may retry.

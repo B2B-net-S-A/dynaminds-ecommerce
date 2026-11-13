@@ -575,7 +575,7 @@ test('source/PIM drift and exact-key collisions reject atomically rather than ch
   assert.deepEqual(await snapshot(),approved);
 });
 
-test('read-only source handlers deny malformed writes before parse and genuine missing110 leaves ordinary source replay and manual109 available',async()=>{
+test('read-only source handlers deny malformed writes before parse and genuine missing110 leaves ordinary source replay and manual109 available; a torn 110 table refuses startup',async()=>{
   const f = await setup(), p = await preview(f), response = await execute(p);
   assert.equal(response.statusCode,201,response.body);
   const order = response.json().order;
@@ -616,34 +616,15 @@ test('read-only source handlers deny malformed writes before parse and genuine m
     try { await legacy?.close(); }
     finally { await pool.query('ALTER FUNCTION '+renamed+'(uuid,uuid) RENAME TO b2b_external_import_certify'); }
   }
-  // A torn 110 table must not turn the independent, installed 109 manual path into a broken INSERT trigger.
+  // A torn 110 table cannot exist on a migrated database: pim_dictionary_valid() covers it, so the application does
+  // not start (503 incomplete PIM module) and nothing is written; the installed 109 manual path is not reachable torn.
   await pool.query('ALTER TABLE b2b_external_import_certificates RENAME TO b2b_external_import_certificates_own_unavailable');
-  let torn:Awaited<ReturnType<typeof buildApp>>|undefined;
   try {
-    torn = await buildApp({integrationTransport:transport.transport});
-    const unavailable = await request('/import-external-intent-previews/'+p.id,'GET',undefined,buyerCookie,torn);
-    assert.equal(unavailable.statusCode,503,unavailable.body);
-    const physical = await snapshot(true), itemId = randomUUID();
-    const created = await request('/b2b/external-order-intents/orders','POST',{
-      client_key:randomUUID(),
-      order:{customer_name:'Own manual109 after torn110',email:'manual109@example.test',
-        address:{street:'Own109 customer1',city:'Poznań',postal_code:'60-001',country:'PL'},
-        warehouse_id:buyerWarehouse,currency:'PLN',payment_mode:'cod',
-        items:[{customer_item_id:itemId,product_id:f.product.id,quantity:1}]},
-      allocations:[{customer_item_id:itemId,local_quantity:0,external_quantity:1,unassigned_quantity:0,link_id:f.link.id}],
-    },buyerCookie,torn);
-    assert.equal(created.statusCode,201,created.body);
-    const result = created.json();
-    assert(result.intent && result.order);
-    assert.notEqual(result.order.id,order.id);
-    assert.equal(result.order.total,29999);
-    assert.equal(result.intent.items[0].customer_item_id,itemId);
-    assert.equal(result.intent.items[0].local_quantity,0);
-    assert.equal(result.intent.items[0].external_quantity,1);
-    assert.equal(result.order.picking_items.length,0);
+    const physical = await snapshot(true);
+    await assert.rejects(() => buildApp({integrationTransport:transport.transport}),
+      (e:any) => e?.status===503 && /Niekompletny moduł PIM/.test(e.message));
     assert.deepEqual(await snapshot(true),physical);
   } finally {
-    try { await torn?.close(); }
-    finally { await pool.query('ALTER TABLE b2b_external_import_certificates_own_unavailable RENAME TO b2b_external_import_certificates'); }
+    await pool.query('ALTER TABLE b2b_external_import_certificates_own_unavailable RENAME TO b2b_external_import_certificates');
   }
 });

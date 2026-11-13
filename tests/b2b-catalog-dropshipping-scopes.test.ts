@@ -183,10 +183,11 @@ test('accepted legacy checkout replay and genuine cancellation survive a later s
   assert.equal(providerCalls, 0);
 });
 
-test('genuinely absent142 and144 retains historical source reads; partial144 still fails closed', async () => {
+// 142/143 (and 144) hidden while 152 is installed cannot exist on a migrated database: catalog_stock_control_guards()
+// calls product_catalog_guards() (42883 in guard_verdict), so the source reads are refused as an incomplete module (503)
+// and change nothing; with one 144 marker restored the module stays incomplete (503) as before.
+test('hidden 142/143/144 under an installed 152 refuses source reads as an incomplete module; partial144 still fails closed', async () => {
   const f = await fixture(false), before = await facts(f);
-  const original = await f.buyer.ok(f.path + '/sources/' + f.order.id);
-  const originalList = await f.buyer.ok(f.path + '/sources?limit=100');
   // Serial disposable fixture: keep all OIDs/rows/ACLs, hide complete modules
   // and disable only their birth guards. No business write runs while hidden.
   const c = await pool.connect(); let hidden = false;
@@ -214,8 +215,11 @@ test('genuinely absent142 and144 retains historical source reads; partial144 sti
     for (const column of runColumns) await c.query(`ALTER TABLE b2b_catalog_runs RENAME COLUMN ${ident(column.attname)} TO ${ident('qa159_hidden_' + column.attname)}`);
     await c.query('COMMIT'); hidden = true;
     await withHistoricalCatalogModules(pool, async () => {
-      assert.deepEqual(await f.buyer.ok(f.path + '/sources/' + f.order.id), original);
-      assert.deepEqual(await f.buyer.ok(f.path + '/sources?limit=100'), originalList);
+      for (const path of [f.path + '/sources/' + f.order.id, f.path + '/sources?limit=100']) {
+        const refused = await f.buyer.request(path);
+        assert.equal(refused.statusCode, 503, refused.body);
+        assert.match(refused.json().detail, /Niekompletny moduł/);
+      }
       // Restore exactly one marker, leaving the module incomplete. It must
       // never activate the unrestricted historical branch.
       const marker = functions.find(fn => fn.proname === 'b2b_catalog_scope_installed'); assert(marker);
