@@ -442,7 +442,7 @@ test('Odebrana rola administratora zatrzymuje PUT', async () => {
   try {
     const j = await claim(p.job_id);
     // The Allegro job authority refuses the withdrawn author before the status policy does.
-  await assert.rejects(() => processStatusWrite(j, ctx), /uprawnień|utracił rolę administratora/);
+    await assert.rejects(() => processStatusWrite(j, ctx), /uprawnień|utracił rolę administratora/);
     assert.equal(puts().length, 0);
   } finally {
     await pool.query("UPDATE memberships SET role='admin' WHERE tenant_id=$1 AND user_id=$2", [
