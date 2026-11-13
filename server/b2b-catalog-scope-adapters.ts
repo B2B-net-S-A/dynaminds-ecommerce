@@ -230,6 +230,11 @@ export async function assertB2BCatalogSourceSnapshotInTx(c: PoolClient, pair: B2
   ensure(snapshotMatches(pair, actual, snapshot), 409, 'Oferta lub zakres katalogu B2B zmieniły się');
 }
 
+function withoutAvailable<T>(value: T): T {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+  const { available: _available, ...rest } = value as Record<string, unknown>;
+  return rest as T;
+}
 function snapshotMatches(pair: B2BCatalogPair, actual: Record<string, unknown>, snapshot: unknown) {
   if (isDeepStrictEqual(actual, snapshot)) return true;
   // Existing unconfigured activity may have the original unstamped shape.
@@ -241,8 +246,11 @@ function snapshotMatches(pair: B2BCatalogPair, actual: Record<string, unknown>, 
 }
 
 /** Current persisted buyer items, exact remote source facts, and local pool.
- * One bounded supplier page validates the whole selection; no per-row reframe. */
-export async function assertB2BBuyerCatalogItemsInTx(c: PoolClient, pair: B2BCatalogPair, itemIds: unknown, requireLinked = true, allowLiveLegacyQuote = false) {
+ * One bounded supplier page validates the whole selection; no per-row reframe.
+ * liveAvailability (dropshipping: source product → physical quantity needed): the supplier's current available must
+ * cover it and is left out of the snapshot comparison; price, scope and every other snapshot field still match exactly. */
+export async function assertB2BBuyerCatalogItemsInTx(c: PoolClient, pair: B2BCatalogPair, itemIds: unknown, requireLinked = true, allowLiveLegacyQuote = false,
+  liveAvailability?: ReadonlyMap<string, number>) {
   const ids = selection.parse(itemIds), binding = pairs.get(pair);
   ensure(binding?.client === c && binding.txid === (await context(c, pair.buyer.tenant_id)).txid,
     409, 'Para B2B nie należy do bieżącej transakcji');
@@ -262,7 +270,11 @@ export async function assertB2BBuyerCatalogItemsInTx(c: PoolClient, pair: B2BCat
       const actual = { ...product, currency: page.currency,
         catalog_scope: { protocol: 'b2b_catalog_snapshot_v1', buyer: pair.buyer, supplier: pair.supplier } };
       const liveLegacyQuote = allowLiveLegacyQuote && pair.buyer.mode === 'legacy_default' && pair.supplier.mode === 'legacy_default';
-      ensure(product && (liveLegacyQuote || snapshotMatches(pair, actual, item.snapshot)), 409, 'Oferta lub zakres katalogu B2B zmieniły się');
+      ensure(product && (liveLegacyQuote || (liveAvailability
+        ? snapshotMatches(pair, withoutAvailable(actual), withoutAvailable(item.snapshot))
+        : snapshotMatches(pair, actual, item.snapshot))), 409, 'Oferta lub zakres katalogu B2B zmieniły się');
+      if (liveAvailability) ensure(Number(product.available) >= (liveAvailability.get(item.source_product_id) ?? 0),
+        409, 'Dostawca nie ma już wystarczającej dostępności');
     }
   } finally { await c.query("SELECT set_config('app.tenant_id',$1,true)", [pair.buyer.tenant_id]).catch(() => undefined); }
   return items;

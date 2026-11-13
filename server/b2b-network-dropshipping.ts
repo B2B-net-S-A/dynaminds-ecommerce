@@ -658,8 +658,9 @@ export async function createB2bDropshipQuote(
       'Dostawa obsługuje do 100 różnych produktów fizycznych',
     );
     const selectedMappings = [...new Set<string>(selected.flatMap(i => i.mappings.map(m => m.catalog_item_id)))];
+    // The supplier's available is checked live against the physical quantities; the rest of the offer snapshot exactly.
     if (pair) for (let offset = 0; offset < selectedMappings.length; offset += 500)
-      await assertB2BBuyerCatalogItemsInTx(c, pair, selectedMappings.slice(offset, offset + 500));
+      await assertB2BBuyerCatalogItemsInTx(c, pair, selectedMappings.slice(offset, offset + 500), true, false, supplierQuantities);
     const custody = (await c.query('SELECT b2b_dropship_custody_snapshot($1) snapshot', [s.o.id]))
       .rows[0].snapshot;
     const partner = await networkSource(c, l);
@@ -861,8 +862,10 @@ export async function checkoutB2bDropship(
         'Mapowanie dostawcy zmieniło się od wyceny',
       );
     const selectedMappings = [...new Set<string>(q.snapshot.mapping_snapshot.map((m: Row) => m.catalog_item.id))];
+    const frozenQuantities = new Map<string, number>(
+      q.snapshot.wholesale.items.map((i: Row) => [i.source_product_id, Number(i.quantity)]));
     if (pair) for (let offset = 0; offset < selectedMappings.length; offset += 500)
-      await assertB2BBuyerCatalogItemsInTx(c, pair, selectedMappings.slice(offset, offset + 500));
+      await assertB2BBuyerCatalogItemsInTx(c, pair, selectedMappings.slice(offset, offset + 500), true, false, frozenQuantities);
     ensure(
       isDeepStrictEqual(
         (await c.query('SELECT b2b_dropship_custody_snapshot($1) snapshot', [q.customer_order_id]))
