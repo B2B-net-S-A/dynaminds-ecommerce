@@ -9,6 +9,7 @@ import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
 import { CATALOG_EXPORT_TEMP_DIR } from '../server/catalog-export';
 import { openSalesReportFile } from '../server/sales-reports';
+import { apiKeyLineage } from './api-key-last-use';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -299,7 +300,8 @@ async function snapshot() {
         tenant,
       ])
     ).rows;
-    result[name] = createHash('sha256').update(JSON.stringify(rows)).digest('hex');
+    const facts = name === 'auth237_api_key_state' ? apiKeyLineage(rows) : rows;
+    result[name] = createHash('sha256').update(JSON.stringify(facts)).digest('hex');
   }
   return result;
 }

@@ -5,6 +5,7 @@ import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 import { returnAssistantFixture } from './return-assistant-fixture';
 import { returnAssistantQueueFixture } from './return-assistant-queues-fixture';
 
@@ -44,7 +45,7 @@ async function facts(tenant: string) {
       assert.match(name, /^[a-z_][a-z0-9_]*$/);
       rows[name] = (await c.query(`SELECT to_jsonb(q) row FROM "${name}" q WHERE tenant_id=$1 ORDER BY 1`, [tenant])).rows;
     }
-    await c.query('COMMIT'); return rows;
+    await c.query('COMMIT'); return withoutApiKeyLastUse(rows);
   } finally { await c.query('ROLLBACK').catch(() => undefined); c.release(); }
 }
 function unchangedBusiness(beforeRows: Record<string, Row[]>, afterRows: Record<string, Row[]>) {

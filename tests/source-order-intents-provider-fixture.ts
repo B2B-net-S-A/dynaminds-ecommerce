@@ -6,6 +6,7 @@ import { migrate, pool } from '../server/db';
 import type { Transport } from '../server/integrations';
 import { processB2bCatalog } from '../server/b2b-network';
 import { seed } from './fixtures';
+import { apiKeyLineage } from './api-key-last-use';
 
 type Row = Record<string, any>;
 type Actor = { tenant: string; user: string; warehouse: string; cookie: string };
@@ -276,9 +277,10 @@ export async function freshSourceIntentFixture(
             [selectedTenants],
           )
         ).rows;
+        const facts = name === 'auth237_api_key_state' ? apiKeyLineage(rows) : rows;
         result[name] = {
-          count: rows.length,
-          sha256: createHash('sha256').update(JSON.stringify(rows)).digest('hex'),
+          count: facts.length,
+          sha256: createHash('sha256').update(JSON.stringify(facts)).digest('hex'),
         };
       }
       await client.query('COMMIT');

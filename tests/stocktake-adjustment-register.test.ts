@@ -7,6 +7,7 @@ import { stocktakeAdjustmentRegister } from '../server/stocktake-adjustments';
 import { seed } from './fixtures';
 import { productCatalogFacts } from './product-catalogs-fixture';
 import { adjustmentActor, countedAdjustmentSource, stocktakeAdjustmentFixture, type AdjustmentFixture, type AdjustmentTestRow as Row } from './stocktake-adjustments-fixture';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 
 // Root alone executes this against an exclusively allocated disposable DB.
 assert.equal(process.env.DYNA_TEST,'true');
@@ -43,7 +44,7 @@ const noCosts=(value:unknown)=>{const text=JSON.stringify(value);for(const key o
 const qs=(values:Record<string,string>)=>new URLSearchParams(values).toString();
 async function globalFacts(){const c=await pool.connect();try{await c.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');await c.query("SET LOCAL TimeZone='UTC'");const result:Record<string,unknown[]>={};
   for(const {tablename} of (await c.query("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY 1")).rows){assert.match(tablename,/^[a-z_][a-z0-9_]*$/);result[tablename]=(await c.query(`SELECT to_jsonb(r) row FROM public."${tablename}" r ORDER BY 1`)).rows;}
-  await c.query('COMMIT');return result;}finally{await c.query('ROLLBACK').catch(()=>undefined);c.release();}}
+  await c.query('COMMIT');return withoutApiKeyLastUse(result);}finally{await c.query('ROLLBACK').catch(()=>undefined);c.release();}}
 
 test('52 genuinely posted tied headers paginate once each; literal own filters and reads preserve all tenant rows',async()=>{
   const f=await stocktakeAdjustmentFixture(app),s=await series(f),marker='test_register165_'+randomUUID().replaceAll('-','');

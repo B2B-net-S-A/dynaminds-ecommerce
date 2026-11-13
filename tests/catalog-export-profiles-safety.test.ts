@@ -5,6 +5,7 @@ import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -133,7 +134,7 @@ async function snapshot() {
       ])
     ).rows;
   }
-  return result;
+  return withoutApiKeyLastUse(result);
 }
 async function waitOn(holder: PoolClient, pattern: RegExp) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid;

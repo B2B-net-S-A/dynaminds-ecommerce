@@ -5,6 +5,7 @@ import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 import {
   createPriceBulkEditPreviewInTx,
   executePriceBulkEditInTx,
@@ -172,7 +173,7 @@ async function snapshot() {
       ])
     ).rows;
   }
-  return result;
+  return withoutApiKeyLastUse(result);
 }
 async function waitOn(holder: PoolClient) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid,
