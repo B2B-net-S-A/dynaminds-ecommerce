@@ -159,7 +159,8 @@ async function physical() {
 }
 test(
   '10000 same-bin lot candidates paginate exactly; an explicit last-page choice writes one zero receipt and no physical effects',
-  { timeout: 120000 },
+  // Hang guard only: the 10000-lot fixture, stocktake and 100 candidate pages took 262 s locally on 13.11.2026.
+  { timeout: 600000 },
   async () => {
     const product = await ok('/products', 'POST', {
       sku: 'BOUNDARY-' + randomUUID(),
@@ -182,6 +183,9 @@ test(
     await tenantTx(
       tenant,
       async (c) => {
+        // Fixture only: 10000 rows per statement pass per-row warehouse policy guards (~5-13 ms per row,
+        // 13.11.2026) and exceeded the ordinary 8 s statement_timeout on CI. The code under test keeps 8 s.
+        await c.query("SET LOCAL statement_timeout='120s'");
         enlistWmsActorInTx(
           c,
           { tenantId: tenant, userId: user, source: 'manual' },
@@ -215,6 +219,9 @@ test(
       },
       { wmsAdmission: 'activation' },
     );
+    // Autovacuum would analyze 10000 fresh rows within a minute; without statistics every 100-line
+    // stocktake scope query planned a nested loop over all layers (~4 s each, 13.11.2026).
+    await pool.query('ANALYZE wms_lots, wms_cost_layers, wms_layer_positions, wms_layer_movements');
     const { stocktake } = await ok('/wms-lots/stocktakes', 'POST', {
       client_key: randomUUID(),
       warehouse_id: warehouse,

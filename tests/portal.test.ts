@@ -401,10 +401,14 @@ test('odtworzona kopia pokazuje historię, ale nie tworzy spraw ani nie rotuje l
   }
 });
 async function history(order: any, count: number) {
-  await pool.query(
-    `INSERT INTO return_cases(id,tenant_id,order_id,warehouse_id,number,kind,state,reason,created_at) SELECT gen_random_uuid(),$1,$2,$3,'HIST-'||$4||'-'||n,'return','cancelled','QA history','2026-01-01 00:00:00.000000+00'::timestamptz+n*interval '1 microsecond' FROM generate_series(1,$5::int) n`,
-    [DEMO_TENANT, order.id, warehouse, randomUUID(), count],
-  );
+  // Each return case runs the warehouse policy guards three times (~5 ms per row, 13.11.2026), so
+  // 10000 rows in one statement passed the 8 s statement_timeout. Batches of 250 keep every trigger.
+  const series = randomUUID();
+  for (let from = 1; from <= count; from += 250)
+    await pool.query(
+      `INSERT INTO return_cases(id,tenant_id,order_id,warehouse_id,number,kind,state,reason,created_at) SELECT gen_random_uuid(),$1,$2,$3,'HIST-'||$4||'-'||n,'return','cancelled','QA history','2026-01-01 00:00:00.000000+00'::timestamptz+n*interval '1 microsecond' FROM generate_series($5::int,$6::int) n`,
+      [DEMO_TENANT, order.id, warehouse, series, from, Math.min(count, from + 249)],
+    );
 }
 test('kursor zachowuje mikrosekundy, filtry i kompletność historii starszej niż 25 spraw', async () => {
   const { o } = await fixture();
@@ -516,12 +520,15 @@ test('paginacja 10000 historycznych spraw ma ograniczony wynik i zapisane pomiar
   assert.equal(first.data.length, 25);
   let after = first.meta.cursor;
   const times: number[] = [];
+  // Timers wrap only returnPage: an ungated test tenantTx also runs the full schema validators
+  // (server/db.ts preflightUngatedTenantSchema) and commit guards, seconds that production never pays.
   for (let n = 0; n < 10; n++) {
-    const start = performance.now();
-    const page = await tenantTx(DEMO_TENANT, (c) =>
-      returnPage(c, returnQuery.parse({ limit: 25, search: o.number, after })),
-    );
-    times.push(performance.now() - start);
+    const page = await tenantTx(DEMO_TENANT, async (c) => {
+      const start = performance.now();
+      const result = await returnPage(c, returnQuery.parse({ limit: 25, search: o.number, after }));
+      times.push(performance.now() - start);
+      return result;
+    });
     assert.equal(page.data.length, 25);
     after = page.meta.cursor;
   }
@@ -534,11 +541,16 @@ test('paginacja 10000 historycznych spraw ma ograniczony wynik i zapisane pomiar
   const deepCursor = Buffer.from(
     JSON.stringify({ ...boundary, filter: JSON.stringify([null, null, null, null, o.number]) }),
   ).toString('base64url');
-  const deepStart = performance.now();
-  const deep = await tenantTx(DEMO_TENANT, (c) =>
-    returnPage(c, returnQuery.parse({ limit: 25, search: o.number, after: deepCursor })),
-  );
-  const deepMs = performance.now() - deepStart;
+  let deepMs = Infinity;
+  const deep = await tenantTx(DEMO_TENANT, async (c) => {
+    const deepStart = performance.now();
+    const result = await returnPage(
+      c,
+      returnQuery.parse({ limit: 25, search: o.number, after: deepCursor }),
+    );
+    deepMs = performance.now() - deepStart;
+    return result;
+  });
   assert.equal(deep.data.length, 25);
   assert.equal(deep.meta.has_more, false);
   assert(deepMs < 2000);

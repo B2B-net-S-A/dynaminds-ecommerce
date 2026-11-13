@@ -608,12 +608,15 @@ test('500 selected and all 501 filtered products retain complete two-source matr
       ...product,
       index: Number(product.sku.slice(range.length)),
     }));
-    await c.query(
-      `INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand)
+    // Each stock row runs the warehouse policy guards six times (~13 ms per row, 13.11.2026), so
+    // 1002 rows in one statement passed the 8 s statement_timeout. Batches of 100 keep every trigger.
+    for (let i = 0; i < rows.length; i += 100)
+      await c.query(
+        `INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand)
    SELECT $1::uuid,$2::uuid,id,20+(index%10) FROM jsonb_to_recordset($4::jsonb) AS x(id uuid,index integer)
    UNION ALL SELECT $1::uuid,$3::uuid,id,10+(index%7) FROM jsonb_to_recordset($4::jsonb) AS x(id uuid,index integer)`,
-      [DEMO_TENANT, wh1, wh2, JSON.stringify(rows)],
-    );
+        [DEMO_TENANT, wh1, wh2, JSON.stringify(rows.slice(i, i + 100))],
+      );
     await c.query(
       `INSERT INTO price_list_items(tenant_id,price_list_id,product_id,price)
    SELECT $1::uuid,$2::uuid,id,index FROM jsonb_to_recordset($3::jsonb) AS x(id uuid,index integer) WHERE index%3=0`,

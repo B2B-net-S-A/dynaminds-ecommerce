@@ -115,10 +115,13 @@ async function products(count = 1, extra: any = {}) {
       SELECT id,$1,sku,name,price,vat,category,description,attributes,images,active FROM jsonb_to_recordset($2::jsonb) x(id uuid,sku text,name text,price integer,vat integer,category text,description text,attributes jsonb,images jsonb,active boolean)`,
       [tenant, JSON.stringify(rows)],
     );
-    await c.query(
-      'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) SELECT $1,$2,id,10 FROM products WHERE id=ANY($3::uuid[])',
-      [tenant, warehouse, rows.map((r) => r.id)],
-    );
+    // Each stock row runs the warehouse policy guards six times (~13 ms per row, 13.11.2026), so
+    // 500 rows in one statement passed the 8 s statement_timeout on CI. Batches of 100 keep every trigger.
+    for (let i = 0; i < rows.length; i += 100)
+      await c.query(
+        'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) SELECT $1,$2,id,10 FROM products WHERE id=ANY($3::uuid[])',
+        [tenant, warehouse, rows.slice(i, i + 100).map((r) => r.id)],
+      );
   });
   return rows.map((r) => ({ ...r, version: 1 }));
 }
