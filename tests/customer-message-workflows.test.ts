@@ -172,10 +172,15 @@ test('no enabled opt-in rule preserves the ordinary buyer message without order 
       .rows[0].n;
   await buyer(f);
   assert.deepEqual(await business(f), before);
-  assert.equal(
-    (await pool.query('SELECT count(*)::int n FROM order_events WHERE order_id=$1', [f.order.id]))
-      .rows[0].n,
-    events,
+  // The only new order event is the automation v2 trigger "Wiadomość od klienta" (no enabled v2 rule, so no job).
+  assert.deepEqual(
+    (
+      await pool.query(
+        'SELECT kind FROM order_events WHERE order_id=$1 ORDER BY created_at OFFSET $2',
+        [f.order.id, events],
+      )
+    ).rows.map((r) => r.kind),
+    ['customer_message.received'],
   );
   assert.equal(
     (await pool.query('SELECT count(*)::int n FROM jobs WHERE tenant_id=$1', [DEMO_TENANT])).rows[0]
