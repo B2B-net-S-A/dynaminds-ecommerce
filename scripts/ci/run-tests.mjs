@@ -13,10 +13,15 @@
  * files listed under "noGuardCache", or reading pg_stat_xact_* / track_functions themselves, run without it.
  * Requires DYNA_LOCAL_CONFIG_PATH (dbPassword) and DYNA_TEST_PG_PORT; PostgreSQL on 127.0.0.1.
  *
+ * --kind db: a file that failed on time (statement/lock timeout, a test past its own timeout — not the 45 min file
+ * limit) runs once more, alone, on a new database after the others (decision 13.11.2026: lock-wait and statement-timeout
+ * tests fail under the load of two files at once). Any other failure is deterministic enough to stay red at once.
+ * Green on the second try counts as green but is listed as flaky (summary line, flaky.txt; the first attempt's log
+ * stays as <file>.attempt1.log).
  * Exit code 1 when any file fails or times out. Never touches a database it did not create.
  */
 import { spawn } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync, appendFileSync, createWriteStream } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, appendFileSync, createWriteStream, renameSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ROOT, loadConfig } from './classify-tests.mjs';
@@ -140,36 +145,55 @@ const summary = join(out, 'summary.txt');
 writeFileSync(summary, '');
 const durations = {};
 const failed = [];
+const retry = [];
+const flaky = [];
 if (kind === 'db' && files.some((f) => !fresh.has(f))) await prepareTemplate();
 
+async function runFile(file, note = '') {
+  const logPath = join(out, basename(file) + '.log');
+  let env = {};
+  let database;
+  if (kind === 'db') {
+    database = await createDatabase(file);
+    env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true', ...guardCacheEnv(file) };
+  }
+  const r = await run(file, env, logPath);
+  if (database) await admin.query(`DROP DATABASE IF EXISTS ${database} WITH (FORCE)`).catch((e) => console.error(`DROP ${database}: ${e.message}`));
+  durations[file] = Math.max(durations[file] ?? 0, r.seconds);
+  const counts = (readFileSync(logPath, 'utf8').match(/^# (?:pass|fail) \d+/gm) ?? []).join(' ');
+  const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s${kind === 'db' ? guardCacheSummary(file) : ''}${note}`;
+  console.log(line);
+  appendFileSync(summary, line + '\n');
+  return r.code;
+}
+
+// Failures that depend on load, not on the code under test.
+const TIMING = /statement timeout|\b57014\b|\b55P03\b|lock timeout|test timed out after/;
 let next = 0;
 async function worker() {
   while (next < files.length) {
     const file = files[next++];
-    const logPath = join(out, basename(file) + '.log');
-    let env = {};
-    let database;
-    if (kind === 'db') {
-      database = await createDatabase(file);
-      env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true', ...guardCacheEnv(file) };
-    }
-    const r = await run(file, env, logPath);
-    if (database) await admin.query(`DROP DATABASE IF EXISTS ${database} WITH (FORCE)`).catch((e) => console.error(`DROP ${database}: ${e.message}`));
-    durations[file] = r.seconds;
-    const counts = (readFileSync(logPath, 'utf8').match(/^# (?:pass|fail) \d+/gm) ?? []).join(' ');
-    const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s${kind === 'db' ? guardCacheSummary(file) : ''}`;
-    console.log(line);
-    appendFileSync(summary, line + '\n');
-    if (r.code !== 0) failed.push(file);
+    const code = await runFile(file);
+    if (code === 0) continue;
+    // A file past the time limit is not retried: a second 45 min would double the shard.
+    if (kind === 'db' && code !== 124 && TIMING.test(readFileSync(join(out, basename(file) + '.log'), 'utf8'))) retry.push(file);
+    else failed.push(file);
   }
 }
 await Promise.all(Array.from({ length: Math.min(concurrency, files.length) }, worker));
+for (const file of retry) {
+  for (const ext of ['.log', '.guard-cache.jsonl']) try { renameSync(join(out, basename(file) + ext), join(out, basename(file) + '.attempt1' + ext)); } catch {}
+  if (await runFile(file, ' (2. próba, sam)') === 0) flaky.push(file);
+  else failed.push(file);
+}
 if (kind === 'db') {
   if (template) await admin.query(`DROP DATABASE IF EXISTS ${template} WITH (FORCE)`).catch(() => {});
   await admin.end();
 }
 writeFileSync(join(out, 'durations.json'), JSON.stringify(Object.fromEntries(Object.entries(durations).sort()), null, 1) + '\n');
 writeFileSync(join(out, 'failed.txt'), failed.length ? failed.join('\n') + '\n' : '');
+writeFileSync(join(out, 'flaky.txt'), flaky.length ? flaky.join('\n') + '\n' : '');
+if (flaky.length) console.log(`Niestabilne (zielone dopiero za 2. razem):\n${flaky.map((f) => '  ' + f).join('\n')}`);
 console.log(`\n${kind}: ${files.length - failed.length}/${files.length} plików zielonych.`);
 if (failed.length) {
   console.log('Nie przeszły:\n' + failed.map((f) => '  ' + f).join('\n'));
