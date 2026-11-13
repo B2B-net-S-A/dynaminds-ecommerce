@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -78,13 +79,13 @@ async function fixture(on: boolean, issued = true, commercial = false, shippingC
   let order = await ok('/orders', 'POST', { source: 'manual', customer_name: 'Own release buyer', email: 'release@example.test', address: { street: 'Testowa 153', city: 'Warszawa', postal_code: '00-153', country: 'PL', phone: '500000153' }, warehouse_id: warehouse, currency: 'PLN', payment_mode: 'prepaid', shipping_cost: shippingCost, items: commercial ? (on ? [{product_id:sale,quantity:3},{product_id:components[0].id,quantity:1}] : [{product_id:sale,quantity:4}]) : [{ product_id: sale, quantity: 3 }], ...(commercial ? {manual_lines:manualLines} : {}) }, 201);
   order = await ok('/orders/' + order.id);
   await ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version), kind: 'receipt', amount: order.total, currency: 'PLN', method: 'other', reference: 'Synthetic local ledger only', confirmed: true });
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const allocations = await ok('/wms-lots/orders/' + order.id + '/allocations');
     assert.equal(allocations.data.length, 2); assert.equal(allocations.meta?.cursor ?? null, null);
     for (const a of allocations.data) { const p = components.find(p => p.id === a.product_id); assert(p); for (let i = 0; i < a.quantity; i++) await ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: p.sku, location: a.location, layer_id: a.layer_id }); }
   } else for (let i = 0; i < (commercial ? 4 : 3); i++) await ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: components[0].sku, location: 'REL-01' });
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   order = await ok('/orders/' + order.id);
   if(commercial) {assert.equal(order.total,4018+shippingCost);assert.equal(order.items.length,3);assert.equal(new Set(order.items.map((i:any)=>i.id)).size,3);for(const l of manualLines) assert.equal(order.items.filter((i:any)=>i.product_id===l.product_id&&i.quantity===l.quantity&&i.line_total===l.line_total).length,1);}
   const parcelItems = commercial ? [order.items.map((i:any)=>({item_id:i.id,quantity:1})),order.items.filter((i:any)=>i.quantity===2).map((i:any)=>({item_id:i.id,quantity:1}))] : [1,2].map(quantity=>[{item_id:order.items[0].id,quantity}]);

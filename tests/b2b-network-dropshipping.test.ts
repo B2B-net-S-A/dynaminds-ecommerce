@@ -623,13 +623,13 @@ test('supplier dispatch then genuine local remainder produces local parcel quant
       [buyer, f.order.id],
     )
   ).rows[0].row;
-  await pool.query('UPDATE shipments SET dispatched_at=NULL WHERE tenant_id=$1 AND order_id=$2', [
-    buyer,
-    f.order.id,
-  ]);
-  await pool.query(
-    'UPDATE shipments s SET dispatched_at=e.dispatched_at FROM shopify_dispatch_evidence e WHERE (e.tenant_id,e.shipment_id)=(s.tenant_id,s.id) AND s.tenant_id=$1 AND s.order_id=$2',
-    [buyer, f.order.id],
+  // A confirmed dispatch cannot be undone and replayed (order_shipments_guard, 133), so the witness stays the first one.
+  await assert.rejects(
+    pool.query('UPDATE shipments SET dispatched_at=NULL WHERE tenant_id=$1 AND order_id=$2', [
+      buyer,
+      f.order.id,
+    ]),
+    /Potwierdzone wydanie przesyłki jest trwałe/,
   );
   assert.deepEqual(
     (

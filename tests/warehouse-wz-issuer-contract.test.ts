@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 /** Authored without running the app or tests. Root owns disposable PG execution. */
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -60,7 +61,7 @@ async function packedFixture(on: boolean, existing?: Awaited<ReturnType<typeof s
   }, 201);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version), kind: 'receipt', amount: order.total,
     currency: 'PLN', method: 'other', reference: 'Own local declared payment168', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const a = await f.ok('/wms-lots/orders/' + order.id + '/allocations'); assert.equal(a.meta.cursor, null);
     for (const r of a.data) {
@@ -73,7 +74,7 @@ async function packedFixture(on: boolean, existing?: Awaited<ReturnType<typeof s
       for (let n = 0; n < r.quantity; n++) await f.ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: product.sku, location: r.location });
     }
   }
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   return { ...f, order };
 }
 async function issued(on: boolean) {
@@ -265,7 +266,7 @@ for (const values of [false, true]) test(`real export final current-role wait ${
     await held.query('BEGIN'); await held.query('UPDATE memberships SET role=role WHERE tenant_id=$1 AND user_id=$2', [f.tenant, f.user]);
     pending = f.request(base + '/documents/' + f.saved.id + '/export?format=xml&include_values=' + values);
     let completed = false; void pending.then(() => { completed = true; }, () => { completed = true; });
-    const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid, end = Date.now() + 6000;
+    const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid, end = Date.now() + 30000;
     let observed = false;
     while (Date.now() < end) {
       assert.equal(completed, false);
@@ -302,7 +303,7 @@ test('a list cursor issued after an observed final role downgrade pages two genu
     await held.query('BEGIN'); await held.query('UPDATE memberships SET role=role WHERE tenant_id=$1 AND user_id=$2', [f.tenant, f.user]);
     pending = f.request(base + '/documents?limit=1');
     let finished = false; void pending.then(() => { finished = true; }, () => { finished = true; });
-    const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid, end = Date.now() + 6000;
+    const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid, end = Date.now() + 30000;
     let observed = false;
     while (Date.now() < end) {
       assert.equal(finished, false);

@@ -131,8 +131,9 @@ test('damage consumes the local origin even without restock; absent origin, over
   const tooMuch = await f.request('/returns/' + r.id + '/receive', 'POST', {
     ...damage, items: [{ item_id: f.customerItem.id, accepted: 2, restocked: 0 }],
   });
-  // The typed prepare validates the approved local capacity before core receipt writes.
-  assert.equal(tooMuch.statusCode, 409, tooMuch.body); noStore(tooMuch);
+  // Over-acceptance is refused before core receipt writes. Since 152 the catalogue-stock return prepare runs before
+  // the local quota (server/catalog-stock-return-effects.ts) and refuses accepted > requested as 422.
+  assert.equal(tooMuch.statusCode, 422, tooMuch.body); noStore(tooMuch);
   assert.deepEqual(await f.snapshot(), beforeCompeting);
   const received = await f.ok('/returns/' + r.id + '/receive', 'POST', damage);
   assert.equal(received.refund_amount, 2500); assert.equal(received.items[0].accepted, 1);
@@ -424,7 +425,8 @@ test('a blocked real local receipt and competing origin selection share upfront 
   let receive: ReturnType<typeof f.request> | undefined;
   let select: ReturnType<typeof f.request> | undefined;
   const blocked = async (blockingPid: number, query: RegExp) => {
-    const deadline = Date.now() + 5000;
+    // 30 s, not 5 s: on a loaded runner the receipt reaches the held order much later than locally.
+    const deadline = Date.now() + 30000;
     while (Date.now() < deadline) {
       const rows = (await pool.query(
         "SELECT pid,query,wait_event FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))",

@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -169,14 +170,14 @@ test('count and free-unit move preserve frozen sale/allocation snapshots through
       ['B1', 7, 0],
     ],
   );
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   for (const [prod, count] of [
     [p, 3],
     [q, 2],
   ] as const)
     for (let n = 0; n < count; n++)
       await ok('/orders/' + order.id + '/scan', 'POST', { code: prod.sku, location: 'A2' });
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   assert.equal((await selection([p.id]))[0].warehouse_on_hand, 117);
   assert.equal((await selection([q.id]))[0].warehouse_on_hand, 48);

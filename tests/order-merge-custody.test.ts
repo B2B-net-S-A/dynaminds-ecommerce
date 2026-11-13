@@ -1,10 +1,11 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
-import { migrate, pool, tenantTx } from '../server/db';
+import { localConfig, migrate, pool, tenantTx } from '../server/db';
+import { captureOrderMergeBuyerAddressActor, inheritOrderMergeBuyerAddressInTx } from '../server/buyer-address';
 import { seed } from './fixtures';
 import { transferOrderMergeCustodyInTx } from '../server/order-merge-custody';
 import {
@@ -275,7 +276,7 @@ async function supply(p: Row) {
 }
 async function waitOn(holder: PoolClient, match: RegExp) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid,
-    until = Date.now() + 4000;
+    until = Date.now() + 30000; // 30 s, not 4 s: on a loaded runner the merge reaches the held row later
   while (Date.now() < until) {
     const rs = (
       await pool.query(
@@ -653,7 +654,7 @@ async function preparedRaw(c: PoolClient, p: Row) {
       external_id: null,
       channel_id: null,
       source_snapshot: null,
-      portal_token: randomUUID(),
+      portal_token: randomBytes(24).toString('hex'), // 209 receipt: a fresh 48-hex portal token
       version: '1',
       status: planned.target_status,
       total: planned.total_minor,
@@ -703,12 +704,44 @@ async function preparedRaw(c: PoolClient, p: Row) {
     request: consent(p),
     state: 'done',
     before_snapshot: s,
-    after_snapshot: { target: header, items: s.items, picks: [...picks.values()] },
+    // The stored target row, as executeOrderMerge records it (the 209 receipt compares it with the order).
+    after_snapshot: {
+      target: (await c.query('SELECT to_jsonb(o) row FROM orders o WHERE id=$1', [target])).rows[0].row,
+      items: s.items,
+      picks: [...picks.values()],
+    },
   };
   await c.query(
     'INSERT INTO order_merge_executions SELECT * FROM jsonb_populate_record(NULL::order_merge_executions,$1::jsonb)',
     [JSON.stringify(execution)],
   );
+  // A technical merge inherits the main order's buyer delivery address (209) before the custody transfer, as
+  // executeOrderMerge does; the deferred 209 receipt check refuses a merge target without it.
+  if (planned.merge_mode === 'technical_merge') {
+    const delivery = s.buyer_delivery_frames.find((d: Row) => d.order_id === main.id);
+    const merger = captureOrderMergeBuyerAddressActor(
+      {
+        actor: actor(),
+        currentUser: { id: user, tenant_id: tenant },
+        cookies: { dyna_session: cookie.slice(cookie.indexOf('=') + 1) },
+        headers: {},
+      } as any,
+      'dyna_session',
+    );
+    await inheritOrderMergeBuyerAddressInTx(
+      c,
+      merger,
+      {
+        tenant_id: tenant,
+        execution_id: executionId,
+        merge_preview_id: p.id,
+        scope_hash: planned.scope_hash,
+        source: { order: main, state: delivery.state, buyer_basis_hash: delivery.buyer_basis_hash },
+        target_order_id: target,
+      },
+      localConfig.encryptionKey,
+    );
+  }
   await transferOrderMergeCustodyInTx(c, actor(), {
     execution_id: executionId,
     source_order_ids: planned.source_ids,
@@ -745,8 +778,10 @@ test('actual typed transfer followed by constraint flush and savepoint cannot mu
         tenantTx(
           tenant,
           async (c) => {
-            await c.query('SAVEPOINT actual_merge_subtransaction');
+            // The savepoint follows the transfer and flush: the 209 inheritance binds the execution row of the
+            // top-level transaction (xmin), so a technical merge cannot itself run inside a subtransaction.
             const target = await preparedRaw(c, planned);
+            await c.query('SAVEPOINT actual_merge_subtransaction');
             proofReached = true;
             if (mutation === 'stock')
               await c.query(

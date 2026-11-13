@@ -212,8 +212,10 @@ test('all100 selected receipts on one baseline commit atomically with one paid t
         [tenant],
       )
     ).rows[0].n,
-    1,
-    'Only original order.created event, no import events dispatch',
+    // An event with no enabled rules queues no automation job (server/events.ts), so this own tenant
+    // has none for order.created either; the import's order.paid is a local event (financialEvent).
+    0,
+    'No automation dispatch: no rules for order.created, no import events dispatch',
   );
   console.log(
     JSON.stringify({

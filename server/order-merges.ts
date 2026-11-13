@@ -1051,6 +1051,9 @@ export async function executeOrderMerge(a: Actor, input: unknown) {
         )
       ).rows[0];
       if (p.merge_mode === 'technical_merge') {
+        // The 209 inheritance checks the local role itself and raises 40001 on a change. An administrator withdrawn
+        // during the stock wait is refused here as by the final grant (403), not as an unexpected database error.
+        await access(c, a, true);
         const delivery = snapshot.buyer_delivery_frames?.find(
           (f) => f.order_id === main.id,
         );

@@ -217,7 +217,6 @@ test('shipment.cancelled: Anuluj etykietę returns Gotowe do nadania to Spakowan
   assert.equal(ev.length, 1);
   assert.equal(ev[0].scope, 'local');
   await refused(`/api/orders/${o.id}/cancel-label`, 'POST', {}, 409, /nie ma etykiety/);
-  await refused(`/api/orders/${o.id}/demo-label`, 'POST', {}, 409, /anulowano/);
   // The server refuses to print or fetch a cancelled label, not only the hidden card button.
   const sid = (await pool.query('SELECT id FROM shipments WHERE order_id=$1', [o.id])).rows[0].id;
   const uuid = randomUUID;
@@ -229,6 +228,9 @@ test('shipment.cancelled: Anuluj etykietę returns Gotowe do nadania to Spakowan
   assert.equal((await pool.query('SELECT count(*)::int n FROM shipments WHERE order_id=$1 AND dispatched_at IS NOT NULL', [o.id])).rows[0].n, 0);
   await drain();
   assert.ok(await tagged(o, 'ANULOWANA'));
+  // Since migration 268 a new label takes over the cancelled row (tests/relabel-after-cancel*.database.test.ts).
+  c = await ok(`/api/orders/${o.id}/demo-label`, 'POST', {});
+  assert.equal(c.fulfilment_stage, 'ready_to_ship');
   const plain = await packed();
   await refused(`/api/orders/${plain.o.id}/cancel-label`, 'POST', {}, 409, /nie ma etykiety/);
   await ok(`/api/orders/${plain.o.id}/demo-label`, 'POST', {});
