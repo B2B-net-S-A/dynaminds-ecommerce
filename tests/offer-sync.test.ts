@@ -11,8 +11,10 @@ import {
   finishOAuth,
   readScopes,
   offerWriteScope,
+  withAllegroRequestContext,
   type IntegrationContext,
 } from '../server/channel-access';
+import type { FastifyRequest } from 'fastify';
 import { processOfferJob, failOffer } from '../server/offers';
 import {
   processOfferSync,
@@ -28,6 +30,7 @@ let app: Awaited<ReturnType<typeof buildApp>>,
   other: string,
   warehouse: string,
   actorId: string,
+  authenticatedRequest: FastifyRequest,
   nextId = 900000;
 const store = new Map<string, any>(),
   calls: { url: string; method: string; body: any }[] = [];
@@ -96,6 +99,10 @@ before(async () => {
   await migrate();
   await seed();
   app = await buildApp({ integrationTransport: ctx.transport });
+  // Direct beginOAuth/finishOAuth calls need the authority of a real authenticated request (Allegro OAuth authority).
+  app.addHook('preHandler', async (req) => {
+    if (req.url === '/api/auth/me') authenticatedRequest = req;
+  });
   for (const [email, set] of [
     ['admin@demo.local', (v: string) => (cookie = v)],
     ['viewer@demo.local', (v: string) => (viewer = v)],
@@ -773,8 +780,9 @@ test('ponowne połączenie OAuth unieważnia zgodę harmonogramu bez mylenia go 
       });
     },
   };
-  const started = await beginOAuth(actor, ch.id, auth, true);
-  await finishOAuth(actor, new URL(started.url).searchParams.get('state')!, 'fixture-code', auth);
+  const trusted = withAllegroRequestContext(auth, authenticatedRequest);
+  const started = await beginOAuth(actor, ch.id, trusted, true);
+  await finishOAuth(actor, new URL(started.url).searchParams.get('state')!, 'fixture-code', trusted);
   const after = (await pool.query('SELECT settings FROM channels WHERE id=$1', [ch.id])).rows[0];
   assert(after.settings.oauth_connection_id);
   const count = calls.length;

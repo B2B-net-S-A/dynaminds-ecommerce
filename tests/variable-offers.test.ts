@@ -472,10 +472,13 @@ test('zmiana lokalnego stanu podczas GET zatrzymuje zapis przed POST', async () 
     parent = await createdGroup(ch, g),
     p = await good(variantPreview(ch, g.variants[0], parent.remote_id));
   await good(req('/api/offer-plans/' + p.id + '/queue', 'POST', {}));
+  // A stock change is a tenant write: the catalog stock guard refuses a native birth outside the tenant context.
   afterRead = async () => {
-    await pool.query('UPDATE stock SET on_hand=on_hand+1,version=version+1 WHERE product_id=$1', [
-      g.variants[0].id,
-    ]);
+    await tenantTx(DEMO_TENANT, (c) =>
+      c.query('UPDATE stock SET on_hand=on_hand+1,version=version+1 WHERE product_id=$1', [
+        g.variants[0].id,
+      ]),
+    );
   };
   const before = writes();
   const d = await execute(p.id);
