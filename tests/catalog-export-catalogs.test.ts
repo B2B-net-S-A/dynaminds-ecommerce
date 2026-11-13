@@ -10,6 +10,7 @@ import { productCatalogFixture, productCatalogFacts, productCatalogCreate, produ
 import { catalogExportFileInput, catalogExportDefinitionInput, openCatalogExport, catalogExportPreview } from '../server/catalog-export';
 import { catalogExportSourceFrame } from '../server/catalog-export-sources';
 import { previewProductCatalog, commitProductCatalog } from '../server/product-catalogs';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const db = new URL(process.env.DATABASE_URL ?? '');
@@ -300,7 +301,7 @@ test('pure preview/file remain available with isolated restore sessions and v1 c
   } finally { await readonly.close(); }
 });
 
-test('genuinely absent142/143 retains legacy export and explicit catalog fails503 without adding fields to old source frames', async () => {
+test('142/143 hidden in the full schema is a torn install: catalogue export fails closed without writes and works again once restored', async () => {
   const f = await productCatalogFixture(app), initial = await productCatalogFacts(f.tenant);
   const sourceDefinition = definition({ columns: ['sku', 'inventory_json'], warehouse_ids: [f.warehouse] });
   const originalFrame = await tenantTx(f.tenant, c => catalogExportSourceFrame(c, sourceDefinition, f.tenant), { wmsAdmission: 'read' });
@@ -321,14 +322,11 @@ test('genuinely absent142/143 retains legacy export and explicit catalog fails50
     await c.query('ALTER TABLE products RENAME COLUMN catalog_id TO qa158_hidden_catalog_id');
     await c.query('DELETE FROM migrations WHERE name=ANY($1::text[])', [markers.map(m => m.name)]);
     await c.query('COMMIT'); hidden = true;
-    assert.deepEqual(await tenantTx(f.tenant, client => catalogExportSourceFrame(client, sourceDefinition, f.tenant), { wmsAdmission: 'read' }), originalFrame);
-    for (const prefix of ['/api', '/api/v1']) {
-      const options = await app.inject({ url: prefix + '/catalog/exports/options', headers: { cookie: f.cookie } }); assert.equal(options.statusCode, 200); assert.equal(options.json().catalog_available, false); assert.deepEqual(options.json().catalogs, []);
-      const body = definition({ columns: ['sku', 'inventory_json'], warehouse_ids: [f.warehouse] });
-      const preview = await app.inject({ method: 'POST', url: prefix + '/catalog/exports/preview', payload: body, headers: { cookie: f.cookie } }); assert.equal(preview.statusCode, 200); assert.equal(Object.hasOwn(preview.json(), 'catalog'), false);
-      const file = await app.inject({ method: 'POST', url: prefix + '/catalog/exports/file', payload: body, headers: { cookie: f.cookie } }); assert.equal(file.statusCode, 200); assert(file.body.includes(f.product.sku)); assert.equal(file.headers['x-product-catalog-id'], undefined);
-      const explicit = await app.inject({ method: 'POST', url: prefix + '/catalog/exports/preview', payload: { ...body, catalog_id: f.defaultCatalog.id }, headers: { cookie: f.cookie } }); assert.equal(explicit.statusCode, 503);
-    }
+    // Not an older copy: the PIM integrity guards see a torn installation and the
+    // tenant transaction fails closed, with no write.
+    const digest = await tenantDataDigest();
+    await assert.rejects(tenantTx(f.tenant, client => catalogExportSourceFrame(client, sourceDefinition, f.tenant), { wmsAdmission: 'read' }), pimIncomplete);
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
     await c.query('ROLLBACK');
     if (hidden) {
@@ -340,5 +338,8 @@ test('genuinely absent142/143 retains legacy export and explicit catalog fails50
     }
     c.release();
   }
+  assert.deepEqual(await tenantTx(f.tenant, client => catalogExportSourceFrame(client, sourceDefinition, f.tenant), { wmsAdmission: 'read' }), originalFrame);
+  const restored = await app.inject({ url: '/api/catalog/exports/options', headers: { cookie: f.cookie } });
+  assert.equal(restored.statusCode, 200, restored.body); assert.equal(restored.json().catalog_available, true);
   assert.deepEqual(await productCatalogFacts(f.tenant), initial); assert.equal(providerCalls, 0);
 });

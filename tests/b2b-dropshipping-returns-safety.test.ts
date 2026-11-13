@@ -26,6 +26,7 @@ import {
   type Row,
   type ReturnFixture,
 } from './b2b-dropshipping-returns-fixture';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 let h: Harness;
 before(async () => {
@@ -921,61 +922,18 @@ test('read-only copy projections remain readable and every coordinated malformed
     await readonly.close();
   }
   let older: Awaited<ReturnType<typeof buildApp>> | undefined;
-  const originalSupplierCase = await supplierCase(f, c.id);
-  const shipmentId = (
-    await pool.query('SELECT id FROM shipments WHERE tenant_id=$1 AND order_id=$2', [
-      f.supplier.tenant,
-      f.forwarded.supplier_order_id,
-    ])
-  ).rows[0].id;
   await pool.query(
     'ALTER FUNCTION b2b_dropship_return_prepare(uuid,uuid,uuid,uuid,text,jsonb) RENAME TO qa_128_missing_prepare',
   );
+  // Hidden in the full schema this is a torn install, not an older copy: the
+  // application refuses to start on it (PIM integrity), with no write.
   try {
-    older = await buildApp();
-    const options = await older.inject({
-      url: '/api' + returnBase + '/options',
-      headers: { cookie: f.buyer.cookie },
-    });
-    assert.equal(options.statusCode, 200, options.body);
-    assert.equal(options.json().available, false);
-    const refused = await older.inject({
-      url: '/api' + returnBase + '/returns/' + retail.id + '/previews',
-      method: 'POST',
-      headers: { cookie: f.buyer.cookie },
-      payload: {
-        client_key: randomUUID(),
-        version: Number(retail.version),
-        items: [
-          {
-            customer_item_id: f.cheap.id,
-            dropship_order_id: f.forwarded.id,
-            quantity: 1,
-            physical_sources: [
-              {
-                supplier_item_id: originalSupplierCase.supplier_items[0].supplier_item_id,
-                shipment_id: shipmentId,
-                quantity: 1,
-              },
-            ],
-          },
-        ],
-        confirmed: true,
-      },
-    });
-    assert.equal(refused.statusCode, 503, refused.body);
-    noStore(refused);
-    const ordinary = await older.inject({
-      url: '/api/orders/' + f.forwarded.supplier_order_id + '/returns',
-      method: 'POST',
-      headers: { cookie: f.supplier.cookie },
-      payload: {
-        client_key: randomUUID(),
-        reason: 'Own128 older copy ordinary RMA remains available',
-        items: [{ item_id: originalSupplierCase.supplier_items[0].supplier_item_id, quantity: 1 }],
-      },
-    });
-    assert.equal(ordinary.statusCode, 201, ordinary.body);
+    const digest = await tenantDataDigest();
+    await assert.rejects(
+      buildApp().then((app) => (older = app)),
+      pimIncomplete,
+    );
+    assert.deepEqual(await tenantDataDigest(), digest);
     assert.deepEqual(await f.snapshot({ physicalOnly: true }), f.buyerPhysical);
   } finally {
     try {
@@ -986,4 +944,7 @@ test('read-only copy projections remain readable and every coordinated malformed
       );
     }
   }
+  const restored = await f.request(returnBase + '/options');
+  assert.equal(restored.statusCode, 200, restored.body);
+  assert.equal(restored.json().available, true);
 });
