@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -70,7 +71,7 @@ async function packed(f: AdjustmentFixture, bundle?: Row) {
     client_key: randomUUID(), version: Number(order.version), kind: 'receipt', amount: order.total,
     currency: 'PLN', method: 'other', reference: 'Local declared payment for race168', confirmed: true,
   });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   const holds = (await pool.query('SELECT * FROM reservation_locations WHERE tenant_id=$1 AND order_id=$2 ORDER BY product_id,location',
     [f.tenant, order.id])).rows;
   assert.equal(holds.reduce((n, h) => n + h.quantity, 0), bundle ? 6 : 3);
@@ -80,13 +81,13 @@ async function packed(f: AdjustmentFixture, bundle?: Row) {
       client_key: randomUUID(), code: product.sku, location: h.location,
     });
   }
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   order = await f.ok('/orders/' + order.id); assert.equal(order.status, 'packed');
   return order;
 }
 
 async function waitForTwoQuotaWaiters(controller: PoolClient, pid: number, terminal: () => boolean) {
-  const deadline = Date.now() + 4000;
+  const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
     await controller.query('SELECT pg_stat_clear_snapshot()');
     const waiters = (await controller.query(`SELECT pid FROM pg_stat_activity

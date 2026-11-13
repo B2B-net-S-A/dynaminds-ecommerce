@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { before, beforeEach, after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -503,10 +504,10 @@ test('forecast append counts target incoming once, freezes forecast and permits 
       },
       201,
     );
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   for (let n = 0; n < 3; n++)
     await ok('/orders/' + order.id + '/scan', 'POST', { code: p.sku, location: 'A-01' });
-  await ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   const po = await draft([
       { product_id: p.id, quantity: 1, unit_cost: 317, supplier_sku: 'SUP-001' },

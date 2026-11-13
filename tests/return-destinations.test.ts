@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -193,7 +194,7 @@ async function fixture(on: boolean, unknown = false): Promise<Fixture> {
   order = await f.ok('/orders/' + order.id);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version), kind: 'receipt',
     amount: 4401, currency: 'PLN', method: 'other', reference: 'Own local test declaration', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   const allocations = await f.ok('/wms-lots/orders/' + order.id + '/allocations'); assert.equal(allocations.meta.cursor, null);
   for (const allocation of allocations.data) {
     const component = components.find(c => c.id === allocation.product_id); assert(component);
@@ -201,7 +202,7 @@ async function fixture(on: boolean, unknown = false): Promise<Fixture> {
       client_key: randomUUID(), code: component.sku, location: allocation.location, layer_id: allocation.layer_id,
     });
   }
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' }); await f.ok('/orders/' + order.id + '/ship-demo', 'POST', {});
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' })); await f.ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   order = await f.ok('/orders/' + order.id);
   let rma = await f.ok('/orders/' + order.id + '/returns', 'POST', { client_key: randomUUID(), reason: 'Own real unknown layer return',
     items: order.items.map((line: Row) => ({ item_id: line.id, quantity: line.quantity })), shipping_refund: 0 }, 201);
@@ -383,7 +384,7 @@ for (const on of [false, true]) for (const rejectAll of [false, true]) test(`com
   order = await f.ok('/orders/' + order.id);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version), kind: 'receipt',
     amount: 4401, currency: 'PLN', method: 'other', reference: 'Own local parcel ledger', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const allocations = await f.ok('/wms-lots/orders/' + order.id + '/allocations'); assert.equal(allocations.meta?.cursor ?? null, null);
     for (const allocation of allocations.data) {
@@ -392,7 +393,7 @@ for (const on of [false, true]) for (const rejectAll of [false, true]) test(`com
         client_key: randomUUID(), code: component.sku, location: allocation.location, layer_id: allocation.layer_id });
     }
   } else for (let n = 0; n < 3; n++) await f.ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: f.product.sku, location: 'RET-01' });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' }); order = await f.ok('/orders/' + order.id);
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' })); order = await f.ok('/orders/' + order.id);
   const expensive = order.items.find((line: Row) => line.line_total === 3401); assert(expensive);
   const pp = (await f.ok('/order-parcels/orders/' + order.id + '/previews', 'POST', {
     client_key: randomUUID(), order_version: String(order.version), protocol: 'commercial_v1', parcels: [
@@ -575,7 +576,15 @@ test('actual093 enqueue and deferred flush ignore a consistent pg_temp graph and
   const c = new Client({ connectionString: process.env.DATABASE_URL }); await c.connect();
   const operationId = randomUUID();
   try {
-    await c.query('BEGIN'); await c.query('SET LOCAL ROLE dyna_app');
+    // Since 262 dyna_app cannot create temporary tables at all (42501). The
+    // validator must still ignore a shadow graph, so the shadow is built under a
+    // grant that exists only inside this rolled-back transaction.
+    await assert.rejects(c.query("BEGIN; SET LOCAL ROLE dyna_app; CREATE TEMP TABLE qa262_shadow_probe(x int)"),
+      (error: unknown) => (error as { code?: string }).code === '42501');
+    await c.query('ROLLBACK');
+    await c.query('BEGIN');
+    await c.query("DO $$BEGIN EXECUTE format('GRANT TEMPORARY ON DATABASE %I TO dyna_app', current_database()); END$$");
+    await c.query('SET LOCAL ROLE dyna_app');
     await c.query("SELECT set_config('app.tenant_id',$1,true)", [f.tenant]);
     for (const name of ['wms_operations', 'wms_layer_movements', 'wms_issue_fragments', 'wms_return_fragments',
       'wms_cost_layers', 'wms_lots', 'wms_layer_positions', 'return_cases', 'return_items']) {
@@ -636,7 +645,7 @@ test('real certified physical callback cannot append an issue fragment beneath t
       assert.equal(op.kind, 'return'); assert.equal(op.return_id, f.rma.id);
       const fragment = (await c.query(`SELECT r.*,l.unit_cost_minor,l.currency FROM public.wms_return_fragments r
         JOIN public.wms_cost_layers l ON(l.tenant_id,l.id,l.product_id)=(r.tenant_id,r.layer_id,r.product_id)
-        WHERE r.tenant_id=$1 AND r.operation_id=$2 ORDER BY r.id LIMIT 1`, [f.tenant, eid])).rows[0];
+        WHERE r.tenant_id=$1 AND r.operation_id=$2 AND r.warehouse_id=$3 ORDER BY r.id LIMIT 1`, [f.tenant, eid, f.warehouse])).rows[0];
       assert(fragment, 'The original physical adapter must create actual return fragments before the negative insertion');
       assert.equal((await c.query('SELECT count(*)::int n FROM public.stock_movements WHERE tenant_id=$1 AND return_id=$2 AND delta>0',
         [f.tenant, f.rma.id])).rows[0].n > 0, true);

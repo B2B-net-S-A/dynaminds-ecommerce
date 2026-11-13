@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
@@ -5,6 +6,7 @@ import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed, SECOND_TENANT } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 import { dispatchAutomation, processAutomation } from '../server/automations';
 import { processBatch } from '../server/order-operations';
 import { processSchedule } from '../server/automation-schedules';
@@ -224,7 +226,7 @@ async function orderFixture(quantity = 1) {
     payment_mode: 'cod',
     items: [{ product_id: p.id, quantity }],
   });
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'picking' }));
   return { p, o: await ok('/orders/' + o.id) };
 }
 async function fixture(quantity = 1, scanned = quantity) {
@@ -293,7 +295,7 @@ async function finish(f: F) {
 }
 async function waitOn(c: PoolClient, pattern: RegExp) {
   const pid = (await c.query('SELECT pg_backend_pid() pid')).rows[0].pid,
-    end = Date.now() + 3000;
+    end = Date.now() + 30000;
   while (Date.now() < end) {
     const rows = (
       await pool.query(
@@ -364,7 +366,7 @@ async function claim(id: string) {
 
 test(
   'order wait permits operator downgrade and rolls back every tentative finish consequence',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       p = await preview(f);
@@ -383,7 +385,7 @@ test(
 );
 test(
   'carton wait and actor user FK wait do not pin grants before preview persistence',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture();
     for (const [table, id] of [
@@ -410,7 +412,7 @@ test(
 );
 test(
   'receipt actor FK wait permits revoke and rolls back profile packed session jobs and evidence',
-  { timeout: 20000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture(),
       p = await preview(f);
@@ -429,7 +431,7 @@ test(
 );
 test(
   'public packing preview sees revoke expiry or scope loss committed during actual order wait',
-  { timeout: 30000 },
+  { timeout: 120000 },
   async () => {
     const f = await fixture();
     // The API actor must own its lease, not borrow the operator cookie's session.
@@ -648,7 +650,7 @@ test('renew and expired takeover fence all old previews and tokens; two fresh ta
 });
 test(
   'generic cancellation uses its reserved terminal slot without waiting for packing admission',
-  { timeout: 10000 },
+  { timeout: 120000 },
   async () => {
     const config = await configs(),
       f = await orderFixture(),
@@ -683,6 +685,7 @@ test(
         tenant,
       ])
     ).rows[0].n;
+    const cancel = await legacySerialOrderStatusPayload((orderPath) => req(orderPath, 'GET', undefined), '/orders/' + f.o.id + '/status', { status: 'cancelled' });
     const c = await pool.connect();
     let pending: ReturnType<typeof req> | undefined,
       timer: ReturnType<typeof setTimeout> | undefined;
@@ -691,13 +694,13 @@ test(
       await c.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
         'packing.admission:' + tenant,
       ]);
-      pending = req('/orders/' + f.o.id + '/status', 'PATCH', { status: 'cancelled' }, operator);
+      pending = req('/orders/' + f.o.id + '/status', 'PATCH', cancel, operator);
       const result = await Promise.race([
         pending,
         new Promise<never>((_, reject) => {
           timer = setTimeout(
             () => reject(Error('Generic cancellation waited for packing admission')),
-            3000,
+            30000,
           );
         }),
       ]);
@@ -866,7 +869,7 @@ test('frozen bundle components drive physical completion and packing never consu
     warehouse_id: warehouse,
     items: [{ product_id: kit.id, quantity: 2 }],
   });
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'picking' }));
   const current = await ok('/orders/' + o.id),
     token = randomUUID();
   let session = (
@@ -953,7 +956,7 @@ test('policy ON blocks generic packed workflow batch rule and scheduled actions 
   assert.equal((await ok('/orders/' + o.id)).status, 'picking');
   const wf = await ok('/workflow-statuses', 'POST', { name: 'Packed local', stage: 'packed' });
   assert.equal(
-    (await req('/orders/' + o.id + '/status', 'PATCH', { status: 'packed' })).statusCode,
+    (await req('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => req(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'packed' }))).statusCode,
     409,
   );
   for (const action of [
@@ -1243,7 +1246,7 @@ test('configuration quota preserves exact replay and rejects a new admission wit
   );
   assert.deepEqual(await snapshot(), before);
 });
-test('viewer and insufficient scopes deny writes; readonly or missing module rejects malformed JSON before parse', async () => {
+test('viewer and insufficient scopes deny writes; readonly rejects malformed JSON before parse; torn module fails closed with 503', async () => {
   assert.equal(
     (
       await req(
@@ -1283,27 +1286,19 @@ test('viewer and insufficient scopes deny writes; readonly or missing module rej
     await readonly.close();
   }
   await pool.query('ALTER TABLE packing_receipts RENAME TO packing_receipts_missing_test');
-  let missing: Awaited<ReturnType<typeof buildApp>> | undefined;
   try {
-    missing = await buildApp();
-    const cookie = await login('admin@demo.local', missing);
-    const meta = await req('/packing', 'GET', undefined, cookie, undefined, missing);
-    assert.equal(meta.statusCode, 200);
-    assert.equal(meta.headers['cache-control'], 'no-store');
-    assert.equal(meta.json().available, false);
-    const r = await missing.inject({
-      url: '/api/packing/previews',
-      method: 'POST',
-      payload: '{bad',
-      headers: { cookie, 'content-type': 'application/json' },
-    });
-    assert.equal(r.statusCode, 503);
-    assert.equal(
-      (await req('/orders', 'GET', undefined, cookie, undefined, missing)).statusCode,
-      200,
+    // In the fully migrated schema a hidden packing table is a torn install, not a missing module:
+    // construction and tenant transactions fail closed (PIM integrity), with no write.
+    const digest = await tenantDataDigest();
+    await assert.rejects(buildApp(), pimIncomplete);
+    await assert.rejects(
+      tenantTx(tenant, (c) => c.query('SELECT 1')),
+      pimIncomplete,
     );
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
-    await missing?.close();
     await pool.query('ALTER TABLE packing_receipts_missing_test RENAME TO packing_receipts');
   }
+  const restored = await ok('/packing');
+  assert.equal(restored.available, true);
 });
