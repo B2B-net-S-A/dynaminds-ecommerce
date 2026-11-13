@@ -767,8 +767,8 @@ test('current API revoke, expiry and compound-scope loss after genuine customer-
   assert.equal(providerCalls, 0);
 });
 
-test('current mapping, active catalogue and supplier quote drift each invalidate the entire frozen checkout', async () => {
-  for (const mode of ['mapping', 'inactive', 'price'] as const) {
+test('current mapping, active catalogue, supplier quote drift and missing supplier availability each invalidate the entire frozen checkout', async () => {
+  for (const mode of ['mapping', 'inactive', 'price', 'availability'] as const) {
     const f = await fixture(),
       q = await quote(f);
     if (mode === 'mapping') {
@@ -788,6 +788,9 @@ test('current mapping, active catalogue and supplier quote drift each invalidate
         'UPDATE products SET active=false,version=version+1 WHERE tenant_id=$1 AND id=$2',
         [buyer, f.local.id],
       );
+    } else if (mode === 'availability') {
+      // The supplier's available is checked live (not against the catalogue snapshot): none left refuses.
+      await ok('/inventory/adjust', 'POST', { product_id: f.source.id, warehouse_id: supplierWarehouse, delta: -30, note: 'Own supplier stock gone' }, supplierCookie);
     } else {
       const current = (
         await ok(
@@ -810,6 +813,7 @@ test('current mapping, active catalogue and supplier quote drift each invalidate
     // An inactive own product is outside the active B2B catalogue: assertB2BCatalogProductsInTx answers 404
     // ("Produkt nie należy do wybranego katalogu B2B"), as for any product outside it; drifts answer 409.
     assert.equal(rejected.statusCode, mode === 'inactive' ? 404 : 409, mode);
+    if (mode === 'availability') assert.match(rejected.json().detail, /wystarczającej dostępności/);
     assert.deepEqual(await snapshot(), before);
   }
   assert.equal(providerCalls, 0);
