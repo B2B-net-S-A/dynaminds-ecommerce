@@ -80,8 +80,16 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  const text=(await read('server/catalog-stock-writer-coverage.ts')).toString('utf8'),roster=JSON.parse(text.match(/const SOURCE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]),native=JSON.parse(text.match(/const NATIVE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]);
  assert.equal(roster.length,43);assert.equal(native.length,3);const db=await read('server/db.ts'),current={path:'server/db.ts',sha256:hash(db),bytes:db.length};assert.deepEqual(roster.filter(row=>row.path==='server/db.ts'),[current]);assert.equal(text.split(JSON.stringify(current)).length,2);
  let historical=text;
+ // SourceOffer202 re-pinned allegro-oauth-authority.ts (a write that already started is still read after a config
+ // pause) after SourcePortalN1 and added its comment; both go first and return to the previous pin.
+ const sourceOffer202Comment="// SourceOffer202 re-pins allegro-oauth-authority.ts after review: an offer.write or order.status.write job whose plan\n// already left 'ready' (write_started, or verify with an operation Allegro accepted) keeps its OAuth authority when the\n// config is paused or changed (enabled, external_authorized, version); offers.ts (accept_observed) and order-status.ts\n// then only read and reconcile. A 'ready' plan still needs the current config; actor, lease, plan and connection pins\n// stay; no stock write, stock-writer call or gate bypass.\n";
+ assert.equal(historical.split(sourceOffer202Comment).length,2);historical=historical.replace(sourceOffer202Comment,'');
+ const offer202Now={path:'server/allegro-oauth-authority.ts',sha256:'99e6ae2a8d81f68604fada57a621c55858d83cf1a785f8ee6d91ec6c35250296',bytes:29042},offer202Back={path:'server/allegro-oauth-authority.ts',sha256:'24d0106650c30ce482fe9d96ed09ebb1895b31709e9403d55af61f6431ccb848',bytes:28207};
+ assert.deepEqual(roster.find(r=>r.path===offer202Now.path),offer202Now);assert.equal(historical.split(JSON.stringify(offer202Now)).length,2);historical=historical.replace(JSON.stringify(offer202Now),JSON.stringify(offer202Back));
+ // Later steps read the roster pin of this file: they continue from the previous pin.
+ Object.assign(roster.find(r=>r.path===offer202Now.path),offer202Back);
  // SourcePortalN1 re-pinned return-query.ts and catalog-stock-return-effects.ts (a returns list page reads its PZ heads once)
- // and added its comment; both go first and return to their Source236 / Source270 pins.
+ // and added its comment; both go next and return to their Source236 / Source270 pins.
  const sourcePortalN1Comment="// SourcePortalN1 re-pins return-query.ts and catalog-stock-return-effects.ts after review: a returns list page reads its\n// PZ heads once (one availability verdict, one read for all rows) instead of once per row; read only, no stock write or gate bypass.\n";
  assert.equal(historical.split(sourcePortalN1Comment).length,2);historical=historical.replace(sourcePortalN1Comment,'');
  const portalN1Back={'server/return-query.ts':{path:'server/return-query.ts',sha256:'77913dfddf71391003427f21d8dce67c687c251124f9bda26d030edab3f4ad05',bytes:4714},'server/catalog-stock-return-effects.ts':{path:'server/catalog-stock-return-effects.ts',sha256:'9477925717a4a21dfbbb8c14a96e881e28068b48db6b960d7f1fb6fc4bd277d0',bytes:8630}};

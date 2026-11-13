@@ -35,8 +35,15 @@ type JobKind = 'orders.sync' | 'offer.write' | 'offer.sync'
 type JobFrame = Base & { kind: 'job'; jobId: string; leaseToken: string;
   jobKind: JobKind; payload: string; planId: string | null;
   config: 'offer' | 'status' | 'payment' | null; configVersion: number | null;
-  batchId: string | null; orderId: string | null };
+  batchId: string | null; orderId: string | null;
+  /** offer.write / order.status.write whose plan already left 'ready' (write_started, or verify with an operation
+   * Allegro accepted): the job only reads and reconciles the result (offers.ts accept_observed, order-status
+   * non-ready path), so a paused or changed config (enabled, external_authorized, version) does not cut it off.
+   * Actor, lease, plan and connection pins stay; a plan still 'ready' (a new write) needs the current config. */
+  startedWrite: boolean };
 type Frame = SessionFrame | KeyFrame | JobFrame;
+/** Plan phases after the provider write began: only reading and reconciling follow. */
+const STARTED_WRITE: readonly string[] = ['write_started', 'verify'];
 type TxState = { authorities: Set<AllegroOAuthAuthority>;
   jobPins: Set<AllegroOAuthAuthority>; frozen: boolean; completed: boolean };
 const custody = new WeakMap<AllegroOAuthAuthority, Readonly<Frame>>();
@@ -189,16 +196,18 @@ export async function allegroAuthorityForJobInTx(c: PoolClient,
       : config ? current.payload.version : null;
     const batchId = kind === 'offer.variants' ? uuid.parse(current.payload.batch_id) : null;
     const orderId = kind === 'payment.source.read' ? uuid.parse(current.payload.order_id) : null;
+    let startedWrite = false;
     if (planId) {
       const table = kind === 'offer.write' ? 'offer_plans' : 'order_status_plans';
       const versionColumn = kind === 'offer.write' ? 'sync_version' : 'config_version';
-      const p = (await c.query(`SELECT actor_id,channel_id,job_id,state,${versionColumn} AS version
+      const p = (await c.query(`SELECT actor_id,channel_id,job_id,state,phase,${versionColumn} AS version
         FROM public.${table} WHERE tenant_id=$1 AND id=$2`, [job.tenant_id, planId])).rows[0];
       ensure(p && p.actor_id === userId && p.channel_id === channelId
         && p.job_id === current.id && p.state === 'queued', 409, 'Źródło zadania Allegro zmieniło się');
       if (p.version != null) {
         config = kind === 'offer.write' ? 'offer' : 'status'; configVersion = p.version;
       }
+      startedWrite = STARTED_WRITE.includes(p.phase);
     } else ensure(current.payload.channel_id === channelId, 409, 'Zadanie dotyczy innego kanału');
     if (batchId) {
       const b = (await c.query('SELECT actor_id,channel_id,job_id,state FROM public.variant_offer_batches '
@@ -216,7 +225,8 @@ export async function allegroAuthorityForJobInTx(c: PoolClient,
       nativeStatusConnection ??= (await import('./order-status')).statusConnection;
     const authority = issue({ kind: 'job', tenantId: job.tenant_id, userId, channelId,
       security: checkedSecurity, jobId: current.id, leaseToken: current.lease_token,
-      jobKind: kind, payload: JSON.stringify(current.payload), planId, config, configVersion, batchId, orderId });
+      jobKind: kind, payload: JSON.stringify(current.payload), planId, config, configVersion, batchId, orderId,
+      startedWrite });
     const refused = current.payload.allegro_oauth_commit_refused;
     if (refused) {
       const marker = z.object({ channel_id: uuid, connection_id: uuid.nullable() }).strict().parse(refused);
@@ -244,7 +254,7 @@ async function jobSource(c: PoolClient, f: JobFrame, pin: boolean) {
     cfg = (await c.query(`SELECT actor_id,enabled,version,external_authorized,connection_hash
       FROM public.${table} WHERE tenant_id=$1 AND channel_id=$2`
       + (pin ? ' FOR SHARE NOWAIT' : ''), [f.tenantId, f.channelId])).rows[0];
-    ensure(cfg && cfg.enabled && cfg.external_authorized && cfg.version === f.configVersion
+    ensure(cfg && (f.startedWrite || (cfg.enabled && cfg.external_authorized && cfg.version === f.configVersion))
       && cfg.actor_id === f.userId, 409, 'Konfigurację zadania Allegro wyłączono lub zmieniono');
   }
   const j = (await c.query(`SELECT kind,payload,state,lease_token FROM public.jobs
@@ -256,11 +266,12 @@ async function jobSource(c: PoolClient, f: JobFrame, pin: boolean) {
   if (f.planId) {
     const table = f.jobKind === 'offer.write' ? 'offer_plans' : 'order_status_plans';
     const column = f.jobKind === 'offer.write' ? 'sync_version' : 'config_version';
-    const p = (await c.query(`SELECT actor_id,channel_id,job_id,state,${column} AS version
+    const p = (await c.query(`SELECT actor_id,channel_id,job_id,state,phase,${column} AS version
       FROM public.${table} WHERE tenant_id=$1 AND id=$2` + (pin ? ' FOR SHARE NOWAIT' : ''),
       [f.tenantId, f.planId])).rows[0];
     ensure(p && p.actor_id === f.userId && p.channel_id === f.channelId
-      && p.job_id === f.jobId && p.state === 'queued' && p.version === f.configVersion,
+      && p.job_id === f.jobId && p.state === 'queued' && p.version === f.configVersion
+      && (!f.startedWrite || STARTED_WRITE.includes(p.phase)),
       409, 'Plan zadania Allegro zmienił się');
   }
   if (f.batchId) {
