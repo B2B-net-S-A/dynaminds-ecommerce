@@ -6,6 +6,7 @@ import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { DEMO_TENANT, seed } from './fixtures';
 import { wmsLotsHash } from '../server/wms-lots';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 import {
   createInventoryBulkEditPreviewInTx,
   executeInventoryBulkEditInTx,
@@ -114,7 +115,7 @@ async function snapshot(forTenant = tenant) {
       ])
     ).rows;
   }
-  return out;
+  return withoutApiKeyLastUse(out);
 }
 const product = () =>
   ok(

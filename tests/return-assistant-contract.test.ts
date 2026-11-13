@@ -6,6 +6,7 @@ import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../server/app';
 import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 import { returnAssistantFixture } from './return-assistant-fixture';
 
 // Metadata compatibility mutations below are confined to the disposable native test DB.
@@ -31,7 +32,7 @@ async function facts(tenant: string) {
       assert.match(table_name, /^[a-z][a-z0-9_]*$/);
       result[table_name] = (await c.query(`SELECT to_jsonb(x) row FROM "${table_name}" x WHERE tenant_id=$1 ORDER BY 1`, [tenant])).rows;
     }
-    await c.query('COMMIT'); return result;
+    await c.query('COMMIT'); return withoutApiKeyLastUse(result);
   } finally { await c.query('ROLLBACK').catch(() => undefined); c.release(); }
 }
 function noStore(r: { headers: Row }) { assert.match(String(r.headers['cache-control']), /no-store/); }

@@ -8,6 +8,7 @@ import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
 import { openCatalogExport } from '../server/catalog-export';
 import { withHistoricalCatalogModules } from './catalog-export-historical-fixture';
+import { withoutApiKeyLastUse } from './api-key-last-use';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -168,7 +169,7 @@ async function snapshot() {
       ])
     ).rows;
   }
-  return result;
+  return withoutApiKeyLastUse(result);
 }
 async function waitOn(holder: PoolClient, pattern: RegExp, relation?: 'warehouses' | 'stock') {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid,
@@ -483,6 +484,8 @@ test(
     let pending: ReturnType<typeof openCatalogExport> | undefined;
     try {
       await blocker.query('BEGIN');
+      // The coherent writer's stock UPDATE journals a native birth (152), accepted only in its own app.tenant_id.
+      await blocker.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
       await blocker.query('LOCK TABLE stock IN ACCESS EXCLUSIVE MODE');
       pending = openCatalogExport(
         actor(),
