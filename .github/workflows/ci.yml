@@ -202,7 +202,7 @@ jobs:
           # Zielone dopiero za drugim razem (run-tests.mjs ponawia padnięty plik raz, sam): log pierwszej próby.
           if [ -s ci-out/db/flaky.txt ]; then
             mkdir -p ci-out/failed-logs
-            { echo "Niestabilne (zielone za 2. razem):"; sed 's/^/- /' ci-out/db/flaky.txt; } >> "$GITHUB_STEP_SUMMARY"
+            { echo ""; echo "#### Niestabilne (zielone za 2. razem)"; sed 's/^/- /' ci-out/db/flaky.txt; } >> "$GITHUB_STEP_SUMMARY"
             while read -r f; do cp "ci-out/db/$(basename "$f").attempt1.log" ci-out/failed-logs/; done < ci-out/db/flaky.txt
           fi
       - name: Upload logs of failed files

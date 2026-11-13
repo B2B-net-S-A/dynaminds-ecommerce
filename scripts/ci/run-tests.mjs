@@ -14,7 +14,7 @@
  * Requires DYNA_LOCAL_CONFIG_PATH (dbPassword) and DYNA_TEST_PG_PORT; PostgreSQL on 127.0.0.1.
  *
  * --kind db: a file that failed on time (statement/lock timeout, a test past its own timeout — not the 45 min file
- * limit) runs once more, alone, on a new database after the others (decision 13.11.2026: lock-wait and statement-timeout
+ * limit, nor a file that already took over a third of it) runs once more, alone, on a new database after the others (decision 13.11.2026: lock-wait and statement-timeout
  * tests fail under the load of two files at once). Any other failure is deterministic enough to stay red at once.
  * Green on the second try counts as green but is listed as flaky (summary line, flaky.txt; the first attempt's log
  * stays as <file>.attempt1.log).
@@ -175,14 +175,15 @@ async function worker() {
     const file = files[next++];
     const code = await runFile(file);
     if (code === 0) continue;
-    // A file past the time limit is not retried: a second 45 min would double the shard.
-    if (kind === 'db' && code !== 124 && TIMING.test(readFileSync(join(out, basename(file) + '.log'), 'utf8'))) retry.push(file);
+    // A file past the time limit is not retried: a second 45 min would double the shard. Nor is one that already
+    // took more than a third of that limit: run alone again it would push the shard over its budget.
+    if (kind === 'db' && code !== 124 && durations[file] <= timeoutMin * 20 && TIMING.test(readFileSync(join(out, basename(file) + '.log'), 'utf8'))) retry.push(file);
     else failed.push(file);
   }
 }
 await Promise.all(Array.from({ length: Math.min(concurrency, files.length) }, worker));
 for (const file of retry) {
-  for (const ext of ['.log', '.guard-cache.jsonl']) try { renameSync(join(out, basename(file) + ext), join(out, basename(file) + '.attempt1' + ext)); } catch {}
+  for (const ext of ['.log', '.guard-cache.jsonl']) try { renameSync(join(out, basename(file) + ext), join(out, basename(file) + '.attempt1' + ext)); } catch (e) { if (e.code !== 'ENOENT') console.error(`rename ${basename(file) + ext}: ${e.message}`); }
   if (await runFile(file, ' (2. próba, sam)') === 0) flaky.push(file);
   else failed.push(file);
 }
