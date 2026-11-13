@@ -10,7 +10,6 @@
   },
   "quarantine": {
     "tests/b2b-external-order-intent.test.ts": "e3 13.11.2026: błąd SQL — b2b_external_allocate (109) wstawia reservations przez jsonb_populate_recordset bez consumed_quantity (NOT NULL od 134) → 23502 → 500 przy każdym allocate; naprawa wymaga nowej migracji — decyzja Artura",
-    "tests/b2b-network-dropshipping-safety.test.ts": "e3 13.11.2026: zostaje tylko :453 — druga wycena po checkout dostaje 409 „Oferta lub zakres katalogu B2B zmieniły się”, bo migawka pozycji katalogu B2B zawiera available dostawcy (30), a checkout zarezerwował 2 (28); dropshipping porównuje migawkę ściśle (assertB2BBuyerCatalogItemsInTx bez allowLiveLegacyQuote) — decyzja Artura",
     "tests/catalog-export-catalogs.test.ts": "e1 13.11.2026: ukryte 142/143 przepisane na kontrakt fail-closed (zielone); zostaje :211 — okno 2,5 s na obserwację czekania przez IAM, lokalnie pod obciążeniem nie widzi blokady (zielony 1 z 4 biegów) — do potwierdzenia w CI",
     "tests/catalog-export-profiles-safety.test.ts": "e1 13.11.2026: migawki naprawione (auth237 last-use); lokalnie pod obciążeniem (load ~26) :436 (199 POST-ów) przekracza 20 s, a jego zaległe zapisy psują migawki :465/:585/:638 — do potwierdzenia w CI",
     "tests/catalog-file-import-safety.test.ts": "e1 13.11.2026: migawki naprawione (auth237 last-use), 11/12 zielone; :859 (dwa buildApp, w tym kopia z ukrytymi tabelami) przekracza 30 s lokalnie pod obciążeniem — do potwierdzenia w CI (możliwy też preflight PIM)",
