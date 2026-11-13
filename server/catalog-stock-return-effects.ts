@@ -121,7 +121,7 @@ export async function catalogStockReturnDocumentsForReturnsInTx(c:PoolClient,ret
   const actor:CatalogStockControlActor={tenantId:own.tenants[0],userId:null,source:'system'};
   return owner(c,actor,async()=>{
     if(!await catalogStockControlAvailable(c))return documents;
-    const over=(await c.query('SELECT 1 FROM public.catalog_stock_return_documents WHERE tenant_id=$1 AND return_id=ANY($2::uuid[]) GROUP BY return_id HAVING count(*)>100 LIMIT 1',[actor.tenantId,ids])).rowCount;
+    const over=(await c.query('SELECT 1 FROM public.catalog_stock_return_documents WHERE tenant_id=$1 AND return_id=ANY($2::uuid[]) GROUP BY return_id HAVING count(*)>100 LIMIT 1',[actor.tenantId,ids])).rows.length;
     ensure(!over,413,'Przyjęcie zwrotu obejmuje zbyt wiele magazynów');
     const rows=(await c.query('SELECT return_id,payload FROM public.catalog_stock_return_documents WHERE tenant_id=$1 AND return_id=ANY($2::uuid[]) ORDER BY return_id,warehouse_id,id',[actor.tenantId,ids])).rows;
     for(const row of rows)documents.set(row.return_id,[...(documents.get(row.return_id)??[]),row.payload as CatalogStockReturnPz]);
