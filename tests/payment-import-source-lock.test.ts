@@ -15,6 +15,7 @@ import {
 import { encrypt } from '../server/security';
 import { Problem } from '../server/errors';
 import type { IntegrationContext } from '../server/channel-access';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const testUrl = new URL(process.env.DATABASE_URL ?? 'http://invalid');
@@ -87,7 +88,8 @@ async function fixture() {
     "INSERT INTO products(id,tenant_id,sku,name,price) VALUES($1,$2,$3,'Source lock product',3167)",
     [product, tenant, 'SRC-' + product],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) VALUES($1,$2,$3,20)',
     [tenant, warehouse, product],
   );
@@ -159,7 +161,7 @@ async function orderWait(holderPid: number, scheduler = false) {
   while (Date.now() < end) {
     const rows = (
       await pool.query(
-        "SELECT pid FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND (($2 AND query LIKE 'SELECT id FROM orders WHERE channel_id=%FOR UPDATE') OR (NOT $2 AND query='SELECT * FROM orders WHERE id=$1 FOR UPDATE')) AND $1=ANY(pg_blocking_pids(pid))",
+        "SELECT pid FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND (($2 AND query LIKE 'SELECT id FROM orders WHERE channel_id=%FOR UPDATE') OR (NOT $2 AND query='SELECT id FROM orders WHERE id=$1 FOR UPDATE')) AND $1=ANY(pg_blocking_pids(pid))",
         [holderPid, scheduler],
       )
     ).rows;

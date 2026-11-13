@@ -11,6 +11,7 @@ import { tick } from '../server/worker';
 import { encrypt } from '../server/security';
 import { Problem } from '../server/errors';
 import type { Actor } from '../server/domain';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 
 assert.equal(process.env.DYNA_TEST, 'true', 'Lock tests require an isolated ephemeral DB');
 const testUrl = new URL(process.env.DATABASE_URL ?? 'http://invalid');
@@ -82,7 +83,8 @@ async function ready(operation: Operation): Promise<Fixture> {
       [id, actor.tenantId, 'LOCK-' + id, JSON.stringify({ Materiał: 'stal' })],
     )
   ).rows[0];
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    actor.tenantId,
     'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) VALUES($1,$2,$3,7)',
     [actor.tenantId, warehouse, id],
   );

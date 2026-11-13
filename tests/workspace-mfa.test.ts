@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 import { totp } from '../server/totp';
 import { tokenHash } from '../server/security';
 
@@ -447,37 +448,27 @@ test('concurrent activation and global MFA disable serialize without leaving unp
     assert.equal((await req('/api/products', 'GET', undefined, b.cookie)).statusCode, 200);
   }
 });
-test('pre-policy schema remains usable for older restored backups without missing-column queries', async () => {
+test('pre-policy schema dropped from the full schema fails closed with 503 and no effects; restored policy schema is a complete install again', async () => {
   const a = await signup();
   await enable(a);
-  await app.close();
   await pool.query(
     'DROP TABLE workspace_security_policies; ALTER TABLE sessions DROP COLUMN mfa_verified_at',
   );
   try {
-    app = await buildApp();
-    assert.equal((await req('/api/health')).json().workspace_mfa_available, false);
-    const login = await req('/api/auth/login', 'POST', {
-      email: a.user.email,
-      password,
-      code: a.codes.shift(),
-    });
-    assert.equal(login.statusCode, 200, login.body);
-    a.cookie = cookieOf(login);
-    assert.equal((await req('/api/products', 'GET', undefined, a.cookie)).statusCode, 200);
-    const s = (await req('/api/auth/security', 'GET', undefined, a.cookie)).json();
-    assert.equal(s.enabled, true);
-    assert.deepEqual(s.required_by_organizations, []);
-    const verify = await req(
-      '/api/auth/security/verify',
-      'POST',
-      { password, code: a.codes.shift() },
-      a.cookie,
+    // In the fully migrated schema this is a torn install, not an older restored backup:
+    // construction and tenant transactions fail closed (PIM integrity), with no write.
+    const digest = await tenantDataDigest();
+    await assert.rejects(buildApp(), pimIncomplete);
+    assert.ok(a.user.tenant_id);
+    await assert.rejects(
+      tenantTx(a.user.tenant_id, (c) => c.query('SELECT 1')),
+      pimIncomplete,
     );
-    assert.equal(verify.statusCode, 200, verify.body);
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
     await pool.query(
       await readFile(new URL('../server/057_workspace_mfa.sql', import.meta.url), 'utf8'),
     );
   }
+  assert.equal((await pool.query('SELECT public.pim_dictionary_valid() valid')).rows[0].valid, true);
 });

@@ -20,6 +20,8 @@ import {
 import { isLocalFinancialVersion } from '../server/local-financial-policy';
 import { scheduleCandidates } from '../server/automation-schedules';
 import { previewStatus, statusConnection } from '../server/order-status';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const testUrl = new URL(process.env.DATABASE_URL ?? 'http://invalid');
@@ -139,7 +141,8 @@ async function make(mode = 'prepaid', status = 'new', total = 10000) {
     "INSERT INTO products(id,tenant_id,sku,name,price) VALUES($1,$2,$3,'Financial product',10000)",
     [product, actor.tenantId, 'FIN-' + product],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    actor.tenantId,
     'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) VALUES($1,$2,$3,7)',
     [actor.tenantId, warehouse, product],
   );
@@ -169,7 +172,7 @@ async function make(mode = 'prepaid', status = 'new', total = 10000) {
 }
 async function shipment(order: any, dispatched = true) {
   return (
-    await pool.query(
+    await rewriteShipmentFixture(
       "INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,dispatched_at,cod_expected) VALUES($1,$2,$3,'DPD',$4,'sandbox','confirmed',$5,CASE WHEN $6 THEN now() END,$7) RETURNING *",
       [randomUUID(), actor.tenantId, order.id, randomUUID(), channel.id, dispatched, order.total],
     )

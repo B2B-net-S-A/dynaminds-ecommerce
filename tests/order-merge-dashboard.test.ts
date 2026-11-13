@@ -5,6 +5,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 import { createOrder, orderSchema } from '../server/domain';
 
 type Row = Record<string, any>;
@@ -401,28 +402,25 @@ test('nested merge suppresses original sources and previous technical owner in e
   for (const historical of [first, second, technical])
     assert(!JSON.stringify(result.dashboard).includes(historical.id));
 });
-test('pre-merge-schema dashboard fallback keeps ordinary reads and old grouping without mutation', async () => {
+test('torn merge schema fails the dashboard closed with 503 without mutation; restored module reads again', async () => {
   const p = await product(),
     first = await order(p, 2, { shipping_cost: 100 }),
     second = await order(p, 1, { currency: 'EUR' });
   const before = await unchangedRead();
   sections(before, [first, second]);
-  // Explicit isolated old-copy capability fixture. No source rows or migration
-  // receipt are changed; restore the original name even if a read assertion fails.
+  // order_merge_claims hidden in the full schema is a torn install, not an older copy:
+  // the application refuses to start on it. Restore the name even if an assertion fails.
   await pool.query('ALTER TABLE order_merge_claims RENAME TO qa_dashboard_old_claims');
-  let legacy: Awaited<ReturnType<typeof buildApp>> | undefined;
   try {
-    legacy = await buildApp();
-    const result = await unchangedRead(legacy);
-    sections(result, [first, second]);
-    assert.deepEqual(result.dashboard, before.dashboard);
+    const digest = await tenantDataDigest();
+    await assert.rejects(buildApp(), pimIncomplete);
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
-    try {
-      await legacy?.close();
-    } finally {
-      await pool.query('ALTER TABLE qa_dashboard_old_claims RENAME TO order_merge_claims');
-    }
+    await pool.query('ALTER TABLE qa_dashboard_old_claims RENAME TO order_merge_claims');
   }
+  const result = await unchangedRead();
+  sections(result, [first, second]);
+  assert.deepEqual(result.dashboard, before.dashboard);
 });
 
 test('incomplete merge module still suppresses real closed sources while full capability is unavailable', async () => {

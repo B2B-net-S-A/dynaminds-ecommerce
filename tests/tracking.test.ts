@@ -1,6 +1,7 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool, migrate, tenantTx } from '../server/db';
@@ -82,6 +83,8 @@ beforeEach(() => {
 });
 const read = (sql: string, args: any[] = []) =>
   tenantTx(DEMO_TENANT, async (c) => (await c.query(sql, args)).rows);
+const rewriteRows = async (sql: string, args: any[] = []) =>
+  (await rewriteShipmentFixture(sql, args)).rows;
 async function channel(sim = false, mode = 'live') {
   const id = randomUUID();
   await read(
@@ -124,8 +127,8 @@ async function shipment(ch: string) {
   await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'packed' }));
   await ok('/orders/' + o.id + '/ship-demo', 'POST', {});
   const s = (
-    await read(
-      "UPDATE shipments SET channel_id=$2,external_id='123',status='confirmed',dispatched_at=now() WHERE order_id=$1 RETURNING *",
+    await rewriteRows(
+      "UPDATE shipments SET channel_id=$2,external_id='QA-'||id::text,status='confirmed',dispatched_at=now() WHERE order_id=$1 RETURNING *",
       [o.id, ch],
     )
   )[0];
@@ -412,7 +415,7 @@ test('scheduler excludes undispatched, terminal and expired shipments', async ()
     b = await shipment(ch),
     c = await shipment(ch),
     d = await shipment(ch);
-  await read('UPDATE shipments SET dispatched_at=NULL WHERE id=$1', [a.s.id]);
+  await rewriteRows('UPDATE shipments SET dispatched_at=NULL WHERE id=$1', [a.s.id]);
   await read(
     "UPDATE shipments SET tracking_data='{" + '"status":"returned_to_sender"' + "}' WHERE id=$1",
     [b.s.id],
@@ -497,7 +500,7 @@ async function cloneShipments(ch: string, base: any, count: number) {
       SELECT $2,tenant_id,$3,customer_name,email,address,currency,'shipped',total,warehouse_id,$4 FROM orders WHERE id=$1`,
       [base.o.id, oid, 'TRACK-PAGE-' + oid, randomUUID() + randomUUID()],
     );
-    await read(
+    await rewriteRows(
       `INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,dispatched_at)
       VALUES($1,$2,$3,'InPost fixture',$4,'live','confirmed',$5,now())`,
       [sid, DEMO_TENANT, oid, 'TRACK-' + sid, ch],

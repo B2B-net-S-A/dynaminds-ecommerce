@@ -1,6 +1,7 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool, migrate, tenantTx } from '../server/db';
@@ -98,6 +99,8 @@ beforeEach(() => {
 });
 const read = (sql: string, args: any[] = []) =>
   tenantTx(DEMO_TENANT, async (c) => (await c.query(sql, args)).rows);
+const rewriteRows = async (sql: string, args: any[] = []) =>
+  (await rewriteShipmentFixture(sql, args)).rows;
 async function channel(sim = false, mode = 'live') {
   const id = randomUUID();
   await read(
@@ -145,13 +148,13 @@ async function shipment(ch: string) {
   await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'packed' }));
   await ok('/orders/' + o.id + '/ship-demo', 'POST', {});
   const s = (
-    await read(
+    await rewriteRows(
       "UPDATE shipments SET channel_id=$2,external_id='123',status='confirmed',dispatched_at=now() WHERE order_id=$1 RETURNING *",
       [o.id, ch],
     )
   )[0];
   s.tracking_number = String(Date.now()).padStart(13, '0') + 'Q';
-  await read('UPDATE shipments SET tracking_number=$2 WHERE id=$1', [s.id, s.tracking_number]);
+  await rewriteRows('UPDATE shipments SET tracking_number=$2 WHERE id=$1', [s.id, s.tracking_number]);
   responses.set(s.tracking_number, soap([event(s.tracking_number, '170101')]));
   return { s, o, p };
 }
@@ -581,7 +584,7 @@ test('tracking API paginates DPD history without leaking tenants or allowing vie
       SELECT $2,tenant_id,$3,customer_name,email,address,currency,'shipped',total,warehouse_id,$4 FROM orders WHERE id=$1`,
       [o.id, oid, 'DPD-PAGE-' + oid, randomUUID() + randomUUID()],
     );
-    await read(
+    await rewriteRows(
       "INSERT INTO shipments(id,tenant_id,order_id,carrier,tracking_number,mode,status,channel_id,dispatched_at) VALUES($1,$2,$3,'DPD',$4,'demo','confirmed',$5,now())",
       [randomUUID(), DEMO_TENANT, oid, '00008891' + String(10000 + n) + 'Q', ch],
     );

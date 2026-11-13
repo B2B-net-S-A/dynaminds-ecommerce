@@ -11,6 +11,8 @@ import {
 } from '../server/ebay-fulfillment-schedules';
 import { test, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 import { randomUUID } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
 import { buildApp } from '../server/app';
@@ -123,7 +125,7 @@ async function fixture(simulation = false, shipped = true) {
       [ch],
     );
   else if (shipped)
-    await pool.query(
+    await rewriteShipmentFixture(
       "UPDATE shipments SET mode='sandbox',carrier='DPD QA synthetic',tracking_number=$2 WHERE order_id=$1",
       [o.id, '003' + randomUUID().replaceAll('-', '')],
     );
@@ -216,7 +218,7 @@ test('eBay shipping: packing, DEMO/live environment and invalid tracking block t
     'dispatched_at=NULL',
   ]) {
     const x = await fixture();
-    await pool.query(`UPDATE shipments SET ${change} WHERE order_id=$1`, [x.o.id]);
+    await rewriteShipmentFixture(`UPDATE shipments SET ${change} WHERE order_id=$1`, [x.o.id]);
     assert([409, 422].includes((await preview(x)).statusCode));
   }
   assert.equal(writes().length, 0);
@@ -273,7 +275,7 @@ test('eBay shipping: changed tracking, order or connection invalidates preview b
     const x = await fixture(),
       p = await plan(x);
     if (kind === 'tracking')
-      await pool.query("UPDATE shipments SET tracking_number='OTHER003' WHERE order_id=$1", [
+      await rewriteShipmentFixture("UPDATE shipments SET tracking_number='OTHER003' WHERE order_id=$1", [
         x.o.id,
       ]);
     else if (kind === 'order')
@@ -412,7 +414,7 @@ test('eBay shipping: revoked role or changed tracking during final GET blocks PO
             [DEMO_TENANT, user],
           );
         else
-          await pool.query("UPDATE shipments SET tracking_number='OTHER003' WHERE order_id=$1", [
+          await rewriteShipmentFixture("UPDATE shipments SET tracking_number='OTHER003' WHERE order_id=$1", [
             x.o.id,
           ]);
       }
@@ -917,7 +919,7 @@ async function cloneShipped(x: Fixture) {
       }),
     ],
   );
-  await pool.query(
+  await rewriteShipmentFixture(
     'INSERT INTO shipments SELECT (jsonb_populate_record(NULL::shipments,to_jsonb(s)||$2::jsonb)).* FROM shipments s WHERE order_id=$1',
     [
       x.o.id,
@@ -1034,16 +1036,17 @@ test('eBay automatic shipping: RLS isolation and cross-tenant receipt FK; previe
 test('eBay automatic shipping: dispatched date bounds and local stage exclude future, old and unshipped orders', async () => {
   const x = await fixture(true);
   await config(x);
-  await pool.query("UPDATE shipments SET dispatched_at=now()+interval '1 day' WHERE order_id=$1", [
+  await rewriteShipmentFixture("UPDATE shipments SET dispatched_at=now()+interval '1 day' WHERE order_id=$1", [
     x.o.id,
   ]);
   assert.equal((await scan(x)).payload.stats.checked, 0);
-  await pool.query("UPDATE shipments SET dispatched_at=now()-interval '2 days' WHERE order_id=$1", [
+  await rewriteShipmentFixture("UPDATE shipments SET dispatched_at=now()-interval '2 days' WHERE order_id=$1", [
     x.o.id,
   ]);
   assert.equal((await scan(x)).payload.stats.checked, 0);
-  await pool.query('UPDATE shipments SET dispatched_at=now() WHERE order_id=$1', [x.o.id]);
-  await pool.query("UPDATE orders SET status='packed' WHERE id=$1", [x.o.id]);
+  await rewriteShipmentFixture('UPDATE shipments SET dispatched_at=now() WHERE order_id=$1', [x.o.id]);
+  // Packing-field guards (189) resolve the order in the declared tenant scope.
+  await tenantScopedOwnerQuery(DEMO_TENANT, "UPDATE orders SET status='packed' WHERE id=$1", [x.o.id]);
   assert.equal((await scan(x)).payload.stats.checked, 0);
   assert.equal((await autoPlans(x)).length, 0);
 });

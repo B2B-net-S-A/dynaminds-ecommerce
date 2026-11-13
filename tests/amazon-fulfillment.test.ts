@@ -1,6 +1,7 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { randomUUID, createHash } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
 import { buildApp } from '../server/app';
@@ -151,7 +152,7 @@ async function fixture(
       [ch],
     );
   else if (shipped)
-    await pool.query(
+    await rewriteShipmentFixture(
       "UPDATE shipments SET mode='sandbox',carrier='QA DPD',tracking_number=$2 WHERE order_id=$1",
       [o.id, '003' + randomUUID().replaceAll('-', '')],
     );
@@ -246,9 +247,9 @@ test('Amazon fulfillment: local packing, grant opt-in, account ID, DEMO/live mis
     "dispatched_at=now()+interval '1 hour'",
     'dispatched_at=NULL',
   ]) {
-    await pool.query(`UPDATE shipments SET ${change} WHERE order_id=$1`, [y.o.id]);
+    await rewriteShipmentFixture(`UPDATE shipments SET ${change} WHERE order_id=$1`, [y.o.id]);
     assert([409, 422].includes((await preview(y)).statusCode));
-    await pool.query(
+    await rewriteShipmentFixture(
       'UPDATE shipments SET mode=$2,tracking_number=$3,dispatched_at=$4 WHERE order_id=$1',
       [y.o.id, original.mode, original.tracking_number, original.dispatched_at],
     );
@@ -278,7 +279,7 @@ test('Amazon fulfillment: Other requires carrierName, optional service, unknown 
 test('Amazon fulfillment: changed local snapshot/address/tracking and remote cancellations, programs, prices and line identity stop before POST', async () => {
   const x = await fixture(),
     p = await plan(x);
-  await pool.query("UPDATE shipments SET tracking_number='CHANGED' WHERE order_id=$1", [x.o.id]);
+  await rewriteShipmentFixture("UPDATE shipments SET tracking_number='CHANGED' WHERE order_id=$1", [x.o.id]);
   assert.equal((await queue(p)).statusCode, 409);
   for (const edit of [
     (r: any) => (r.recipient.deliveryAddress.city = 'Other'),

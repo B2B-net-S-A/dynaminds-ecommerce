@@ -7,6 +7,7 @@ import { platform, arch, cpus } from 'node:os';
 import { migrate, pool } from '../server/db';
 import { buildApp } from '../server/app';
 import { hashPassword, tokenHash } from '../server/security';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 assert.equal(process.env.DYNA_TEST, 'true');
 test('lokalny burst: 20 organizacji, 200 SKU, 400 zamówień, 25 równoczesnych żądań', async () => {
   await migrate();
@@ -46,7 +47,8 @@ test('lokalny burst: 20 organizacji, 200 SKU, 400 zamówień, 25 równoczesnych 
         'INSERT INTO products(id,tenant_id,sku,name,price) VALUES($1,$2,$3,$4,10000)',
         [id, tenant, `LOAD-${n}`, 'Produkt obciążenia'],
       );
-      await pool.query(
+      await tenantScopedOwnerQuery(
+        tenant,
         'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) VALUES($1,$2,$3,100)',
         [tenant, warehouse, id],
       );
