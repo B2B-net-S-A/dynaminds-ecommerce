@@ -175,6 +175,23 @@ jobs:
             -c "SELECT pg_reload_conf()"
           docker exec "$PG_CONTAINER" psql -U postgres -Atc "SELECT version()"
           echo "DYNA_LOCAL_CONFIG_PATH=$cfg" >> "$GITHUB_ENV"
+      # pg_dump/pg_restore 18 dla testów kopii i odtwarzania (server/recovery.ts czyta DYNA_PG_TOOLS; lokalnie
+      # `npm run pg:tools`). Runner ma tylko klienta 16, a pg_dump nie zrzuca nowszego serwera. Testy restore169
+      # przypinają ścieżkę i sumę SHA-256 binarek na czas biegu (DYNA_ACL169_PG_*), liczone tu z zainstalowanych.
+      - name: PostgreSQL 18 client tools
+        run: |
+          set -euo pipefail
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+          sudo apt-get install -y -qq --no-install-recommends postgresql-client-18 > /dev/null
+          bin=/usr/lib/postgresql/18/bin
+          "$bin/pg_dump" --version
+          {
+            echo "DYNA_PG_TOOLS=$bin"
+            echo "DYNA_ACL169_PG_DUMP_PATH=$bin/pg_dump"
+            echo "DYNA_ACL169_PG_RESTORE_PATH=$bin/pg_restore"
+            echo "DYNA_ACL169_PG_DUMP_SHA256=$(sha256sum "$bin/pg_dump" | cut -d' ' -f1)"
+            echo "DYNA_ACL169_PG_RESTORE_SHA256=$(sha256sum "$bin/pg_restore" | cut -d' ' -f1)"
+          } >> "$GITHUB_ENV"
       - name: Tests
         env:
           SHARD: ${{ matrix.shard }}

@@ -126,7 +126,8 @@ test('bounded keyset traversal preserves timestamp microseconds and UUID ties wi
 test('tenant isolation, read-only role, metadata without unbounded channels and truthful summaries', async () => {
   const metadata = (await request('/api/integrations/workspace', viewer)).json();
   assert.equal(metadata.summary.total, 205);
-  assert.equal(metadata.registry.length, 14);
+  // 14 providers when written; Mirakl, DHL and Poczta Polska (carriers234) joined the registry later.
+  assert.equal(metadata.registry.length, 17);
   assert.equal(metadata.channels, undefined);
   assert.equal(metadata.summary.attention, 68);
   for (const status of ['simulation', 'verified_read']) {

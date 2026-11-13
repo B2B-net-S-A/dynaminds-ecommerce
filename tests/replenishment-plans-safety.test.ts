@@ -1144,40 +1144,41 @@ test(
     const effectsBefore = await thresholdFingerprint(thresholdEffects);
     try {
       await thresholdTransaction(c);
-      await c.query(`CREATE TEMP TABLE quota_copies ON COMMIT DROP AS
-      SELECT gen_random_uuid() AS preview_id,gen_random_uuid() AS preview_key,
-        gen_random_uuid() AS row_id,gen_random_uuid() AS execution_id,
-        gen_random_uuid() AS execution_key,gen_random_uuid() AS execution_row_id
-      FROM generate_series(1,1999)`);
+      // dyna_app may not create temporary tables (migration 262_revoke_public_temporary), so the 1999
+      // copy identities travel as uuid[] parameters instead of an ON COMMIT DROP temp table.
+      const copyIds = () => Array.from({ length: 1999 }, () => randomUUID());
+      const copies = [copyIds(), copyIds(), copyIds(), copyIds(), copyIds(), copyIds()];
+      const quotaCopies = `unnest($2::uuid[],$3::uuid[],$4::uuid[],$5::uuid[],$6::uuid[],$7::uuid[])
+        AS m(preview_id,preview_key,row_id,execution_id,execution_key,execution_row_id)`;
       await c.query(
         `INSERT INTO replenishment_previews
       SELECT (jsonb_populate_record(NULL::replenishment_previews,to_jsonb(p)||
         jsonb_build_object('id',m.preview_id,'client_key',m.preview_key,'byte_count',1))).*
-      FROM replenishment_previews p CROSS JOIN quota_copies m WHERE p.id=$1`,
-        [p.id],
+      FROM replenishment_previews p CROSS JOIN ${quotaCopies} WHERE p.id=$1`,
+        [p.id, ...copies],
       );
       await c.query(
         `INSERT INTO replenishment_rows
       SELECT (jsonb_populate_record(NULL::replenishment_rows,to_jsonb(r)||
         jsonb_build_object('id',m.row_id,'preview_id',m.preview_id,'byte_count',1))).*
-      FROM replenishment_rows r CROSS JOIN quota_copies m WHERE r.preview_id=$1`,
-        [p.id],
+      FROM replenishment_rows r CROSS JOIN ${quotaCopies} WHERE r.preview_id=$1`,
+        [p.id, ...copies],
       );
       await c.query(
         `INSERT INTO replenishment_executions
       SELECT (jsonb_populate_record(NULL::replenishment_executions,to_jsonb(e)||
         jsonb_build_object('id',m.execution_id,'preview_id',m.preview_id,
           'client_key',m.execution_key,'byte_count',1))).*
-      FROM replenishment_executions e CROSS JOIN quota_copies m WHERE e.id=$1`,
-        [e.id],
+      FROM replenishment_executions e CROSS JOIN ${quotaCopies} WHERE e.id=$1`,
+        [e.id, ...copies],
       );
       await c.query(
         `INSERT INTO replenishment_execution_rows
       SELECT (jsonb_populate_record(NULL::replenishment_execution_rows,to_jsonb(r)||
         jsonb_build_object('id',m.execution_row_id,'execution_id',m.execution_id,
           'preview_id',m.preview_id,'preview_row_id',m.row_id,'byte_count',1))).*
-      FROM replenishment_execution_rows r CROSS JOIN quota_copies m WHERE r.execution_id=$1`,
-        [e.id],
+      FROM replenishment_execution_rows r CROSS JOIN ${quotaCopies} WHERE r.execution_id=$1`,
+        [e.id, ...copies],
       );
       await c.query('SET CONSTRAINTS ALL IMMEDIATE');
       await c.query('COMMIT');

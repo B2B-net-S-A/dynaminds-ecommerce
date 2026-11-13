@@ -48,12 +48,14 @@ async function all(){const c=await pool.connect();try{await c.query('BEGIN ISOLA
  for(const {tablename} of (await c.query("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY 1")).rows){assert.match(tablename,/^[a-z][a-z0-9_]*$/);x[tablename]=(await c.query(`SELECT to_jsonb(t) row FROM public."${tablename}" t ORDER BY 1`)).rows;}
  await c.query('COMMIT');return x;}finally{await c.query('ROLLBACK').catch(()=>{});c.release();}}
 const ledger=async(id:string)=>(await pool.query('SELECT to_jsonb(t) row FROM public.allegro_oauth_recovery_attempts t WHERE channel_id=$1 ORDER BY id',[id])).rows.map(x=>x.row);
+// The first request with the fixture API key stamps its last use (migration 237, server/api-key-rotation.ts touchApiKey).
+const apiKeyLastUse='auth237_api_key_state';
 function sameExcept(a:Record<string,unknown[]>,b:Record<string,unknown[]>,tables:string[]){assert.deepEqual(Object.keys(a),Object.keys(b));for(const t of Object.keys(a))if(!tables.includes(t))assert.deepEqual(b[t],a[t],t);}
 
 test('pre-send barrier survives unknown response; session and different real jobs never resubmit the unresolved connection',async()=>{
  const f=await fixture(),before=await all(),n=calls;response='unknown';
  const first=await catalog(f);assert.equal(first.statusCode,503);assert.equal(calls,n+1);
- const after=await all();sameExcept(before,after,['allegro_oauth_recovery_attempts']);
+ const after=await all();sameExcept(before,after,['allegro_oauth_recovery_attempts',apiKeyLastUse]);
  const rows=await ledger(f.id);const pending=rows.filter(r=>r.state==='refused');assert.equal(pending.length,1);assert.equal(pending[0].refusal_code,'response_unknown');assert.equal(pending[0].actor_kind,'api_key');
  const session=await req(f.a,'/api/integrations/'+f.id+'/allegro/catalog?phrase=Durable');assert.equal(session.statusCode,503);assert.equal(calls,n+1);assert.deepEqual(await all(),after);
  // Separate actual sync jobs, not replacement leases or fabricated principal rows.
@@ -103,7 +105,7 @@ test('real subprocess exit after pre-send commit leaves an unknown barrier acros
   const p=spawn(process.execPath,['--import','tsx','--input-type=module','-e',child],{env:{...process.env,DYNA_OAUTH_QA_KEY:f.key,DYNA_OAUTH_QA_PATH:'/api/v1/integrations/'+f.id+'/allegro/catalog?phrase=Durable'},stdio:'ignore'});
   const timer=setTimeout(()=>{p.kill('SIGKILL');reject(new Error('Owned child exceeded bounded startup'));},15000);
   p.once('error',e=>{clearTimeout(timer);reject(e);});p.once('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal});});});assert.equal(result.code,73);assert.equal(result.signal,null);
- const after=await all();sameExcept(before,after,['allegro_oauth_recovery_attempts']);
+ const after=await all();sameExcept(before,after,['allegro_oauth_recovery_attempts',apiKeyLastUse]);
  const rows=await ledger(f.id);assert.equal(rows.filter(r=>r.state==='may_have_been_sent').length,1);assert.equal(calls,n,'Child transport is isolated from parent counter');
  assert.equal((await catalog(f)).statusCode,503);assert.equal(calls,n);assert.deepEqual(await all(),after);
  response='good';await complete(f.a,f.id);assert.equal(calls,n+1);assert.equal((await catalog(f)).statusCode,200);assert.equal(calls,n+1);

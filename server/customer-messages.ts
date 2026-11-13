@@ -299,7 +299,10 @@ async function append(
 /** Short single-line excerpt of a message for the order history (the full text stays in the thread). */
 export function messageExcerpt(body: string, max = 120): string {
   const flat = body.replace(/\s+/g, ' ').trim();
-  return flat.length > max ? flat.slice(0, max - 1) + '…' : flat;
+  if (flat.length <= max) return flat;
+  // Never end on half of a surrogate pair: a lone surrogate is not valid jsonb text (order_events.detail).
+  const cut = flat.slice(0, max - 1);
+  return (/[\ud800-\udbff]$/.test(cut) ? cut.slice(0, -1) : cut) + '…';
 }
 export async function writeCustomerMessage(
   a: Actor,
