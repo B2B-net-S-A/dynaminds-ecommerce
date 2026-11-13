@@ -120,7 +120,7 @@ Wpis ręczny wygrywa z regułami. Ścieżka musi istnieć — po usunięciu test
 i sprawdź `node scripts/ci/classify-tests.mjs`. Jeśli test sam asertuje port/nazwę bazy/zmienną,
 klasyfikator wykryje go bez wpisu. **Kwarantanna** jest dla testu, który pada na mainie z powodu
 niezwiązanego z CI: wpis w `quarantine` z commitem i objawem, a naprawa idzie osobnym zadaniem —
-po naprawie wpis usuń. Od 12.11.2026 w kwarantannie jest 156 plików db: 153 czerwone w pełnym biegu 43322230795 i 3 niestabilne
+po naprawie wpis usuń. Od 12.11.2026 w kwarantannie jest 155 plików db: 153 czerwone w pełnym biegu 43322230795 i 2 niestabilne bez oznaki czasu
 (decyzja Artura: kwarantanna i naprawa w osobnych sesjach); przy każdym wpisie plik:linia i objaw pierwszego padu.
 
 ## Skrypty
@@ -130,7 +130,7 @@ po naprawie wpis usuń. Od 12.11.2026 w kwarantannie jest 156 plików db: 153 cz
 | `scripts/ci/classify-tests.mjs` | podsumowanie; `--list static\|db\|darwin\|special`; `--json`; `--why` (sygnał, który przesądził o db) |
 | `scripts/ci/shard.mjs` | podział listy na N shardów (LPT po czasach z `scripts/ci/test-durations.json`, bez czasów round-robin); `--plan --target-min M --max K` wylicza N |
 | `scripts/ci/select-pr-tests.mjs` | sito PR-a i kolejki z `git diff --name-only` (domyślnie `origin/main...HEAD`, albo `--range A..B`): zmienione testy db + testy importujące zmienione moduły albo nazwane od nich (graf importów wstecz, najbliższe najpierw; `--limit` plików, `--budget-min` szacowanych minut). Zmiana w `server/db.ts`, `server/*.sql`, runnerze/manifeście migracji → najpierw pakiet migracji; `package*.json`, `tsconfig.json`, `scripts/ci/`, `ci.yml` → zestaw dymny i pakiet migracji. Nigdy pełny zestaw; testy: `tests/ci-select-pr-tests.test.mjs` |
-| `scripts/ci/run-tests.mjs` | uruchamia pliki po jednym procesie `tsx --test`, logi per plik, `summary.txt`, `failed.txt`, `durations.json`; `--kind db` zakłada i sprząta bazy |
+| `scripts/ci/run-tests.mjs` | uruchamia pliki po jednym procesie `tsx --test`, logi per plik, `summary.txt`, `failed.txt`, `durations.json`; `--kind db` zakłada i sprząta bazy, a plik padnięty na czasie (`statement timeout`/57014, także jako 503 API „Operacja trwała zbyt długo”, `lock timeout`/55P03, `test timed out`; nie limit pliku 45 min ani plik, który trwał już ponad jego trzecią część) puszcza drugi raz, sam, na nowej bazie — zielony za drugim razem liczy się jako zielony, ale trafia do `flaky.txt`, do Step Summary („Niestabilne”) i do artefaktu `db-failed-logs-shard-N` jako `<plik>.attempt1.log` (decyzja 13.11.2026: testy czekania na blokadę i limitu zapytania padają losowo przy dwóch plikach naraz) |
 | `scripts/ci/migrate-database.ts` | `migrate()` na bazie-szablonie shardu |
 | `scripts/ci/guard-cache.mjs` | cache odpowiedzi strażników schematu, ładowany tylko przez `run-tests.mjs --kind db` (niżej); testy: `tests/ci-guard-cache.database.test.ts` |
 

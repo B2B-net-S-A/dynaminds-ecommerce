@@ -199,8 +199,14 @@ jobs:
             cp ci-out/db/_template-migrate.log ci-out/failed-logs/ 2>/dev/null || true
             while read -r f; do cp "ci-out/db/$(basename "$f").log" ci-out/failed-logs/; done < ci-out/db/failed.txt
           fi
+          # Zielone dopiero za drugim razem (run-tests.mjs ponawia padnięty plik raz, sam): log pierwszej próby.
+          if [ -s ci-out/db/flaky.txt ]; then
+            mkdir -p ci-out/failed-logs
+            { echo ""; echo "#### Niestabilne (zielone za 2. razem)"; sed 's/^/- /' ci-out/db/flaky.txt; } >> "$GITHUB_STEP_SUMMARY"
+            while read -r f; do cp "ci-out/db/$(basename "$f").attempt1.log" ci-out/failed-logs/; done < ci-out/db/flaky.txt
+          fi
       - name: Upload logs of failed files
-        if: ${{ failure() }}
+        if: ${{ failure() || hashFiles('ci-out/failed-logs/**') != '' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: db-failed-logs-shard-${{ matrix.shard }}
