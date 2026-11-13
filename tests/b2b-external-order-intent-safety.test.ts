@@ -302,7 +302,7 @@ async function snapshot(tenants = [buyer, supplier]) {
     await pool.query(`SELECT DISTINCT c.table_name FROM information_schema.columns c
     JOIN information_schema.tables t USING(table_schema,table_name)
     WHERE c.table_schema='public' AND c.column_name='tenant_id' AND t.table_type='BASE TABLE'
-    AND c.table_name NOT IN ('memberships','api_keys','outbound_subscriptions','sessions') ORDER BY 1`)
+    AND c.table_name NOT IN ('memberships','api_keys','auth237_api_key_state','outbound_subscriptions','sessions') ORDER BY 1`)
   ).rows;
   const result: Row = {};
   for (const { table_name: name } of names) {

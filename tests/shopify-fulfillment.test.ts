@@ -1,6 +1,7 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { randomUUID } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
 import { buildApp } from '../server/app';
@@ -129,7 +130,7 @@ async function fixture(
     await ok('/orders/' + o.id + '/ship-demo', 'POST', {}, auth);
   }
   if (!simulation && shipped)
-    await pool.query("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
+    await rewriteShipmentFixture("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
       o.id,
       'QA' + randomUUID().replaceAll('-', ''),
     ]);
@@ -228,7 +229,7 @@ test('Shopify: packing is insufficient; DEMO never goes to a real store', async 
   assert.equal(f.calls.length, beforeFirst);
   const y = await fixture();
   const beforeSecond = f.calls.length;
-  await pool.query("UPDATE shipments SET mode='demo' WHERE order_id=$1", [y.o.id]);
+  await rewriteShipmentFixture("UPDATE shipments SET mode='demo' WHERE order_id=$1", [y.o.id]);
   assert.equal((await preview(y)).statusCode, 422);
   assert.equal(f.calls.length, beforeSecond);
 });
@@ -288,10 +289,12 @@ test('Shopify: existing exact full shipment is adopted by GET without creating a
   await execute(p);
   const f1 = f.state.fulfillments[0];
   const x2 = await fixture(false, true, cookie, x.store);
-  await pool.query('UPDATE shipments SET tracking_number=$2 WHERE order_id=$1', [
-    x2.o.id,
-    f1.tracking[0].number,
-  ]);
+  // Tracking is unique per tenant, carrier, mode and channel (shipments_tracking_identity), so
+  // the remote fulfillment carries the second order's own local tracking instead of a duplicate.
+  const tracking = (
+    await pool.query('SELECT tracking_number FROM shipments WHERE order_id=$1', [x2.o.id])
+  ).rows[0].tracking_number;
+  f1.tracking[0] = { ...f1.tracking[0], number: tracking };
   const second = await plan(x2);
   assert.equal(second.remote.existing, f1.id);
   assert.equal((await queue(second)).statusCode, 409);

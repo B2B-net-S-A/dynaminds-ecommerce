@@ -6,6 +6,7 @@ import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { inventoryBulkEditOperationKey } from '../server/inventory-bulk-edit';
 import { seed, SECOND_TENANT } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -545,7 +546,8 @@ test(
       'INSERT INTO inventory_bulk_edit_previews SELECT gen_random_uuid(),tenant_id,actor_id,warehouse_id,gen_random_uuid(),request_hash,scope_hash,source,note,total,changed,unchanged,invalid,conflicts,ready,created_at FROM inventory_bulk_edit_previews CROSS JOIN generate_series(1,1999) WHERE id=$1',
       [plan.id],
     );
-    await pool.query(
+    await tenantScopedOwnerQuery(
+      tenant,
       'INSERT INTO inventory_bulk_edit_executions SELECT gen_random_uuid(),p.tenant_id,p.id,p.actor_id,gen_random_uuid(),e.request_hash,p.scope_hash,e.state,p.total,p.changed,p.unchanged,e.created_at FROM inventory_bulk_edit_previews p CROSS JOIN inventory_bulk_edit_executions e WHERE e.id=$1 AND p.tenant_id=$2 AND p.id<>$3',
       [done.execution.id, tenant, plan.id],
     );

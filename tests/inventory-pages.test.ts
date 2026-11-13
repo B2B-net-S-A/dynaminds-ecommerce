@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool, migrate } from '../server/db';
 import { seed, SECOND_TENANT } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 assert.equal(process.env.DYNA_TEST, 'true');
 let app: Awaited<ReturnType<typeof buildApp>>,
   cookie: string,
@@ -53,7 +54,8 @@ before(async () => {
     products.push(r.json());
   }
   for (const p of products.slice(0, 10))
-    await pool.query(
+    await tenantScopedOwnerQuery(
+      tenant,
       'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) VALUES($1,$2,$3,3)',
       [tenant, w2, p.id],
     );
@@ -280,7 +282,8 @@ test('snapshot służy inwentaryzacji i nie omija konfliktu rezerwacji po pomiar
 });
 test('ruchy o równej dacie i mikrosekundach nie giną, również po usunięciu wiersza kursora', async () => {
   for (let i = 0; i < 7; i++)
-    await pool.query(
+    await tenantScopedOwnerQuery(
+      tenant,
       "INSERT INTO stock_movements(id,tenant_id,warehouse_id,product_id,delta,kind,note,created_at) VALUES($1,$2,$3,$4,1,'page-fixture','Mikro historia',$5)",
       [
         randomUUID(),
