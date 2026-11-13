@@ -80,6 +80,12 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  const text=(await read('server/catalog-stock-writer-coverage.ts')).toString('utf8'),roster=JSON.parse(text.match(/const SOURCE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]),native=JSON.parse(text.match(/const NATIVE_ROSTER:readonly Entry\[\]=(\[[^\n]+\]);/)[1]);
  assert.equal(roster.length,43);assert.equal(native.length,3);const db=await read('server/db.ts'),current={path:'server/db.ts',sha256:hash(db),bytes:db.length};assert.deepEqual(roster.filter(row=>row.path==='server/db.ts'),[current]);assert.equal(text.split(JSON.stringify(current)).length,2);
  let historical=text;
+ // SourcePortalN1 re-pinned return-query.ts and catalog-stock-return-effects.ts (a returns list page reads its PZ heads once)
+ // and added its comment; both go first and return to their Source236 / Source270 pins.
+ const sourcePortalN1Comment="// SourcePortalN1 re-pins return-query.ts and catalog-stock-return-effects.ts after review: a returns list page reads its\n// PZ heads once (one availability verdict, one read for all rows) instead of once per row; read only, no stock write or gate bypass.\n";
+ assert.equal(historical.split(sourcePortalN1Comment).length,2);historical=historical.replace(sourcePortalN1Comment,'');
+ const portalN1Back={'server/return-query.ts':{path:'server/return-query.ts',sha256:'77913dfddf71391003427f21d8dce67c687c251124f9bda26d030edab3f4ad05',bytes:4714},'server/catalog-stock-return-effects.ts':{path:'server/catalog-stock-return-effects.ts',sha256:'9477925717a4a21dfbbb8c14a96e881e28068b48db6b960d7f1fb6fc4bd277d0',bytes:8630}};
+ for(const[path,back]of Object.entries(portalN1Back)){const now=roster.find(r=>r.path===path);assert.notDeepEqual(now,back);assert.equal(historical.split(JSON.stringify(now)).length,2);historical=historical.replace(JSON.stringify(now),JSON.stringify(back));}
  // SourceUwagi3 re-pinned domain.ts and wms-lots.ts (Uwagi v3 lanes, migrations 265–268) after Source269 and added its
  // comment; both go first and return to their SourceOrderNumber / SourceOpening pins.
  const sourceUwagi3Comment="// SourceUwagi3 re-pins domain.ts and wms-lots.ts after review (Uwagi v3 lanes, migrations 265\u2013268, neutral publication comment;\n// with 268 a new DEMO label takes over the cancelled shipments row):\n// order card stage/sections, invoice data, DEMO label at packing and automation events; a WMS order line edit releases or\n// resizes only that product's reservation layers/locations (no stock row write); no new stock-writer call or gate bypass.\n";
@@ -141,7 +147,7 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  // its comment, which goes first; the two return to their literal pins.
  for(const before of [{path:'server/catalog-stock-control.ts',sha256:'a37ebf48c1ceabe920ebf48ad27e7bb16942589ddcd7223017200a7f8800531d',bytes:29004},
   {path:'server/catalog-stock-return-effects.ts',sha256:'a56ab5b2977b9fbb23c963a76788c2e8dc993651f463d949ecc811469d5e99d5',bytes:8218}]){
-  const after=roster.find(r=>r.path===before.path);assert.notDeepEqual(after,before);assert.equal(historical.split(JSON.stringify(after)).length,2);historical=historical.replace(JSON.stringify(after),JSON.stringify(before));
+  const after=portalN1Back[before.path]??roster.find(r=>r.path===before.path);assert.notDeepEqual(after,before);assert.equal(historical.split(JSON.stringify(after)).length,2);historical=historical.replace(JSON.stringify(after),JSON.stringify(before));
  }
  const source270Comment="// Source270 re-pins catalog-stock-control.ts and catalog-stock-return-effects.ts after review: effect prepare/finish and\n// return prepare call the stock_verdict_ copy when installed (sealed body, 248 verdict for the guard); no stock write or gate bypass.\n";
  assert.equal(historical.split(source270Comment).length,2);historical=historical.replace(source270Comment,'');
@@ -207,7 +213,7 @@ test('coverage restores the literal207 snapshot after exact six207, a251dfe and 
  assert.notDeepEqual(domain238,source236Domain);assert.equal(historical.split(JSON.stringify(domain238)).length,2);historical=historical.replace(JSON.stringify(domain238),JSON.stringify(source236Domain));
  const source238Comment='// Source238 re-pins domain.ts after review: audit() only delegates its one audit_events insert to\n// insertAuditEvent (plus the audit238 key row); no stock write, stock-writer call or gate bypass.\n';
  assert.equal(historical.split(source238Comment).length,2);historical=historical.replace(source238Comment,'');
- for(const before of pre236Pins){const after=before.path==='server/domain.ts'?source236Domain:before.path==='server/b2b-network.ts'?source236Network:source236Of250.find(r=>r.path===before.path)??roster.find(r=>r.path===before.path);assert(after);assert.notDeepEqual(after,before);assert.equal(historical.split(JSON.stringify(after)).length,2);historical=historical.replace(JSON.stringify(after),JSON.stringify(before));}
+ for(const before of pre236Pins){const after=before.path==='server/domain.ts'?source236Domain:before.path==='server/b2b-network.ts'?source236Network:source236Of250.find(r=>r.path===before.path)??portalN1Back[before.path]??roster.find(r=>r.path===before.path);assert(after);assert.notDeepEqual(after,before);assert.equal(historical.split(JSON.stringify(after)).length,2);historical=historical.replace(JSON.stringify(after),JSON.stringify(before));}
  const source236Comment='// Source236 re-pins14 drifted sources after review: deleted-product225 refusals, reason223\n// readouts, read/append tx, MIG-3/6/7 migrator and API scopes add no stock write or gate bypass.\n';
  assert.equal(historical.split(source236Comment).length,2);historical=historical.replace(source236Comment,'');
  // 69ba8fd re-pinned returns.ts38350→39085 for the a251dfe receipt wrapper and added its comment.

@@ -2,7 +2,7 @@ import type { PoolClient } from 'pg';
 import { z } from 'zod';
 import { Problem } from './errors';
 import { getReturnAcceptanceInTx } from './return-acceptance';
-import { catalogStockReturnDocumentsInTx } from './catalog-stock-return-effects';
+import { catalogStockReturnDocumentsForReturnsInTx } from './catalog-stock-return-effects';
 import { returnReasonChoicesInTx } from './return-reasons223';
 import {
   returnExchangeAvailable,
@@ -86,14 +86,13 @@ export async function returnPage(c: PoolClient, q: ReturnQuery, orderId?: string
   }
   const accepted = new Map<string, Awaited<ReturnType<typeof getReturnAcceptanceInTx>>>();
   const exchanges = new Map<string, Awaited<ReturnType<typeof returnExchangeMetadataInTx>>>();
-  const stockReceipts = new Map<string, Awaited<ReturnType<typeof catalogStockReturnDocumentsInTx>>>();
   const exchangeAvailable = data.length > 0 && (await returnExchangeAvailable(c));
   const substitutionAvailable =
     exchangeAvailable && (await returnExchangeSubstitutionsAvailable(c));
   const reasonChoices = await returnReasonChoicesInTx(c, data.map((r) => r.id));
+  const stockReceipts = await catalogStockReturnDocumentsForReturnsInTx(c, data.map((r) => r.id));
   for (const row of data) {
     accepted.set(row.id, await getReturnAcceptanceInTx(c, row));
-    stockReceipts.set(row.id, await catalogStockReturnDocumentsInTx(c, row.id));
     if (exchangeAvailable) exchanges.set(row.id, await returnExchangeMetadataInTx(c, row, true));
   }
   return {
