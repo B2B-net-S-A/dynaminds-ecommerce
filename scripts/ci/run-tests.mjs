@@ -13,7 +13,8 @@
  * files listed under "noGuardCache", or reading pg_stat_xact_* / track_functions themselves, run without it.
  * Requires DYNA_LOCAL_CONFIG_PATH (dbPassword) and DYNA_TEST_PG_PORT; PostgreSQL on 127.0.0.1.
  *
- * --kind db: a file that failed on time (statement/lock timeout, a test past its own timeout — not the 45 min file
+ * --kind db: a file that failed on time (statement/lock timeout, also as the API's 503 "Operacja trwała zbyt długo", a
+ * test past its own timeout — not the 45 min file
  * limit, nor a file that already took over a third of it) runs once more, alone, on a new database after the others (decision 13.11.2026: lock-wait and statement-timeout
  * tests fail under the load of two files at once). Any other failure is deterministic enough to stay red at once.
  * Green on the second try counts as green but is listed as flaky (summary line, flaky.txt; the first attempt's log
@@ -167,8 +168,9 @@ async function runFile(file, note = '') {
   return r.code;
 }
 
-// Failures that depend on load, not on the code under test.
-const TIMING = /statement timeout|\b57014\b|\b55P03\b|lock timeout|test timed out after/;
+// Failures that depend on load, not on the code under test. The API answers a statement timeout with 503 and the
+// detail of server/statement-cancel.ts, so a test that asserts the status sees only that text.
+const TIMING = /statement timeout|\b57014\b|\b55P03\b|lock timeout|test timed out after|Operacja trwała zbyt długo/;
 let next = 0;
 async function worker() {
   while (next < files.length) {
