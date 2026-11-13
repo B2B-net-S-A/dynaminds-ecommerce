@@ -1,6 +1,7 @@
 import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { randomUUID } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
 import { buildApp } from '../server/app';
@@ -255,7 +256,7 @@ async function setup(
   if (dispatch) await ok('/orders/' + owner.id + '/ship-demo', 'POST', {}, a);
   const tenant = (await ok('/auth/me', 'GET', undefined, a)).user.tenant_id;
   if (!simulation && dispatch)
-    await pool.query("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
+    await rewriteShipmentFixture("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
       owner.id,
       'PARTIAL' + randomUUID().replaceAll('-', ''),
     ]);

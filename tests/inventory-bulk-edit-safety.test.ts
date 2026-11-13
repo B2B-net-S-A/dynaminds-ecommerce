@@ -6,6 +6,8 @@ import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { inventoryBulkEditOperationKey } from '../server/inventory-bulk-edit';
 import { seed, SECOND_TENANT } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -545,7 +547,8 @@ test(
       'INSERT INTO inventory_bulk_edit_previews SELECT gen_random_uuid(),tenant_id,actor_id,warehouse_id,gen_random_uuid(),request_hash,scope_hash,source,note,total,changed,unchanged,invalid,conflicts,ready,created_at FROM inventory_bulk_edit_previews CROSS JOIN generate_series(1,1999) WHERE id=$1',
       [plan.id],
     );
-    await pool.query(
+    await tenantScopedOwnerQuery(
+      tenant,
       'INSERT INTO inventory_bulk_edit_executions SELECT gen_random_uuid(),p.tenant_id,p.id,p.actor_id,gen_random_uuid(),e.request_hash,p.scope_hash,e.state,p.total,p.changed,p.unchanged,e.created_at FROM inventory_bulk_edit_previews p CROSS JOIN inventory_bulk_edit_executions e WHERE e.id=$1 AND p.tenant_id=$2 AND p.id<>$3',
       [done.execution.id, tenant, plan.id],
     );
@@ -727,12 +730,11 @@ test(
 );
 
 test(
-  'readonly and missing-module gates precede JSON parsing and leave legacy catalogue and bins readable',
-  { timeout: 20000 },
+  'readonly gate precedes JSON parsing; a torn inventory module fails closed with 503 and no effects',
+  { timeout: 60000 },
   async () => {
     const p = await product();
-    let readonly: Awaited<ReturnType<typeof buildApp>> | undefined,
-      older: Awaited<ReturnType<typeof buildApp>> | undefined;
+    let readonly: Awaited<ReturnType<typeof buildApp>> | undefined;
     const authFor = async (target: Awaited<ReturnType<typeof buildApp>>) => {
       const cookie = await login('admin@demo.local', target),
         r = await req('/workspaces/switch', 'POST', { tenant_id: tenant }, cookie, target);
@@ -759,43 +761,27 @@ test(
     await pool.query(
       'ALTER TABLE inventory_bulk_edit_previews RENAME TO inventory_bulk_edit_previews_hidden_qa107',
     );
+    // Hidden in the full schema this is a torn install, not an older copy: the
+    // application refuses to start on it (PIM integrity), with no write.
     try {
-      older = await buildApp({ integrationTransport: transport });
-      const auth = await authFor(older);
-      const meta = await req('/inventory-bulk-edit', 'GET', undefined, auth, older);
-      assert.equal(meta.statusCode, 200);
-      assert.equal(meta.json().available, false);
-      assert.equal(meta.json().can_write, false);
-      assert.match(String(meta.headers['cache-control']), /no-store/);
-      assert.equal(
-        (
-          await older.inject({
-            method: 'POST',
-            url: '/api/inventory-bulk-edit/previews',
-            headers: { cookie: auth, 'content-type': 'application/json' },
-            payload: '{',
-          })
-        ).statusCode,
-        503,
-      );
-      assert.equal((await req('/products/' + p.id, 'GET', undefined, auth, older)).statusCode, 200);
-      assert.equal(
-        (
-          await req(
-            '/stock-locations?warehouse_id=' + warehouse + '&product_id=' + p.id,
-            'GET',
-            undefined,
-            auth,
-            older,
-          )
-        ).statusCode,
-        200,
-      );
+      const digest = await tenantDataDigest();
+      await assert.rejects(buildApp({ integrationTransport: transport }), pimIncomplete);
+      assert.deepEqual(await tenantDataDigest(), digest);
     } finally {
-      if (older) await older.close();
       await pool.query(
         'ALTER TABLE inventory_bulk_edit_previews_hidden_qa107 RENAME TO inventory_bulk_edit_previews',
       );
     }
+    assert.equal(
+      (
+        await req(
+          '/stock-locations?warehouse_id=' + warehouse + '&product_id=' + p.id,
+          'GET',
+          undefined,
+          admin,
+        )
+      ).statusCode,
+      200,
+    );
   },
 );

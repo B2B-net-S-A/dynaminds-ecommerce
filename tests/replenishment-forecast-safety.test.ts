@@ -5,6 +5,7 @@ import type { Pool, PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -195,7 +196,7 @@ async function snapshot() {
   const names = (
     await pool.query(`SELECT DISTINCT c.table_name FROM information_schema.columns c JOIN information_schema.tables t USING(table_schema,table_name)
     WHERE c.table_schema='public' AND c.column_name='tenant_id' AND t.table_type='BASE TABLE'
-    AND c.table_name NOT IN ('memberships','api_keys','outbound_subscriptions','sessions') ORDER BY 1`)
+    AND c.table_name NOT IN ('memberships','api_keys','auth237_api_key_state','outbound_subscriptions','sessions') ORDER BY 1`)
   ).rows;
   const result: Row = {};
   for (const { table_name: name } of names) {
@@ -272,12 +273,13 @@ async function movement(
   kind = 'shipment',
   c: Pool | PoolClient = pool,
 ) {
-  const id = randomUUID();
-  await c.query(
-    `INSERT INTO stock_movements(id,tenant_id,product_id,warehouse_id,order_id,delta,kind)
+  const id = randomUUID(),
+    sql = `INSERT INTO stock_movements(id,tenant_id,product_id,warehouse_id,order_id,delta,kind)
     VALUES($1,$2,$3,$4,$5,$6,$7)`,
-    [id, tenant, p.id, warehouse, order.id, delta, kind],
-  );
+    values = [id, tenant, p.id, warehouse, order.id, delta, kind];
+  // A native journal birth is accepted only inside its own tenant scope (152_catalog_stock_control).
+  if (c === pool) await tenantScopedOwnerQuery(tenant, sql, values);
+  else await c.query(sql, values);
   return id;
 }
 async function rawApp(fn: (c: PoolClient) => Promise<void>, scope = tenant) {
@@ -393,7 +395,7 @@ test('raw INSERT from an empty journal, UPDATE correction, DELETE and restored-v
 });
 
 test(
-  'owner journal writes without GUC hold the global source gate before planning; completed history appears only after commit',
+  'owner journal writes in their own tenant scope hold the source gate before planning; completed history appears only after commit',
   { timeout: 20000 },
   async () => {
     const f = await fixture(),
@@ -403,7 +405,9 @@ test(
     let pending: ReturnType<typeof request> | undefined;
     try {
       await holder.query('BEGIN');
-      await holder.query("SELECT set_config('app.tenant_id','',true)");
+      // A journal birth without tenant scope is rejected since 152_catalog_stock_control
+      // ("Obcy tenant native birth"); the owner write declares its own tenant.
+      await holder.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
       await movement(f.p, o, -11, 'shipment', holder);
       pending = request(prefix + '/previews', 'POST', f.body);
       await waitOn(holder, /purchasing_source_admit/);
@@ -431,7 +435,9 @@ test('journal gate rejects missing application scope, declared foreign scope, tr
   for (const [sql, values, scope, owner, code] of [
     ['UPDATE stock_movements SET delta=delta WHERE id=$1', [id], '', false, '42501'],
     ['UPDATE stock_movements SET delta=delta WHERE id=$1', [id], randomUUID(), true, '42501'],
-    ['TRUNCATE stock_movements', [], tenant, true, '23514'],
+    // Native receipts reference the journal by foreign key, so PostgreSQL refuses the
+    // truncation (0A000) before the purchasing TRUNCATE trigger would.
+    ['TRUNCATE stock_movements', [], tenant, true, '0A000'],
     [
       'INSERT INTO purchasing_stock_changes(tenant_id) VALUES($1)',
       [tenant],

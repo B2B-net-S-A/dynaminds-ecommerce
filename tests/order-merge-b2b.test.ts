@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { migrate, pool } from '../server/db';
 import { seed } from './fixtures';
+import { assertPimIncomplete, tenantDataDigest } from './torn-module-fixture';
 assert.equal(process.env.DYNA_TEST, 'true');
 assert.match(new URL(process.env.DATABASE_URL!).pathname, /^\/dynaminds_test_\d+$/);
 type Row = Record<string, any>;
@@ -440,33 +441,33 @@ test('B2B order cursor preserves PostgreSQL microseconds and checks original acc
   );
   assert.deepEqual(foreignPage, { data: [], next: null });
 });
-test('B2B legacy reads and checkout replay work when both merge history tables are absent', async () => {
+test('B2B reads and checkout fail closed with 503 and change nothing while merge history tables are torn', async () => {
   const b = await buyer('LEGACY', 1011, 100);
   await pool.query('ALTER TABLE order_merge_origins RENAME TO order_merge_origins_b2b_hidden');
   await pool.query(
     'ALTER TABLE order_merge_executions RENAME TO order_merge_executions_b2b_hidden',
   );
   try {
-    const d = await ok(b.base + '/orders/' + b.order.id, 'GET', undefined, 200, b.cookie);
-    assert.equal(d.total, 1111);
-    assert.equal(d.historical, undefined);
-    const l = await ok(b.base + '/orders', 'GET', undefined, 200, b.cookie);
-    assert.deepEqual(
-      l.data.map((o: Row) => o.id),
-      [b.order.id],
+    const before = await tenantDataDigest();
+    assertPimIncomplete(await req(b.base + '/orders/' + b.order.id, 'GET', undefined, b.cookie));
+    assertPimIncomplete(
+      await req(b.base + '/quotes/' + b.quote.id + '/checkout', 'POST', { confirmed: true }, b.cookie),
     );
-    const q = await ok(
-      b.base + '/quotes/' + b.quote.id + '/checkout',
-      'POST',
-      { confirmed: true },
-      200,
-      b.cookie,
-    );
-    assert.equal(q.total, 1111);
+    assert.deepEqual(await tenantDataDigest(), before);
   } finally {
     await pool.query(
       'ALTER TABLE order_merge_executions_b2b_hidden RENAME TO order_merge_executions',
     );
     await pool.query('ALTER TABLE order_merge_origins_b2b_hidden RENAME TO order_merge_origins');
   }
+  const d = await ok(b.base + '/orders/' + b.order.id, 'GET', undefined, 200, b.cookie);
+  assert.equal(d.total, 1111);
+  const q = await ok(
+    b.base + '/quotes/' + b.quote.id + '/checkout',
+    'POST',
+    { confirmed: true },
+    200,
+    b.cookie,
+  );
+  assert.equal(q.total, 1111);
 });

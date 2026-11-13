@@ -6,6 +6,7 @@ import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { catalogBulkEditHash } from '../server/catalog-bulk-edit';
 import { seed, SECOND_TENANT } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -693,40 +694,22 @@ test(
 );
 
 test(
-  'older copy exposes SKU capability false, rejects explicit SKU changes and preserves legacy omitted updates',
-  { timeout: 20000 },
+  'torn SKU module in the full schema fails closed with 503 before any write; restored module edits again',
+  { timeout: 60000 },
   async () => {
     const p = await product(),
       legacy = await editBody(p.id, { description: 'Omitted SKU remains usable' });
-    let older: Awaited<ReturnType<typeof buildApp>> | undefined;
     await pool.query('ALTER TABLE product_sku_aliases RENAME TO product_sku_aliases_hidden_qa106');
     try {
-      older = await buildApp({ integrationTransport: transport });
-      let auth = await login('admin@demo.local', older);
-      const switched = await req('/workspaces/switch', 'POST', { tenant_id: tenant }, auth, older);
-      assert.equal(switched.statusCode, 200);
-      auth = String(switched.headers['set-cookie']).split(';')[0];
-      const read = await req('/products/' + p.id, 'GET', undefined, auth, older);
-      assert.equal(read.statusCode, 200);
-      assert.equal(read.json().product_sku_edit_available, false);
-      assert.equal(read.json().sku, p.sku);
-      const before = await snapshot(businessTables.filter((t) => t !== 'product_sku_aliases'));
-      assert.equal(
-        (await req('/products/' + p.id, 'PATCH', { ...legacy, sku: 'MUST-NOT-SAVE' }, auth, older))
-          .statusCode,
-        503,
-      );
-      assert.deepEqual(
-        await snapshot(businessTables.filter((t) => t !== 'product_sku_aliases')),
-        before,
-      );
-      assert.equal((await req('/products/' + p.id, 'PATCH', legacy, auth, older)).statusCode, 200);
+      const before = await tenantDataDigest();
+      await assert.rejects(buildApp({ integrationTransport: transport }), pimIncomplete);
+      assert.deepEqual(await tenantDataDigest(), before);
     } finally {
-      if (older) await older.close();
       await pool.query(
         'ALTER TABLE product_sku_aliases_hidden_qa106 RENAME TO product_sku_aliases',
       );
     }
+    assert.equal((await req('/products/' + p.id, 'PATCH', legacy)).statusCode, 200);
     assert.equal((await detail(p.id)).sku, p.sku);
   },
 );

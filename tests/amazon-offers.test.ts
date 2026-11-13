@@ -9,6 +9,7 @@ import { processOfferJob, failOffer } from '../server/offers';
 import { processOfferSync, failOfferSync } from '../server/offer-sync';
 import { amazonOfferFixture, offerConfig } from './amazon-offer-fixture';
 import { amazonSecrets } from './amazon-fixture';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 assert.equal(process.env.DYNA_TEST, 'true');
 let app: Awaited<ReturnType<typeof buildApp>>,
   cookie: string,
@@ -251,7 +252,7 @@ test('price-only touches selected B2C base; stock-only zero sends no price and p
   assert.equal(patches()[0].body.patches.length, 1);
   assert.equal(patches()[0].body.patches[0].path, '/attributes/purchasable_offer');
   x = await fixture();
-  await pool.query('UPDATE stock SET on_hand=0 WHERE product_id=$1', [x.p.id]);
+  await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=0 WHERE product_id=$1', [x.p.id]);
   p = await preview(x, { price: false });
   await queue(p);
   await step(p);
@@ -321,7 +322,7 @@ test('local or provider changes after preview stop before PATCH', async () => {
   const y = await fixture(),
     q = await preview(y);
   await queue(q);
-  await pool.query('UPDATE stock SET on_hand=9 WHERE product_id=$1', [y.p.id]);
+  await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=9 WHERE product_id=$1', [y.p.id]);
   await step(q, /lokalny/);
   assert.equal(patches().length, 0);
 });
@@ -586,7 +587,7 @@ test('stock changed after dispatch is reported separately from verified remote w
   f.state.hook = async (u, m) => {
     if (m === 'PATCH') {
       f.state.hook = undefined;
-      await pool.query('UPDATE stock SET on_hand=9 WHERE product_id=$1', [x.p.id]);
+      await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=9 WHERE product_id=$1', [x.p.id]);
     }
   };
   const r = await step(p);
