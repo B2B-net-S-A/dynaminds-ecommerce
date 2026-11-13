@@ -9,6 +9,7 @@ import { seed } from './fixtures';
 import { openCatalogExport } from '../server/catalog-export';
 import { withHistoricalCatalogModules } from './catalog-export-historical-fixture';
 import { withoutApiKeyLastUse } from './api-key-last-use';
+import { assertPimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -607,7 +608,7 @@ test(
   },
 );
 
-test('a genuine 096 validator body exposes new sources as unavailable without rewriting old profiles or changing old default export bytes', async () => {
+test('a 096 validator body over hidden 142/143 is a torn install: profiles and exports fail closed without writes, then old profiles and default bytes are unchanged', async () => {
   const body = {
     name: 'Old 115 profile',
     definition: { format: 'csv', columns: ['sku', 'name'], headers: {}, spreadsheet_safe: false },
@@ -632,38 +633,38 @@ test('a genuine 096 validator body exposes new sources as unavailable without re
   await withHistoricalCatalogModules(pool, async () => {
   try {
     await pool.query(originalValidator);
-    const options = await ok('/catalog/exports/options');
-    assert.equal(options.sources.warehouses.available, false);
-    assert.equal(options.sources.price_lists.available, false);
-    assert.deepEqual(options.sources.warehouses.data, []);
-    assert.deepEqual(options.sources.price_lists.data, []);
+    // Hidden in the full schema this is a torn install, not an older copy: the PIM
+    // integrity guards fail every tenant read and write closed, with no write.
+    const digest = await tenantDataDigest();
     for (const path of ['/catalog/exports/file', '/catalog/exports/preview']) {
+      // The source admission refuses first (503 before any tenant transaction).
       const response = await request(path, 'POST', input([p.id]));
       assert.equal(response.statusCode, 503, response.body);
       assert(!response.headers['content-disposition']);
     }
-    const deniedProfile = await request('/catalog/export-profiles', 'POST', {
-      name: 'New sources in old copy',
+    assertPimIncomplete(await request('/catalog/export-profiles', 'POST', {
+      name: 'New sources in torn copy',
       definition: definition(),
       client_key: randomUUID(),
-    });
-    assert.equal(deniedProfile.statusCode, 503, deniedProfile.body);
-    const detail = await ok('/catalog/export-profiles/' + saved.profile.id);
-    assert.deepEqual(detail.profile, saved.profile);
-    const replay = await ok('/catalog/export-profiles', 'POST', body);
-    assert.equal(replay.reused, true);
-    const file = await request('/catalog/exports/file', 'POST', {
-      ...body.definition,
-      selection: 'selected',
-      ids: [p.id],
-    });
-    assert.equal(file.statusCode, 200, file.body);
-    assert.equal(file.body, `"sku","name"\r\n"${p.sku}","Before source snapshot"\r\n`);
+    }));
+    assertPimIncomplete(await request('/catalog/export-profiles/' + saved.profile.id));
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
     await pool.query(currentValidator.definition);
     assert.deepEqual((await pool.query("SELECT oid,proowner,proacl,pg_get_functiondef(oid) definition FROM pg_proc WHERE oid='public.catalog_export_profile_definition_valid(jsonb)'::regprocedure")).rows[0], currentValidator);
   }
   });
+  const detail = await ok('/catalog/export-profiles/' + saved.profile.id);
+  assert.deepEqual(detail.profile, saved.profile);
+  const replay = await ok('/catalog/export-profiles', 'POST', body);
+  assert.equal(replay.reused, true);
+  const file = await request('/catalog/exports/file', 'POST', {
+    ...body.definition,
+    selection: 'selected',
+    ids: [p.id],
+  });
+  assert.equal(file.statusCode, 200, file.body);
+  assert.equal(file.body, `"sku","name"\r\n"${p.sku}","Before source snapshot"\r\n`);
   assert.deepEqual(await snapshot(), before);
 });
 
