@@ -161,6 +161,20 @@ function physicalGraph(a: Facts, b: Facts, f: Fixture, quantity: number, protoco
   return { receipt, document, rows };
 }
 
+// The order card of a commercial_v1 parcel plan reads the sale scope of migration 204
+// (commercialSaleScopeReadonlyInTx), so the tests below run with every later migration installed over 152.
+test('every later migration installs over the genuine 152 rows', async () => {
+  await app.close();
+  const { migrate } = await import('../server/db');
+  await migrate();
+  // Statistics for the new relations, as run-tests gives its template: without them the native
+  // guards plan blind and the parcel preview's guard fingerprint ran into the 8 s statement_timeout.
+  await pool.query('ANALYZE');
+  app = await buildApp({ integrationTransport: async () => {
+    providerCalls++; throw new Error('No provider in return coordinator169');
+  } });
+});
+
 for (const on of [false, true]) test(`strict ${on ? 'ON' : 'OFF'} commercial parcel138 receives duplicate commercial items once, creates native138 before PZ and preserves exact replay`, async () => {
   let f = await packed(on);
   const expensive = f.order.items.find((i: Row) => i.line_total === 3401); assert(expensive);
@@ -215,7 +229,8 @@ for (const on of [false, true]) test(`strict ${on ? 'ON' : 'OFF'} commercial par
     const maps = own169(accepted, 'catalog_stock_return_item_maps', f.tenant).filter(x => x.row_id === row.id);
     assert.deepEqual(maps.map(x => [x.item_id, x.quantity]).sort(), origins.map(x => [x.item_id, 1]).sort(), 'Shared physical row conserves both original item UUIDs');
   }
-  assert.deepEqual(await f.ok('/returns/' + rma.id + '/receive', 'POST', body), result);
+  // A pure replay answers the saved receipt marked reused (returnReceiveOutcome, server/returns.ts).
+  assert.deepEqual(await f.ok('/returns/' + rma.id + '/receive', 'POST', body), { ...result, reused: true });
   assert.deepEqual(await facts169(), accepted, 'No new PZ/number/receipt/journal on replay');
   assert.equal((await f.request('/returns/' + rma.id + '/receive', 'POST', { ...body, note: 'Changed historical body' })).statusCode, 409);
   assert.deepEqual(await facts169(), accepted);
