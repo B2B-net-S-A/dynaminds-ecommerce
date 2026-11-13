@@ -5,6 +5,7 @@ import type { PoolClient } from 'pg';
 import { buildApp } from '../server/app';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed, SECOND_TENANT } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -745,8 +746,8 @@ test(
 );
 
 test(
-  'readonly and older copies gate writes before parsing, while viewer/read-only keys cannot approve prices',
-  { timeout: 20000 },
+  'readonly gates writes before parsing, a torn price module fails closed, and viewer/read-only keys cannot approve prices',
+  { timeout: 60000 },
   async () => {
     const p = await product(),
       l = await list(),
@@ -788,8 +789,7 @@ test(
       assert.equal(r.statusCode, 200);
       return String(r.headers['set-cookie']).split(';')[0];
     };
-    let ro: Awaited<ReturnType<typeof buildApp>> | undefined,
-      older: Awaited<ReturnType<typeof buildApp>> | undefined;
+    let ro: Awaited<ReturnType<typeof buildApp>> | undefined;
     try {
       ro = await buildApp({ readOnly: true, integrationTransport: transport });
       const auth = await authFor(ro),
@@ -814,35 +814,17 @@ test(
     await pool.query(
       'ALTER TABLE price_bulk_edit_previews RENAME TO price_bulk_edit_previews_hidden_qa108',
     );
+    // Hidden in the full schema this is a torn install, not an older copy: the
+    // application refuses to start on it (PIM integrity), with no write.
     try {
-      older = await buildApp({ integrationTransport: transport });
-      const auth = await authFor(older),
-        meta = await req('/price-bulk-edit', 'GET', undefined, auth, older);
-      assert.equal(meta.statusCode, 200);
-      assert.equal(meta.json().available, false);
-      assert.equal(meta.json().can_write, false);
-      assert.match(String(meta.headers['cache-control']), /no-store/);
-      assert.equal(
-        (
-          await older.inject({
-            method: 'POST',
-            url: '/api/price-bulk-edit/previews',
-            headers: { cookie: auth, 'content-type': 'application/json' },
-            payload: '{',
-          })
-        ).statusCode,
-        503,
-      );
-      assert.equal(
-        (await req('/price-lists/' + l.id + '/items', 'GET', undefined, auth, older)).statusCode,
-        200,
-      );
-      assert.equal((await req('/products/' + p.id, 'GET', undefined, auth, older)).statusCode, 200);
+      const digest = await tenantDataDigest();
+      await assert.rejects(buildApp({ integrationTransport: transport }), pimIncomplete);
+      assert.deepEqual(await tenantDataDigest(), digest);
     } finally {
-      if (older) await older.close();
       await pool.query(
         'ALTER TABLE price_bulk_edit_previews_hidden_qa108 RENAME TO price_bulk_edit_previews',
       );
     }
+    assert.equal((await req('/products/' + p.id, 'GET', undefined, admin)).statusCode, 200);
   },
 );

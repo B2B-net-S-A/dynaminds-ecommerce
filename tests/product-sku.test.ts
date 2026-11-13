@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import type { PoolClient } from 'pg';
 import { migrate, pool, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 import { productSchema, type Actor } from '../server/domain';
 import {
   createProduct,
@@ -340,39 +341,21 @@ test('legacy 41-emoji SKU survives a name-only fifteen-field sheet while explici
   assert.deepEqual(await business(), before);
 });
 
-test('missing SKU module exposes false capability/current-only resolver; omission works and explicit rename503', async () => {
+test('torn SKU module in the full schema fails closed with 503 and changes nothing; restored module works again', async () => {
   const p = await create(),
     old = p.sku;
   await pool.query('ALTER TABLE product_sku_aliases RENAME TO product_sku_aliases_qa_missing');
   try {
-    assert.equal(await tx((c) => productSkuAvailable(c)), false);
-    assert.equal((await detail(p.id)).product_sku_edit_available, false);
-    const current = await tx((c) => resolveProductSkus(c, [old]));
-    assert.equal(current[0].id, p.id);
-    assert.equal(current[0].matched_sku, old);
-    const legacy = await edit(p, { name: 'Legacy bez SKU' });
-    assert.equal(legacy.sku, old);
-    const before = await tx(async (c) => ({
-      products: (await c.query('SELECT * FROM products')).rows,
-      audits: (await c.query('SELECT * FROM audit_events ORDER BY id')).rows,
-    }));
-    await assert.rejects(
-      edit(legacy, { sku: 'Missing-' + randomUUID() }),
-      (e: any) => e.status === 503,
-    );
-    await assert.rejects(
-      preview([{ ...legacy, changes: { sku: old } }]),
-      (e: any) => e.status === 503,
-    );
-    assert.deepEqual(
-      await tx(async (c) => ({
-        products: (await c.query('SELECT * FROM products')).rows,
-        audits: (await c.query('SELECT * FROM audit_events ORDER BY id')).rows,
-      })),
-      before,
-    );
+    const before = await tenantDataDigest();
+    await assert.rejects(tx((c) => productSkuAvailable(c)), pimIncomplete);
+    await assert.rejects(edit(p, { name: 'Legacy bez SKU' }), pimIncomplete);
+    await assert.rejects(edit(p, { sku: 'Missing-' + randomUUID() }), pimIncomplete);
+    assert.deepEqual(await tenantDataDigest(), before);
   } finally {
     await pool.query('ALTER TABLE product_sku_aliases_qa_missing RENAME TO product_sku_aliases');
   }
-  assert.equal((await detail(p.id)).product_sku_edit_available, true);
+  const restored = await detail(p.id);
+  assert.equal(restored.product_sku_edit_available, true);
+  assert.equal(restored.sku, old);
+  assert.equal(restored.name, p.name);
 });

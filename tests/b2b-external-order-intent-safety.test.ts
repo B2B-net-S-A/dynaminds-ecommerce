@@ -10,6 +10,7 @@ import { processB2bCatalog } from '../server/b2b-network';
 import { assertB2bWholeParcelAckInTx } from '../server/b2b-dropship-ack-guard';
 import { assertB2bExternalLocalRestockInTx } from '../server/b2b-external-order-intent-guards';
 import { publicApiDocument } from '../server/developer-api';
+import { pimIncomplete, tenantDataDigest } from './torn-module-fixture';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 const database = new URL(process.env.DATABASE_URL ?? '');
@@ -690,7 +691,7 @@ test('intent evidence forces tenant RLS and private proof isolation; raw incompl
   assert.equal(providerCalls, 0);
 });
 
-test('readonly intent reads work while every malformed mutation is rejected before parsing; missing module fails closed without breaking old catalog reads', async () => {
+test('readonly intent reads work while every malformed mutation is rejected before parsing; a torn intent module fails closed with 503 and no effects', async () => {
   const f = await fixture();
   await createIntent(f);
   const readonly = await buildApp({
@@ -771,32 +772,18 @@ test('readonly intent reads work while every malformed mutation is rejected befo
   await pool.query(
     'ALTER TABLE b2b_external_order_intents RENAME TO b2b_external_order_intents_safety_hidden',
   );
-  let legacy: Awaited<ReturnType<typeof buildApp>> | undefined;
+  // Hidden in the full schema this is a torn install, not an older copy: the
+  // application refuses to start on it (PIM integrity), with no write.
   try {
-    legacy = await buildApp({ integrationTransport: transport });
-    const options = await ok(intentPath + '/options', 'GET', undefined, buyerCookie, legacy);
-    assert.equal(options.available, false);
-    assert.equal(options.can_manage, false);
-    const r = await request(intentPath + '/orders', 'POST', intentBody(f), buyerCookie, legacy);
-    assert.equal(r.statusCode, 503, r.body);
-    assert.match(String(r.headers['cache-control']), /no-store/);
-    assert.equal(
-      (await request(f.base + '/catalog', 'GET', undefined, buyerCookie, legacy)).statusCode,
-      200,
-    );
-    assert.equal(
-      (await request('/products', 'GET', undefined, buyerCookie, legacy)).statusCode,
-      200,
-    );
+    const digest = await tenantDataDigest();
+    await assert.rejects(buildApp({ integrationTransport: transport }), pimIncomplete);
+    assert.deepEqual(await tenantDataDigest(), digest);
   } finally {
-    try {
-      await legacy?.close();
-    } finally {
-      await pool.query(
-        'ALTER TABLE b2b_external_order_intents_safety_hidden RENAME TO b2b_external_order_intents',
-      );
-    }
+    await pool.query(
+      'ALTER TABLE b2b_external_order_intents_safety_hidden RENAME TO b2b_external_order_intents',
+    );
   }
+  assert.equal((await request(f.base + '/catalog', 'GET', undefined, buyerCookie)).statusCode, 200);
   assert.deepEqual(await snapshot(), before);
   assert.equal(providerCalls, 0);
 });
