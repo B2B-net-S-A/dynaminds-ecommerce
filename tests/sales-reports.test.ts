@@ -429,8 +429,10 @@ test('legacy empty components and missing cost module remain explicitly incomple
   assert.equal(r.missing_issue_quantity, '2');
   assert.equal(r.margin_minor, null);
   assert(r.cost_reasons.includes('physical_snapshot_unavailable'));
+  // wms_issue_fragments, not wms_return_fragments: the return-exchange module (120) seals wms_return_fragments,
+  // so hiding that table makes the exchange module incomplete (503), not just the cost module unavailable.
   await pool.query(
-    'ALTER TABLE wms_return_fragments RENAME TO report_unavailable_return_fragments',
+    'ALTER TABLE wms_issue_fragments RENAME TO report_unavailable_issue_fragments',
   );
   try {
     const d = (await report('/orders/' + o.id)).order;
@@ -440,7 +442,7 @@ test('legacy empty components and missing cost module remain explicitly incomple
     assert.equal(s.cohort_current[0].incomplete_order_count, 1);
   } finally {
     await pool.query(
-      'ALTER TABLE report_unavailable_return_fragments RENAME TO wms_return_fragments',
+      'ALTER TABLE report_unavailable_issue_fragments RENAME TO wms_issue_fragments',
     );
   }
 });

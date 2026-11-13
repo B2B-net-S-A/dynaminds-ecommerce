@@ -752,6 +752,9 @@ test('200 historical parcels are paginated without gaps and form one bounded exa
             number: 'COL-HISTORY-' + oid,
             portal_token: randomBytes(24).toString('hex'),
             portal_enabled: false,
+            // The copied original is already shipped; order_shipments_guard admits a new shipment row only
+            // on an order that is not yet shipped, so the synthetic history order is copied as packed.
+            status: 'packed',
           }),
         ],
       );

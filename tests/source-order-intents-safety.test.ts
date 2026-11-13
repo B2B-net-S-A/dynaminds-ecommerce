@@ -173,7 +173,8 @@ const executeBody = (p:Row) => ({client_key:randomUUID(),version:1 as const,scop
 const execute = (p:Row,body=executeBody(p),auth=buyerCookie) => request('/import-external-intent-previews/'+p.id+'/execute','POST',body,auth);
 async function waitOn(holder:PoolClient, pattern:RegExp) {
   const pid = (await holder.query('SELECT pg_backend_pid() pid')).rows[0].pid;
-  const until = Date.now()+4000;
+  // 30 s, not 4 s: the execution prepares the whole import before the held row; on a loaded runner that took 10–12 s.
+  const until = Date.now()+30000;
   while (Date.now()<until) {
     const waits = (await pool.query("SELECT query FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))",[pid])).rows;
     if (waits.some((r:Row)=>pattern.test(r.query))) return;

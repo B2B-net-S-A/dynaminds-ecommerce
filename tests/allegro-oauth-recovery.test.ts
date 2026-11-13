@@ -229,11 +229,11 @@ test('concurrent refreshes still rotate once and reuse the newly persisted acces
 // from tick(), not from an injected permission or fabricated source parent.
 test('known-response refusal fences a replacement native lease before refresh unlock', { timeout: 60000 }, async () => {
   const id = await channel(), held = context('takeover', true);
-  // Seed emits genuine automation jobs before this sync. Explicitly postpone
-  // their fixture clocks before the purity baseline: both real worker claims
-  // must select the target, including after the reaper resets its run_at.
+  // Any pending automation job left by the seed (the seed's rules are disabled and
+  // events with no rules queue none, server/events.ts) is postponed before the
+  // purity baseline: both real worker claims must select the target, including
+  // after the reaper resets its run_at.
   const seeded = (await pool.query("SELECT id,kind,payload FROM jobs WHERE state='pending' ORDER BY id")).rows;
-  assert(seeded.length > 0);
   assert(seeded.every(j => j.kind === 'automation' && Array.isArray(j.payload.rules)));
   await pool.query("UPDATE jobs SET run_at=clock_timestamp()+interval '1 hour' WHERE id=ANY($1::uuid[])",
     [seeded.map(j => j.id)]);

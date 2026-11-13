@@ -47,7 +47,8 @@ async function holder(f: Row) {
   await c.query('SELECT id FROM orders WHERE tenant_id=$1 AND id=$2 FOR UPDATE', [f.tenant, f.order.id]); return c;
 }
 async function waitOn(c: PoolClient, query = /return_assistant_prepare|orders.*FOR UPDATE/i) {
-  const pid = (await c.query('SELECT pg_backend_pid() pid')).rows[0].pid, until = Date.now() + 4000;
+  // 30 s, not 4 s: on a loaded runner the receive reaches the held order after ~2.5 s or much later (receipt hydration likewise).
+  const pid = (await c.query('SELECT pg_backend_pid() pid')).rows[0].pid, until = Date.now() + 30000;
   while (Date.now() < until) {
     const waiting = (await pool.query("SELECT query FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))", [pid])).rows;
     if (waiting.some(r => query.test(r.query))) return;
@@ -98,7 +99,7 @@ test('ordinary OFF final IAM waits after receipt validation and output hydration
   const outcome = pending.then(value => ({ value, error: undefined as unknown }), error => ({ value: undefined, error }));
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    await Promise.race([reachedHydration, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('Must reach genuine receipt hydration after flush')), 5000); })]);
+    await Promise.race([reachedHydration, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('Must reach genuine receipt hydration after flush')), 30000); })]);
     if (timer) clearTimeout(timer);
     await authority.query('BEGIN'); await authority.query("SET LOCAL statement_timeout='1500ms'");
     await authority.query("UPDATE memberships SET role='viewer' WHERE tenant_id=$1 AND user_id=$2", [f.tenant, f.user]);

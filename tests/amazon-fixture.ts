@@ -47,10 +47,10 @@ export function amazonFixture(count = 1) {
     } else {
       assert.equal(u.origin, amazonBase('sandbox', 'eu'));
       assert.equal(init.method, 'GET');
-      assert.equal(
-        (init.headers as any)['x-amz-access-token'],
-        'DEMO-amazon-access-' + state.token,
-      );
+      // Any access token issued so far: like LWA, an earlier token stays valid until it expires, and two
+      // concurrent requests may each refresh one (amazon-imports: concurrent commits).
+      const issued = /^DEMO-amazon-access-(\d+)$/.exec((init.headers as any)['x-amz-access-token']);
+      assert(issued && Number(issued[1]) >= 1 && Number(issued[1]) <= state.token, 'Unissued Amazon access token');
       assert.equal((init.headers as any).Authorization, undefined);
       assert.equal(u.searchParams.get('includedData'), AMAZON_DATA);
       if (state.fail401) {

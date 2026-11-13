@@ -305,7 +305,8 @@ test('OAuth contention refuses a delivery with503 before channel locks and uncha
     ]);
     const receiving = send(f, d);
     let waiting = false;
-    for (let attempt = 0; attempt < 40; attempt++) {
+    // A deadline, not a poll count: on a loaded runner the receiver reaches the grant lock later than 0.4 s.
+    for (const until = Date.now() + 30000; Date.now() < until; ) {
       waiting = (
         await pool.query(
           "SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event='advisory' AND query LIKE '%pg_advisory_xact_lock_shared%') AS waiting",
@@ -362,7 +363,8 @@ test('retry concurrent with the final worker wait returns409 while one worker co
     pending.push(working);
     void working.catch(() => {});
     const waitFor = async (sql: string, params: unknown[]) => {
-      for (let attempt = 0; attempt < 150; attempt++) {
+      // A deadline, not a poll count: on a loaded runner the worker reaches the job lock later than 3 s.
+      for (const until = Date.now() + 30000; Date.now() < until; ) {
         const row = (await pool.query(sql, params)).rows[0];
         if (row) return row;
         await new Promise((resolve) => setTimeout(resolve, 20));

@@ -98,7 +98,8 @@ async function mint(f: MixedFixture, scopes: string[]) {
 async function protectedBusiness(f: MixedFixture) {
   const all = await f.snapshot();
   // Only intentionally changed IAM/quota accounting are excluded, never source/RMA/stock/evidence.
-  const { api_keys, memberships, workspace_usage, ...business } = all;
+  // auth237_api_key_state is the key's last-use stamp (237), written by every authenticated key request.
+  const { api_keys, auth237_api_key_state, memberships, workspace_usage, ...business } = all;
   return business;
 }
 function noFinancialFields(value: unknown) {
