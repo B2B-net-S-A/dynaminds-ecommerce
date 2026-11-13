@@ -5,7 +5,6 @@
     "tests/operational-delivery-consumers.test.ts": "wymaga DYNA_OPERATIONAL_DELIVERY_NATIVE=true i natywnego klastra na porcie 55432 z instalacją operational-delivery"
   },
   "quarantine": {
-    "tests/allegro-creation.test.ts": "za długi plik (lokalnie 13.11.2026: 46 testów, 2723 s pojedynczo; test „maksymalna partia 200 SKU” 790 s — 200 ticków workera po ~4 s w teście bez bramki schematu) oraz :1114 „Obcy tenant native birth” (grupa C); wymaga podziału pliku albo --test-shard w run-tests",
     "tests/b2b-catalog-bind-key-safety.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/b2b-catalog-bind-key-safety.test.ts:48:1 — Expected values to be strictly deep-equal:",
     "tests/b2b-catalog-dropshipping-scopes.test.ts": "e3 13.11.2026: :186 ukrywa moduły 142/143 (product_catalog_*), a catalog_stock_control_guards() (152) woła product_catalog_guards() → 42883 w guard_verdict → 500; stan niemożliwy na pełnym schemacie — decyzja Artura (usunąć test albo ukrywać też 152)",
     "tests/b2b-catalog-network-scopes.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/b2b-catalog-network-scopes.test.ts:103:1 — Expected values to be strictly deep-equal:",
@@ -51,7 +50,6 @@
     "tests/catalog-stock-count-value169.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/catalog-stock-count-value169.test.ts:83:1 — seed(): hydrateOrder → replacedLabelsInTx czyta shipment268_replaced_labels na bazie sprzed 268 (PR #8)",
     "tests/deepl.test.ts": "niestabilny bez oznaki czasu, więc bez ponowienia (pada w biegach 43262334505 i 43330236658, przechodzi w 43286339319 i 43322230795): tests/deepl.test.ts:684 — z 22 równoczesnych podglądów 16 zamiast 20 odpowiedzi 201",
     "tests/dispatch-transaction.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/dispatch-transaction.test.ts:53:1 — PATCH /orders/<uuid>/status: HTTP 422",
-    "tests/ebay-offers.test.ts": "za długi plik (lokalnie 13.11.2026: 78 testów po ~25 s, ~35–40 min pojedynczo) oraz :472, :542 „Obcy tenant native birth” (grupa C) i :427 „Brak odpowiedzi API eBay”; wymaga podziału pliku albo --test-shard w run-tests",
     "tests/inventory-bulk-edit-flows.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/inventory-bulk-edit-flows.test.ts:93:1 — {\"type\":\"about:blank\",\"title\":\"Nie można wykonać operacji\",\"status\":422,\"detail\":\"expected_version: Invalid input\",\"request_id\":\"req-j\"}",
     "tests/local-ui-origin.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): tests/local-ui-origin.test.ts:29:1 — seed(): hydrateOrder → replacedLabelsInTx czyta shipment268_replaced_labels na bazie sprzed 268 (PR #8)",
     "tests/offer-sync.test.ts": "pada na main (pełny bieg 43322230795, 12.11.2026): :678 „Allegro 202 po wyłączeniu…” — po pauzie synchronizacji autoryzacja zadania Allegro (server/allegro-oauth-authority.ts:248, „Konfigurację zadania Allegro wyłączono lub zmieniono”) kończy plan z przyjętą operacją 202 jako failed, test oczekuje dalszego odczytu operacji; decyzja: kod czy test (13.11.2026). :754 naprawiony (zaufany kontekst żądania dla beginOAuth)",

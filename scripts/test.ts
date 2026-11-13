@@ -199,7 +199,9 @@ try {
                           'tests/stock-locations.test.ts',
                           'tests/purchasing.test.ts',
                           'tests/offers.test.ts',
-                          'tests/allegro-creation.test.ts',
+                          'tests/allegro-creation-drafts.test.ts',
+                          'tests/allegro-creation-publish.test.ts',
+                          'tests/allegro-creation-batch-max.test.ts',
                           'tests/variable-offers.test.ts',
                           'tests/offer-sync.test.ts',
                           'tests/order-status.test.ts',
@@ -227,7 +229,9 @@ try {
                           'tests/ebay.test.ts',
                           'tests/ebay-imports.test.ts',
                           'tests/ebay-catalog.test.ts',
-                          'tests/ebay-offers.test.ts',
+                          'tests/ebay-offers-sync-publish.test.ts',
+                          'tests/ebay-offers-create.test.ts',
+                          'tests/ebay-offers-metadata.test.ts',
                           'tests/ebay-oauth.test.ts',
                           'tests/ebay-fulfillment.test.ts',
                           'tests/odoo-catalog.test.ts',
@@ -403,7 +407,9 @@ try {
     ];
   if (process.argv.includes('--allegro-creation'))
     files = [
-      'tests/allegro-creation.test.ts',
+      'tests/allegro-creation-drafts.test.ts',
+      'tests/allegro-creation-publish.test.ts',
+      'tests/allegro-creation-batch-max.test.ts',
       'tests/offers.test.ts',
       'tests/offer-sync.test.ts',
       'tests/variable-offers.test.ts',
@@ -587,7 +593,9 @@ try {
     ];
   if (process.argv.includes('--ebay-offers'))
     files = [
-      'tests/ebay-offers.test.ts',
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
       'tests/ebay.test.ts',
       'tests/ebay-catalog.test.ts',
       'tests/offers.test.ts',
@@ -595,13 +603,19 @@ try {
       'tests/shopify-offers.test.ts',
       'tests/prestashop-offers.test.ts',
     ];
-  if (process.argv.includes('--ebay-offers-only')) files = ['tests/ebay-offers.test.ts'];
+  if (process.argv.includes('--ebay-offers-only')) files = [
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
+    ];
   if (process.argv.includes('--ebay-oauth'))
     files = [
       'tests/ebay-oauth.test.ts',
       'tests/ebay.test.ts',
       'tests/ebay-catalog.test.ts',
-      'tests/ebay-offers.test.ts',
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
       'tests/sync.test.ts',
       'tests/backup.test.ts',
     ];
@@ -610,7 +624,9 @@ try {
       'tests/ebay-oauth.test.ts',
       'tests/ebay.test.ts',
       'tests/ebay-catalog.test.ts',
-      'tests/ebay-offers.test.ts',
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
       'tests/ebay-fulfillment.test.ts',
       'tests/sync.test.ts',
       'tests/backup.test.ts',
@@ -630,7 +646,9 @@ try {
   if (process.argv.includes('--ebay-api-limits'))
     files = [
       'tests/ebay-api-limits.test.ts',
-      'tests/ebay-offers.test.ts',
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
       'tests/ebay-oauth.test.ts',
       'tests/ebay-fulfillment.test.ts',
       'tests/ebay.test.ts',
@@ -641,7 +659,9 @@ try {
   if (process.argv.includes('--ebay-api-focused'))
     files = [
       'tests/ebay-api-limits.test.ts',
-      'tests/ebay-offers.test.ts',
+      'tests/ebay-offers-sync-publish.test.ts',
+      'tests/ebay-offers-create.test.ts',
+      'tests/ebay-offers-metadata.test.ts',
       'tests/ebay-oauth.test.ts',
     ];
   if (process.argv.includes('--account-security'))
