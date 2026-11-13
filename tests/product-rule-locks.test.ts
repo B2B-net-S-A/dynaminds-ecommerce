@@ -201,7 +201,9 @@ async function snapshot() {
   return rows;
 }
 async function blockedByCatalog(holder: number) {
-  const deadline = Date.now() + 2500;
+  // Deadline to reach the wait, not part of it: the request first runs the ungated test tenantTx schema
+  // validators, and 2.5 s missed the wait locally under load on 13.11.2026.
+  const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
     const blocked = await pool.query(
       "SELECT pid FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%pg_advisory_xact_lock%' AND $1=ANY(pg_blocking_pids(pid))",
@@ -216,7 +218,8 @@ async function blockedByCatalog(holder: number) {
 for (const operation of ['AI', 'DeepL', 'DeepL batch'] as const) {
   test(
     `${operation}: admin revocation commits while real apply waits for catalogue; then 403 without mutations or jobs`,
-    { timeout: 15000 },
+    // Hang guard only: 16 s and more locally under load on 13.11.2026 (15 s cut it off).
+    { timeout: 120000 },
     async () => {
       const control = await ready(operation);
       await apply(control);
@@ -312,7 +315,9 @@ for (const operation of ['AI', 'DeepL', 'DeepL batch'] as const) {
 
 test(
   'actual worker tick does not claim another pending lease if product-rule reaper transaction fails',
-  { timeout: 15000 },
+  // Hang guard only: the fault trigger changes pg_catalog, so the tick runs every schema guard uncached:
+  // 25 s locally on 13.11.2026; 15 s cut it off on CI (run 43425966080).
+  { timeout: 120000 },
   async () => {
     const failedSource = await ready('AI'),
       pendingSource = await ready('AI');

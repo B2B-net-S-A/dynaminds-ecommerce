@@ -35,7 +35,9 @@ test('two price-list births queue behind a real catalog lock and enroll exactly 
     await blocker.query('SELECT pg_advisory_xact_lock_shared(hashtextextended($1,0))', ['catalog:' + f.tenant]);
     requests.push(...['A', 'B'].map(s => f.request('/price-lists', 'POST', { name: 'Concurrent own birth ' + s + ' ' + randomUUID(), currency: 'PLN' })));
     let waiting = 0;
-    for (let n = 0; n < 100; ++n) {
+    // A deadline to reach the wait, not part of it: 100 polls of 10 ms (1-3 s) missed the two requests on a
+    // loaded CI runner (run 43425966080), where each first runs the ungated test tenantTx schema validators.
+    for (const until = Date.now() + 30000; Date.now() < until; ) {
       waiting = Number((await pool.query("SELECT count(*) n FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND wait_event='advisory' AND $1::int=ANY(pg_blocking_pids(pid))", [blockerPid])).rows[0].n);
       if (waiting >= 2) break;
       await new Promise(resolve => setTimeout(resolve, 10));

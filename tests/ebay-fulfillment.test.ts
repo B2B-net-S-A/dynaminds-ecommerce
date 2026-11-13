@@ -413,8 +413,10 @@ test('eBay shipping: revoked role or changed tracking during final GET blocks PO
             "UPDATE memberships SET role='viewer' WHERE tenant_id=$1 AND user_id=$2",
             [DEMO_TENANT, user],
           );
+        // Not 'OTHER003': an earlier test leaves that number on another DEMO shipment, so this UPDATE hit
+        // shipments_tracking_identity, the hook threw and the attempt ended as a lost GET ('queued').
         else
-          await rewriteShipmentFixture("UPDATE shipments SET tracking_number='OTHER003' WHERE order_id=$1", [
+          await rewriteShipmentFixture("UPDATE shipments SET tracking_number='OTHER013' WHERE order_id=$1", [
             x.o.id,
           ]);
       }
