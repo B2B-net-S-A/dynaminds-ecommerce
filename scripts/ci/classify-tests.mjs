@@ -24,7 +24,7 @@ const TEST_FILE = /^tests\/[^/]+\.test\.(?:ts|tsx|mts|mjs)$/;
 
 export function loadConfig(root = ROOT) {
   const config = JSON.parse(readFileSync(join(root, CONFIG), 'utf8'));
-  for (const key of ['special', 'quarantine', 'darwin', 'db', 'static', 'freshDatabase']) {
+  for (const key of ['special', 'quarantine', 'darwin', 'db', 'static', 'freshDatabase', 'noGuardCache']) {
     for (const file of Object.keys(config[key] ?? {})) {
       if (!TEST_FILE.test(file)) throw new Error(`${CONFIG}: ${key} "${file}" nie jest plikiem tests/*.test.*`);
       if (!existsSync(join(root, file))) throw new Error(`${CONFIG}: ${key} "${file}" nie istnieje — usuń wpis`);

@@ -7,7 +7,10 @@
  *
  * --kind db: one database per file, named dynaminds_test_<13 digits> (the name guards in tests accept it),
  * copied from a template that is migrated once per run (CREATE DATABASE … TEMPLATE). Files listed under
- * "freshDatabase" in scripts/ci/test-classes.json get an empty database and migrate themselves.
+ * "freshDatabase" in scripts/ci/test-classes.json, or calling bootstrap151169() (tests/catalog-stock-control169-fixture.ts
+ * asserts an empty database), get an empty database and migrate themselves.
+ * Guard answers are reused while their inputs are unchanged (scripts/ci/guard-cache.mjs, preloaded via NODE_OPTIONS);
+ * files listed under "noGuardCache", or reading pg_stat_xact_* / track_functions themselves, run without it.
  * Requires DYNA_LOCAL_CONFIG_PATH (dbPassword) and DYNA_TEST_PG_PORT; PostgreSQL on 127.0.0.1.
  *
  * Exit code 1 when any file fails or times out. Never touches a database it did not create.
@@ -15,7 +18,9 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, createWriteStream } from 'node:fs';
 import { basename, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { ROOT, loadConfig } from './classify-tests.mjs';
+import { loadDurations } from './shard.mjs';
 
 const args = process.argv.slice(2);
 const opt = (name, dflt) => {
@@ -30,7 +35,10 @@ const out = opt('--out', 'ci-out/' + kind);
 const concurrency = Math.max(1, Number(opt('--concurrency', kind === 'db' ? '1' : '4')));
 const timeoutMin = Number(opt('--timeout-min', process.env.CI_FILE_TIMEOUT_MIN ?? (kind === 'db' ? '45' : '10')));
 const filesFrom = opt('--files-from', null);
-const files = [...args, ...(filesFrom ? readFileSync(filesFrom, 'utf8').split('\n') : [])].map((s) => s.trim()).filter(Boolean);
+const listed = [...args, ...(filesFrom ? readFileSync(filesFrom, 'utf8').split('\n') : [])].map((s) => s.trim()).filter(Boolean);
+// Several workers: longest measured file first, so the shard does not end with one long file running alone.
+const measured = concurrency > 1 ? loadDurations() : {};
+const files = concurrency > 1 ? [...listed].sort((a, b) => (measured[b] ?? 0) - (measured[a] ?? 0)) : listed;
 if (!['static', 'db'].includes(kind)) throw new Error('--kind static|db');
 mkdirSync(out, { recursive: true });
 if (!files.length) {
@@ -49,7 +57,27 @@ if (kind === 'db') {
   admin = new pg.Client({ host: '127.0.0.1', port: Number(port), user: 'postgres', password, database: 'postgres' });
   await admin.connect();
 }
-const fresh = new Set(Object.keys(loadConfig().freshDatabase ?? {}));
+const config = loadConfig();
+const sources = new Map();
+const source = (file) => { if (!sources.has(file)) { let text = ''; try { text = readFileSync(join(ROOT, file), 'utf8'); } catch {} sources.set(file, text); } return sources.get(file); };
+const freshListed = new Set(Object.keys(config.freshDatabase ?? {}));
+const fresh = { has: (file) => freshListed.has(file) || /\bbootstrap151169\(\)/.test(source(file)) };
+const noGuardCacheListed = new Set(Object.keys(config.noGuardCache ?? {}));
+const guardCacheFor = (file) => !noGuardCacheListed.has(file) && !/pg_stat_xact|pg_stat_user_functions|track_functions/.test(source(file));
+const guardCacheEnv = (file) => guardCacheFor(file) ? {
+  NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --import=${pathToFileURL(join(ROOT, 'scripts/ci/guard-cache.mjs')).href}`.trim(),
+  DYNA_CI_GUARD_CACHE: '1',
+  DYNA_CI_GUARD_CACHE_STATS: join(out, basename(file) + '.guard-cache.jsonl'),
+  DYNA_CI_GUARD_CACHE_FILE: join(out, fresh.has(file) ? '_guard-cache-fresh.jsonl' : '_guard-cache-template.jsonl'),
+} : {};
+const guardCacheSummary = (file) => {
+  let rows; try { rows = readFileSync(join(out, basename(file) + '.guard-cache.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)); } catch { return ''; }
+  const t = rows.reduce((a, r) => ({ hits: a.hits + r.hits, shared: a.shared + (r.sharedHits ?? 0), misses: a.misses + r.misses, bypassed: a.bypassed + r.bypassed, uncacheable: a.uncacheable + r.uncacheable, guardMs: a.guardMs + r.guardMs }), { hits: 0, shared: 0, misses: 0, bypassed: 0, uncacheable: 0, guardMs: 0 });
+  const causes = {};
+  for (const r of rows) for (const [c, n] of Object.entries(r.missBy ?? {})) causes[c] = (causes[c] ?? 0) + n;
+  const top = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `${c}=${n}`).join(',');
+  return ` guards=${t.hits}hit(${t.shared}shared)/${t.misses}miss(${Math.round(t.guardMs / 1000)}s:${top})/${t.bypassed}bypass/${t.uncacheable}uncacheable`;
+};
 const dbUrl = (name) => `postgres://postgres:${encodeURIComponent(password)}@127.0.0.1:${port}/${name}`;
 let nameSeq = Date.now();
 const nextName = () => `dynaminds_test_${String(nameSeq++).padStart(13, '0')}`;
@@ -60,11 +88,14 @@ function run(file, env, logPath, asTest = true) {
     const started = Date.now();
     const child = spawn(process.execPath, asTest ? [TSX, '--test', '--test-concurrency=1', file] : [TSX, file], {
       cwd: ROOT, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'],
+      // Own process group: tsx and node --test start children that hold the pipes; killing only the direct child
+      // left them running (ebay-offers ran 92 min past the 45 min limit, run 43205055600).
+      detached: true,
     });
     child.stdout.pipe(log, { end: false });
     child.stderr.pipe(log, { end: false });
     let timedOut = false;
-    const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, timeoutMin * 60_000);
+    const timer = setTimeout(() => { timedOut = true; try { process.kill(-child.pid, 'SIGKILL'); } catch { child.kill('SIGKILL'); } }, timeoutMin * 60_000);
     child.on('close', (code) => {
       clearTimeout(timer);
       log.end(timedOut ? `\n# CI: przekroczony limit ${timeoutMin} min — proces zabity\n` : '');
@@ -120,13 +151,13 @@ async function worker() {
     let database;
     if (kind === 'db') {
       database = await createDatabase(file);
-      env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true' };
+      env = { DATABASE_URL: dbUrl(database), DYNA_TEST: 'true', ...guardCacheEnv(file) };
     }
     const r = await run(file, env, logPath);
     if (database) await admin.query(`DROP DATABASE IF EXISTS ${database} WITH (FORCE)`).catch((e) => console.error(`DROP ${database}: ${e.message}`));
     durations[file] = r.seconds;
     const counts = (readFileSync(logPath, 'utf8').match(/^# (?:pass|fail) \d+/gm) ?? []).join(' ');
-    const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s`;
+    const line = `${r.code === 0 ? 'ok  ' : 'FAIL'} ${file} exit=${r.code} ${counts} ${r.seconds}s${kind === 'db' ? guardCacheSummary(file) : ''}`;
     console.log(line);
     appendFileSync(summary, line + '\n');
     if (r.code !== 0) failed.push(file);

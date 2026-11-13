@@ -43,7 +43,9 @@ env:
   CI_DB_TARGET_MIN: ${{ vars.CI_DB_TARGET_MIN || '35' }}
   CI_DB_PR_BUDGET_MIN: ${{ vars.CI_DB_PR_BUDGET_MIN || '75' }}
   CI_DB_QUEUE_BUDGET_MIN: ${{ vars.CI_DB_QUEUE_BUDGET_MIN || '600' }}
-  CI_DB_CONCURRENCY: ${{ vars.CI_DB_CONCURRENCY || '1' }}
+  # Dwa pliki naraz na shard (runner 4 vCPU): sam cache strażników nie mieści pełnego zestawu w 60 min
+  # na 20 shardach (bieg 43262334505: ~1690 min plików łącznie).
+  CI_DB_CONCURRENCY: ${{ vars.CI_DB_CONCURRENCY || '2' }}
   CI_FILE_TIMEOUT_MIN: ${{ vars.CI_FILE_TIMEOUT_MIN || '45' }}
 
 jobs:
@@ -84,7 +86,8 @@ jobs:
           mode=$(node -p 'require("./plan/selection.json").mode')
           # Sito PR-a: 1–3 shardy; sito kolejki i pełny zestaw (noc, ręczny bieg): do CI_DB_MAX_SHARDS.
           if [ "$EVENT" != "pull_request" ]; then max=$CI_DB_MAX_SHARDS; target=$CI_DB_TARGET_MIN; else max=3; target=30; fi
-          node scripts/ci/shard.mjs --plan --target-min "$target" --max "$max" --files-from plan/files.txt > plan/plan.json
+          # Czasy plików są mierzone pojedynczo; przy CI_DB_CONCURRENCY plikach naraz shard mieści ich tyle razy więcej.
+          node scripts/ci/shard.mjs --plan --target-min "$((target * CI_DB_CONCURRENCY))" --max "$max" --files-from plan/files.txt > plan/plan.json
           count=$(node -p 'require("./plan/plan.json").count')
           if [ "$count" -gt 0 ]; then
             node scripts/ci/shard.mjs --count "$count" --out-dir plan --files-from plan/files.txt
