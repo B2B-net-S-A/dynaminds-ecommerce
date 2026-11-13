@@ -89,10 +89,8 @@ async function fixture(on: boolean) {
 
 test('strict ON legacy-origin RMA ordinary receive uses real WMS fragments and one typed PZ; 0/NULL and exact replay preserved', async () => {
   const f = await fixture(true), initial = await facts169();
-  // Neither ordinary no-lot input nor the old status shortcut may infer WMS picks.
+  // Ordinary no-lot input may not infer WMS picks. (The status path is the legacy ON command, tested below.)
   assert.equal((await f.request('/returns/' + f.rma.id + '/receive', 'POST', f.body)).statusCode, 409);
-  assert.deepEqual(await facts169(), initial);
-  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' }))).statusCode, 409);
   assert.deepEqual(await facts169(), initial);
   const fragments = own169(initial, 'wms_issue_fragments', f.tenant).filter(r => r.order_id === f.order.id);
   assert.equal(fragments.length, 3); assert(fragments.every(r => r.quantity === 1));
@@ -185,6 +183,57 @@ test('strict ON legacy-origin RMA ordinary receive uses real WMS fragments and o
   assert.deepEqual(await facts169(), accepted, 'Exact legacy-origin WMS replay allocates no number or second physical/financial/session write');
   assert.equal((await f.request('/returns/' + f.rma.id + '/receive', 'POST', { ...body, note: 'Another request' })).statusCode, 409);
   assert.deepEqual(await facts169(), accepted);
+});
+
+test('strict ON legacy-origin status return_received completes the RMA through the WMS command once; no second physical write', async () => {
+  const f = await fixture(true), initial = await facts169();
+  const status = async () => legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' });
+  // Allowed on purpose: transitionDirectLegacyOnReturnInTx (server/legacy-return-on-command.ts) receives the one requested legacy RMA.
+  await f.ok('/orders/' + f.order.id + '/status', 'PATCH', await status());
+  const accepted = await facts169(), rma = await f.ok('/returns/' + f.rma.id);
+  assert.equal(rma.state, 'refund_pending'); assert.equal(rma.refund_amount, 1501);
+  for (const table of Object.keys(initial)) assert.deepEqual(
+    accepted[table].filter(x => x.row.tenant_id !== f.tenant), initial[table].filter(x => x.row.tenant_id !== f.tenant),
+    'Every foreign/global row and session retained: ' + table);
+  const fragments = own169(initial, 'wms_issue_fragments', f.tenant).filter(r => r.order_id === f.order.id);
+  assert.equal(fragments.length, 3);
+  const admission = one(own169(accepted, 'catalog_stock_return_admissions', f.tenant));
+  const receipt = one(own169(accepted, 'catalog_stock_return_receipts', f.tenant));
+  const document = one(own169(accepted, 'catalog_stock_return_documents', f.tenant));
+  const rows = own169(accepted, 'catalog_stock_return_rows', f.tenant);
+  assert.equal(admission.protocol, 'legacy_status'); assert.equal(admission.return_id, f.rma.id); assert.equal(admission.sealed, true);
+  assert.equal(receipt.id, admission.id); assert.equal(document.receipt_id, receipt.id);
+  assert.equal(document.payload.kind, 'PZ'); assert.equal(document.payload.wms_enabled, true);
+  assert.equal(document.payload.quantity, '3'); assert.equal(rows.length, 3);
+  // Stock comes in through the WMS command: one return operation, one returned fragment and layer movement per issued unit.
+  const op = one(added(initial, accepted, 'wms_operations'));
+  assert.equal(op.id, receipt.wms_operation_id); assert.equal(op.kind, 'return'); assert.equal(op.return_id, f.rma.id); assert.equal(op.order_id, f.order.id);
+  const physical = added(initial, accepted, 'stock_movements'), bins = added(initial, accepted, 'stock_location_movements');
+  const returned = added(initial, accepted, 'wms_return_fragments'), layers = added(initial, accepted, 'wms_layer_movements');
+  assert.equal(physical.length, 3); assert.equal(bins.length, 3); assert.equal(returned.length, 3); assert.equal(layers.length, 3);
+  assert.deepEqual(returned.map(r => r.issue_fragment_id).sort(), ids(fragments));
+  assert(layers.every(m => m.operation_id === op.id && m.delta === 1));
+  assert.deepEqual([...receipt.proof.stock_movement_ids].sort(), ids(physical));
+  assert.deepEqual([...receipt.proof.location_movement_ids].sort(), ids(bins));
+  for (const p of f.products) {
+    const aggregate = one(physical.filter(j => j.product_id === p.id));
+    assert.equal(aggregate.kind, 'return'); assert.equal(aggregate.delta, 1); assert.equal(aggregate.return_id, f.rma.id);
+    const oldStock = one(own169(initial, 'stock', f.tenant).filter(s => s.product_id === p.id && s.warehouse_id === f.warehouse.id));
+    const stock = one(own169(accepted, 'stock', f.tenant).filter(s => s.product_id === p.id && s.warehouse_id === f.warehouse.id));
+    assert.equal(stock.on_hand, oldStock.on_hand + 1); assert.equal(stock.reserved, oldStock.reserved);
+  }
+  // No double movement: neither a repeated status nor the ordinary receive with the same picks writes again.
+  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', await status())).statusCode, 409);
+  assert.deepEqual(await facts169(), accepted);
+  const policy = one(own169(accepted, 'wms_policies', f.tenant));
+  const current = await f.ok('/returns/' + f.rma.id);
+  const body = { ...f.body, version: Number(current.version), wms_lots: { client_key: randomUUID(), policy_version: String(policy.version),
+    stock_versions: f.products.map(p => ({ product_id: p.id, warehouse_id: f.warehouse.id,
+      version: String(one(own169(accepted, 'stock', f.tenant).filter(s => s.product_id === p.id && s.warehouse_id === f.warehouse.id)).version) })),
+    picks: fragments.map(r => ({ issue_fragment_id: r.id, quantity: 1, location: 'A-01' })),
+  } };
+  assert.equal((await f.request('/returns/' + f.rma.id + '/receive', 'POST', body)).statusCode, 409);
+  assert.deepEqual(await facts169(), accepted, 'Received once: no second number, PZ, stock, bin or layer write');
 });
 
 test('strict OFF legacy-origin ordinary receive stays refused; genuine legacy_status completion still posts one PZ', async () => {
