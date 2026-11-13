@@ -54,8 +54,11 @@ export const SCALE_HTTP_PORT_LIMITATIONS=Object.freeze([
 // Re-pins app.ts and domain.ts (12.11.2026, migration 268): the label download refuses a cancelled label, the DEMO
 // label takes over a cancelled row and the order detail adds replaced_labels; no scale HTTP route or port changes
 // (was 964d0852…0e0edf, accaef7c…c1c2a8). Not re-measured by a live scale run.
+// Re-pins app.ts (13.11.2026): the error handler answers 503 "Niekompletny moduł bazy danych…" for 55000/42883 raised
+// inside guard_verdict() (server/guard-verdict-errors.ts) instead of 500; no HTTP route or port changes
+// (was 4d6d77f2…c17bb4). Not re-measured by a live scale run.
 export const SCALE_HTTP_PORT_SOURCE_PINS=Object.freeze({
- "server/app.ts": "4d6d77f20ccc03186b67cda7805da52b5047778c77356ee03c7cabc3bab17bb4",
+ "server/app.ts": "43c509929f40d35d420f6276c7595b25b7c96ccaf65b8dccff601ae96c2b5bd4",
  "server/domain.ts": "97c9165aba2352f24edbbd20bcecf76124eeceb2494dba80391d67b02de58b76",
  "server/catalog-routes.ts": "626a78aaa0e141792979c1030b7df3895df39ba1a0a87a612360bb0ec2976b1d",
  "server/catalog.ts": "7fe1988a3e4a5c178181ac89cb124c5bd7418007f00bc475fb88ff26d0eb2c61",

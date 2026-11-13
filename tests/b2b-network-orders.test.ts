@@ -852,7 +852,26 @@ for (const mode of ['into_main_order', 'technical_merge'])
       }
     },
   );
-test('network legacy supplier reads work when merge history tables are absent', async () => {
+// Every tenant-owned business row (sessions and the API-key last-use stamp are request bookkeeping).
+async function businessFacts() {
+  const names = (
+    await pool.query(`SELECT c.table_name FROM information_schema.columns c JOIN information_schema.tables t
+      USING(table_schema,table_name) WHERE c.table_schema='public' AND c.column_name='tenant_id'
+      AND t.table_type='BASE TABLE' AND c.table_name NOT IN('sessions','auth237_api_key_state') ORDER BY 1`)
+  ).rows.map((r) => r.table_name as string);
+  const facts: Record<string, string> = {};
+  for (const name of names) {
+    assert.match(name, /^[a-z][a-z0-9_]*$/);
+    facts[name] = (
+      await pool.query(`SELECT md5(coalesce(string_agg(to_jsonb(t)::text,',' ORDER BY to_jsonb(t)::text),'')) h FROM "${name}" t`)
+    ).rows[0].h;
+  }
+  return facts;
+}
+// Merge history (104) without the merge-delivery module that validates it (209) cannot exist on a migrated
+// database: the catalogue guard cannot run (55000 in guard_verdict), so the read is refused as an incomplete
+// module (503) and nothing is written.
+test('network supplier read with hidden merge history tables is refused as an incomplete module without effects', async () => {
   const f = await imported(),
     o = await checkout(f, await quote(f, 1));
   await pool.query('ALTER TABLE order_merge_origins RENAME TO order_merge_origins_network_hidden');
@@ -860,19 +879,11 @@ test('network legacy supplier reads work when merge history tables are absent', 
     'ALTER TABLE order_merge_executions RENAME TO order_merge_executions_network_hidden',
   );
   try {
-    const d = await api(purchase(o), 'GET', undefined, buyer);
-    assert.equal(d.fulfillment.status, 'new');
-    assert.equal(d.total_gross, 12345);
-    assert.equal(d.read_only, undefined);
-    assert.deepEqual(d.fulfillment.payments, {
-      currency: 'PLN',
-      payment_mode: 'prepaid',
-      received: 0,
-      refunded: 0,
-      credit: 0,
-      amount_due: 12345,
-      overpayment: 0,
-    });
+    const before = await businessFacts();
+    const r = await req(purchase(o), 'GET', undefined, buyer);
+    assert.equal(r.statusCode, 503, r.body);
+    assert.match(r.json().detail, /Niekompletny moduł/);
+    assert.deepEqual(await businessFacts(), before);
   } finally {
     await pool.query(
       'ALTER TABLE order_merge_executions_network_hidden RENAME TO order_merge_executions',
@@ -881,4 +892,5 @@ test('network legacy supplier reads work when merge history tables are absent', 
       'ALTER TABLE order_merge_origins_network_hidden RENAME TO order_merge_origins',
     );
   }
+  assert.equal((await api(purchase(o), 'GET', undefined, buyer)).total_gross, 12345);
 });

@@ -807,7 +807,9 @@ test('current mapping, active catalogue and supplier quote drift each invalidate
     }
     const before = await snapshot();
     const rejected = await request(f.path + '/quotes/' + q.id + '/checkout', 'POST', consent(q));
-    assert.equal(rejected.statusCode, 409, mode);
+    // An inactive own product is outside the active B2B catalogue: assertB2BCatalogProductsInTx answers 404
+    // ("Produkt nie należy do wybranego katalogu B2B"), as for any product outside it; drifts answer 409.
+    assert.equal(rejected.statusCode, mode === 'inactive' ? 404 : 409, mode);
     assert.deepEqual(await snapshot(), before);
   }
   assert.equal(providerCalls, 0);
@@ -1071,37 +1073,30 @@ test('readonly writes fail before malformed parsing, and missing module does not
     'ALTER FUNCTION b2b_dropship_fulfillment(uuid) RENAME TO b2b_dropship_fulfillment_safety_hidden',
   );
   try {
-    // A missing projection helper must never reopen an existing custody ledger.
+    // A missing projection helper must never reopen an existing custody ledger. The hidden function leaves an
+    // incomplete module, refused with 503 before any write (the PIM validator covers it and refuses first; the
+    // dropship guard would answer 503 "Brakuje dowodu realizacji dropshippingu" too).
     const cancelled = await request('/orders/' + f.order.id + '/status', 'PATCH', { status: 'cancelled', expected_version: String(beforeMissingFulfillment.version) });
-    assert.equal(cancelled.statusCode, 409);
+    assert.equal(cancelled.statusCode, 503, cancelled.body);
+    assert.match(cancelled.json().detail, /Niekompletny moduł|Brakuje dowodu realizacji dropshippingu/);
     assert.deepEqual(await snapshot(), activeBefore);
   } finally {
     await pool.query(
       'ALTER FUNCTION b2b_dropship_fulfillment_safety_hidden(uuid) RENAME TO b2b_dropship_fulfillment',
     );
   }
+  // A hidden dropship quote table cannot exist on a migrated database: the PIM validator covers it, so the
+  // application does not start (503 incomplete PIM module) and nothing is written.
   await pool.query('ALTER TABLE b2b_dropship_quotes RENAME TO b2b_dropship_quotes_safety_hidden');
-  let legacy: Awaited<ReturnType<typeof buildApp>> | undefined;
+  let builtUnexpectedly: Awaited<ReturnType<typeof buildApp>> | undefined;
   try {
-    legacy = await buildApp({ integrationTransport: transport });
-    const options = await ok(f.path + '/options', 'GET', undefined, buyerCookie, legacy);
-    assert.equal(options.available, false);
-    assert.equal(options.can_manage, false);
-    const noWrite = await request(f.path + '/quotes', 'POST', quoteBody(f), buyerCookie, legacy);
-    assert.equal(noWrite.statusCode, 503);
-    assert.match(String(noWrite.headers['cache-control']), /no-store/);
-    assert.equal(
-      (await request(f.base + '/catalog', 'GET', undefined, buyerCookie, legacy)).statusCode,
-      200,
+    await assert.rejects(
+      () => buildApp({ integrationTransport: transport }).then((a) => (builtUnexpectedly = a)),
+      (e: any) => e?.status === 503 && /Niekompletny moduł PIM/.test(e.message),
     );
   } finally {
-    try {
-      await legacy?.close();
-    } finally {
-      await pool.query(
-        'ALTER TABLE b2b_dropship_quotes_safety_hidden RENAME TO b2b_dropship_quotes',
-      );
-    }
+    await builtUnexpectedly?.close();
+    await pool.query('ALTER TABLE b2b_dropship_quotes_safety_hidden RENAME TO b2b_dropship_quotes');
   }
   assert.deepEqual(await snapshot(), activeBefore);
   assert.equal(providerCalls, 0);
