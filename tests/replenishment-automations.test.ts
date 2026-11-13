@@ -11,6 +11,7 @@ import {
 } from '../server/replenishment-automations';
 import { replenishmentAutomationCreateInput } from '../server/replenishment-automations-schema';
 import { tenantTx } from '../server/db';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 
 assert.equal(process.env.DYNA_TEST, 'true');
 assert.match(new URL(process.env.DATABASE_URL!).pathname, /^\/dynaminds_test_\d+$/);
@@ -486,7 +487,8 @@ test(
       )
     ).rows;
     for (const p of ps) await policy(p, { minimum_quantity: 2, target_quantity: 3 });
-    await pool.query(
+    await tenantScopedOwnerQuery(
+      tenant,
       'INSERT INTO stock(tenant_id,warehouse_id,product_id,on_hand) SELECT $1::uuid,$2::uuid,id,2 FROM products WHERE tenant_id=$1',
       [tenant, warehouse],
     );

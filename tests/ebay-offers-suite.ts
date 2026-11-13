@@ -3,7 +3,8 @@ import {
   ebayApiScope,
   ebaySimulationApplication,
 } from '../server/ebay-api-limits';
-import { test, before, after, beforeEach, afterEach } from 'node:test';
+import { test as nodeTest, before, after, beforeEach, afterEach } from 'node:test';
+import type { TestFn, TestOptions } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
@@ -30,7 +31,27 @@ import {
   reserveEbayRevisions,
 } from '../server/ebay-revision-budget';
 import { ebaySecrets } from './ebay-fixture';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 assert.equal(process.env.DYNA_TEST, 'true');
+/** One CI file ran over the 45 min per-file limit, so the suite is split: each part file
+ * (tests/ebay-offers-<part>.test.ts) runs the shared fixture and hooks below with its own
+ * tests. section() assigns every following test() to a part. */
+type EbayOffersPart = 'sync-publish' | 'create' | 'metadata';
+const parts: Record<EbayOffersPart, (() => void)[]> = { 'sync-publish': [], create: [], metadata: [] };
+let currentPart: EbayOffersPart = 'sync-publish';
+const section = (part: EbayOffersPart) => {
+  currentPart = part;
+};
+const test = (name: string, options: TestOptions | TestFn, fn?: TestFn) => {
+  parts[currentPart].push(() =>
+    typeof options === 'function'
+      ? void nodeTest(name, options)
+      : void nodeTest(name, options, fn),
+  );
+};
+export function defineEbayOffersTests(part: EbayOffersPart) {
+  for (const define of parts[part]) define();
+}
 let app: Awaited<ReturnType<typeof buildApp>>,
   cookie = '',
   viewer = '',
@@ -440,7 +461,8 @@ test('role, mapping and local-stock changes during provider reads fence mutation
         else if (reason === 'mapping')
           await pool.query("UPDATE listings SET external_id='DIFFERENT-SKU' WHERE id=$1", [x.l.id]);
         else
-          await pool.query(
+          await tenantScopedOwnerQuery(
+            DEMO_TENANT,
             'UPDATE stock SET on_hand=on_hand+1,version=version+1 WHERE product_id=$1',
             [x.p.id],
           );
@@ -492,7 +514,7 @@ test('automatic sync queues changed values, acknowledges verification, skips fre
   const callsBefore = f.calls.length;
   await tick();
   assert.equal(f.calls.length, callsBefore);
-  await pool.query('UPDATE stock SET on_hand=7,version=version+1 WHERE product_id=$1', [x.p.id]);
+  await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=7,version=version+1 WHERE product_id=$1', [x.p.id]);
   await tick();
   const pending = (
     await pool.query("SELECT * FROM offer_plans WHERE channel_id=$1 AND state='queued'", [x.ch])
@@ -541,7 +563,7 @@ test('lease loss after POST prevents local completion and next owner recovers on
 });
 test('provider ending a listing at quantity zero is a visible uncertain result that can be observed', async () => {
   const x = await fixture();
-  await pool.query('UPDATE stock SET on_hand=0,version=version+1 WHERE product_id=$1', [x.p.id]);
+  await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=0,version=version+1 WHERE product_id=$1', [x.p.id]);
   const p = await plan(x, { price: false });
   await queue(p);
   f.state.afterWrite = async () => {
@@ -959,6 +981,7 @@ const creationConfig = () => ({
   content_language: 'de-DE',
   condition: 'NEW',
 });
+section('create');
 async function newDraft(simulation = false, bind = true, mode = 'gross') {
   const x = await fixture('orders_inventory_write', simulation, mode, bind);
   await pool.query('DELETE FROM listings WHERE id=$1', [x.l.id]);
@@ -1215,7 +1238,7 @@ test('local stock drift after Inventory prevents POST; observed orphan closes wi
     p = await creationPlan(x);
   await queue(p);
   f.state.afterInventoryWrite = async () => {
-    await pool.query('UPDATE stock SET on_hand=9,version=version+1 WHERE product_id=$1', [x.p.id]);
+    await tenantScopedOwnerQuery(DEMO_TENANT, 'UPDATE stock SET on_hand=9,version=version+1 WHERE product_id=$1', [x.p.id]);
   };
   const r = await execute(p);
   assert.equal(r.state, 'failed', r.error);
@@ -1376,6 +1399,7 @@ test('observed foreign Inventory is not offered for reuse as an owned retained r
   assert.equal(offerCreates().length, 1);
 });
 
+section('metadata');
 const verifiedConfig = () => ({
   ...creationConfig(),
   verify_settings: true,

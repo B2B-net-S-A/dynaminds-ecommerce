@@ -1,9 +1,11 @@
-import { before, after, beforeEach, test } from 'node:test';
+import { before, after, beforeEach, test as nodeTest } from 'node:test';
+import type { TestFn, TestOptions } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool, migrate, tenantTx } from '../server/db';
 import { seed } from './fixtures';
+import { tenantScopedOwnerQuery } from './tenant-scoped-owner-write';
 import { encrypt } from '../server/security';
 import { tick } from '../server/worker';
 import { offerSnapshotHash, processOfferJob } from '../server/offers';
@@ -20,6 +22,25 @@ import {
   type IntegrationContext,
 } from '../server/channel-access';
 assert.equal(process.env.DYNA_TEST, 'true');
+/** One CI file ran over the 45 min per-file limit, so the suite is split: each part file
+ * (tests/allegro-creation-<part>.test.ts) runs the shared fixture and hooks below with its
+ * own tests. section() assigns every following test() to a part. */
+type AllegroCreationPart = 'drafts' | 'publish' | 'batch-max';
+const parts: Record<AllegroCreationPart, (() => void)[]> = { drafts: [], publish: [], 'batch-max': [] };
+let currentPart: AllegroCreationPart = 'drafts';
+const section = (part: AllegroCreationPart) => {
+  currentPart = part;
+};
+const test = (name: string, options: TestOptions | TestFn, fn?: TestFn) => {
+  parts[currentPart].push(() =>
+    typeof options === 'function'
+      ? void nodeTest(name, options)
+      : void nodeTest(name, options, fn),
+  );
+};
+export function defineAllegroCreationTests(part: AllegroCreationPart) {
+  for (const define of parts[part]) define();
+}
 const ids = Array.from({ length: 5 }, (_, i) => '10000000-0000-4000-8000-00000000000' + (i + 1));
 const input = {
   product_id: ids[0],
@@ -1005,6 +1026,7 @@ test('paginacja i filtr SKU nie gubią pozycji, a publiczne API chroni partię z
   );
 });
 
+section('batch-max');
 test('maksymalna partia 200 SKU ma checkpointy i kompletne strony podglądu bez POST', async () => {
   const f = await fixture(true),
     ids = Array.from({ length: 200 }, () => randomUUID()),
@@ -1090,6 +1112,7 @@ test('wznowienie anulowanej zatwierdzonej partii zachowuje rozpoczętą ofertę 
   assert.equal(posts(), 3);
 });
 
+section('publish');
 async function publishFixture(count = 3, simulation = false) {
   const f = await batchFixture(count, simulation),
     review = await batchTicks(f, ['review']);
@@ -1117,7 +1140,8 @@ test('publikacja partii ma GET-only podgląd i minimalny PATCH, zachowując ceny
     'UPDATE products SET price=99999,version=version+1 WHERE tenant_id=$1 AND id=ANY($2::uuid[])',
     [tenant, f.products.map((p: any) => p.id)],
   );
-  await pool.query(
+  await tenantScopedOwnerQuery(
+    tenant,
     'UPDATE stock SET on_hand=23 WHERE tenant_id=$1 AND product_id=ANY($2::uuid[])',
     [tenant, f.products.map((p: any) => p.id)],
   );
