@@ -7,7 +7,7 @@ import {readFileSync} from 'node:fs';
 import {createServer,transformWithOxc} from 'vite';
 import path from 'node:path';
 const dbSource=readFileSync(new URL('../server/db.ts',import.meta.url),'utf8');
-const managerStart=dbSource.indexOf('export async function tenantTx<'),managerEnd=dbSource.indexOf('\nexport async function migrate()',managerStart);
+const managerStart=dbSource.indexOf('export async function tenantTx<'),managerEnd=dbSource.indexOf('\nexport async function migrate(',managerStart);
 assert(managerStart>=0&&managerEnd>managerStart);
 const tenantJs=(await transformWithOxc(dbSource.slice(managerStart,managerEnd),'actual-tenant-manager.ts')).code.replace(/^export /,'');
 const virtualDb='\0controlled-order-split-db';
@@ -16,6 +16,7 @@ const T=await vite.ssrLoadModule(path.resolve('server/order-split-transport.ts')
 const R=await vite.ssrLoadModule(path.resolve('server/order-split-transaction.ts'));
 const DB=await vite.ssrLoadModule('virtual:controlled-split-db');
 const {drainPublicConstraintsInTx}=await vite.ssrLoadModule(path.resolve('server/public-constraint-drain.ts'));
+const {assertDbLocksHeldInTx}=await vite.ssrLoadModule(path.resolve('server/db-lock-holder.ts'));
 test.after(()=>vite.close());
 const managedClients=new Set();
 test.afterEach(()=>{DB.setTenantTx(()=>{throw Error('Unconfigured controlled DB port')});for(const c of managedClients)R.endOrderSplitTransaction(c);managedClients.clear();});
@@ -191,7 +192,7 @@ function productionManager(m){
  const events=[],ports={pool:{async connect(){events.push('connect');return m.c;}},ordinarySchemaGate:null,
   originalTenantPoolClients187:new WeakMap(),activeManagedSchemaTransactions:new WeakMap(),acknowledgedTenantRollbacks:new WeakMap(),
   runBoundDurableTenantTransaction187:()=>undefined,hasAcknowledgedDurableWorkerRollback187:()=>false,isDurableWorkerClientTainted187:()=>false,
-  ...R,drainPublicConstraintsInTx,assertOrderSplitCompositionInTx:c=>{assert.equal(c,m.c);assert(R.hasOrderSplitTransactionDuty(c));events.push('composition');}};
+  ...R,drainPublicConstraintsInTx,assertDbLocksHeldInTx,assertOrderSplitCompositionInTx:c=>{assert.equal(c,m.c);assert(R.hasOrderSplitTransactionDuty(c));events.push('composition');}};
  const names=[...new Set([...tenantJs.matchAll(/\b((?:begin|end|prepare|finalize|preflight)[A-Z]\w+|wmsLotsAdmissionInTx|purchasingSourceAdmissionInTx|purchasingStockAdmissionInTx|catalogStockControlAdmissionInTx)\(/g)].map(m=>m[1]))];
  for(const name of names)if(!(name in ports))ports[name]=async()=>{events.push(name);return false;};
  const manager=new Function(...Object.keys(ports),tenantJs+';return tenantTx;')(...Object.values(ports));

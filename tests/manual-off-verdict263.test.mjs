@@ -44,7 +44,8 @@ test('263 follows 262 in the release list and pins the exact SQL bytes', () => {
   assert.equal(row.bytes, 18915);
   assert.equal(row.sha256, '5588862afd2e689b12934875b73fa4117f18f4a352405c120f0f7012b9dc11c9');
   assert.equal(RELEASE_MIGRATIONS[i - 1].name, '262_revoke_public_temporary');
-  assert.equal(i, RELEASE_MIGRATIONS.length - 1, '263 is the last release migration');
+  // 263 was the last release migration when it was registered; 264_order_status_labels and later follow it.
+  assert.equal(RELEASE_MIGRATIONS[i + 1]?.name, '264_order_status_labels', '264 is the next release migration');
   assert.match(sql(), /^-- Migration 263_manual_off_verdict \(prepared as 281, registered after 262_revoke_public_temporary; no object name contains\n/);
   assert.doesNotMatch(sql(), /PREPARED|placeholder|INTEGRATION-p281/, 'no placeholder wording left');
   assert.equal(RELEASE_MIGRATIONS.find((m) => m.number === 281), undefined, 'no row for the placeholder number');

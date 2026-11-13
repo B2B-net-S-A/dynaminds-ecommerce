@@ -10,13 +10,14 @@ import path from 'node:path';
 const db=readFileSync(new URL('../server/db.ts',import.meta.url),'utf8');
 const epoch=readFileSync(new URL('../server/large-import/durable-original-epoch.ts',import.meta.url),'utf8');
 async function body(source,start,end){const a=source.indexOf(start),b=source.indexOf(end,a+start.length);assert(a>=0&&b>a);return(await transformWithOxc(source.slice(a,b),'controlled-managed-tail.ts')).code.replace(/^export /,'');}
-const tenantJs=await body(db,'export async function tenantTx<','\nexport async function migrate()');
+const tenantJs=await body(db,'export async function tenantTx<','\nexport async function migrate(');
 const workerJs=await body(epoch,'export function runDurableWorker187<','\n/** Logical poison');
 const vite=await createServer({server:{middlewareMode:true,hmr:false,ws:false,watch:null},appType:'custom',logLevel:'error'});
 const R=await vite.ssrLoadModule(path.resolve('server/order-split-transaction.ts'));
 const Transport=await vite.ssrLoadModule(path.resolve('server/order-split-transport.ts'));
 const {drainPublicConstraintsInTx}=await vite.ssrLoadModule(path.resolve('server/public-constraint-drain.ts'));
 const {fa3DraftOwnerInTx}=await vite.ssrLoadModule(path.resolve('server/fa3-draft-access.ts'));
+const {assertDbLocksHeldInTx}=await vite.ssrLoadModule(path.resolve('server/db-lock-holder.ts'));
 await vite.close();
 const id=n=>`${String(n).padStart(8,'0')}-1000-4000-8000-000000000001`;
 function harness(durable=false,options={}){
@@ -61,7 +62,7 @@ function harness(durable=false,options={}){
  const ports={pool:{async connect(){events.push('connect');return c;}},ordinarySchemaGate:gate,originalTenantPoolClients187:new WeakMap(),activeManagedSchemaTransactions:new WeakMap(),acknowledgedTenantRollbacks:new WeakMap(),
   runBoundDurableTenantTransaction187:(client,tenantId,work)=>durable?worker({},client,'growth',work):undefined,
   hasAcknowledgedDurableWorkerRollback187:(e,client)=>acknowledgedDurableWorkerRollbacks187.get(e)===client,isDurableWorkerClientTainted187:client=>tainted.has(client),
-  beginActiveManagedSchemaTransaction:async()=>{assert(active);events.push('managed-begin');},...R,drainPublicConstraintsInTx,
+  beginActiveManagedSchemaTransaction:async()=>{assert(active);events.push('managed-begin');},...R,drainPublicConstraintsInTx,assertDbLocksHeldInTx,
   // Composition policy/getters have their own real-module tests. This port
   // tests that the actual manager checks the policy before ANY sibling tail.
   assertOrderSplitCompositionInTx:client=>{assert.equal(client,c);events.push('split-composition');if(options.mixedDuty){const e=Error('MIXED_SPLIT_DUTY');e.status=409;throw e;}}};
