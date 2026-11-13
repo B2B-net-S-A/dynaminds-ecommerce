@@ -484,6 +484,8 @@ test(
     let pending: ReturnType<typeof openCatalogExport> | undefined;
     try {
       await blocker.query('BEGIN');
+      // The coherent writer's stock UPDATE journals a native birth (152), accepted only in its own app.tenant_id.
+      await blocker.query("SELECT set_config('app.tenant_id',$1,true)", [tenant]);
       await blocker.query('LOCK TABLE stock IN ACCESS EXCLUSIVE MODE');
       pending = openCatalogExport(
         actor(),
