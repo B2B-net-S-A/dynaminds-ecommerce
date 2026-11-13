@@ -1,9 +1,11 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHmac } from 'node:crypto';
 import { pool, migrate, tenantTx } from '../server/db';
 import { buildApp } from '../server/app';
 import { seed, DEMO_TENANT } from './fixtures';
+import { rewriteShipmentFixture } from './shipment-identity-fixture';
 import { encrypt, decrypt, tokenHash } from '../server/security';
 import { channelRead } from '../server/channel-access';
 import { refreshShopifyOAuth, shopifyAccountPolicy } from '../server/shopify-oauth';
@@ -728,11 +730,11 @@ test('Shopify OAuth: approved fulfillment refreshes before mutation and retains 
     warehouse_id: wh,
     expected_hash: staged.source_hash,
   });
-  await ok(`/orders/${order.id}/status`, 'PATCH', { status: 'picking' });
+  await ok(`/orders/${order.id}/status`, 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), `/orders/${order.id}/status`, { status: 'picking' }));
   for (let i = 0; i < 2; i++) await ok(`/orders/${order.id}/scan`, 'POST', { code: p.sku });
-  await ok(`/orders/${order.id}/status`, 'PATCH', { status: 'packed' });
+  await ok(`/orders/${order.id}/status`, 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), `/orders/${order.id}/status`, { status: 'packed' }));
   await ok(`/orders/${order.id}/ship-demo`, 'POST', {});
-  await pool.query("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
+  await rewriteShipmentFixture("UPDATE shipments SET mode='sandbox',tracking_number=$2 WHERE order_id=$1", [
     order.id,
     'QA086-' + randomUUID(),
   ]);

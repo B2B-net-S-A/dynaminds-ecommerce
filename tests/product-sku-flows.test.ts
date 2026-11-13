@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -207,7 +208,7 @@ test('ordinary picking accepts frozen, intermediate and current SKU after rename
   const beforeItems = o.items,
     middle = await rename(p, code()),
     current = await rename(p, code());
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'picking' }));
   for (const sku of [p.sku, middle.sku, current.sku])
     await ok('/orders/' + o.id + '/scan', 'POST', { code: sku, location: 'A2' });
   const picked = await ok('/orders/' + o.id);
@@ -217,7 +218,7 @@ test('ordinary picking accepts frozen, intermediate and current SKU after rename
     picked.items.map((x: any) => [x.id, x.sku, x.quantity, x.price, x.components]),
     beforeItems.map((x: any) => [x.id, x.sku, x.quantity, x.price, x.components]),
   );
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'packed' }));
   const shipped = await ok('/orders/' + o.id + '/ship-demo', 'POST', {});
   assert.equal(shipped.status, 'shipped');
   assert.equal((await ok('/products/' + p.id)).stock[0].on_hand, 17);
@@ -258,7 +259,7 @@ test('a SKU/EAN collision between physical products is rejected without counting
     { product_id: other.id, quantity: 1 },
   ]);
   await rename(p, collision);
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'picking' }));
   assert.equal(
     (await req('/orders/' + o.id + '/scan', 'POST', { code: collision, location: 'A2' }))
       .statusCode,

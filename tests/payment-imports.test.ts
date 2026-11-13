@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { test, before, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -330,11 +331,11 @@ test('same economic ID across profiles/files is duplicate or conflict and concur
   );
 });
 async function dispatched(o: any) {
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'picking' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'picking' }));
   for (const i of o.picking_items)
     for (let n = 0; n < i.quantity; n++)
       await ok('/orders/' + o.id + '/scan', 'POST', { code: i.sku });
-  await ok('/orders/' + o.id + '/status', 'PATCH', { status: 'packed' });
+  await ok('/orders/' + o.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => ok(orderPath, 'GET', undefined), '/orders/' + o.id + '/status', { status: 'packed' }));
   const s = await ok('/orders/' + o.id + '/ship-demo', 'POST');
   return (await pool.query('SELECT * FROM shipments WHERE order_id=$1', [o.id])).rows[0];
 }
@@ -783,7 +784,7 @@ test('exact100 ready rows execute atomically and receipt pages retain all rows; 
   );
   await assert.rejects(
     pool.query('DELETE FROM payment_import_claims WHERE execution_id=$1', [e.id]),
-    /immutable/,
+    /Cannot release a durable or active claim/,
   );
   assert.equal(
     (

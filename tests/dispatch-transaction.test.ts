@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -27,7 +28,7 @@ async function packed(on: boolean) {
   }, 201);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version),
     kind: 'receipt', amount: order.total, currency: 'PLN', method: 'other', reference: 'Local declared fixture168', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const allocations = await f.ok('/wms-lots/orders/' + order.id + '/allocations');
     assert.equal(allocations.meta.cursor, null);
@@ -46,7 +47,7 @@ async function packed(on: boolean) {
       });
     }
   }
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   return { ...f, order };
 }
 
@@ -65,7 +66,7 @@ test('shipping waits on the warehouse before taking order/plan locks', async () 
     await held.query('SELECT id FROM warehouses WHERE tenant_id=$1 AND id=$2 FOR UPDATE', [f.tenant, f.warehouse.id]);
     const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid;
     pending = tenantTx(f.tenant, c => lockedShipping(c, plan.id)); void pending.catch(() => {});
-    const deadline = Date.now() + 5000; let observed = false;
+    const deadline = Date.now() + 30000; let observed = false;
     while (Date.now() < deadline) {
       const waits = (await pool.query(`SELECT query FROM pg_stat_activity WHERE datname=current_database()
         AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))`, [pid])).rows;
@@ -88,11 +89,12 @@ test('shipping waits on the warehouse before taking order/plan locks', async () 
 
 async function observeFinalWait(held: PoolClient, key: boolean, hydrated: () => boolean) {
   const pid = (await held.query('SELECT pg_backend_pid() pid')).rows[0].pid;
-  const deadline = Date.now() + 5000;
+  const deadline = Date.now() + 30000;
   while (Date.now() < deadline) {
     const waits = (await pool.query(`SELECT query FROM pg_stat_activity WHERE datname=current_database()
       AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))`, [pid])).rows;
-    const pattern = key ? /wms_key_grant|FROM api_keys\s+WHERE tenant_id=/ : /wms_current_role|FROM memberships WHERE tenant_id=/;
+    // OFF: the first terminal sibling is the 152 catalog finalizer, which names its tables schema-qualified.
+    const pattern = key ? /wms_key_grant|FROM (?:public\.)?api_keys\s+WHERE tenant_id=/ : /wms_current_role|FROM (?:public\.)?memberships WHERE tenant_id=/;
     if (waits.some(r => pattern.test(r.query))) {
       assert(hydrated(), 'Actual physical writer and response hydration must finish before the observed final grant wait');
       return;

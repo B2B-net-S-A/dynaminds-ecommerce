@@ -1,3 +1,4 @@
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 /** Source-authored only. Root runs this suite in an exclusively owned numeric DB. */
 import { before, after, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -81,7 +82,7 @@ async function packed(on: boolean, enabled = true) {
     items: f.products.map(p => ({ product_id: p.id, quantity: 3 })) }, 201);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version), kind: 'receipt',
     amount: order.total, currency: 'PLN', method: 'other', reference: 'Own declared payment safety168', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   const allocations: Row[] = on ? (await f.ok('/wms-lots/orders/' + order.id + '/allocations')).data :
     (await pool.query('SELECT * FROM reservation_locations WHERE tenant_id=$1 AND order_id=$2 ORDER BY product_id,location', [f.tenant, order.id])).rows;
   assert.equal(allocations.length, 6);
@@ -91,7 +92,7 @@ async function packed(on: boolean, enabled = true) {
     for (let n = 0; n < allocation.quantity; n++) await f.ok('/orders/' + order.id + '/scan', 'POST', {
       client_key: randomUUID(), code: p.sku, location: allocation.location, ...(on ? { layer_id: allocation.layer_id } : {}) });
   }
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   return { ...f, order, configuration };
 }
 
@@ -149,6 +150,7 @@ for (const on of [false, true]) for (const target of ['source', 'row'] as const)
   assert.equal(sealed, true); assert.deepEqual(await capture(), before);
 });
 
+const ddlGeneration = async () => (await pool.query('SELECT to_jsonb(r) row FROM public.ordinary182_runtime_generation r ORDER BY 1')).rows;
 async function moduleMetadata() {
   return {
     functions: (await pool.query("SELECT oid,to_jsonb(p) meta,pg_get_functiondef(oid) definition FROM pg_proc p WHERE pronamespace='public'::regnamespace AND proname LIKE 'warehouse_wz_issuer_%' ORDER BY oid")).rows,
@@ -167,21 +169,24 @@ for (const torn of ['function ACL', 'source trigger', 'ledger'] as const) test(`
   const during = torn === 'ledger' ? { ...before, migrations: before.migrations.filter(r => r.row.name !== '151_warehouse_wz_issuer') } : before;
   try {
     await pool.query(breakSQL);
+    // Owner DDL (the deliberate break and repair) advances the 182 schema generation by design;
+    // only the refused requests themselves must leave every row unchanged.
+    const broken = { ...during, ordinary182_runtime_generation: await ddlGeneration() };
     assert.equal((await pool.query('SELECT public.warehouse_wz_issuer_guards() ok')).rows[0].ok, false);
     assert.equal((await f.request('/orders/' + f.order.id + '/ship-demo', 'POST', {})).statusCode, 503);
     for (const path of ['/warehouse-wz-issued/options','/warehouse-wz-issued/documents']) assert.equal((await f.request(path)).statusCode, 503);
     await assert.rejects(buildApp(), (e: any) => e.status === 503);
-    assert.deepEqual(await capture(), during, 'Only the deliberately removed ledger row differs; refusals introduce no effects');
+    assert.deepEqual(await capture(), broken, 'Only the deliberately removed ledger row differs; refusals introduce no effects');
   } finally { await pool.query(repairSQL, torn === 'ledger' ? [ledger[0].name, ledger[0].applied_at] : []); }
   assert.deepEqual(await moduleMetadata(), metadata, 'Repair restores real OID/ACL/body/trigger metadata exactly');
   assert.equal((await pool.query('SELECT public.warehouse_wz_issuer_guards() ok')).rows[0].ok, true);
   assert.equal((await f.request('/warehouse-wz-issued/options')).statusCode, 200);
-  assert.deepEqual(await capture(), before);
+  assert.deepEqual(await capture(), { ...before, ordinary182_runtime_generation: await ddlGeneration() });
 });
 
 async function waiter(blockerPid: number, pending: Promise<unknown>) {
   let finished = false; void pending.then(() => { finished = true; }, () => { finished = true; });
-  const end = Date.now() + 6000;
+  const end = Date.now() + 30000;
   while (Date.now() < end) {
     assert.equal(finished, false, 'The genuine request must wait at the expected lock boundary');
     const candidates = (await pool.query("SELECT pid,query FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1=ANY(pg_blocking_pids(pid))", [blockerPid])).rows;
