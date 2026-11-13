@@ -110,3 +110,21 @@ export async function catalogStockReturnDocumentsInTx(c:PoolClient,returnId:stri
     return rows.map(row=>row.payload as CatalogStockReturnPz);
   });
 }
+/** Page variant of catalogStockReturnDocumentsInTx: one availability verdict and one read for all returns
+ * of a list page instead of one guard per row (13.11.2026 on a test database: 370-580 ms per row, 9-15 s per page of 25). */
+export async function catalogStockReturnDocumentsForReturnsInTx(c:PoolClient,returnIds:string[]):Promise<Map<string,CatalogStockReturnPz[]>>{
+  const ids=[...new Set(returnIds.map(id=>uuid.parse(id)))],documents=new Map<string,CatalogStockReturnPz[]>();
+  if(!ids.length)return documents;
+  const own=(await c.query('SELECT count(*)::int n,array_agg(DISTINCT tenant_id) tenants FROM return_cases WHERE id=ANY($1::uuid[])',[ids])).rows[0];
+  ensure(own.n===ids.length,404,'Nie znaleziono własnego zwrotu');
+  ensure(own.tenants.length===1,403,'Nieprawidłowy kontekst przyjęcia zwrotu');
+  const actor:CatalogStockControlActor={tenantId:own.tenants[0],userId:null,source:'system'};
+  return owner(c,actor,async()=>{
+    if(!await catalogStockControlAvailable(c))return documents;
+    const over=(await c.query('SELECT 1 FROM public.catalog_stock_return_documents WHERE tenant_id=$1 AND return_id=ANY($2::uuid[]) GROUP BY return_id HAVING count(*)>100 LIMIT 1',[actor.tenantId,ids])).rows.length;
+    ensure(!over,413,'Przyjęcie zwrotu obejmuje zbyt wiele magazynów');
+    const rows=(await c.query('SELECT return_id,payload FROM public.catalog_stock_return_documents WHERE tenant_id=$1 AND return_id=ANY($2::uuid[]) ORDER BY return_id,warehouse_id,id',[actor.tenantId,ids])).rows;
+    for(const row of rows)documents.set(row.return_id,[...(documents.get(row.return_id)??[]),row.payload as CatalogStockReturnPz]);
+    return documents;
+  });
+}
