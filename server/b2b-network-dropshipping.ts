@@ -862,8 +862,10 @@ export async function checkoutB2bDropship(
         'Mapowanie dostawcy zmieniło się od wyceny',
       );
     const selectedMappings = [...new Set<string>(q.snapshot.mapping_snapshot.map((m: Row) => m.catalog_item.id))];
-    const frozenQuantities = new Map<string, number>(
-      q.snapshot.wholesale.items.map((i: Row) => [i.source_product_id, Number(i.quantity)]));
+    // Summed per source product: a repeated product in the frozen quote must not shrink the quantity checked live.
+    const frozenQuantities = new Map<string, number>();
+    for (const i of q.snapshot.wholesale.items as Row[])
+      frozenQuantities.set(i.source_product_id, (frozenQuantities.get(i.source_product_id) ?? 0) + Number(i.quantity));
     if (pair) for (let offset = 0; offset < selectedMappings.length; offset += 500)
       await assertB2BBuyerCatalogItemsInTx(c, pair, selectedMappings.slice(offset, offset + 500), true, false, frozenQuantities);
     ensure(

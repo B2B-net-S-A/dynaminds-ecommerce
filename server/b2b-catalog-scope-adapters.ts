@@ -273,7 +273,7 @@ export async function assertB2BBuyerCatalogItemsInTx(c: PoolClient, pair: B2BCat
       ensure(product && (liveLegacyQuote || (liveAvailability
         ? snapshotMatches(pair, withoutAvailable(actual), withoutAvailable(item.snapshot))
         : snapshotMatches(pair, actual, item.snapshot))), 409, 'Oferta lub zakres katalogu B2B zmieniły się');
-      if (liveAvailability) ensure(Number(product.available) >= (liveAvailability.get(item.source_product_id) ?? 0),
+      if (liveAvailability) ensure(Number(product.available ?? 0) >= (liveAvailability.get(item.source_product_id) ?? 0),
         409, 'Dostawca nie ma już wystarczającej dostępności');
     }
   } finally { await c.query("SELECT set_config('app.tenant_id',$1,true)", [pair.buyer.tenant_id]).catch(() => undefined); }
