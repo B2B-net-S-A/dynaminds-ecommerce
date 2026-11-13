@@ -407,7 +407,8 @@ async function blockedOrder(
     await c.query('SELECT id FROM orders WHERE id=$1 FOR UPDATE', [f.o.id]);
     pending = operation();
     let waiting = false;
-    for (let n = 0; n < 100; n++) {
+    // A deadline, not a poll count: on a loaded runner the request reaches the fence after ~0.5 s or later.
+    for (const until = Date.now() + 15000; Date.now() < until; ) {
       waiting = !!(
         await pool.query(
           "SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event='transactionid' AND query LIKE 'SELECT id,portal_token%') waiting",

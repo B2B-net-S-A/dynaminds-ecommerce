@@ -199,7 +199,8 @@ async function conversation(f: F) {
 }
 async function orderWait(c: PoolClient) {
   const pid = (await c.query('SELECT pg_backend_pid() pid')).rows[0].pid;
-  for (let i = 0; i < 100; i++) {
+  // A deadline, not a poll count: on a loaded runner the request reaches the lock after ~1 s or later.
+  for (const until = Date.now() + 15000; Date.now() < until; ) {
     const row = (
       await pool.query(
         "SELECT pid,query FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND $1::int=ANY(pg_blocking_pids(pid)) AND query ~ 'orders.*FOR (UPDATE|SHARE)'",
