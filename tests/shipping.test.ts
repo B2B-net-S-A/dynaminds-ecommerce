@@ -318,7 +318,15 @@ test('quote → label → physical dispatch: stock consumed once, concurrent rep
     req('/api/shipping-plans/' + q.id + '/dispatch', 'POST', {}),
     req('/api/shipping-plans/' + q.id + '/dispatch', 'POST', {}),
   ]);
-  assert.ok(dispatched.every((x) => x.statusCode === 200));
+  // On a loaded CI runner (run 43425966080) a dispatch can pass the 8 s statement limit and answer 503
+  // "spróbuj ponownie"; the client replays it once. Stock consumed exactly once is asserted right below.
+  for (const [i, x] of dispatched.entries())
+    if (x.statusCode === 503)
+      dispatched[i] = await req('/api/shipping-plans/' + q.id + '/dispatch', 'POST', {});
+  assert.ok(
+    dispatched.every((x) => x.statusCode === 200),
+    dispatched.map((x) => x.statusCode + ' ' + x.body.slice(0, 300)).join('\n'),
+  );
   assert.deepEqual(await stock(p.id), { on_hand: 8, reserved: 0 });
   assert.equal(
     await tenantTx(
