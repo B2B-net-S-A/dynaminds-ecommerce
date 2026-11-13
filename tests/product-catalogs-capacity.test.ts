@@ -26,7 +26,8 @@ after(async () => { try { await app?.close(); } finally { await pool.end(); } })
 function businessEqual(beforeRows: Record<string, unknown[]>, afterRows: Record<string, unknown[]>) {
   assert.deepEqual(Object.keys(afterRows), Object.keys(beforeRows));
   for (const name of Object.keys(beforeRows)) {
-    if (name === 'product_catalogs' || name.startsWith('product_catalog_') || name === 'audit_events') continue;
+    // base_wire220_catalog_ids: the numeric Base id a new catalog receives with its row (migration 220 trigger).
+    if (name === 'product_catalogs' || name.startsWith('product_catalog_') || name === 'base_wire220_catalog_ids' || name === 'audit_events') continue;
     assert.deepEqual(afterRows[name], beforeRows[name], name);
   }
 }

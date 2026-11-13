@@ -18,9 +18,10 @@ after(async () => { try { await app?.close(); } finally { await pool.end(); } })
 const prefix = '/product-catalogs';
 async function preview(f: any, body: any, key?: any) { return (await f.ok(prefix + '/previews', 'POST', body, 201, key)).preview; }
 async function commit(f: any, p: any, body = productCatalogConsent(p)) { return f.ok(prefix + '/previews/' + p.id + '/commit', 'POST', body, 201); }
+// base_wire220_catalog_ids: the numeric Base id a new catalog receives with its row (migration 220 trigger).
 function businessEqual(a: Record<string, any[]>, b: Record<string, any[]>) {
   assert.deepEqual(Object.keys(a), Object.keys(b));
-  for (const name of Object.keys(a)) if (!name.startsWith('product_catalog_') && name !== 'product_catalogs' && name !== 'audit_events') assert.deepEqual(b[name], a[name], name);
+  for (const name of Object.keys(a)) if (!name.startsWith('product_catalog_') && name !== 'product_catalogs' && name !== 'base_wire220_catalog_ids' && name !== 'audit_events') assert.deepEqual(b[name], a[name], name);
 }
 async function updateBody(f: any, catalog: any, extra: any = {}) {
   const head = (await f.ok(prefix + '/' + catalog.id)).catalog;
