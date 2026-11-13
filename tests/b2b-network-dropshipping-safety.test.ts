@@ -314,12 +314,14 @@ async function row(table: string, tenant: string, id: string) {
   return (await pool.query(`SELECT * FROM "${table}" WHERE tenant_id=$1 AND id=$2`, [tenant, id]))
     .rows[0];
 }
+// auth237_api_key_state is the key's last-use stamp (237), written by every authenticated key request like
+// api_keys.last_used_at before it, so it is left out with api_keys.
 async function snapshot(tenants = [buyer, supplier]) {
   const names = (
     await pool.query(`SELECT DISTINCT c.table_name FROM information_schema.columns c
     JOIN information_schema.tables t USING(table_schema,table_name)
     WHERE c.table_schema='public' AND c.column_name='tenant_id' AND t.table_type='BASE TABLE'
-    AND c.table_name NOT IN ('memberships','api_keys','outbound_subscriptions','sessions') ORDER BY 1`)
+    AND c.table_name NOT IN ('memberships','api_keys','auth237_api_key_state','outbound_subscriptions','sessions') ORDER BY 1`)
   ).rows;
   const result: Row = {};
   for (const { table_name: name } of names) {

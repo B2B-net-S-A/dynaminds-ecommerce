@@ -10,7 +10,6 @@ import { Problem } from '../server/errors';
 import {
   offerWriteScope,
   readScopes,
-  beginOAuth,
   finishOAuth,
   type IntegrationContext,
 } from '../server/channel-access';
@@ -21,7 +20,6 @@ let app: Awaited<ReturnType<typeof buildApp>>,
   other: string,
   viewer: string,
   warehouse: string,
-  actor: any,
   nextId = 10000;
 const store = new Map<string, any>(),
   calls: { url: string; method: string; body: any }[] = [];
@@ -131,11 +129,6 @@ before(async () => {
   other = await login('other@demo.local');
   viewer = await login('viewer@demo.local');
   warehouse = (await req('/api/warehouses')).json().data[0].id;
-  actor = {
-    tenantId: DEMO_TENANT,
-    userId: (await req('/api/auth/me')).json().user.id,
-    role: 'admin',
-  };
 });
 after(async () => {
   await app.close();
@@ -533,8 +526,10 @@ test('Allegro bez prawa zapisu nie może zakolejkować zmian, a OAuth oferuje os
     c.query('UPDATE channels SET oauth_scopes=$2 WHERE id=$1', [ch.id, readScopes]),
   );
   assert.equal((await queue(d)).statusCode, 422);
-  const start = await beginOAuth(actor, ch.id, ctx, true);
-  assert.ok(new URL(start.url).searchParams.get('scope')!.includes(offerWriteScope));
+  // The real route supplies the trusted caller context (withAllegroRequestContext).
+  const start = await req('/api/integrations/' + ch.id + '/oauth/start', 'POST', { offers_write: true });
+  assert.equal(start.statusCode, 200, start.body);
+  assert.ok(new URL(start.json().url).searchParams.get('scope')!.includes(offerWriteScope));
 });
 test('ostatni błąd zapisu pozostawia jawny niepewny wynik i blokuje nowe zmiany do uzgodnienia', async () => {
   const ch = await channel(),

@@ -8,10 +8,12 @@ import { seed, DEMO_TENANT, SECOND_TENANT } from './fixtures';
 import { encrypt } from '../server/security';
 import { demoWooOrder } from '../server/import-routes';
 import { demoAllegroOrder } from '../server/allegro-example';
+import type { FastifyRequest } from 'fastify';
 import {
   beginOAuth,
   readScopes,
   orderWriteScope,
+  withAllegroRequestContext,
   type IntegrationContext,
 } from '../server/channel-access';
 import {
@@ -24,6 +26,7 @@ import {
 import { Problem } from '../server/errors';
 assert.equal(process.env.DYNA_TEST, 'true');
 let app: Awaited<ReturnType<typeof buildApp>>,
+  authenticatedRequest: FastifyRequest,
   cookie: string,
   viewer: string,
   other: string,
@@ -96,6 +99,10 @@ before(async () => {
   await migrate();
   await seed();
   app = await buildApp({ integrationTransport: ctx.transport });
+  // beginOAuth needs the trusted caller context of a natively authenticated request (withAllegroRequestContext).
+  app.addHook('preHandler', async (r) => {
+    if (r.url === '/api/auth/me') authenticatedRequest = r;
+  });
   for (const [email, set] of [
     ['admin@demo.local', (v: string) => (cookie = v)],
     ['viewer@demo.local', (v: string) => (viewer = v)],
@@ -434,7 +441,8 @@ test('Odebrana rola administratora zatrzymuje PUT', async () => {
   ]);
   try {
     const j = await claim(p.job_id);
-    await assert.rejects(() => processStatusWrite(j, ctx), /uprawnień/);
+    // The Allegro job authority refuses the withdrawn author before the status policy does.
+  await assert.rejects(() => processStatusWrite(j, ctx), /uprawnień|utracił rolę administratora/);
     assert.equal(puts().length, 0);
   } finally {
     await pool.query("UPDATE memberships SET role='admin' WHERE tenant_id=$1 AND user_id=$2", [
@@ -473,13 +481,16 @@ test('OAuth żąda osobnego zakresu zamówień bez uprawnienia płatności', asy
   const result = await beginOAuth(
     { tenantId: DEMO_TENANT, userId: user, role: 'admin' },
     f.ch,
-    {
-      oauthConfig: () => ({
-        clientId: 'app',
-        clientSecret: 'secret',
-        redirectUri: 'http://127.0.0.1:4100/api/oauth/allegro/callback',
-      }),
-    },
+    withAllegroRequestContext(
+      {
+        oauthConfig: () => ({
+          clientId: 'app',
+          clientSecret: 'secret',
+          redirectUri: 'http://127.0.0.1:4100/api/oauth/allegro/callback',
+        }),
+      },
+      authenticatedRequest,
+    ),
     false,
     true,
   );
@@ -718,7 +729,8 @@ test('Nieaktualna dzierżawa nie może wysłać PUT ani zapisać wyniku', async 
     p = await queue(await preview(f)),
     old = await claim(p.job_id);
   await pool.query("UPDATE jobs SET state='pending',lease_token=NULL WHERE id=$1", [p.job_id]);
-  await processStatusWrite(old, ctx);
+  // The Allegro job authority refuses the stale lease before any provider request.
+  await assert.rejects(() => processStatusWrite(old, ctx), /Dzierżawa zadania Allegro została utracona/);
   assert.equal(puts().length, 0);
   const done = await work(p);
   assert.equal(done.state, 'done');
@@ -856,7 +868,8 @@ test('401 na PUT odświeża OAuth, lecz nigdy nie odtwarza żądania zapisu', as
 for (const provider of ['woocommerce', 'allegro'])
   test(provider + ' COD fulfillment status writes without claiming a payment', async () => {
     const f = await fixture(provider, false, true);
-    assert.equal(f.o.status, 'new');
+    // Cash on delivery starts ready to fulfil: status paid ("Nowe") with nothing received (server/domain.ts createOrder).
+    assert.equal(f.o.status, 'paid');
     assert.equal(f.o.payment.received, 0);
     await ship(f);
     const result = await work(await queue(await preview(f)));
