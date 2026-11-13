@@ -1088,12 +1088,14 @@ test('readonly writes fail before malformed parsing, and missing module does not
   // A hidden dropship quote table cannot exist on a migrated database: the PIM validator covers it, so the
   // application does not start (503 incomplete PIM module) and nothing is written.
   await pool.query('ALTER TABLE b2b_dropship_quotes RENAME TO b2b_dropship_quotes_safety_hidden');
+  let builtUnexpectedly: Awaited<ReturnType<typeof buildApp>> | undefined;
   try {
     await assert.rejects(
-      () => buildApp({ integrationTransport: transport }),
+      () => buildApp({ integrationTransport: transport }).then((a) => (builtUnexpectedly = a)),
       (e: any) => e?.status === 503 && /Niekompletny moduł PIM/.test(e.message),
     );
   } finally {
+    await builtUnexpectedly?.close();
     await pool.query('ALTER TABLE b2b_dropship_quotes_safety_hidden RENAME TO b2b_dropship_quotes');
   }
   assert.deepEqual(await snapshot(), activeBefore);

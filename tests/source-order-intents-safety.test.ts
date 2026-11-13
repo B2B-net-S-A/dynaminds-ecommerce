@@ -619,12 +619,14 @@ test('read-only source handlers deny malformed writes before parse and genuine m
   // A torn 110 table cannot exist on a migrated database: pim_dictionary_valid() covers it, so the application does
   // not start (503 incomplete PIM module) and nothing is written; the installed 109 manual path is not reachable torn.
   await pool.query('ALTER TABLE b2b_external_import_certificates RENAME TO b2b_external_import_certificates_own_unavailable');
+  let builtUnexpectedly: Awaited<ReturnType<typeof buildApp>> | undefined;
   try {
     const physical = await snapshot(true);
-    await assert.rejects(() => buildApp({integrationTransport:transport.transport}),
+    await assert.rejects(() => buildApp({integrationTransport:transport.transport}).then(a => (builtUnexpectedly = a)),
       (e:any) => e?.status===503 && /Niekompletny moduł PIM/.test(e.message));
     assert.deepEqual(await snapshot(true),physical);
   } finally {
+    await builtUnexpectedly?.close();
     await pool.query('ALTER TABLE b2b_external_import_certificates_own_unavailable RENAME TO b2b_external_import_certificates');
   }
 });
