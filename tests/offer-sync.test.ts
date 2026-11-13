@@ -780,6 +780,7 @@ test('ponowne połączenie OAuth unieważnia zgodę harmonogramu bez mylenia go 
       });
     },
   };
+  assert(authenticatedRequest, 'admin login in before() must pass through GET /api/auth/me');
   const trusted = withAllegroRequestContext(auth, authenticatedRequest);
   const started = await beginOAuth(actor, ch.id, trusted, true);
   await finishOAuth(actor, new URL(started.url).searchParams.get('state')!, 'fixture-code', trusted);
