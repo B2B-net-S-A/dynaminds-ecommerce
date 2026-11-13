@@ -686,6 +686,52 @@ test('Pauza po utracie odpowiedzi zachowuje GET-only uzgodnienie', async () => {
   assert.equal(done.state, 'done');
   assert.equal(puts().length, 1);
 });
+test('Pauza zatwierdzona po write_started, a przed PUT, nie wysyła zapisu Allegro', async () => {
+  const f = await fixture('allegro');
+  await configure(f);
+  await scheduleStatusesDue();
+  await scan(f);
+  const p = (await ok('/orders/' + f.o.id + '/channel-status')).data[0];
+  // Commit the pause right after the transaction that flips the plan to write_started, before the PUT.
+  const connect: (...args: any[]) => any = pool.connect.bind(pool);
+  let armed = true;
+  (pool as any).connect = async (...callback: any[]) => {
+    // pool.query checks out with a callback: pass it through untouched.
+    if (callback.length || !armed) return connect(...callback);
+    const c: any = await connect();
+    const query = c.query;
+    let flipped = false;
+    c.query = async (...args: any[]) => {
+      const result = await query.apply(c, args);
+      const text = typeof args[0] === 'string' ? args[0] : '';
+      if (text.includes("SET phase='write_started'")) flipped = true;
+      else if (text === 'COMMIT' || text === 'ROLLBACK') {
+        c.query = query;
+        if (flipped && text === 'COMMIT' && armed) {
+          armed = false;
+          // The pause as committed by PATCH /order-status (not through the route: the job holds its order lock).
+          await tenantTx(DEMO_TENANT, (t) =>
+            t.query(
+              'UPDATE order_status_configs SET enabled=false,version=version+1,updated_at=now() WHERE channel_id=$1',
+              [f.ch],
+            ),
+          );
+        }
+      }
+      return result;
+    };
+    return c;
+  };
+  try {
+    const failed = await work(p);
+    assert.equal(armed, false, 'the write_started flip committed');
+    assert.equal(puts().length, 0);
+    assert.notEqual(failed.state, 'done');
+  } finally {
+    armed = false;
+    (pool as any).connect = connect;
+  }
+});
 test('Przegląd większy niż 25 zamówień zapisuje kursor i wznawia kolejną stronę', async () => {
   const f = await fixture('allegro');
   for (let n = 0; n < STATUS_BATCH; n++) {

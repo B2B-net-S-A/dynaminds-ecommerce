@@ -634,12 +634,19 @@ export async function processStatusWrite(job: any, ctx: IntegrationContext = {})
                 await client.updateOrderStatus(o.external_id, p.target);
               else if (client instanceof WooCommerce)
                 await client.updateOrderStatus(Number(o.external_id), p.target);
-              else
+              else {
+                // The job authority no longer pins the config once the plan is write_started; a pause committed
+                // after the write_started flip must still stop this first PUT.
+                await tenantTx(actor.tenantId, async (c) => {
+                  const current = (await c.query('SELECT * FROM channels WHERE id=$1 FOR SHARE', [ch.id])).rows[0];
+                  await policy(c, actor, current, p.config_version);
+                });
                 await (client as Allegro).updateOrderStatus(
                   o.external_id,
                   p.target,
                   remote.revision,
                 );
+              }
             },
             ctx,
             false,
