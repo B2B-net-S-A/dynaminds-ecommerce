@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool } from '../server/db';
 import { seed } from './fixtures';
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { sourceCatalogStockControl, previewCatalogStockControl, commitCatalogStockControl } from '../server/catalog-stock-control';
 import type { CatalogStockControlWarehouse } from '../server/catalog-stock-control-schema';
 import { bootstrap151169, install152169, fixture169, facts169, own169, raw169,
@@ -60,7 +61,7 @@ async function fixture(on: boolean) {
     client_key: randomUUID(), version: Number(order.version), kind: 'receipt', amount: 1501, currency: 'PLN',
     method: 'other', reference: 'Local declaration', confirmed: true,
   });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const allocations = await f.ok('/wms-lots/orders/' + order.id + '/allocations');
     assert.equal(allocations.meta.cursor, null); assert.equal(allocations.data.length, 3);
@@ -72,11 +73,11 @@ async function fixture(on: boolean) {
       });
     }
   } else await f.ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: product.sku, location: 'A-01' });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await f.ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   order = await f.ok('/orders/' + order.id);
   await activate(f); // Requested RMA is deliberately created AFTER BO.
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'return_initiated' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'return_initiated' }));
   const listed = await f.ok('/orders/' + order.id + '/returns');
   const head = one(listed.cases);
   const rma = await f.ok('/returns/' + head.id);
@@ -91,7 +92,7 @@ test('strict ON legacy-origin RMA ordinary receive uses real WMS fragments and o
   // Neither ordinary no-lot input nor the old status shortcut may infer WMS picks.
   assert.equal((await f.request('/returns/' + f.rma.id + '/receive', 'POST', f.body)).statusCode, 409);
   assert.deepEqual(await facts169(), initial);
-  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', { status: 'return_received' })).statusCode, 409);
+  assert.equal((await f.request('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' }))).statusCode, 409);
   assert.deepEqual(await facts169(), initial);
   const fragments = own169(initial, 'wms_issue_fragments', f.tenant).filter(r => r.order_id === f.order.id);
   assert.equal(fragments.length, 3); assert(fragments.every(r => r.quantity === 1));
@@ -190,7 +191,7 @@ test('strict OFF legacy-origin ordinary receive stays refused; genuine legacy_st
   const f = await fixture(false), beforeRows = await facts169();
   assert.equal((await f.request('/returns/' + f.rma.id + '/receive', 'POST', f.body)).statusCode, 409);
   assert.deepEqual(await facts169(), beforeRows);
-  await f.ok('/orders/' + f.order.id + '/status', 'PATCH', { status: 'return_received' });
+  await f.ok('/orders/' + f.order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + f.order.id + '/status', { status: 'return_received' }));
   const accepted = await facts169(), rma = await f.ok('/returns/' + f.rma.id);
   assert.equal(rma.state, 'refund_pending');
   const admission = one(own169(accepted, 'catalog_stock_return_admissions', f.tenant));

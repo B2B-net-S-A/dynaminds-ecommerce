@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool } from '../server/db';
 import { seed } from './fixtures';
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { sourceCatalogStockControl, previewCatalogStockControl, commitCatalogStockControl } from '../server/catalog-stock-control';
 import type { CatalogStockControlWarehouse } from '../server/catalog-stock-control-schema';
 import { bootstrap151169, install152169, fixture169, facts169, own169, raw169,
@@ -76,7 +77,7 @@ async function fixture(on: boolean, custody = false) {
   assert.equal(order.items.length, 2); assert.equal(new Set(order.items.map((i: Row) => i.id)).size, 2);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version),
     kind: 'receipt', amount: 4401, currency: 'PLN', method: 'other', reference: 'Own local declaration', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   if (on) {
     const page = await f.ok('/wms-lots/orders/' + order.id + '/allocations'); assert.equal(page.meta.cursor, null);
     assert.equal(page.data.length, 3);
@@ -90,7 +91,7 @@ async function fixture(on: boolean, custody = false) {
   } else for (let n = 0; n < 3; n++) await f.ok('/orders/' + order.id + '/scan', 'POST', {
     client_key: randomUUID(), code: product.sku, location: 'A-01',
   });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await f.ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   order = await f.ok('/orders/' + order.id);
   // Fulfillment precedes BO; the new requested RMA must not bypass

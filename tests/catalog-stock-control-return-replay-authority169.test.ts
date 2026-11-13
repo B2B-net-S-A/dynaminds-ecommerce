@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { buildApp } from '../server/app';
 import { pool } from '../server/db';
 import { seed } from './fixtures';
+import { legacySerialOrderStatusPayload } from './order-status-cas-helper';
 import { adjustmentActor } from './stocktake-adjustments-fixture';
 import { sourceCatalogStockControl, previewCatalogStockControl, commitCatalogStockControl } from '../server/catalog-stock-control';
 import type { CatalogStockControlWarehouse } from '../server/catalog-stock-control-schema';
@@ -59,9 +60,9 @@ async function intake(strict = true) {
   order = await f.ok('/orders/' + order.id);
   await f.ok('/orders/' + order.id + '/payments', 'POST', { client_key: randomUUID(), version: Number(order.version),
     kind: 'receipt', amount: order.total, currency: 'PLN', method: 'other', reference: 'Own local declaration', confirmed: true });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'picking' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'picking' }));
   await f.ok('/orders/' + order.id + '/scan', 'POST', { client_key: randomUUID(), code: f.products[0].sku, location: 'A-01' });
-  await f.ok('/orders/' + order.id + '/status', 'PATCH', { status: 'packed' });
+  await f.ok('/orders/' + order.id + '/status', 'PATCH', await legacySerialOrderStatusPayload((orderPath) => f.ok(orderPath, 'GET', undefined), '/orders/' + order.id + '/status', { status: 'packed' }));
   await f.ok('/orders/' + order.id + '/ship-demo', 'POST', {});
   order = await f.ok('/orders/' + order.id); assert.equal(order.status, 'shipped');
   // Reservations are consumed; no requested RMA exists at real BO consent.
@@ -103,7 +104,8 @@ test('saved strict OFF ordinary169 receipt binds exact actor/key/body; same iden
   const otherActor = await adjustmentActor(app, f.tenant, 'other@demo.local');
   const beforeRows = await facts169();
   assert.notEqual(otherActor.user, f.user);
-  assert.deepEqual(await f.ok(f.path, 'POST', f.body, 200, f.key), f.result);
+  // A pure replay answers the saved receipt marked reused (returnReceiveOutcome, server/returns.ts).
+  assert.deepEqual(await f.ok(f.path, 'POST', f.body, 200, f.key), { ...f.result, reused: true });
   assert.deepEqual(await facts169(), beforeRows);
   assert.equal((await f.request(f.path, 'POST', f.body, otherKey)).statusCode, 409);
   assert.deepEqual(await facts169(), beforeRows);
@@ -116,7 +118,7 @@ test('saved strict OFF ordinary169 receipt binds exact actor/key/body; same iden
   const sessionReceipt = await saved(false);
   const secondActor = await adjustmentActor(app, sessionReceipt.tenant, 'other@demo.local');
   const sessionBaseline = await facts169();
-  assert.deepEqual(await sessionReceipt.ok(sessionReceipt.path, 'POST', sessionReceipt.body), sessionReceipt.result);
+  assert.deepEqual(await sessionReceipt.ok(sessionReceipt.path, 'POST', sessionReceipt.body), { ...sessionReceipt.result, reused: true });
   assert.equal((await secondActor.request(sessionReceipt.path, 'POST', sessionReceipt.body)).statusCode, 409);
   assert.deepEqual(await facts169(), sessionBaseline, 'Same NULL key but different real current actor is independently denied');
 });
