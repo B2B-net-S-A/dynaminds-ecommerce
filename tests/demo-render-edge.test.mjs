@@ -35,11 +35,12 @@ function demoApp(req, res) {
       res.end(JSON.stringify({ user: { email } }));
     });
   }
-  if (req.url === '/api/auth/me') {
+  // Like the application's framework, it reads a declared body before answering.
+  if (req.url === '/api/auth/me') return req.resume().on('end', () => {
     const ok = /dyna_session=tok-/.test(req.headers.cookie ?? '');
     res.writeHead(ok ? 200 : 401, { 'content-type': 'application/json' });
-    return res.end(ok ? `{"session":"${/dyna_session=([^;]+)/.exec(req.headers.cookie)[1]}"}` : '{"detail":"Sesja wygasła"}');
-  }
+    res.end(ok ? `{"session":"${/dyna_session=([^;]+)/.exec(req.headers.cookie)[1]}"}` : '{"detail":"Sesja wygasła"}');
+  });
   res.setHeader('set-cookie', ['a=1', 'b=2']); res.end('app');
 }
 const edgeOn = (listen, appPort, env = {}) => spawn(process.execPath, [fileURLToPath(new URL('../tools/demo/render/edge.mjs', import.meta.url))], {
@@ -133,6 +134,9 @@ test('ten wrong codes from one address lock that address for 15 minutes, even wi
     assert.equal(locked.status, 429);
     assert.match(locked.body, /15 minut/);
     assert.notEqual((await enter({ code: 'zly', role: 'owner' }, { 'x-forwarded-for': '1.1.1.1, 2.2.2.2' }, own)).status, 429, 'another visitor is not locked');
+    for (let i = 0; i < 10; i++) await enter({ code: 'zly', role: 'owner' }, { 'x-forwarded-for': `2001:db8:1:2::${i + 1}` }, own);
+    assert.equal((await enter({ code: CODE, role: 'owner' }, { 'x-forwarded-for': '2001:db8:1:2:ffff::9' }, own)).status, 429, 'IPv6 is locked by its /64');
+    assert.notEqual((await enter({ code: 'zly', role: 'owner' }, { 'x-forwarded-for': '2001:db8:1:3::1' }, own)).status, 429, 'another /64 is not');
   } finally { e.kill(); }
 });
 
@@ -146,6 +150,17 @@ test('an entered device without an application session is signed in again as its
   assert.equal(stale.status, 200, 'a session the application no longer knows is replaced');
   assert.equal(JSON.parse(stale.body).session, 'tok-owner');
   assert.ok(seen.every((s) => !(s.headers.cookie ?? '').includes('dyna_demo')), 'the entrance cookie stays at the edge');
+});
+
+test('GET /api/auth/me with a body header still gets an answer instead of holding an application slot', async () => {
+  const raw = (extra) => new Promise((ok) => {
+    const s = net.connect(port, '127.0.0.1', () => s.write(`GET /api/auth/me HTTP/1.1\r\nHost: x\r\nCookie: ${GATE}; dyna_session=tok-owner\r\n${extra}Connection: close\r\n\r\n`));
+    // The answer is what counts: the socket itself may wait for the body the client declared.
+    let b = ''; s.on('data', (d) => { b += d; if (b.includes('\r\n\r\n')) { s.destroy(); ok(b.split(' ')[1]); } });
+    setTimeout(() => { s.destroy(); ok('timeout'); }, 3000);
+  });
+  assert.equal(await raw('Content-Length: 4\r\n'), '200');
+  assert.equal(await raw('Transfer-Encoding: chunked\r\n'), '200');
 });
 
 test('logging out forgets the entrance, so the next visit chooses again', async () => {

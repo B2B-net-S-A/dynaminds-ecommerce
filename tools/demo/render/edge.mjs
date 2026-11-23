@@ -48,7 +48,14 @@ function gateRole(req) {
 
 // Ten wrong codes lock that address for 15 minutes. The platform's proxy appends the visitor's address last.
 const FAILS = 10, LOCK_MS = 15 * 60_000, fails = new Map();
-const clientOf = (req) => String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean).at(-1) ?? req.socket.remoteAddress;
+// An IPv6 visitor holds a whole /64, so the lock keys IPv6 by that prefix.
+const clientOf = (req) => {
+  const ip = String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean).at(-1) ?? req.socket.remoteAddress ?? '';
+  if (!ip.includes(':') || ip.startsWith('::ffff:')) return ip;
+  const [head, tail = ''] = ip.split('::');
+  const groups = [...head.split(':').filter(Boolean), ...Array(Math.max(0, 8 - head.split(':').filter(Boolean).length - tail.split(':').filter(Boolean).length)).fill('0'), ...tail.split(':').filter(Boolean)];
+  return groups.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, '')).join(':') + '::/64';
+};
 const locked = (who) => { const f = fails.get(who); if (f && f.until < Date.now()) fails.delete(who); return (fails.get(who)?.n ?? 0) >= FAILS; };
 function failed(who) {
   if (fails.size > 10_000) fails.clear();
@@ -100,6 +107,7 @@ const appLogin = (role) => new Promise((ok) => {
   const up = http.request({ host: '127.0.0.1', port: appPort, method: 'POST', path: '/api/auth/login', agent: false, timeout: 15000,
     headers: { host: `127.0.0.1:${appPort}`, 'content-type': 'application/json', 'content-length': Buffer.byteLength(body) } }, (r) => {
     let s = ''; r.on('data', (d) => s += d);
+    r.on('error', () => ok(null));
     r.on('end', () => {
       let mfa = false; try { mfa = JSON.parse(s).mfa_required === true; } catch {}
       const cookies = [].concat(r.headers['set-cookie'] ?? []);
@@ -175,15 +183,20 @@ function relay(req, res, headers, body, extraCookies) {
   if (typeof body === 'string') up.end(body); else body.pipe(up);
 }
 // GET /api/auth/me buffered: an answer of 401 to an entered device means the application forgot the session (a reset),
-// so the role is signed in again and asked once more.
-function me(req, headers, extraCookies) {
+// so the role is signed in again and asked once more. The request carries no body upstream: a declared one that never
+// came would hold an application slot, so the body headers are dropped and the client's body is read away.
+const BODY_HEADERS = ['content-length', 'transfer-encoding', 'expect', 'connection'];
+function me(req, res, headers, extraCookies) {
+  const plain = Object.fromEntries(Object.entries(headers).filter(([k]) => !BODY_HEADERS.includes(k)));
   return new Promise((ok) => {
-    const up = http.request({ host: '127.0.0.1', port: appPort, method: 'GET', path: req.url, headers }, (r) => {
+    const up = http.request({ host: '127.0.0.1', port: appPort, method: 'GET', path: req.url, headers: plain, timeout: 30000 }, (r) => {
       const chunks = []; r.on('data', (d) => chunks.push(d));
       r.on('end', () => ok({ status: r.statusCode, raw: r.rawHeaders, body: Buffer.concat(chunks), extraCookies }));
       r.on('error', () => ok(null));
     });
+    up.on('timeout', () => up.destroy());
     up.on('error', () => ok(null));
+    res.on('close', () => { if (!res.writableFinished) up.destroy(); });
     up.end();
   });
 }
@@ -220,10 +233,11 @@ const server = http.createServer(async (req, res) => {
     if (login) { extraCookies = login.cookies; headers = withSession(headers, login.pair); }
   }
   if (path !== '/api/auth/me' || req.method !== 'GET') return relay(req, res, headers, req, extraCookies);
-  let answer = await me(req, headers, extraCookies);
+  req.resume();
+  let answer = await me(req, res, headers, extraCookies);
   if (answer?.status === 401 && !extraCookies.length) {
     const login = await appLogin(role);
-    if (login) answer = await me(req, withSession(headers, login.pair), login.cookies);
+    if (login) answer = await me(req, res, withSession(headers, login.pair), login.cookies);
   }
   if (!answer) return starting(res);
   const raw = [...answer.raw];
