@@ -1048,6 +1048,9 @@ function App() {
     if (switching) setPage(invitedToken() ? 'settings' : 'dashboard');
     reload();
   };
+  // The hosted demo forgets its entrance on logout (tools/demo/render/edge.mjs); a built page reloads, so the entrance
+  // shows again and the next person chooses a role. A reload of a local installation shows the login form as before.
+  const signedOut = () => { changedUser(null); if (import.meta.env.PROD) location.replace('/'); };
   const go = (p: Page) => {
     if(hasPendingLargeImport()){notify('Najpierw rozstrzygnij oryginalną próbę dużego importu.',true);return false;}
     if(hasPendingPim()){notify('Najpierw rozstrzygnij dokładną próbę parametrów produktu.',true);return false;}
@@ -1160,7 +1163,7 @@ function App() {
   if (wms.active && !wmsBlocked())
     return <WmsApp key={user.tenant_id + ':' + user.id} user={user} readOnly={restorePreview || !write}
       routeOrder={wms.ref} onRouteOrder={wms.setOrder}
-      onOffice={wms.close} onLogout={async () => { await api('/auth/logout', 'POST'); changedUser(null); }} />;
+      onOffice={wms.close} onLogout={async () => { await api('/auth/logout', 'POST'); signedOut(); }} />;
   const action =
     restorePreview ? null : page === 'products' && admin
       ? 'product'
@@ -1237,7 +1240,7 @@ function App() {
             onClick={async () => {
               if (hasPendingPim() || hasPendingManualOff()) return;
               await api('/auth/logout', 'POST');
-              changedUser(null);
+              signedOut();
             }}
             title="Wyloguj"
           >
@@ -1263,7 +1266,7 @@ function App() {
                 notify(error instanceof Error ? error.message : 'Nie udało się zmienić konta.', true);
                 return;
               }
-              changedUser(null);
+              signedOut();
             }}
           >
             Zmień konto

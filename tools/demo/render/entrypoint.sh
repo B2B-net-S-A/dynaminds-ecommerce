@@ -3,13 +3,14 @@
 # entrance (edge.mjs). The release needs its own superuser-owned cluster on loopback, so a managed database cannot replace it.
 set -euo pipefail
 export DYNA_PUBLIC_ORIGIN="${DYNA_PUBLIC_ORIGIN:-${RENDER_EXTERNAL_URL:-}}"   # Render sets the service's own https address.
-: "${DEMO_ENCRYPTION_KEY:?required}" "${DEMO_BASIC_AUTH_PASSWORD:?required}" "${DYNA_PUBLIC_ORIGIN:?required}"
-export DEMO_BASIC_AUTH_USER="${DEMO_BASIC_AUTH_USER:-demo}"
+: "${DEMO_ENCRYPTION_KEY:?required}" "${DEMO_ACCOUNT_PASSWORDS:?required}" "${DYNA_PUBLIC_ORIGIN:?required}"
+# The entrance code: DEMO_ACCESS_CODE, or the former Basic password of installations configured before the entrance page.
+: "${DEMO_ACCESS_CODE:=${DEMO_BASIC_AUTH_PASSWORD:?DEMO_ACCESS_CODE required}}"; export DEMO_ACCESS_CODE
 DATA="${DEMO_DATA_DIR:-/var/data}"; PGDATA="$DATA/pg"; SECRETS="$DATA/secrets"; APP_PORT=4300; DB=dynaminds_demo; SNAP=dynaminds_demo_snapshot
 OPT=/opt/dyna; KSEF_PORT=4239; PRINTER_PORT=4233
 export DEMO_APP_PORT=$APP_PORT PORT="${PORT:-10000}"
-as_pg() { gosu postgres env -u DEMO_ENCRYPTION_KEY -u DEMO_BASIC_AUTH_PASSWORD "$@"; }
-as_app() { gosu dyna env -u DEMO_ENCRYPTION_KEY -u DEMO_BASIC_AUTH_PASSWORD "$@"; }
+as_pg() { gosu postgres env -u DEMO_ENCRYPTION_KEY -u DEMO_BASIC_AUTH_PASSWORD -u DEMO_ACCESS_CODE -u DEMO_ACCOUNT_PASSWORDS "$@"; }
+as_app() { gosu dyna env -u DEMO_ENCRYPTION_KEY -u DEMO_BASIC_AUTH_PASSWORD -u DEMO_ACCESS_CODE -u DEMO_ACCOUNT_PASSWORDS "$@"; }
 psql_on() { local db="$1"; shift; gosu postgres env -u DEMO_ENCRYPTION_KEY PGPASSFILE="$PGDATA/.demo-pgpass" psql -X -q -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d "$db" "$@"; }
 
 pids=()
@@ -21,7 +22,7 @@ trap stop_all EXIT
 # /api/health reports the release commit, so the deploy pipeline can tell the new build from the old one.
 DEMO_RELEASE_COMMIT="$(node -p 'require("/opt/dyna/release-build.json").commit ?? ""' 2>/dev/null || true)"; export DEMO_RELEASE_COMMIT
 gosu dyna env -u DEMO_ENCRYPTION_KEY node "$OPT/edge.mjs" & pids+=($!)
-unset DEMO_BASIC_AUTH_PASSWORD
+unset DEMO_BASIC_AUTH_PASSWORD DEMO_ACCESS_CODE DEMO_ACCOUNT_PASSWORDS
 
 install -d -m 0755 "$DATA"
 # One instance per disk: a platform that starts the new container before stopping the old one (rolling update) would

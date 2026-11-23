@@ -1,8 +1,8 @@
 #!/bin/bash
 # Prepares the image context from a packaged release and the demo snapshot, and builds the image.
 #   tools/demo/render/build-image.sh <release-build.json> <image tag> [platform, default linux/amd64]
-# Context and private values stay in local-builds/render-demo (outside the repository); the demo's encryption key goes to
-# private/render.env, 0600, and is never part of the image. Needs the demo instance's containers (tools/demo/demo.sh).
+# Context and private values stay in local-builds/render-demo (outside the repository); the demo's encryption key, entrance code and
+# account passwords go to private/render.env, 0600, and are never part of the image. Needs the demo instance's containers (tools/demo/demo.sh).
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; REPO="$(cd "$HERE/../../.." && pwd)"
 RB="${1:?release-build.json}"; TAG="${2:?image tag}"; PLATFORM="${3:-linux/amd64}"
@@ -42,6 +42,8 @@ printf '.git\n' > "$CTX/.dockerignore"
 chmod -R go+rX "$CTX"
 { echo "DEMO_ENCRYPTION_KEY=$(node -p 'JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).encryptionKey' "$DEMO/pg-state/local-config.json")"
   [ -s "$ROOT/private/basic-auth" ] || node -e 'process.stdout.write(require("crypto").randomBytes(18).toString("base64url"))' > "$ROOT/private/basic-auth"
-  echo "DEMO_BASIC_AUTH_PASSWORD=$(cat "$ROOT/private/basic-auth")"; } > "$ROOT/private/render.env"
+  echo "DEMO_ACCESS_CODE=$(cat "$ROOT/private/basic-auth")"
+  # The entrance signs the visitor into the seeded accounts, whose passwords tools/demo/seed.mjs wrote here.
+  echo "DEMO_ACCOUNT_PASSWORDS=$(node -p 'JSON.stringify(Object.fromEntries(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).users.map((u)=>[u.key,u.password])))' "$DEMO/private/credentials.json")"; } > "$ROOT/private/render.env"
 docker buildx build --platform "$PLATFORM" --load -t "$TAG" "$CTX"
 echo "image $TAG ($PLATFORM), private values in $ROOT/private/render.env"
