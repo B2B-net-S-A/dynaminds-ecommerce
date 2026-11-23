@@ -49,16 +49,31 @@ function gateRole(req) {
 // Ten wrong codes lock that address for 15 minutes. The platform's proxy appends the visitor's address last.
 const FAILS = 10, LOCK_MS = 15 * 60_000, fails = new Map();
 // An IPv6 visitor holds a whole /64, so the lock keys IPv6 by that prefix.
+// Without the proxy's header every visitor is the proxy's own address and one lock would close the demo for all, so
+// that is logged once.
+let warnedNoForwarded = false;
 const clientOf = (req) => {
-  const ip = String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean).at(-1) ?? req.socket.remoteAddress ?? '';
+  const forwarded = String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean).at(-1);
+  if (!forwarded && !warnedNoForwarded) { warnedNoForwarded = true; console.error(JSON.stringify({ status: 'DEMO_ENTRANCE_NO_FORWARDED_FOR', note: 'the code lock counts per proxy address' })); }
+  const ip = forwarded ?? req.socket.remoteAddress ?? '';
   if (!ip.includes(':') || ip.startsWith('::ffff:')) return ip;
   const [head, tail = ''] = ip.split('::');
   const groups = [...head.split(':').filter(Boolean), ...Array(Math.max(0, 8 - head.split(':').filter(Boolean).length - tail.split(':').filter(Boolean).length)).fill('0'), ...tail.split(':').filter(Boolean)];
   return groups.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, '')).join(':') + '::/64';
 };
 const locked = (who) => { const f = fails.get(who); if (f && f.until < Date.now()) fails.delete(who); return (fails.get(who)?.n ?? 0) >= FAILS; };
+// A full table drops the expired entries and then the fewest-failure ones (down to 90%), never all of them: a flood of
+// one-off addresses must not wipe the count of an address part way into guessing.
+const MAX_TRACKED = 10_000;
 function failed(who) {
-  if (fails.size > 10_000) fails.clear();
+  if (fails.size >= MAX_TRACKED && !fails.has(who)) {
+    const now = Date.now();
+    for (const [k, f] of fails) if (f.until < now) fails.delete(k);
+    if (fails.size >= MAX_TRACKED) {
+      const drop = [...fails].sort((a, b) => a[1].n - b[1].n || a[1].until - b[1].until).slice(0, fails.size - MAX_TRACKED * 0.9);
+      for (const [k] of drop) fails.delete(k);
+    }
+  }
   const f = fails.get(who) ?? { n: 0, until: 0 };
   fails.set(who, { n: f.n + 1, until: Date.now() + LOCK_MS });
 }

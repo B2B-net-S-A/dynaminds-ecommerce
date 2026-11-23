@@ -140,6 +140,19 @@ test('ten wrong codes from one address lock that address for 15 minutes, even wi
   } finally { e.kill(); }
 });
 
+test('a flood of one-off addresses does not wipe the count of an address nine codes into guessing', async () => {
+  const own = await free(), e = edgeOn(own, await free());
+  await new Promise((ok) => e.stdout.once('data', ok));
+  const agent = new http.Agent({ keepAlive: true, maxSockets: 100 });
+  const bad = (ip) => new Promise((ok, no) => { const q = http.request({ port: own, path: '/demo/wejdz', method: 'POST', agent, headers: { 'content-type': 'application/x-www-form-urlencoded', 'x-forwarded-for': ip } }, (r) => { r.resume(); r.on('end', () => ok(r.statusCode)); }); q.on('error', no); q.end('code=zly&role=owner'); });
+  try {
+    for (let i = 0; i < 9; i++) assert.equal(await bad('7.7.7.7'), 401);
+    for (let i = 0; i < 10_001; i += 500) await Promise.all(Array.from({ length: Math.min(500, 10_001 - i) }, (_, j) => bad(`10.${(i + j) >> 16 & 255}.${(i + j) >> 8 & 255}.${(i + j) & 255}`)));
+    assert.equal(await bad('7.7.7.7'), 401);
+    assert.equal((await enter({ code: CODE, role: 'owner' }, { 'x-forwarded-for': '7.7.7.7' }, own)).status, 429);
+  } finally { agent.destroy(); e.kill(); }
+});
+
 test('an entered device without an application session is signed in again as its role', async () => {
   seen = [];
   const r = await call({ path: '/api/auth/me', headers: authed() });
